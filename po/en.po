@@ -1,0 +1,340 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-08-21 13:06+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: application/x-xml2pot; charset=UTF-8\n"
+"Content-Transfer-Encoding: ENCODING\n"
+
+#: ../imagepool/netquery.cpp:54
+msgid "no description"
+msgstr ""
+
+#: ../widgets/aseriesmenu.cpp:15
+#, c-format
+msgid ""
+"Series %i (%s)\n"
+"%s"
+msgstr ""
+
+#: ../widgets/aseriesmenu.cpp:18
+#, c-format
+msgid ""
+"Series %i (%s)\n"
+"No description"
+msgstr ""
+
+#: ../widgets/adisplay.cpp:120
+msgid "Acc:\n"
+msgstr ""
+
+#: ../widgets/adisplay.cpp:122
+msgid "Acq Tm: "
+msgstr ""
+
+#: ../widgets/adisplay.cpp:135
+#, c-format
+msgid "Image: %i / %i"
+msgstr ""
+
+#: ../widgets/adisplay.cpp:410 ../widgets/adisplay.cpp:462
+#, c-format
+msgid "%i mm"
+msgstr ""
+
+#: ../widgets/studyview.cpp:52
+msgid "Close the current study"
+msgstr ""
+
+#: ../widgets/studyview.cpp:57
+msgid "Rearrange the series of the current study"
+msgstr ""
+
+#: ../widgets/studyview.cpp:58
+msgid "Display the series tiling menu"
+msgstr ""
+
+#: ../widgets/studyview.cpp:65
+msgid "Toggle single series mode"
+msgstr ""
+
+#: ../widgets/studyview.cpp:66
+msgid "Display the series selection menu"
+msgstr ""
+
+#: ../widgets/studyview.cpp:72
+msgid "Rearrange the images of the selected series"
+msgstr ""
+
+#: ../widgets/studyview.cpp:73
+msgid "Display the the image tiling menu"
+msgstr ""
+
+#: ../widgets/studyview.cpp:82
+msgid "Display references of the selected series"
+msgstr ""
+
+#: ../src/astockids.cpp:31
+msgid "1 Image"
+msgstr ""
+
+#: ../src/astockids.cpp:32
+msgid "1x2 Images"
+msgstr ""
+
+#: ../src/astockids.cpp:33
+msgid "2x1 Images"
+msgstr ""
+
+#: ../src/astockids.cpp:34
+msgid "2x2 Images"
+msgstr ""
+
+#: ../src/astockids.cpp:35
+msgid "4x4 Images"
+msgstr ""
+
+#: ../src/astockids.cpp:36
+msgid "Single"
+msgstr ""
+
+#: ../src/astockids.cpp:37
+msgid "All"
+msgstr ""
+
+#: ../src/astockids.cpp:38
+msgid "1 Series"
+msgstr ""
+
+#: ../src/astockids.cpp:39
+msgid "2x1 Series"
+msgstr ""
+
+#: ../src/astockids.cpp:40
+msgid "2x2 Series"
+msgstr ""
+
+#: ../src/astockids.cpp:41
+msgid "Reference"
+msgstr ""
+
+#: ../src/astockids.cpp:42
+msgid "Delete item"
+msgstr ""
+
+#: ../src/mainwindow.cpp:16
+msgid "Open DICOM Image files"
+msgstr ""
+
+#: ../src/mainwindow.cpp:53
+msgid "Bring opened files to front"
+msgstr ""
+
+#: ../src/mainwindow.cpp:62
+msgid "DICOM files"
+msgstr ""
+
+#: ../src/mainwindow.cpp:67
+msgid "Any files"
+msgstr ""
+
+#. c->add_attribute(m_tree_icon.property_stock_size(), m_Columns.m_iconsize);
+#: ../src/studymanager.cpp:77
+msgid "Patientsname"
+msgstr ""
+
+#: ../src/studymanager.cpp:78
+msgid "Birthdate"
+msgstr ""
+
+#: ../src/studymanager.cpp:79
+msgid "Description"
+msgstr ""
+
+#: ../src/studymanager.cpp:80
+msgid "Modality"
+msgstr ""
+
+#: ../src/studymanager.cpp:81
+msgid "Date/Time"
+msgstr ""
+
+#: ../src/studymanager.cpp:82
+msgid "Station"
+msgstr ""
+
+#: ../src/studymanager.cpp:228
+#, c-format
+msgid "Series %i (%i Images)"
+msgstr ""
+
+#: ../src/studymanager.cpp:231
+#, c-format
+msgid "Series %i"
+msgstr ""
+
+#: ../src/settings.cpp:38
+msgid "AET"
+msgstr ""
+
+#: ../src/settings.cpp:39 ../src/aeskulap.glade.h:20
+msgid "Port"
+msgstr ""
+
+#: ../src/settings.cpp:40
+msgid "Hostname"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:1
+msgid "(C) 2005 Alexander Pipelka"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:2
+msgid "<b>Filter</b>"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:3
+msgid "<b>First Name:</b>"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:4
+msgid "<b>Last Name:</b>"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:5
+msgid "<b>Modality:</b>"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:6
+msgid "<b>Patient ID:</b>"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:7
+msgid "<b>Study Description:</b>"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:8
+msgid "<b>Study List</b>"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:9
+msgid "Accessionnumber:"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:10
+msgid "Aeskulap"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:11
+msgid "Aeskulap Viewer"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:12
+msgid "Clear Filter"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:13
+msgid "DICOM Servers"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:14
+msgid "DICOM Settings"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:15
+msgid "From:"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:16
+msgid "Fullscreen"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:17
+msgid "Local AET"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:18
+msgid "Medical image viewer and DICOM network client\n"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:21
+msgid "Search"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:22
+msgid "Settings"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:23
+msgid "Study Manager"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:24
+msgid ""
+"The Aeskulap source code is licensed under the following terms:\n"
+"\n"
+"Aesuklap main application:\n"
+"GPL\n"
+"\n"
+"ImagePool DICOM Bridge Library:\n"
+"LGPL\n"
+"\n"
+"DCMTK - OFFIS DICOM Toolkit:\n"
+"BSD/MIT"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:34
+msgid "To:"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:35
+msgid "Today"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:36
+msgid ""
+"XA\n"
+"CT\n"
+"CR\n"
+"NM\n"
+"MR\n"
+"SC\n"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:43
+msgid "Yesterday"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:44
+msgid "_Ansicht"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:45
+msgid "_Bearbeiten"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:46
+msgid "_Datei"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:47
+msgid "_Hilfe"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:48
+msgid "_Info"
+msgstr ""
+
+#. TRANSLATORS: Replace this string with your names, one name per line.
+#: ../src/aeskulap.glade.h:50
+msgid "translator-credits"
+msgstr ""

@@ -1,0 +1,32 @@
+Index: ofstring.h
+===================================================================
+RCS file: /var/lib/cvs/aeskulap/dcmtk/ofstd/include/ofstring.h,v
+retrieving revision 1.1
+diff -u -r1.1 ofstring.h
+--- ofstring.h	26 Jun 2005 19:25:53 -0000	1.1
++++ ofstring.h	26 Jun 2005 20:30:19 -0000
+@@ -37,6 +37,8 @@
+ #include "oftypes.h"      /* for OFBool */
+ #include "ofcast.h"
+ 
++#define HAVE_STD_STRING
++
+ #ifdef HAVE_STD_STRING
+ /*
+ ** Use the ANSI Standard string class
+Index: ofstring.cc
+===================================================================
+RCS file: /var/lib/cvs/aeskulap/dcmtk/ofstd/libsrc/ofstring.cc,v
+retrieving revision 1.1
+diff -u -r1.1 ofstring.cc
+--- ofstring.cc	26 Jun 2005 19:26:16 -0000	1.1
++++ ofstring.cc	26 Jun 2005 20:30:32 -0000
+@@ -42,6 +42,8 @@
+ 
+ #include "osconfig.h"     /* include OS specific configuration first */
+ 
++#define HAVE_STD_STRING
++
+ #ifndef HAVE_STD_STRING
+ 
+ #include "ofstring.h"

@@ -1,0 +1,12 @@
+Source: aeskulap
+Section: unknown
+Priority: optional
+Maintainer: Alexander Pipelka <pipelka@bms-austria.com>
+Build-Depends: debhelper (>= 4.0.0), libgtkmm-2.4-dev, libglibmm-2.4-dev, libglademm-2.4-dev
+Standards-Version: 3.6.0
+
+Package: aeskulap
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Aeskulap medical image viewer
+ Aeskulap is a medical image viewer and DICOM network client.

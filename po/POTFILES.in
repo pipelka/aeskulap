@@ -1,0 +1,18 @@
+# List of source files which contain translatable strings.
+imagepool/netquery.cpp
+widgets/imagelayouttoolbutton.cpp
+widgets/aseriesmenu.cpp
+widgets/seriesview.cpp
+widgets/asimpledisplay.cpp
+widgets/displayparameters.cpp
+widgets/atiler.cpp
+widgets/serieslayouttoolbutton.cpp
+widgets/adisplay.cpp
+widgets/studyview.cpp
+src/main.cpp
+src/astockids.cpp
+src/mainwindow.cpp
+src/studymanager.cpp
+src/aiconfactory.cpp
+src/settings.cpp
+src/aeskulap.glade

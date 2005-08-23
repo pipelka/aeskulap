@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Aeskulap Viewer
+Comment=Medical image viewer and DICOM network client
+Exec=aeskulap
+Icon=/usr/share/aeskulap/images/aeskulap.png
+Terminal=false
+Type=Application
+Categories=Application;Graphics;
+StartupNotify=false
+MimeType=image/dicom

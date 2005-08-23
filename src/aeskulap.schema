@@ -1,0 +1,67 @@
+<gconfschemafile>
+ <schemalist>
+   <schema>
+     <key>/schemas/apps/aeskulap/preferences/local_aet</key>
+     <applyto>/apps/aeskulap/preferences/local_aet</applyto>
+     <owner>aeskulap</owner>
+     <type>string</type>
+     <default>AESKULAP</default>
+     <locale name="C">
+	<short>Local DICOM AET</short>
+	<long>Defines the Application Entity Title of Aeskulap for network communication.</long>
+     </locale>
+   </schema>
+
+   <schema>
+     <key>/schemas/apps/aeskulap/preferences/local_port</key>
+     <applyto>/apps/aeskulap/preferences/local_port</applyto>
+     <owner>aeskulap</owner>
+     <type>int</type>
+     <default>6000</default>
+     <locale name="C">
+	<short>Local DICOM port</short>
+	<long>Defines the TCP/IP port for network communication.</long>
+     </locale>
+   </schema>
+
+   <schema>
+     <key>/schemas/apps/aeskulap/preferences/server_aet</key>
+     <applyto>/apps/aeskulap/preferences/server_aet</applyto>
+     <owner>aeskulap</owner>
+     <type>list</type>
+     <list_type>string</list_type>
+     <default>[ARCHIV]</default>
+     <locale name="C">
+	<short>List of remote server AET's</short>
+	<long>This is a list of all available remote DICOM server AET's.</long>
+     </locale>
+   </schema>
+
+   <schema>
+     <key>/schemas/apps/aeskulap/preferences/server_port</key>
+     <applyto>/apps/aeskulap/preferences/server_port</applyto>
+     <owner>aeskulap</owner>
+     <type>list</type>
+     <list_type>int</list_type>
+     <default>[6100]</default>
+     <locale name="C">
+	<short>List of remote server ports</short>
+	<long>This is a list of all available remote DICOM server ports.</long>
+     </locale>
+   </schema>
+
+   <schema>
+     <key>/schemas/apps/aeskulap/preferences/server_hostname</key>
+     <applyto>/apps/aeskulap/preferences/server_hostname</applyto>
+     <owner>aeskulap</owner>
+     <type>list</type>
+     <list_type>string</list_type>
+     <default>[shuttle]</default>
+     <locale name="C">
+	<short>List of remote server hostnames</short>
+	<long>This is a list of all available remote DICOM server hostnames.</long>
+     </locale>
+   </schema>
+
+ </schemalist>
+</gconfschemafile>
