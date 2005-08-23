@@ -1,0 +1,44 @@
+#
+#	Makefile for config
+#
+
+@SET_MAKE@
+
+SHELL = /bin/sh
+
+include @common_makefile@
+
+
+all:
+
+install:
+
+install-bin:
+
+install-doc:
+
+install-etc:
+
+install-include: include-install
+
+install-lib: include-install
+
+install-support:
+
+libsrc-all:
+
+
+include-install:
+	./mkinstalldirs $(includedir)
+	$(INSTALL_DATA) include/osconfig.h $(includedir)
+	$(INSTALL_DATA) include/cfunix.h $(includedir)
+
+clean:
+	(cd include; rm -f $(TRASH))
+	rm -rf $(TRASH)
+
+distclean:
+	(cd include; rm -f $(DISTTRASH) cfunix.h)
+	rm -rf $(DISTTRASH) Makefile.def
+
+dependencies:

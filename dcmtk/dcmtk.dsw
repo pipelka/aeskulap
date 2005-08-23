@@ -1,0 +1,1535 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "ALL_BUILD"=.\ALL_BUILD.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcm2xml
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmconv
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmcrle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdrle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdump
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmftest
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmgpdir
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmodify
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dump2dcm
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name xml2dcm
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name echoscu
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name findscu
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name movescu
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name storescp
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name storescu
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dbregimg
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagectn
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ti
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdspfn
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcod2lum
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dconvlum
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimage
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcm2pnm
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmquant
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmscale
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmjpeg
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg8
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg12
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg16
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmcjpeg
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdjpeg
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmj2pnm
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmmkdir
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdsig
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsign
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dsr2html
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dsr2xml
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dsrdump
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name xml2dsr
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name mkreport
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmmkcrv
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmmklut
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmp2pgm
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmprscp
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmprscu
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpschk
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpsmk
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpsprt
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpsrcv
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpssnd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmwlm
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name wlmscpfs
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ofstd"=ofstd/libsrc\ofstd.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "dcmdata"=dcmdata/libsrc\dcmdata.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "dcm2xml"=dcmdata/apps\dcm2xml.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmconv"=dcmdata/apps\dcmconv.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmcrle"=dcmdata/apps\dcmcrle.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmdrle"=dcmdata/apps\dcmdrle.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmdump"=dcmdata/apps\dcmdump.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmftest"=dcmdata/apps\dcmftest.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmgpdir"=dcmdata/apps\dcmgpdir.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmodify"=dcmdata/apps\dcmodify.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dump2dcm"=dcmdata/apps\dump2dcm.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "xml2dcm"=dcmdata/apps\xml2dcm.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmtls"=dcmtls/libsrc\dcmtls.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "dcmnet"=dcmnet/libsrc\dcmnet.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "echoscu"=dcmnet/apps\echoscu.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "findscu"=dcmnet/apps\findscu.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "movescu"=dcmnet/apps\movescu.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "storescp"=dcmnet/apps\storescp.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "storescu"=dcmnet/apps\storescu.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "imagedb"=imagectn/libsrc\imagedb.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "dbregimg"=imagectn/apps\dbregimg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "imagectn"=imagectn/apps\imagectn.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ti"=imagectn/apps\ti.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmimgle"=dcmimgle/libsrc\dcmimgle.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "dcmdspfn"=dcmimgle/apps\dcmdspfn.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcod2lum"=dcmimgle/apps\dcod2lum.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dconvlum"=dcmimgle/apps\dconvlum.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmimage"=dcmimage/libsrc\dcmimage.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "dcm2pnm"=dcmimage/apps\dcm2pnm.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimage
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmquant"=dcmimage/apps\dcmquant.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimage
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmscale"=dcmimage/apps\dcmscale.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimage
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmjpeg"=dcmjpeg/libsrc\dcmjpeg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ijg8"=dcmjpeg/libijg8\ijg8.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ijg12"=dcmjpeg/libijg12\ijg12.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ijg16"=dcmjpeg/libijg16\ijg16.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "dcmcjpeg"=dcmjpeg/apps\dcmcjpeg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimage
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmjpeg
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg8
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg12
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg16
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmdjpeg"=dcmjpeg/apps\dcmdjpeg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmjpeg
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg8
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg12
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg16
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmj2pnm"=dcmjpeg/apps\dcmj2pnm.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimage
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmjpeg
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg8
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg12
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg16
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmmkdir"=dcmjpeg/apps\dcmmkdir.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimage
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmjpeg
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg8
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg12
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name ijg16
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmdsig"=dcmsign/libsrc\dcmdsig.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "dcmsign"=dcmsign/apps\dcmsign.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdsig
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmsr"=dcmsr/libsrc\dcmsr.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "dsr2html"=dcmsr/apps\dsr2html.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dsr2xml"=dcmsr/apps\dsr2xml.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dsrdump"=dcmsr/apps\dsrdump.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "xml2dsr"=dcmsr/apps\xml2dsr.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mkreport"=dcmsr/tests\mkreport.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmpstat"=dcmpstat/libsrc\dcmpstat.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "dcmmkcrv"=dcmpstat/apps\dcmmkcrv.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmmklut"=dcmpstat/apps\dcmmklut.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmp2pgm"=dcmpstat/apps\dcmp2pgm.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdsig
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmprscp"=dcmpstat/apps\dcmprscp.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdsig
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmprscu"=dcmpstat/apps\dcmprscu.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdsig
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmpschk"=dcmpstat/apps\dcmpschk.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmpsmk"=dcmpstat/apps\dcmpsmk.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmpsprt"=dcmpstat/apps\dcmpsprt.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdsig
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmpsrcv"=dcmpstat/apps\dcmpsrcv.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdsig
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmpssnd"=dcmpstat/apps\dcmpssnd.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name imagedb
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmimgle
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmpstat
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmsr
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdsig
+End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "dcmwlm"=dcmwlm/libsrc\dcmwlm.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "wlmscpfs"=dcmwlm/apps\wlmscpfs.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+Begin Project Dependency
+Project_Dep_Name ofstd
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmdata
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmtls
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmnet
+End Project Dependency
+Begin Project Dependency
+Project_Dep_Name dcmwlm
+End Project Dependency
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

@@ -1,0 +1,13 @@
+2005-08-14  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Add intl,
+	(EXTRA_DIST): Add config.rpath mkinstalldirs.
+	* configure.in (AC_OUTPUT): Add intl/Makefile,
+
+2005-08-13  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Add intl.
+	(ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): Add config.rpath, mkinstalldirs, m4/ChangeLog.
+	* configure.in (AC_OUTPUT): Add intl/Makefile.
+

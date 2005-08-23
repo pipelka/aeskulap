@@ -1,0 +1,6 @@
+usr/bin/aeskulap
+usr/share/aeskulap/glade/aeskulap.glade
+usr/share/aeskulap/images
+usr/share/applications/aeskulap.desktop
+etc/gconf/schemas/aeskulap.schema
+/usr/share/locale/

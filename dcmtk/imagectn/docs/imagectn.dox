@@ -1,0 +1,32 @@
+/*!
+
+\page mod_imagectn imagectn: an image database server
+
+This module contains a simple image archive that manages a number of storage
+areas and allows images to be stored in these storage areas using the DICOM
+Storage Service Class.  It also allows image attributes to be queried and
+images to be retrieved using the DICOM Query/Retrieve Service Class.
+
+\section Tools
+
+This module contains the following command line tools:
+\li \ref dbregimg
+\li \ref imagectn
+\li \ref ti
+
+\section Files
+
+The following files provide further documentation:
+\li \ref file_ctnconf
+\li \ref file_ctnsetup
+
+*/
+
+/*!
+    \page file_ctnconf ctnconf.txt file
+    \verbinclude ctnconf.txt
+*/
+/*!
+    \page file_ctnsetup ctnsetup.txt file
+    \verbinclude ctnsetup.txt
+*/

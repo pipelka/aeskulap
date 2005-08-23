@@ -1,0 +1,115 @@
+AC_PREREQ(2.52)
+
+AC_INIT(aeskulap, 0.1.0, pipelka@teleweb.at, aeskulap)
+AM_INIT_AUTOMAKE([subdir-objects])
+dnl AM_MAINTAINER_MODE
+
+AM_CONFIG_HEADER(config.h)
+
+PARADICOM_VERSION=0.5.0
+
+dnl
+dnl Require programs
+dnl
+AC_PROG_INTLTOOL(0.33)
+AC_PROG_LIBTOOL
+AC_PROG_CC
+AM_PROG_CC_C_O
+AC_PROG_CXX
+AC_PROG_INSTALL
+dnl AC_PROG_RANLIB
+
+ALL_LINGUAS="en de"
+AM_GNU_GETTEXT
+GETTEXT_PACKAGE="aeskulap"
+AC_SUBST(GETTEXT_PACKAGE)
+
+dnl
+dnl Required headers
+dnl
+AC_HEADER_STDC
+dnl AC_CHECK_HEADERS(fcntl.h paths.h sys/ioctl.h sys/time.h syslog.h unistd.h)
+
+dnl
+dnl Checks for typedefs, structures, and compiler characteristics.
+dnl
+AC_TYPE_MODE_T
+AC_TYPE_PID_T
+AC_HEADER_TIME
+
+dnl GETTEXT_PACKAGE=NetworkManager
+dnl AC_SUBST(GETTEXT_PACKAGE)
+dnl AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
+dnl ALL_LINGUAS="bs cs da de el en_CA es fr gu hr hu it ja nb ne nl no pa pt_BR rw sk sq sv uk wa zh_CN zh_TW"
+dnl AM_GLIB_GNU_GETTEXT
+
+PKG_CHECK_MODULES(GTKMM, gtkmm-2.4)
+AC_SUBST(GTKMM_CFLAGS)
+AC_SUBST(GTKMM_LIBS)
+
+dnl PKG_CHECK_MODULES(GLADEMM, libglademm-2.4)
+dnl AC_SUBST(GLADEMM_CFLAGS)
+dnl AC_SUBST(GLADEMM_LIBS)
+
+PKG_CHECK_MODULES(GLADEMM, libglademm-2.4)
+AC_SUBST(GLADEMM_CFLAGS)
+AC_SUBST(GLADEMM_LIBS)
+
+PKG_CHECK_MODULES(GTHREAD, gthread-2.0)
+AC_SUBST(GTHREAD_CFLAGS)
+AC_SUBST(GTHREAD_LIBS)
+
+PKG_CHECK_MODULES(GCONFMM, gconfmm-2.6)
+AC_SUBST(GCONFMM_CFLAGS)
+AC_SUBST(GCFONMM_LIBS)
+
+ dnl Specify the configuration source, default to xml::$(sysconfdir)/gconf/gconf.xml.defaults
+ 
+GCONF_CONFIG_SOURCE=
+AC_ARG_ENABLE(gconf-source, 
+    [  --enable-gconf-source=sourceaddress      Where to install schema files.],GCONF_CONFIG_SOURCE=$enable_gconf_source,)
+	     
+if test "x$GCONF_CONFIG_SOURCE" = "x"; then
+    GCONF_CONFIG_SOURCE="xml::\${sysconfdir}/gconf/gconf.xml.defaults"
+     INSTALL_GCONF_CONFIG_SOURCE="xml::\$(DESTDIR)\${sysconfdir}/gconf/gconf.xml.defaults"
+fi
+					     
+AC_SUBST(GCONF_CONFIG_SOURCE)
+AC_SUBST(INSTALL_GCONF_CONFIG_SOURCE)
+
+dnl AC_CONFIG_SUBDIRS(dcmtk)
+
+DCMJPEG_LIBS="-L../dcmtk/dcmjpeg/libijg8 -L../dcmtk/dcmjpeg/libijg12 -L../dcmtk/dcmjpeg/libijg16 -lijg8 -lijg12 -lijg16"
+AC_SUBST(DCMJPEG_LIBS)
+
+DCMTK_CFLAGS="-DHAVE_CONFIG_H -I\$(top_srcdir)/dcmtk/config/include -I\$(top_srcdir)/dcmtk/ofstd/include -I\$(top_srcdir)/dcmtk/dcmdata/include -I\$(top_srcdir)/dcmtk/dcmnet/include -I\$(top_srcdir)/dcmtk/dcmimage/include -I\$(top_srcdir)/dcmtk/dcmimgle/include -I\$(top_srcdir)/dcmtk/dcmjpeg/include"
+DCMTK_LIBS="-L../dcmtk/ofstd/libsrc -L../dcmtk/dcmdata/libsrc -L../dcmtk/dcmnet/libsrc -L../dcmtk/dcmjpeg/libsrc -L../dcmtk/dcmimage/libsrc -L../dcmtk/dcmimgle/libsrc -ldcmjpeg \$(DCMJPEG_LIBS) -ldcmimage -ldcmimgle -ldcmnet -ldcmdata -lofstd -lrt -lpthread"
+
+AC_SUBST(DCMTK_CFLAGS)
+AC_SUBST(DCMTK_LIBS)
+
+dnl set PREFIX
+if test "x${prefix}" = "xNONE"; then
+    packageprefix=${ac_default_prefix}
+else
+    packageprefix=${prefix}
+fi
+
+dnl images directory
+aeskulap_images_dir="${packageprefix}/share/aeskulap/images"
+AC_SUBST(aeskulap_images_dir)
+
+AC_OUTPUT([
+intl/Makefile
+po/Makefile.in
+Makefile
+debian/Makefile
+imagepool/Makefile
+src/Makefile
+widgets/Makefile
+pixmaps/Makefile
+])
+
+cd dcmtk
+sh ./configure
+

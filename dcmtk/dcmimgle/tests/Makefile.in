@@ -1,0 +1,34 @@
+#
+#	Makefile for dcmimgle/tests
+#
+
+
+@SET_MAKE@
+
+SHELL = /bin/sh
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+configdir = @top_srcdir@/@configdir@
+
+include $(configdir)/@common_makefile@
+
+support = camera.lut monitor.lut printer.lut scanner.lut
+
+
+all:
+
+install: install-support
+
+install-support:
+	$(configdir)/mkinstalldirs $(datadir)
+	for file in $(support); do \
+		$(INSTALL_DATA) $$file $(datadir) ;\
+	done
+
+clean:
+	rm -f $(TRASH)
+
+distclean:
+	rm -f $(DISTTRASH)
+
+dependencies:

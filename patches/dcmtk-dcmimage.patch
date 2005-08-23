@@ -1,0 +1,30 @@
+Index: dipipng.cc
+===================================================================
+RCS file: /var/lib/cvs/aeskulap/dcmtk/dcmimage/libsrc/dipipng.cc,v
+retrieving revision 1.1
+diff -u -r1.1 dipipng.cc
+--- dipipng.cc	26 Jun 2005 19:26:09 -0000	1.1
++++ dipipng.cc	26 Jun 2005 20:49:06 -0000
+@@ -32,6 +32,7 @@
+ 
+ 
+ #include "osconfig.h"
++#include "ofstring.h"
+ 
+ #ifdef WITH_LIBPNG
+ 
+Index: dipitiff.cc
+===================================================================
+RCS file: /var/lib/cvs/aeskulap/dcmtk/dcmimage/libsrc/dipitiff.cc,v
+retrieving revision 1.1
+diff -u -r1.1 dipitiff.cc
+--- dipitiff.cc	26 Jun 2005 19:26:09 -0000	1.1
++++ dipitiff.cc	26 Jun 2005 20:49:06 -0000
+@@ -32,6 +32,7 @@
+ 
+ 
+ #include "osconfig.h"
++#include "ofstring.h"
+ 
+ #ifdef WITH_LIBTIFF
+ 
