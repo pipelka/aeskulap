@@ -15,7 +15,7 @@ echo "Generating build information ..."
 aclocalinclude="$ACLOCAL_FLAGS"
 
 echo "Running gettextize .."
-gettextize --copy --intl
+gettextize -f --copy --intl
 
 echo "Running intltoolize ..."
 intltoolize -c -f --automake
