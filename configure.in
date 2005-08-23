@@ -99,8 +99,7 @@ dnl images directory
 aeskulap_images_dir="${packageprefix}/share/aeskulap/images"
 AC_SUBST(aeskulap_images_dir)
 
-AC_OUTPUT([
-intl/Makefile
+AC_OUTPUT([ intl/Makefile m4/Makefile 
 po/Makefile.in
 Makefile
 debian/Makefile

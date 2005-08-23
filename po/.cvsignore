@@ -11,3 +11,4 @@ POTFILES
 quot.sed
 remove-potcdate.sin
 Rules-quot
+Makevars.template
