@@ -43,6 +43,8 @@ dnl AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
 dnl ALL_LINGUAS="bs cs da de el en_CA es fr gu hr hu it ja nb ne nl no pa pt_BR rw sk sq sv uk wa zh_CN zh_TW"
 dnl AM_GLIB_GNU_GETTEXT
 
+AM_GNU_GETTEXT_VERSION(0.14.1)
+
 PKG_CHECK_MODULES(GTKMM, gtkmm-2.4)
 AC_SUBST(GTKMM_CFLAGS)
 AC_SUBST(GTKMM_LIBS)
@@ -99,7 +101,10 @@ dnl images directory
 aeskulap_images_dir="${packageprefix}/share/aeskulap/images"
 AC_SUBST(aeskulap_images_dir)
 
-AC_OUTPUT([ intl/Makefile m4/Makefile 
+dnl AC_CONFIG_SUBDIRS(dcmtk)
+
+AC_OUTPUT([
+intl/Makefile
 po/Makefile.in
 Makefile
 debian/Makefile
@@ -111,4 +116,3 @@ pixmaps/Makefile
 
 cd dcmtk
 sh ./configure
-

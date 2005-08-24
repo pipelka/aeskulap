@@ -14,8 +14,8 @@ cd $TOPDIR
 echo "Generating build information ..."
 aclocalinclude="$ACLOCAL_FLAGS"
 
-echo "Running gettextize .."
-gettextize -f --copy --intl
+echo "Running autopoint ..."
+autopoint -f || ( echo "***ERROR*** autopoint failed." ; exit 1 )
 
 echo "Running intltoolize ..."
 intltoolize -c -f --automake
