@@ -19,28 +19,28 @@
     Alexander Pipelka
     pipelka@teleweb.at
 
-    Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/Attic/DicomFindAssociation.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
-    Status:           $State: Exp $
+    Last Update:      $Author$
+    Update Date:      $Date$
+    Source File:      $Source$
+    CVS/RCS Revision: $Revision$
+    Status:           $State$
 */
 
-#ifndef DICOMFINDASSOCIATION_H
-#define DICOMFINDASSOCIATION_H
+#ifndef IMAGEPOOL_FINDASSOCIATION_H
+#define IMAGEPOOL_FINDASSOCIATION_H
 
 
-#include "DicomAssociation.h"
+#include "poolassociation.h"
 
-class DicomFindAssociation : public DicomAssociation  
+class FindAssociation : public Association  
 {
 public:
 
 	/**
 	Constructors
 	*/
-	DicomFindAssociation();
-	virtual ~DicomFindAssociation();
+	FindAssociation();
+	virtual ~FindAssociation();
 
 	/**
 	Send a query object (C-Find) through association
@@ -98,4 +98,4 @@ private:
 	
 };
 
-#endif
+#endif // IMAGEPOOL_FINDASSOCIATION_H

@@ -15,14 +15,14 @@ libimagepool_la_SOURCES = \
 	poolseries.cpp \
 	poolstudy.h \
 	poolstudy.cpp \
-	DicomAssociation.cpp \
-	DicomAssociation.h \
-	DicomFindAssociation.cpp \
-	DicomFindAssociation.h \
-	DicomMoveAssociation.cpp \
-	DicomMoveAssociation.h \
-	DicomNetwork.cpp \
-	DicomNetwork.h
+	poolassociation.cpp \
+	poolassociation.h \
+	poolfindassociation.cpp \
+	poolfindassociation.h \
+	poolmoveassociation.cpp \
+	poolmoveassociation.h \
+	poolnetwork.cpp \
+	poolnetwork.h
 
 INCLUDES = \
 	$(DCMTK_CFLAGS) \

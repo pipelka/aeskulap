@@ -19,15 +19,15 @@
     Alexander Pipelka
     pipelka@teleweb.at
 
-    Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/Attic/DicomAssociation.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
-    Status:           $State: Exp $
+    Last Update:      $Author$
+    Update Date:      $Date$
+    Source File:      $Source$
+    CVS/RCS Revision: $Revision$
+    Status:           $State$
 */
 
-#ifndef DICOMASSOCIATION_H
-#define DICOMASSOCIATION_H
+#ifndef IMAGEPOOL_ASSOCIATION_H
+#define IMAGEPOOL_ASSOCIATION_H
 
 // dcmtk includes
 #include "osconfig.h"
@@ -36,17 +36,17 @@
 #include <dimse.h>
 #include <dcfilefo.h>
 
-class DicomNetwork;
+class Network;
 
-class DicomAssociation  
+class Association  
 {
 public:
 
 	/**
 	Constructors
 	*/
-	DicomAssociation();
-	virtual ~DicomAssociation();
+	Association();
+	virtual ~Association();
 
 	/**
 	Create the association object (connect through DicomNetwork::Connect(..) )
@@ -56,7 +56,7 @@ public:
 	/**
 	Connect the association to a dicom network
 	*/
-	CONDITION Connect(DicomNetwork* network, int lossy = 0);
+	CONDITION Connect(Network* network, int lossy = 0);
 
 	void Destroy();
 	
@@ -83,7 +83,7 @@ public:
 	/**
 	Return the DicomNetwork this association is connected to
 	*/
-	DicomNetwork* GetNetwork();
+	Network* GetNetwork();
 
 	/**
 	add a query key to a dataset
@@ -195,11 +195,11 @@ protected:
 	/**
 	Private data
 	*/
-	DicomNetwork* dcmNet;
+	Network* dcmNet;
 	int m_CompressionQuality;
 	bool m_ProposeCompression;
 
-	friend class DicomNetwork;
+	friend class Network;
 };
 
 #endif

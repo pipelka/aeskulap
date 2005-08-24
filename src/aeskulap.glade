@@ -5,7 +5,6 @@
 
 <widget class="GtkWindow" id="window_main">
   <property agent="glademm" name="cxx_separate_class">True</property>
-  <property name="visible">True</property>
   <property name="title" translatable="yes">Aeskulap Viewer</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>

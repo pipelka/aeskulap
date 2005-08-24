@@ -19,26 +19,26 @@
     Alexander Pipelka
     pipelka@teleweb.at
 
-    Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/Attic/DicomNetwork.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
-    Status:           $State: Exp $
+    Last Update:      $Author$
+    Update Date:      $Date$
+    Source File:      $Source$
+    CVS/RCS Revision: $Revision$
+    Status:           $State$
 */
 
-#ifndef DICOMNETWORK_H
-#define DICOMNETWORK_H
+#ifndef IMAGEPOOL_NETWORK_H
+#define IMAGEPOOL_NETWORK_H
 
-#include "DicomAssociation.h"
+#include "poolassociation.h"
 
-class DicomNetwork {
+class Network {
 public:
 
 	/**
 	constructors
 	*/
-	DicomNetwork();
-	virtual ~DicomNetwork();
+	Network();
+	virtual ~Network();
 
 	/**
 	Initialize the dicom network
@@ -53,7 +53,7 @@ public:
 	/**
 	Connect an association to the specified host
 	*/
-	CONDITION ConnectAssociation(DicomAssociation* assoc, int lossy = 0);
+	CONDITION ConnectAssociation(Association* assoc, int lossy = 0);
 
 	/**
 	Send C-Echo request to dicom node
@@ -68,12 +68,12 @@ public:
 	void SetDcmtkNet(T_ASC_Network* n);
 	
 	/**
-	*/
 	static const char* GetCurrDate();
+	*/
 
 	/**
-	*/
 	static const char* GetCurrTime();
+	*/
 
 private:
 
@@ -85,14 +85,14 @@ private:
 	/**
 	Connect to a host and try to establish an association
 	*/
-	CONDITION ASC_ConnectAssociation(DicomAssociation* assoc, const char* peerTitle, const char* peer, int port, const char* ouraet, const char *abstractSyntax = NULL, int lossy = 0);
+	CONDITION ASC_ConnectAssociation(Association* assoc, const char* peerTitle, const char* peer, int port, const char* ouraet, const char *abstractSyntax = NULL, int lossy = 0);
 
 	/**
 	THE dicom network
 	*/
 	static T_ASC_Network* net;
 
-	friend class DicomAssociation;
+	friend class Association;
 };
 
-#endif
+#endif // IMAGEPOOL_NETWORK_H

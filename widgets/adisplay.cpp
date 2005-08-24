@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 16:54:39 $
+    Update Date:      $Date: 2005/08/24 21:55:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -509,7 +509,7 @@ void Display::draw_line(const ImagePool::Instance::Point& p0, const ImagePool::I
 	ImagePool::Instance::Point s0;
 	ImagePool::Instance::Point s1;
 
-	if(!m_image->transform_point(p0, s0)) {
+	if(!m_image->transform_to_viewport(p0, s0)) {
 		return;
 	}
 
@@ -517,7 +517,7 @@ void Display::draw_line(const ImagePool::Instance::Point& p0, const ImagePool::I
 		return;
 	}
 
-	if(!m_image->transform_point(p1, s1)) {
+	if(!m_image->transform_to_viewport(p1, s1)) {
 		return;
 	}
 
@@ -538,7 +538,7 @@ void Display::draw_point(const ImagePool::Instance::Point& p) {
 	int y;
 	ImagePool::Instance::Point p1;
 	
-	if(!m_image->transform_point(p, p1)) {
+	if(!m_image->transform_to_viewport(p, p1)) {
 		return;
 	}
 
@@ -546,8 +546,12 @@ void Display::draw_point(const ImagePool::Instance::Point& p) {
 		return;
 	}
 	
+	//ImagePool::Instance::Point t, t1;
+	//screen_to_point(x, y, t);
+	//m_image->transform_to_world(t, t1);
+	
 	//std::cout << "O-Point: " << p.x << "/" << p.y << "/" << p.z << std::endl;
-	//std::cout << "T-Point: " << p1.x << "/" << p1.y << "/" << p1.z << std::endl;
+	//std::cout << "T-Point: " << t1.x << "/" << t1.y << "/" << t1.z << std::endl;
 	//std::cout << "Screen: " << x << "/" << y << std::endl;
 	
 

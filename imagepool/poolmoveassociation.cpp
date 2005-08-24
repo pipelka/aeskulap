@@ -19,25 +19,22 @@
     Alexander Pipelka
     pipelka@teleweb.at
 
-    Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/Attic/DicomMoveAssociation.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
-    Status:           $State: Exp $
+    Last Update:      $Author$
+    Update Date:      $Date$
+    Source File:      $Source$
+    CVS/RCS Revision: $Revision$
+    Status:           $State$
 */
 
-#include "DicomNetwork.h"
-#include "DicomMoveAssociation.h"
+#include "poolnetwork.h"
+#include "poolmoveassociation.h"
 
 #include <diutil.h>
 #include "djencode.h"
 #include "djrplol.h"
 
-//////////////////////////////////////////////////////////////////////
-// Konstruktion/Destruktion
-//////////////////////////////////////////////////////////////////////
 
-DicomMoveAssociation::DicomMoveAssociation() {
+MoveAssociation::MoveAssociation() {
 	m_abstractSyntax = UID_MOVEPatientRootQueryRetrieveInformationModel;
 	//m_abstractSyntax = UID_FINDStudyRootQueryRetrieveInformationModel;
 	//m_abstractSyntaxMove = UID_MOVEStudyRootQueryRetrieveInformationModel;
@@ -45,24 +42,24 @@ DicomMoveAssociation::DicomMoveAssociation() {
 	m_maxReceivePDULength = ASC_DEFAULTMAXPDU;
 }
 
-DicomMoveAssociation::~DicomMoveAssociation() {
+MoveAssociation::~MoveAssociation() {
 }
 
-void DicomMoveAssociation::Create(const char *title, const char *peer, int port, const char *ouraet, /*int ourPort,*/ const char *abstractSyntax/*, const char *abstractSyntaxMove*/) {
-	DicomAssociation::Create(title, peer, port, ouraet, abstractSyntax);
+void MoveAssociation::Create(const char *title, const char *peer, int port, const char *ouraet, /*int ourPort,*/ const char *abstractSyntax/*, const char *abstractSyntaxMove*/) {
+	Association::Create(title, peer, port, ouraet, abstractSyntax);
 	//m_abstractSyntaxMove = abstractSyntaxMove;
 	//m_ourPort = ourPort;
 }
 
-CONDITION DicomMoveAssociation::SendObject(DcmDataset *dataset) {
+CONDITION MoveAssociation::SendObject(DcmDataset *dataset) {
 	return moveSCU(dataset);	
 }
 
-void DicomMoveAssociation::OnAddPresentationContext(T_ASC_Parameters *params, const char* transferSyntaxList[], int transferSyntaxListCount) {
+void MoveAssociation::OnAddPresentationContext(T_ASC_Parameters *params, const char* transferSyntaxList[], int transferSyntaxListCount) {
 	ASC_addPresentationContext(params, 3, m_abstractSyntax, transferSyntaxList, transferSyntaxListCount);
 }
 
-CONDITION DicomMoveAssociation::moveSCU(DcmDataset *pdset) {
+CONDITION MoveAssociation::moveSCU(DcmDataset *pdset) {
 	CONDITION cond;
 	T_ASC_PresentationContextID presId;
 	T_DIMSE_C_MoveRQ req;
@@ -124,15 +121,15 @@ CONDITION DicomMoveAssociation::moveSCU(DcmDataset *pdset) {
 	return cond;
 }
 
-void DicomMoveAssociation::moveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request, int responseCount, T_DIMSE_C_MoveRSP *response) {
+void MoveAssociation::moveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request, int responseCount, T_DIMSE_C_MoveRSP *response) {
 /*	MoveCallbackInfo* myCallbackData;
 
 	myCallbackData = (MoveCallbackInfo*)callbackData;
-	DicomMoveAssociation* caller = myCallbackData->pCaller;*/
+	MoveAssociation* caller = myCallbackData->pCaller;*/
 }
 
-void DicomMoveAssociation::subOpCallback(void *pCaller, T_ASC_Network *aNet, T_ASC_Association **subAssoc) {
-	DicomMoveAssociation* caller = (DicomMoveAssociation*)pCaller;
+void MoveAssociation::subOpCallback(void *pCaller, T_ASC_Network *aNet, T_ASC_Association **subAssoc) {
+	MoveAssociation* caller = (MoveAssociation*)pCaller;
 
 	if (caller->GetNetwork() == NULL) {
 		return;
@@ -148,7 +145,7 @@ void DicomMoveAssociation::subOpCallback(void *pCaller, T_ASC_Network *aNet, T_A
 	}
 }
 
-CONDITION DicomMoveAssociation::acceptSubAssoc(T_ASC_Network *aNet, T_ASC_Association **assoc) {
+CONDITION MoveAssociation::acceptSubAssoc(T_ASC_Network *aNet, T_ASC_Association **assoc) {
 	CONDITION cond = ASC_NORMAL;
 	const char* knownAbstractSyntaxes[] = { UID_VerificationSOPClass };
 	const char* transferSyntaxes[] = { UID_JPEGProcess14SV1TransferSyntax, NULL, NULL, UID_LittleEndianImplicitTransferSyntax };
@@ -206,7 +203,7 @@ CONDITION DicomMoveAssociation::acceptSubAssoc(T_ASC_Network *aNet, T_ASC_Associ
 	
 }
 
-CONDITION DicomMoveAssociation::subOpSCP(T_ASC_Association **subAssoc) {
+CONDITION MoveAssociation::subOpSCP(T_ASC_Association **subAssoc) {
 	T_DIMSE_Message msg;
 	T_ASC_PresentationContextID presID;
 
@@ -253,7 +250,7 @@ CONDITION DicomMoveAssociation::subOpSCP(T_ASC_Association **subAssoc) {
 	return cond;
 }
 
-CONDITION DicomMoveAssociation::storeSCP(T_ASC_Association *assoc, T_DIMSE_Message *msg, T_ASC_PresentationContextID presID) {
+CONDITION MoveAssociation::storeSCP(T_ASC_Association *assoc, T_DIMSE_Message *msg, T_ASC_PresentationContextID presID) {
 	CONDITION cond;
 	T_DIMSE_C_StoreRQ* req;
 	DcmDataset *dset = new DcmDataset;
@@ -272,13 +269,13 @@ CONDITION DicomMoveAssociation::storeSCP(T_ASC_Association *assoc, T_DIMSE_Messa
 	return cond;
 }
 
-void DicomMoveAssociation::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *progress, T_DIMSE_C_StoreRQ *req, char *imageFileName, DcmDataset **imageDataSet, T_DIMSE_C_StoreRSP *rsp, DcmDataset **statusDetail) {
+void MoveAssociation::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *progress, T_DIMSE_C_StoreRQ *req, char *imageFileName, DcmDataset **imageDataSet, T_DIMSE_C_StoreRSP *rsp, DcmDataset **statusDetail) {
 	DIC_UI sopClass;
 	DIC_UI sopInstance;
 	DcmDataset* d = NULL;
 
 	StoreCallbackInfo *cbdata = (StoreCallbackInfo*) callbackData;
-	DicomMoveAssociation* caller = cbdata->pCaller;
+	MoveAssociation* caller = cbdata->pCaller;
 
 	if (progress->state == DIMSE_StoreEnd) {
 		*statusDetail = NULL;	/* no status detail */
@@ -302,10 +299,10 @@ void DicomMoveAssociation::storeSCPCallback(void *callbackData, T_DIMSE_StorePro
 				d->chooseRepresentation(EXS_JPEGProcess14SV1TransferSyntax, &rp);
 				if (d->canWriteXfer(EXS_JPEGProcess14SV1TransferSyntax)) {
 					//d->print(COUT, DCMTypes::PF_shortenLongTagValues);
-					COUT << "DicomMoveAssociation: Output transfer syntax " << opt_oxferSyn.getXferName() << " can be written\n";
+					COUT << "MoveAssociation: Output transfer syntax " << opt_oxferSyn.getXferName() << " can be written\n";
 					}
 				else {
-					CERR << "DicomMoveAssociation: No conversion to transfer syntax " << opt_oxferSyn.getXferName() << " possible!\n";
+					CERR << "MoveAssociation: No conversion to transfer syntax " << opt_oxferSyn.getXferName() << " possible!\n";
 				}
 			//}*/
 
@@ -333,7 +330,7 @@ void DicomMoveAssociation::storeSCPCallback(void *callbackData, T_DIMSE_StorePro
 
 }
 
-CONDITION DicomMoveAssociation::echoSCP(T_ASC_Association *assoc, T_DIMSE_Message *msg, T_ASC_PresentationContextID presID) {
+CONDITION MoveAssociation::echoSCP(T_ASC_Association *assoc, T_DIMSE_Message *msg, T_ASC_PresentationContextID presID) {
 	CONDITION cond;
 
 	// the echo succeeded !!
@@ -342,6 +339,6 @@ CONDITION DicomMoveAssociation::echoSCP(T_ASC_Association *assoc, T_DIMSE_Messag
 	return cond;
 }
 
-void DicomMoveAssociation::OnResponseReceived(DcmDataset* response) {
+void MoveAssociation::OnResponseReceived(DcmDataset* response) {
 	//delete response;
 }

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 16:54:39 $
+    Update Date:      $Date: 2005/08/24 21:55:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -72,14 +72,14 @@ SimpleDisplay::~SimpleDisplay() {
 void SimpleDisplay::init_display() {
 
 	m_windowmap = NULL;
-	m_windowmap_depth = 8;
+	m_windowmap_depth = 0;
 	m_windowmap_size = 0;
 	m_magnifier = 1;
 
 	m_id = 0;
 
 	m_pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, 64, 64);
-	bitstretch();
+	//bitstretch();
 
 	m_bin = manage(new Gtk::Frame);
 	add(*m_bin);
@@ -504,9 +504,6 @@ void SimpleDisplay::render(Glib::RefPtr<Gdk::Pixbuf>& pixbuf, bool smooth) {
 		pixbuf->fill(0x0000FF);
 	}
 
-	std::cout << "slope: " << m_image->slope() << std::endl;
-	std::cout << "intercept: " << m_image->intercept() << std::endl;
-
 	// do a smooth scale (slow)
 	if(smooth) {
 		Glib::RefPtr<Gdk::Pixbuf> pixbuf_save = pixbuf;
@@ -671,6 +668,26 @@ bool SimpleDisplay::point_to_screen(const ImagePool::Instance::Point& p, int& x,
 	y = dy0 + (int)(((p.y - my) / m_image->spacing_y()) * m_magnifier);
 
 	return true;
+}
+
+bool SimpleDisplay::screen_to_point(int x, int y, ImagePool::Instance::Point& p) {
+	if(m_image->spacing_x() == 0 || m_image->spacing_y() == 0) {
+		return false;
+	}
+
+	int sx0,sy0,sx1,sy1;
+	int dx0,dy0,dx1,dy1;
+
+	if(!get_blit_rectangles(m_pixbuf, sx0, sy0, sx1, sy1, dx0, dy0, dx1, dy1)) {
+		return false;
+	}
+
+	double mx = (double)m_disp_params->move_x * m_image->spacing_x();
+	double my = (double)m_disp_params->move_y * m_image->spacing_y();
+
+	p.x = mx - (m_image->spacing_x() * (dx0-x)) / m_magnifier;
+	p.y = my - (m_image->spacing_y() * (dy0-y)) / m_magnifier;
+	p.z = 0;
 }
 
 } // namespace Aeskulap

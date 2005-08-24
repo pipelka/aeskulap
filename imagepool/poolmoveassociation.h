@@ -19,23 +19,23 @@
     Alexander Pipelka
     pipelka@teleweb.at
 
-    Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/Attic/DicomMoveAssociation.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
-    Status:           $State: Exp $
+    Last Update:      $Author$
+    Update Date:      $Date$
+    Source File:      $Source$
+    CVS/RCS Revision: $Revision$
+    Status:           $State$
 */
 
-#ifndef DICOMMOVEASSOCIATION_H
-#define DICOMMOVEASSOCIATION_H
+#ifndef IMAGEPOOL_MOVEASSOCIATION_H
+#define IMAGEPOOL_MOVEASSOCIATION_H
 
-#include "DicomFindAssociation.h"
+#include "poolfindassociation.h"
 
-class DicomMoveAssociation : public DicomFindAssociation {
+class MoveAssociation : public FindAssociation {
 public:
 
-	DicomMoveAssociation();
-	virtual ~DicomMoveAssociation();
+	MoveAssociation();
+	virtual ~MoveAssociation();
 
 	void Create(const char *title, const char *peer, int port, const char *ouraet, /*int ourPort,*/ const char *abstractSyntax = UID_MOVEPatientRootQueryRetrieveInformationModel/*, const char *abstractSyntaxMove = UID_MOVEPatientRootQueryRetrieveInformationModel*/);
 
@@ -54,12 +54,12 @@ private:
 	typedef struct _MoveCallbackInfo {
 		T_ASC_Association *assoc;
 		T_ASC_PresentationContextID presId;
-		DicomMoveAssociation* pCaller;
+		MoveAssociation* pCaller;
 	} MoveCallbackInfo;
 
 	typedef struct _StoreCallbackInfo {
 		DcmDataset* dataset;
-		DicomMoveAssociation* pCaller;
+		MoveAssociation* pCaller;
 	} StoreCallbackInfo;
 
 	CONDITION moveSCU(DcmDataset *pdset);
@@ -75,4 +75,4 @@ private:
 	CONDITION echoSCP(T_ASC_Association *assoc, T_DIMSE_Message *msg, T_ASC_PresentationContextID presID);
 };
 
-#endif
+#endif // IMAGEPOOL_MOVEASSOCIATION_H

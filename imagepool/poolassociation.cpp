@@ -19,11 +19,11 @@
     Alexander Pipelka
     pipelka@teleweb.at
 
-    Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/Attic/DicomAssociation.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
-    Status:           $State: Exp $
+    Last Update:      $Author$
+    Update Date:      $Date$
+    Source File:      $Source$
+    CVS/RCS Revision: $Revision$
+    Status:           $State$
 */
 
 // dcmtk includes
@@ -40,20 +40,17 @@
 #include "diregist.h"  /* include to support color images */
 #include "ofcmdln.h"
 
-// DicomAssociation class header
-#include "DicomAssociation.h"
-#include "DicomNetwork.h"
+// Association class header
+#include "poolassociation.h"
+#include "poolnetwork.h"
 
 #include "djencode.h"
 #include "djdecode.h"
 #include "djrplol.h"
 #include "djrploss.h"
 
-//////////////////////////////////////////////////////////////////////
-// Konstruktion/Destruktion
-//////////////////////////////////////////////////////////////////////
 
-DicomAssociation::DicomAssociation() :
+Association::Association() :
 m_abstractSyntax(NULL),
 m_timeout(0),
 assoc(NULL),
@@ -67,14 +64,14 @@ dcmNet(NULL)
 	m_ProposeCompression = true;
 }
 
-DicomAssociation::~DicomAssociation()
+Association::~Association()
 {
 	// drop an existing association on shutdown
 	if(assoc != NULL)
 		Drop();
 }
 
-CONDITION DicomAssociation::Drop(CONDITION cond) {
+CONDITION Association::Drop(CONDITION cond) {
 	// tear down association
 	if(cond == DIMSE_NORMAL) {
 		/* release association */
@@ -100,7 +97,7 @@ CONDITION DicomAssociation::Drop(CONDITION cond) {
 	return cond;
 }
 
-void DicomAssociation::Destroy() {
+void Association::Destroy() {
 	CONDITION cond = ASC_destroyAssociation(&assoc);
 
 	dcmNet = NULL;
@@ -112,7 +109,7 @@ void DicomAssociation::Destroy() {
 
 }
 
-CONDITION DicomAssociation::SendObject(DcmDataset *dataset) {
+CONDITION Association::SendObject(DcmDataset *dataset) {
 
 /*  OFCmdUnsignedInt opt_selection_value = 6;
   OFCmdUnsignedInt opt_point_transform = 0;
@@ -319,13 +316,13 @@ CONDITION DicomAssociation::SendObject(DcmDataset *dataset) {
 	return (rsp.DimseStatus == STATUS_Success) ? DIMSE_NORMAL : DIMSE_BADDATA;
 }
 
-CONDITION DicomAssociation::SendObject(DcmFileFormat *dcmff)
+CONDITION Association::SendObject(DcmFileFormat *dcmff)
 {
 	DcmDataset* dataset = dcmff->getDataset();
 	return SendObject(dataset);
 }
 
-void DicomAssociation::Create(const char *title, const char *peer, int port, const char *ouraet, const char *abstractSyntax)
+void Association::Create(const char *title, const char *peer, int port, const char *ouraet, const char *abstractSyntax)
 {
 	// no connected association till now
 	assoc = NULL;
@@ -345,7 +342,7 @@ void DicomAssociation::Create(const char *title, const char *peer, int port, con
 	presId = 0;
 }
 
-bool DicomAssociation::SendEchoRequest()
+bool Association::SendEchoRequest()
 {
 	DIC_US status;
 	DcmDataset *statusDetail = NULL;
@@ -360,65 +357,65 @@ bool DicomAssociation::SendEchoRequest()
 	return SUCCESS(cond);	
 }
 
-bool DicomAssociation::AddKey(DcmDataset *query, const DcmTagKey& tag, int value) {
+bool Association::AddKey(DcmDataset *query, const DcmTagKey& tag, int value) {
 	static char temp[16];
 	sprintf(temp, "%i", value);
 	return AddKey(query, tag, temp);
 }
 
-bool DicomAssociation::AddKey(DcmDataset *query, const DcmTagKey& tag, double value, const char* format) {
+bool Association::AddKey(DcmDataset *query, const DcmTagKey& tag, double value, const char* format) {
 	static char temp[16];
 	sprintf(temp, format, value);
 	return AddKey(query, tag, temp);
 }
 
-bool DicomAssociation::AddKey(DcmItem *query, const DcmTagKey& tag, int value) {
+bool Association::AddKey(DcmItem *query, const DcmTagKey& tag, int value) {
 	static char temp[16];
 	sprintf(temp, "%i", value);
 	return AddKey(query, tag, temp);
 }
 
-bool DicomAssociation::AddKey(DcmItem *query, const DcmTagKey& tag, double value, const char* format) {
+bool Association::AddKey(DcmItem *query, const DcmTagKey& tag, double value, const char* format) {
 	static char temp[16];
 	sprintf(temp, format, value);
 	return AddKey(query, tag, temp);
 }
 
-bool DicomAssociation::AddKey(DcmDataset *query, const DcmTagKey& t, const char* value) {
+bool Association::AddKey(DcmDataset *query, const DcmTagKey& t, const char* value) {
 	return AddCustomKey/*< DcmDataset >*/(query, t, value);
 }
 
-bool DicomAssociation::AddKey(DcmItem *query, const DcmTagKey& t, const char* value) {
+bool Association::AddKey(DcmItem *query, const DcmTagKey& t, const char* value) {
 	return AddCustomKey/*< DcmItem >*/(query, t, value);
 }
 
-bool DicomAssociation::AddQueryLevel(DcmDataset *query, const char *level)
+bool Association::AddQueryLevel(DcmDataset *query, const char *level)
 {
 	return AddKey(query, DCM_QueryRetrieveLevel, level);
 }
 
 
-void DicomAssociation::OnAddPresentationContext(T_ASC_Parameters *params, const char* transferSyntaxList[], int transferSyntaxListCount)
+void Association::OnAddPresentationContext(T_ASC_Parameters *params, const char* transferSyntaxList[], int transferSyntaxListCount)
 {
 
 }
 
-DicomNetwork* DicomAssociation::GetNetwork()
+Network* Association::GetNetwork()
 {
 	return dcmNet;
 }
 
-CONDITION DicomAssociation::Connect(DicomNetwork *network, int lossy)
+CONDITION Association::Connect(Network *network, int lossy)
 {
 	dcmNet = network;
 	return network->ConnectAssociation(this, lossy);
 }
 
-const char* DicomAssociation::GetOurAET() {
+const char* Association::GetOurAET() {
 	return m_ourAET;
 }
 
-void DicomAssociation::SetPatientData(
+void Association::SetPatientData(
 			DcmDataset* dset,
 			const char* PatientsName,
 			const char* PatientID,
@@ -426,20 +423,20 @@ void DicomAssociation::SetPatientData(
 			const char* PatientsSex)
 {
 	// PatientsName
-	DicomAssociation::AddKey(dset, DCM_PatientsName, PatientsName);
+	Association::AddKey(dset, DCM_PatientsName, PatientsName);
 
 	// PatientID
-	DicomAssociation::AddKey(dset, DCM_PatientID, PatientID);
+	Association::AddKey(dset, DCM_PatientID, PatientID);
 
 	// PatientBirthDate
-	DicomAssociation::AddKey(dset, DCM_PatientsBirthDate, PatientsBirthDate);
+	Association::AddKey(dset, DCM_PatientsBirthDate, PatientsBirthDate);
 
 	// PatientSex
-	DicomAssociation::AddKey(dset, DCM_PatientsSex, PatientsSex);
+	Association::AddKey(dset, DCM_PatientsSex, PatientsSex);
 
 }
 
-const char* DicomAssociation::GetKey(DcmDataset* query, const DcmTagKey& tag) {
+const char* Association::GetKey(DcmDataset* query, const DcmTagKey& tag) {
 	OFString val;
 	static char buffer[129];
 	query->findAndGetOFString(tag, val, 0, OFTrue);
@@ -447,30 +444,30 @@ const char* DicomAssociation::GetKey(DcmDataset* query, const DcmTagKey& tag) {
 	return buffer;
 }
 
-void DicomAssociation::SetSOPInstanceUID(DcmDataset* dset, const char* sop) {
+void Association::SetSOPInstanceUID(DcmDataset* dset, const char* sop) {
 	AddKey(dset, DCM_SOPInstanceUID, sop);
 }
 
-void DicomAssociation::SetTimeout(int t) {
+void Association::SetTimeout(int t) {
 	m_timeout = t;
 }
 
-int DicomAssociation::GetTimeout() {
+int Association::GetTimeout() {
 	return m_timeout;
 }
 
-void DicomAssociation::SetCompressionQuality(int q) {
+void Association::SetCompressionQuality(int q) {
 	m_CompressionQuality = q;
 }
 	
-int DicomAssociation::GetCompressionQuality() {
+int Association::GetCompressionQuality() {
 	return m_CompressionQuality;
 }
 
-void DicomAssociation::SetProposeCompression(bool propose) {
+void Association::SetProposeCompression(bool propose) {
 	m_ProposeCompression = propose;
 }
 
-bool DicomAssociation::GetProposeCompression() {
+bool Association::GetProposeCompression() {
 	return m_ProposeCompression;
 }

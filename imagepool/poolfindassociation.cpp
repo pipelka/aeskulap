@@ -19,34 +19,28 @@
     Alexander Pipelka
     pipelka@teleweb.at
 
-    Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/Attic/DicomFindAssociation.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
-    Status:           $State: Exp $
+    Last Update:      $Author$
+    Update Date:      $Date$
+    Source File:      $Source$
+    CVS/RCS Revision: $Revision$
+    Status:           $State$
 */
 
-// dcmtk includes
 #include "dcdebug.h"
+#include "poolfindassociation.h"
 
-// DicomFindAssociation class header
-#include "DicomFindAssociation.h"
 
-//////////////////////////////////////////////////////////////////////
-// Konstruktion/Destruktion
-//////////////////////////////////////////////////////////////////////
-
-DicomFindAssociation::DicomFindAssociation() {
-	DicomAssociation::m_abstractSyntax = UID_FINDPatientRootQueryRetrieveInformationModel;
+FindAssociation::FindAssociation() {
+	Association::m_abstractSyntax = UID_FINDPatientRootQueryRetrieveInformationModel;
 	maxResults = 400;
 	bPushResults = true;
 }
 
-DicomFindAssociation::~DicomFindAssociation() {
+FindAssociation::~FindAssociation() {
 	DeleteResultStack();
 }
 
-CONDITION DicomFindAssociation::findSCU(T_ASC_Association *assoc, DcmDataset *query) {
+CONDITION FindAssociation::findSCU(T_ASC_Association *assoc, DcmDataset *query) {
 	CONDITION cond;
 	DIC_US msgId = assoc->nextMsgID++;
 	T_ASC_PresentationContextID presId;
@@ -93,8 +87,8 @@ CONDITION DicomFindAssociation::findSCU(T_ASC_Association *assoc, DcmDataset *qu
 	return cond;
 }
 
-void DicomFindAssociation::findCallback(void* callbackData, T_DIMSE_C_FindRQ*, int responseCount, T_DIMSE_C_FindRSP*, DcmDataset *responseIdentifiers) {
-	DicomFindAssociation* caller = (DicomFindAssociation*)callbackData;
+void FindAssociation::findCallback(void* callbackData, T_DIMSE_C_FindRQ*, int responseCount, T_DIMSE_C_FindRSP*, DcmDataset *responseIdentifiers) {
+	FindAssociation* caller = (FindAssociation*)callbackData;
 
 	if(responseCount > caller->maxResults) {
 		//std::cerr << "Maximum number of responses (" << caller->maxResults << ") reached !!!" << std::endl;
@@ -112,19 +106,19 @@ void DicomFindAssociation::findCallback(void* callbackData, T_DIMSE_C_FindRQ*, i
 	caller->OnResponseReceived(response);
 }
 
-CONDITION DicomFindAssociation::SendObject(DcmDataset *dataset) {
+CONDITION FindAssociation::SendObject(DcmDataset *dataset) {
 	return findSCU(assoc, dataset);
 }
 
-void DicomFindAssociation::OnResponseReceived(DcmDataset *response) {
+void FindAssociation::OnResponseReceived(DcmDataset *response) {
 	//response->print(COUT, DCMTypes::PF_shortenLongTagValues);
 }
 
-DcmStack* DicomFindAssociation::GetResultStack() {
+DcmStack* FindAssociation::GetResultStack() {
 	return &result;
 }
 
-DcmStack DicomFindAssociation::CopyResultStack() {
+DcmStack FindAssociation::CopyResultStack() {
 	DcmStack copy;
 
 	for(unsigned int i=0; i<result.card(); i++) {
@@ -135,7 +129,7 @@ DcmStack DicomFindAssociation::CopyResultStack() {
 	return copy;
 }
 
-void DicomFindAssociation::DeleteResultStack() {
+void FindAssociation::DeleteResultStack() {
 	DcmDataset* obj = NULL;
 	unsigned int size = result.card();
 
@@ -147,10 +141,10 @@ void DicomFindAssociation::DeleteResultStack() {
 	result.clear();
 }
 
-void DicomFindAssociation::SetMaxResults(int max) {
+void FindAssociation::SetMaxResults(int max) {
 	maxResults = max;
 }
 
-int DicomFindAssociation::GetMaxResults() {
+int FindAssociation::GetMaxResults() {
 	return maxResults;
 }

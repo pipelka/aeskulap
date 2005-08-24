@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/24 21:55:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -40,7 +40,7 @@
 #include "dcrledrg.h"
 #include "dcrleerg.h"
 
-#include "DicomNetwork.h"
+#include "poolnetwork.h"
 
 #include <locale.h>
 #include <map>
@@ -55,7 +55,7 @@ namespace ImagePool {
 
 void context_function();
 
-DicomNetwork net;
+Network net;
 
 static Glib::Dispatcher context_switch;
 

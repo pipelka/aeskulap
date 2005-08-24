@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/24 21:55:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -31,7 +31,7 @@
 #include "imagepool.h"
 #include "dcdatset.h"
 #include "dcdeftag.h"
-#include "DicomFindAssociation.h"
+#include "poolfindassociation.h"
 #include "netclient.h"
 #include "gettext.h"
 
@@ -218,7 +218,7 @@ void query_from_net(
 
 	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
 
-	NetClient<DicomFindAssociation> a;
+	NetClient<FindAssociation> a;
 	a.QueryServers(&query);
 
 	DcmStack* result = a.GetResultStack();
@@ -273,7 +273,7 @@ void query_series_from_net(const std::string& studyinstanceuid, const sigc::slot
 
 	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
 
-	NetClient<DicomFindAssociation> a;
+	NetClient<FindAssociation> a;
 	a.QueryServers(&query);
 
 	DcmStack* result = a.GetResultStack();
