@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:03 $
+    Update Date:      $Date: 2005/08/24 16:54:39 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -131,7 +131,7 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 
 	if(m_disp_params && m_disp_params->selected) {
 		m_GC->set_foreground(m_colorSelected);
-	m_bin_window->draw_rectangle(m_GC, false, 2, 2, get_width()-5, get_height()-5);
+		m_bin_window->draw_rectangle(m_GC, false, 2, 2, get_width()-5, get_height()-5);
 	}
 	else if(m_disp_params && m_disp_params->series_selected) {
 		m_GC->set_foreground(m_colorSeriesSelected);
