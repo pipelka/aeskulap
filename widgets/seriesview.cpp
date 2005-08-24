@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:03 $
+    Update Date:      $Date: 2005/08/24 16:54:39 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -272,17 +272,24 @@ void SeriesView::update(bool immediate, bool redraw, bool smooth) {
 						m_widgets[i]->set_image(m_instance[m_offset + i], m_dispparam[m_offset + i], smooth);
 						m_widgets[i]->set_id(m_offset + i);
 					}
-					if(immediate) {
-						m_widgets[i]->update();
+					if(!immediate) {
+						m_widgets[i]->queue_draw();
 					}
 					else {
-						m_widgets[i]->queue_draw();
+						m_widgets[i]->update();
 					}
 				}
 			}
 			i++;
 		}
 	}
+
+	/*if(!immediate) {
+		Gdk::Rectangle r(0,0,get_width(),get_height());
+		get_window()->invalidate_rect(r, false);
+		get_window()->process_updates(false);
+	}*/
+
 	signal_update(this);
 }
 

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 15:46:29 $
+    Update Date:      $Date: 2005/08/24 16:54:39 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -151,8 +151,8 @@ bool SimpleDisplay::on_expose_event(GdkEventExpose* event) {
 			event->area.width, 
 			event->area.height, 
 			Gdk::RGB_DITHER_NONE, 
-			Gdk::RGB_DITHER_NONE, 
-			Gdk::RGB_DITHER_NONE);
+			0, 
+			0);
 	}
 	else {
 		m_GC->set_foreground(m_colorBackground);
@@ -214,20 +214,31 @@ bool SimpleDisplay::set_image(const Glib::RefPtr<ImagePool::Instance>& image, co
 
 	m_image = image;
 	
+	int m_new_windowmap_depth;
 	if(m_image->iscolor()) {
-		m_windowmap_depth = 8;
+		m_new_windowmap_depth = 8;
 	}
 	else {
-		m_windowmap_depth = m_image->depth();
+		m_new_windowmap_depth = m_image->depth();
 	}
 
-	m_disp_params = params;
+	if(m_windowmap_depth != m_new_windowmap_depth) {
+		m_windowmap_depth = m_new_windowmap_depth;
+		create_windowmap();
+	}
+	
+	if(m_disp_params->window_center != params->window_center || m_disp_params->window_width != params->window_width) {
+		m_disp_params = params;
+		set_windowlevels(m_disp_params->window_center, m_disp_params->window_width);
+	}
+	else {
+		m_disp_params = params;
+		
+	}
 
-	create_windowmap();
-	set_windowlevels(m_disp_params->window_center, m_disp_params->window_width);
 	bitstretch(smooth);
 
-	queue_draw();
+	//queue_draw();
 	return true;
 }
 
@@ -338,13 +349,13 @@ void SimpleDisplay::linestretch_24to24(int x1, int x2, int y1, int y2, int yr, i
 
 	for (d = 0; d < dx; d++) {
 		p = lut[*src_pixels];
-		*dst_pixels++ = p & 0xFF;
+		*dst_pixels++ = p; // & 0xFF;
 
 		p = lut[*(src_pixels+1)];
-		*dst_pixels++ = p & 0xFF;
+		*dst_pixels++ = p; // & 0xFF;
 
 		p = lut[*(src_pixels+2)];
-		*dst_pixels++ = p & 0xFF;
+		*dst_pixels++ = p; // & 0xFF;
 
 		while (e >= 0) {
 			src_pixels += 3;
@@ -410,9 +421,9 @@ void SimpleDisplay::linestretch_24(int x1, int x2, int y1, int y2, int yr, int y
 
 	for (d = 0; d < dx; d++) {
 		p = lut[*src_pixels];
-		*dst_pixels++ = p & 0xFF;
-		*dst_pixels++ = (p >> 8) & 0xFF;
-		*dst_pixels++ = (p >> 16) & 0xFF;
+		*dst_pixels++ = p; // & 0xFF;
+		*dst_pixels++ = p; //(p >> 8); // & 0xFF;
+		*dst_pixels++ = p; //(p >> 16); // & 0xFF;
 
 		while (e >= 0) {
 			src_pixels ++;
@@ -466,7 +477,6 @@ void SimpleDisplay::rectstretch_24(ST src, int xs1, int ys1, int xs2, int ys2, c
 
 void SimpleDisplay::rect_stretch8(int xs1, int ys1, int xs2, int ys2, int xd1, int yd1, int xd2, int yd2, const Glib::RefPtr<Gdk::Pixbuf>& pixbuf) {
 	guint8* src_pixels = (guint8*)m_image->pixels();
-
 	rectstretch_24(src_pixels, xs1, ys1, xs2, ys2, pixbuf, xd1, yd1, xd2, yd2);
 }
 
@@ -491,7 +501,7 @@ void SimpleDisplay::render(Glib::RefPtr<Gdk::Pixbuf>& pixbuf, bool smooth) {
 	}
 
 	if(dx0 > 0 || dy0 > 0 || dx1 < pixbuf->get_width()-1 || dy1 < pixbuf->get_height()-1) {
-	    pixbuf->fill(0x0000FF);
+		pixbuf->fill(0x0000FF);
 	}
 
 	std::cout << "slope: " << m_image->slope() << std::endl;
@@ -529,20 +539,17 @@ void SimpleDisplay::render(Glib::RefPtr<Gdk::Pixbuf>& pixbuf, bool smooth) {
 	}
 	
 	// do a super fast blocky scale
-	if(m_image->iscolor()) {
-		rect_stretch24(sx0, sy0, sx1, sy1, dx0,  dy0, dx1, dy1, pixbuf);
-		return;
-	}
-
-	switch(m_image->bpp()) {
-		case 8:
+	int bpp = m_image->bpp();
+	if(bpp == 8) {
+		if(m_image->iscolor()) {
+			rect_stretch24(sx0, sy0, sx1, sy1, dx0,  dy0, dx1, dy1, pixbuf);
+		}
+		else {	
 			rect_stretch8(sx0, sy0, sx1, sy1, dx0,  dy0, dx1, dy1, pixbuf);
-			break;
-		case 16:
-			rect_stretch16(sx0, sy0, sx1, sy1, dx0,  dy0, dx1, dy1, pixbuf);
-			break;
-		default:
-			break;
+		}
+	}
+	else if(bpp == 16) {
+		rect_stretch16(sx0, sy0, sx1, sy1, dx0,  dy0, dx1, dy1, pixbuf);
 	}
 }
 
