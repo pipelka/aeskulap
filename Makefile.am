@@ -1,4 +1,4 @@
-SUBDIRS = intl m4  \
+SUBDIRS = \
 	intl \
 	po \
 	debian \
@@ -8,7 +8,7 @@ SUBDIRS = intl m4  \
 	src \
 	pixmaps
 
-DIST_SUBDIRS = intl m4  \
+DIST_SUBDIRS = \
 	intl \
 	po \
 	debian \
@@ -17,7 +17,9 @@ DIST_SUBDIRS = intl m4  \
 	src \
 	pixmaps
 
-EXTRA_DIST = config.rpath mkinstalldirs  config.rpath mkinstalldirs  \
+EXTRA_DIST = \
+	config.rpath \
+	mkinstalldirs  \
 	COPYING \
 	COPYING.LIB \
 	COPYING.DCMTK \
