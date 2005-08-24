@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 16:54:39 $
+    Update Date:      $Date: 2005/08/24 21:55:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -65,6 +65,10 @@ SeriesView::~SeriesView() {
 }
 
 void SeriesView::add_instance(const Glib::RefPtr<ImagePool::Instance>& instance) {
+	if(!instance) {
+		return;
+	}
+
 	int x = 0;
 	int y = 0;
 
@@ -75,14 +79,11 @@ void SeriesView::add_instance(const Glib::RefPtr<ImagePool::Instance>& instance)
 
 	get_xy_from_pos(m_instancecount+1, x, y);
 
-	if(!instance) {
-	}
-
 	// all views occupied ?
 	if(m_instancecount < max_size()) {
 		Aeskulap::Display* d = m_widgets[m_instancecount];
 		if(d != NULL) {
-			d->set_image(instance, m_dispparam[m_instancecount], true);
+			d->set_image(instance, p, true);
 			d->signal_draw.connect(sigc::mem_fun(*this, &SeriesView::on_draw_instance));
 			d->signal_popup.connect(sigc::bind(signal_popup, this));
 

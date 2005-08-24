@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/24 21:55:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -177,7 +177,7 @@ const Instance::Orientation& Instance::get_orientation() {
 	return m_orientation;
 }
 
-bool Instance::transform_point(const Instance::Point& a, Instance::Point& b) {
+bool Instance::transform_to_viewport(const Instance::Point& a, Instance::Point& b) {
 	if(m_orientation.x.x == 0 && m_orientation.x.y == 0 && m_orientation.x.z == 0) {
 		return false;
 	}
@@ -198,6 +198,13 @@ bool Instance::transform_point(const Instance::Point& a, Instance::Point& b) {
 	b = c;
 	return true;
 }
+
+bool Instance::transform_to_world(const Point& a, Point& b) {
+	b.x = m_position.x + m_orientation.x.x * a.x + m_orientation.y.x * a.y;
+	b.y = m_position.y + m_orientation.x.y * a.x + m_orientation.y.y * a.y;
+	b.z = m_position.z + m_orientation.x.z * a.x + m_orientation.y.z * a.y;
+}
+
 
 void Instance::clear() {
 	m_study.clear();

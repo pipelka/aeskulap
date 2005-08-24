@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/24 21:55:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netclient.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -31,10 +31,11 @@
 
 #include <gconfmm.h>
 #include "dcdatset.h"
+#include "poolnetwork.h"
 
 namespace ImagePool {
 
-extern DicomNetwork net;
+extern Network net;
 
 template<class T>
 class NetClient : public T {

@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/24 21:55:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -69,7 +69,7 @@ public:
 	
 	typedef Point Vector;
 
-	typedef struct {
+	typedef struct _Orientation {
 		Vector x;
 		Vector y;
 	} Orientation;
@@ -137,7 +137,9 @@ public:
 	 * transforms the point a from the world coordinate system
 	 * into point b in the patients coordinate system
 	*/
-	bool transform_point(const Point& a, Point& b);
+	bool transform_to_viewport(const Point& a, Point& b);
+
+	bool transform_to_world(const Point& a, Point& b);
 
 	void clear();
 	

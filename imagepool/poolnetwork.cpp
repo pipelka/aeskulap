@@ -19,33 +19,30 @@
     Alexander Pipelka
     pipelka@teleweb.at
 
-    Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/Attic/DicomNetwork.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
-    Status:           $State: Exp $
+    Last Update:      $Author$
+    Update Date:      $Date$
+    Source File:      $Source$
+    CVS/RCS Revision: $Revision$
+    Status:           $State$
 */
 
 // dcmtk includes
 #include <diutil.h>
 
-// DicomNetwork class header
-#include "DicomNetwork.h"
+// ImagePool Network class header
+#include "poolnetwork.h"
 
-T_ASC_Network* DicomNetwork::net = NULL;
+T_ASC_Network* Network::net = NULL;
 
-//////////////////////////////////////////////////////////////////////
-// Konstruktion/Destruktion
-//////////////////////////////////////////////////////////////////////
 
-DicomNetwork::DicomNetwork() {
+Network::Network() {
 }
 
-DicomNetwork::~DicomNetwork() {
+Network::~Network() {
 	DropNetwork();
 }
 
-CONDITION DicomNetwork::ConnectAssociation(DicomAssociation* assoc, int lossy) {
+CONDITION Network::ConnectAssociation(Association* assoc, int lossy) {
 	CONDITION cond;
 
 	cond = ASC_ConnectAssociation(
@@ -68,7 +65,7 @@ CONDITION DicomNetwork::ConnectAssociation(DicomAssociation* assoc, int lossy) {
 	return cond;
 }
 
-CONDITION DicomNetwork::InitializeNetwork(int timeout, int port) {
+CONDITION Network::InitializeNetwork(int timeout, int port) {
 #ifdef _WIN32
 	WORD wVersionRequested;
 	WSADATA wsaData;
@@ -81,7 +78,7 @@ CONDITION DicomNetwork::InitializeNetwork(int timeout, int port) {
 	return ASC_initializeNetwork(NET_ACCEPTORREQUESTOR, port, timeout, &net);
 }
 
-CONDITION DicomNetwork::DropNetwork()
+CONDITION Network::DropNetwork()
 {
 	CONDITION cond = ASC_dropNetwork(&net);
 	net = NULL;
@@ -93,7 +90,7 @@ CONDITION DicomNetwork::DropNetwork()
 	return cond;
 }
 
-CONDITION DicomNetwork::ASC_ConnectAssociation(DicomAssociation* assoc, const char* peerTitle, const char* peer, int port, const char* ouraet, const char *abstractSyntax, int lossy)
+CONDITION Network::ASC_ConnectAssociation(Association* assoc, const char* peerTitle, const char* peer, int port, const char* ouraet, const char *abstractSyntax, int lossy)
 {
     CONDITION cond;
     T_ASC_Parameters *params;
@@ -179,7 +176,7 @@ CONDITION DicomNetwork::ASC_ConnectAssociation(DicomAssociation* assoc, const ch
 	return ASC_NORMAL;
 }
 
-CONDITION DicomNetwork::addAllStoragePresentationContexts(T_ASC_Parameters *params, bool bProposeCompression, int lossy)
+CONDITION Network::addAllStoragePresentationContexts(T_ASC_Parameters *params, bool bProposeCompression, int lossy)
 {
     CONDITION cond = ASC_NORMAL;
     int i;
@@ -238,9 +235,9 @@ CONDITION DicomNetwork::addAllStoragePresentationContexts(T_ASC_Parameters *para
     return cond;
 }
 
-bool DicomNetwork::SendEchoRequest(const char* title, const char* peer, int port, const char* ouraet)
+bool Network::SendEchoRequest(const char* title, const char* peer, int port, const char* ouraet)
 {
-	DicomAssociation dcmEcho;
+	Association dcmEcho;
 	dcmEcho.Create(title, peer, port, ouraet, UID_VerificationSOPClass);
 
 	ConnectAssociation(&dcmEcho);
@@ -248,15 +245,16 @@ bool DicomNetwork::SendEchoRequest(const char* title, const char* peer, int port
 	return dcmEcho.SendEchoRequest();
 }
 
-T_ASC_Network* DicomNetwork::GetDcmtkNet() {
+T_ASC_Network* Network::GetDcmtkNet() {
 	return net;
 }
 
-void DicomNetwork::SetDcmtkNet(T_ASC_Network* n) {
+void Network::SetDcmtkNet(T_ASC_Network* n) {
 	net = n;
 }
 
-const char* DicomNetwork::GetCurrDate() {
+/*
+const char* Network::GetCurrDate() {
 	static char curr_date[10];
 	struct tm *l_time;
 	time_t now;
@@ -268,7 +266,7 @@ const char* DicomNetwork::GetCurrDate() {
 	return curr_date;
 }                                                                                                                         
                                                                                                                           
-const char* DicomNetwork::GetCurrTime() {                                                                                               
+const char* Network::GetCurrTime() {                                                                                               
 	static char curr_time[10];
 	struct tm *l_time;
 	time_t now;
@@ -277,4 +275,5 @@ const char* DicomNetwork::GetCurrTime() {
 	l_time = localtime(&now);
 	strftime(curr_time, sizeof(curr_time), "%H%M%S.000", l_time);
 	return curr_time;
-} 
+}
+*/

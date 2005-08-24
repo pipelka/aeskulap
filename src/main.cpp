@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:06 $
+    Update Date:      $Date: 2005/08/24 21:55:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -72,6 +72,7 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
+	mainWindow->maximize();
 	mainWindow->show();
 
 	for(int c=1; c<argc; c++) {

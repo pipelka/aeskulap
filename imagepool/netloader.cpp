@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/24 21:55:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -30,14 +30,14 @@
 #include <gconfmm.h>
 
 #include "imagepool.h"
-#include "DicomMoveAssociation.h"
+#include "poolmoveassociation.h"
 #include "dcdatset.h"
 #include "dcdeftag.h"
 #include "netclient.h"
 
 namespace ImagePool {
 
-class DicomMover : public DicomMoveAssociation {
+class DicomMover : public MoveAssociation {
 protected:
 	void OnResponseReceived(DcmDataset *response) {
 		ImagePool::create_instance(response, true);

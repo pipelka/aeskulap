@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:06 $
+    Update Date:      $Date: 2005/08/24 21:55:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -75,8 +75,6 @@ m_raise_opened(true)
 
 	m_refGlade->get_widget("edit_settings", item);
 	item->signal_activate().connect(sigc::mem_fun(*this, &MainWindow::on_edit_settings));
-
-	maximize();
 
 	m_dialogFile.set_select_multiple();
 	
