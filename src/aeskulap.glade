@@ -75,48 +75,6 @@
 		<widget class="GtkMenu" id="menuitem_edit_menu">
 
 		  <child>
-		    <widget class="GtkImageMenuItem" id="ausschneiden1">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-cut</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="on_ausschneiden1_activate" last_modification_time="Fri, 17 Jun 2005 19:24:14 GMT"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="kopieren1">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-copy</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="on_kopieren1_activate" last_modification_time="Fri, 17 Jun 2005 19:24:14 GMT"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="einfügen1">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-paste</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="on_einfügen1_activate" last_modification_time="Fri, 17 Jun 2005 19:24:14 GMT"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="löschen1">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-delete</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="on_löschen1_activate" last_modification_time="Fri, 17 Jun 2005 19:24:14 GMT"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkSeparatorMenuItem" id="trennlinie1">
-		      <property name="visible">True</property>
-		    </widget>
-		  </child>
-
-		  <child>
 		    <widget class="GtkImageMenuItem" id="edit_settings">
 		      <property name="visible">True</property>
 		      <property name="label">gtk-preferences</property>
