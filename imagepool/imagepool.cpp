@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:42 $
+    Update Date:      $Date: 2005/08/25 12:09:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -320,54 +320,54 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset, bool threade
 	// set pixelspacing
 	if(dset->findAndGetOFString(DCM_PixelSpacing, value, 0).good()) {
 		r->m_spacing_x = strtod(value.c_str(), NULL);
-		std::cout << "pixelspacing x: " << r->m_spacing_x << std::endl;
+		//std::cout << "pixelspacing x: " << r->m_spacing_x << std::endl;
 	}
 
 	if(dset->findAndGetOFString(DCM_PixelSpacing, value, 1).good()) {
 		r->m_spacing_y = strtod(value.c_str(), NULL);
-		std::cout << "pixelspacing y: " << r->m_spacing_y << std::endl;
+		//std::cout << "pixelspacing y: " << r->m_spacing_y << std::endl;
 	}
 
 	// get ImagePositionPatient
 	if(dset->findAndGetOFString(DCM_ImagePositionPatient, value, 0).good()) {
 		r->m_position.x = strtod(value.c_str(), NULL);
-		std::cout << "ImagePosition x: " << r->m_position.x << std::endl;
+		//std::cout << "ImagePosition x: " << r->m_position.x << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImagePositionPatient, value, 1).good()) {
 		r->m_position.y = strtod(value.c_str(), NULL);
-		std::cout << "ImagePosition y: " << r->m_position.y << std::endl;
+		//std::cout << "ImagePosition y: " << r->m_position.y << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImagePositionPatient, value, 2).good()) {
 		r->m_position.z = strtod(value.c_str(), NULL);
-		std::cout << "ImagePosition z: " << r->m_position.z << std::endl;
+		//std::cout << "ImagePosition z: " << r->m_position.z << std::endl;
 	}
 	
 	// get ImageOrientationPatient / Row - Vector
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 0).good()) {
 		r->m_orientation.x.x = strtod(value.c_str(), NULL);
-		std::cout << "Orientation-Row x: " << r->m_orientation.x.x << std::endl;
+		//std::cout << "Orientation-Row x: " << r->m_orientation.x.x << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 1).good()) {
 		r->m_orientation.x.y = strtod(value.c_str(), NULL);
-		std::cout << "Orientation-Row y: " << r->m_orientation.x.y << std::endl;
+		//std::cout << "Orientation-Row y: " << r->m_orientation.x.y << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 2).good()) {
 		r->m_orientation.x.z = strtod(value.c_str(), NULL);
-		std::cout << "Orientation-Row z: " << r->m_orientation.x.z << std::endl;
+		//std::cout << "Orientation-Row z: " << r->m_orientation.x.z << std::endl;
 	}
 
 	// get ImageOrientationPatient / Column - Vector
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 3).good()) {
 		r->m_orientation.y.x = strtod(value.c_str(), NULL);
-		std::cout << "Orientation-Column x: " << r->m_orientation.y.x << std::endl;
+		//std::cout << "Orientation-Column x: " << r->m_orientation.y.x << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 4).good()) {
 		r->m_orientation.y.y = strtod(value.c_str(), NULL);
-		std::cout << "Orientation-Column y: " << r->m_orientation.y.y << std::endl;
+		//std::cout << "Orientation-Column y: " << r->m_orientation.y.y << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 5).good()) {
 		r->m_orientation.y.z = strtod(value.c_str(), NULL);
-		std::cout << "Orientation-Column z: " << r->m_orientation.y.z << std::endl;
+		//std::cout << "Orientation-Column z: " << r->m_orientation.y.z << std::endl;
 	}
 
 	std::cout << "slope: " << r->m_slope << std::endl;

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:06 $
+    Update Date:      $Date: 2005/08/25 12:09:16 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -82,13 +82,13 @@ protected:
 
 	Gtk::Entry* m_entry_filter_patientid;
 
-	Gtk::Entry* m_entry_filter_lastname;
-
-	Gtk::Entry* m_entry_filter_firstname;
+	Gtk::Entry* m_entry_filter_name;
 
 	Gtk::ComboBoxEntry* m_entry_filter_modality;
 
 	Gtk::Entry* m_entry_filter_studydescription;
+
+	Gtk::Entry* m_entry_filter_stationname;
 
 	class ModelColumns : public Gtk::TreeModel::ColumnRecord {
 	public:

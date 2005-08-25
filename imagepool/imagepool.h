@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/25 12:09:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -69,11 +69,11 @@ namespace ImagePool {
 	void query_from_net(
 				const std::string& patientid,
 				const std::string& lastname,
-				const std::string& firstname,
 				const std::string& modality,
 				const std::string& date_from,
 				const std::string& date_to,
 				const std::string& studydescription,
+				const std::string& stationname,
 				const sigc::slot< void, const Glib::RefPtr< ImagePool::Study >& >& resultslot
 				);
 

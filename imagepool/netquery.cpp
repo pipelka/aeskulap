@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:42 $
+    Update Date:      $Date: 2005/08/25 12:09:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -98,7 +98,7 @@ Glib::RefPtr< ImagePool::Series > create_query_series(DcmDataset* dset) {
 		dset->findAndGetOFString(DCM_StudyDescription, result->m_description);
 	}
 	if(result->m_description.empty()) {
-		result->m_description = "no description";
+		result->m_description = gettext("no description");
 	}
 
 	dset->findAndGetOFString(DCM_Modality, result->m_modality);
@@ -124,31 +124,30 @@ Glib::RefPtr< ImagePool::Series > create_query_series(DcmDataset* dset) {
 
 void query_from_net(
 			const std::string& patientid,
-			const std::string& lastname,
-			const std::string& firstname,
+			const std::string& name,
 			const std::string& modality,
 			const std::string& date_from,
 			const std::string& date_to,
 			const std::string& studydescription,
+			const std::string& stationname,
 			const sigc::slot< void, const Glib::RefPtr< ImagePool::Study >& >& resultslot
 			)
 {
 	// create patientsname querystring
 	std::string patientsname;
 
-	if(lastname.empty() && firstname.empty()) {
+	if(name.empty()) {
 		patientsname = "*";
 	}
-	else if(firstname.empty()) {
-		patientsname = lastname;
-	}
-	else if(lastname.empty()) {
-		patientsname = "*^" + firstname;
-	}
 	else {
-		patientsname = lastname + "^" + firstname;
+		patientsname = "*" + name + "*";
 	}
 
+	std::string description;
+	if(!studydescription.empty()) {
+		description = "*" + studydescription + "*";
+	}
+	
 	// create date querystring
 	std::string date;
 	if(date_from.empty() && date_to.empty()) {
@@ -210,7 +209,11 @@ void query_from_net(
 	query.insert(e);
 
 	e = newDicomElement(DCM_StudyDescription);
-	e->putString(studydescription.c_str());
+	e->putString(description.c_str());
+	query.insert(e);
+
+	e = newDicomElement(DCM_StationName);
+	e->putString(stationname.c_str());
 	query.insert(e);
 
 	std::cout << "NEW QUERY:" << std::endl;

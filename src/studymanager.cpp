@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:06 $
+    Update Date:      $Date: 2005/08/25 12:09:16 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -69,13 +69,13 @@ m_refGlade(refGlade)
 	m_refGlade->get_widget("entry_filter_patientid", m_entry_filter_patientid);
 	m_entry_filter_patientid->signal_activate().connect(sigc::mem_fun(*this, &StudyManager::on_filter_search));
 
-	m_entry_filter_lastname = NULL;
-	m_refGlade->get_widget("entry_filter_lastname", m_entry_filter_lastname);
-	m_entry_filter_lastname->signal_activate().connect(sigc::mem_fun(*this, &StudyManager::on_filter_search));
+	m_entry_filter_name = NULL;
+	m_refGlade->get_widget("entry_filter_name", m_entry_filter_name);
+	m_entry_filter_name->signal_activate().connect(sigc::mem_fun(*this, &StudyManager::on_filter_search));
 
-	m_entry_filter_firstname = NULL;
-	m_refGlade->get_widget("entry_filter_firstname", m_entry_filter_firstname);
-	m_entry_filter_firstname->signal_activate().connect(sigc::mem_fun(*this, &StudyManager::on_filter_search));
+	m_entry_filter_stationname = NULL;
+	m_refGlade->get_widget("entry_filter_stationname", m_entry_filter_stationname);
+	m_entry_filter_stationname->signal_activate().connect(sigc::mem_fun(*this, &StudyManager::on_filter_search));
 
 	m_entry_filter_modality = NULL;
 	m_refGlade->get_widget("entry_filter_modality", m_entry_filter_modality);
@@ -153,12 +153,12 @@ void StudyManager::on_filter_search() {
 
 	ImagePool::query_from_net(
 					m_entry_filter_patientid->get_text(),
-					m_entry_filter_lastname->get_text(),
-					m_entry_filter_firstname->get_text(),
+					m_entry_filter_name->get_text(),
 					m_entry_filter_modality->get_entry()->get_text(),
 					date_from,
 					date_to,
 					m_entry_filter_studydescription->get_text(),
+					m_entry_filter_stationname->get_text(),
 					sigc::mem_fun(*this, &StudyManager::on_queryresult_study)
 					);
 }
@@ -210,10 +210,10 @@ void StudyManager::on_filter_clearfilter() {
 	m_checkbutton_filter_to->set_active(false);
 
 	m_entry_filter_patientid->set_text("");
-	m_entry_filter_lastname->set_text("");
-	m_entry_filter_firstname->set_text("");
+	m_entry_filter_name->set_text("");
 	m_entry_filter_modality->get_entry()->set_text("");
 	m_entry_filter_studydescription->set_text("");
+	m_entry_filter_stationname->set_text("");
 }
 
 void StudyManager::on_queryresult_study(const Glib::RefPtr< ImagePool::Study >& study) {
