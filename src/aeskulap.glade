@@ -450,7 +450,7 @@
 				      <child>
 					<widget class="GtkLabel" id="label26">
 					  <property name="visible">True</property>
-					  <property name="label" translatable="yes">&lt;b&gt;First Name:&lt;/b&gt;</property>
+					  <property name="label" translatable="yes">&lt;b&gt;Name:&lt;/b&gt;</property>
 					  <property name="use_underline">False</property>
 					  <property name="use_markup">True</property>
 					  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -473,7 +473,7 @@
 				      </child>
 
 				      <child>
-					<widget class="GtkEntry" id="entry_filter_firstname">
+					<widget class="GtkEntry" id="entry_filter_name">
 					  <property name="visible">True</property>
 					  <property name="can_focus">True</property>
 					  <property name="editable">True</property>
@@ -539,7 +539,7 @@
 				      <child>
 					<widget class="GtkLabel" id="label24">
 					  <property name="visible">True</property>
-					  <property name="label" translatable="yes">&lt;b&gt;Last Name:&lt;/b&gt;</property>
+					  <property name="label" translatable="yes">&lt;b&gt;Study Description:&lt;/b&gt;</property>
 					  <property name="use_underline">False</property>
 					  <property name="use_markup">True</property>
 					  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -562,7 +562,7 @@
 				      </child>
 
 				      <child>
-					<widget class="GtkEntry" id="entry_filter_lastname">
+					<widget class="GtkEntry" id="entry_filter_studydescription">
 					  <property name="visible">True</property>
 					  <property name="can_focus">True</property>
 					  <property name="editable">True</property>
@@ -674,7 +674,7 @@ SC
 				      <child>
 					<widget class="GtkLabel" id="label25">
 					  <property name="visible">True</property>
-					  <property name="label" translatable="yes">&lt;b&gt;Study Description:&lt;/b&gt;</property>
+					  <property name="label" translatable="yes">&lt;b&gt;Stationname:&lt;/b&gt;</property>
 					  <property name="use_underline">False</property>
 					  <property name="use_markup">True</property>
 					  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -697,7 +697,7 @@ SC
 				      </child>
 
 				      <child>
-					<widget class="GtkEntry" id="entry_filter_studydescription">
+					<widget class="GtkEntry" id="entry_filter_stationname">
 					  <property name="visible">True</property>
 					  <property name="can_focus">True</property>
 					  <property name="editable">True</property>
