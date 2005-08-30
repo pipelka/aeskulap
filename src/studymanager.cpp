@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/25 12:09:16 $
+    Update Date:      $Date: 2005/08/30 20:12:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -254,7 +254,10 @@ void StudyManager::on_queryresult_series(const Glib::RefPtr< ImagePool::Series >
 	int count = row.children().size();
 	char buffer[50];
 
-	if(series->instancecount() > 0) {
+	if(series->instancecount() == 1) {
+		sprintf(buffer, gettext("Series %i (1 Image)"), count);
+	}
+	else if(series->instancecount() > 0) {
 		sprintf(buffer, gettext("Series %i (%i Images)"), count, series->instancecount());
 	}
 	else {
