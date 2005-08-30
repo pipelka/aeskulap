@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:03 $
+    Update Date:      $Date: 2005/08/30 12:59:41 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -77,11 +77,11 @@ m_draw_reference_frame_ends(false) {
 	m_toolbar = manage(new Gtk::Toolbar);
 	m_toolbar->set_tooltips(true);
 
-	m_btn_close = manage(new Gtk::ToolButton(Gtk::Stock::CLOSE));
+	/*m_btn_close = manage(new Gtk::ToolButton(Gtk::Stock::CLOSE));
 	m_toolbar->append(*m_btn_close, sigc::mem_fun(*this, &StudyView::on_close));
 	m_btn_close->set_tooltip(m_tooltips, gettext("Close the current study"));
-	//m_btn_close->set_sensitive(false);
-	m_btn_close->show();
+	m_btn_close->set_sensitive(true);
+	m_btn_close->show();*/
 
 	m_series_layout = manage(new SeriesLayoutToolButton());
 	m_toolbar->append(*m_series_layout);
@@ -508,6 +508,6 @@ void StudyView::on_toggle_refframe() {
 
 void StudyView::set_progress(unsigned int progress) {
 	if(progress >= 100) {
-		m_btn_close->set_sensitive(true);
+		//m_btn_close->set_sensitive(true);
 	}
 }
