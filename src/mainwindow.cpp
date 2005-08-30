@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:43 $
+    Update Date:      $Date: 2005/08/30 11:07:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -170,12 +170,35 @@ void MainWindow::on_view_fullscreen() {
 void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	std::cout << "new study " << study->studyinstanceuid() << std::endl;
 
-	std::string label = study->patientsname().substr(0,20) + ", " + study->studydescription().substr(0,20);
+	std::string labeltext = study->patientsname().substr(0,20) + "\n" + study->studydescription().substr(0,20);
 
 	StudyView* frame = manage(new StudyView(study));
 	m_studyview[study->studyinstanceuid()] = frame;
 
-	m_mainNotebook->append_page(*frame, label, label);
+	Gtk::Label* label = manage(new Gtk::Label(labeltext, Gtk::ALIGN_LEFT));
+	label->show();
+
+	Gtk::Image* image = manage(new Gtk::Image(Gtk::Stock::CLOSE, Gtk::ICON_SIZE_SMALL_TOOLBAR));
+	image->show();
+
+	Gtk::Image* image2 = manage(new Gtk::Image(Gtk::Stock::DND_MULTIPLE, Gtk::ICON_SIZE_LARGE_TOOLBAR));
+	image2->set_padding(2,0);
+	image2->show();
+	
+	Gtk::Button* btn = manage(new Gtk::Button);
+	btn->set_relief(Gtk::RELIEF_NONE);
+	btn->set_focus_on_click(false);
+	btn->add(*image);
+	btn->show();
+	
+	Gtk::HBox* hbox = manage(new Gtk::HBox);
+	hbox->pack_start(*image2);
+	hbox->pack_start(*label);
+	hbox->pack_start(*btn);
+	hbox->show();
+
+	//m_mainNotebook->append_page(*frame, label, label);
+	m_mainNotebook->append_page(*frame, *hbox);
 	frame->show();
 	if(m_raise_opened) {
 		m_raise_opened = false;
