@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/25 12:09:17 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -32,7 +32,6 @@
 #include "dcdatset.h"
 #include "dcmimage.h"
 #include "diregist.h"
-#include "dcfilefo.h"
 #include "dcdeftag.h"
 
 #include "djdecode.h"
@@ -57,15 +56,6 @@ void context_function();
 
 Network net;
 
-static Glib::Dispatcher context_switch;
-
-static Glib::StaticMutex context_mutex = GLIBMM_STATIC_MUTEX_INIT; 
-
-static std::queue< Glib::RefPtr<ImagePool::Instance> > context_image;
-
-
-sigc::signal< void, Glib::RefPtr<ImagePool::Study> > Signals::signal_study_added;
-
 sigc::signal< void, Glib::RefPtr<ImagePool::Study> > Signals::signal_study_removed;
 
 static std::map< std::string, Glib::RefPtr<ImagePool::Instance> > m_pool;
@@ -86,7 +76,6 @@ void init(bool connect) {
 	if(connect) {
 		Gnome::Conf::init();
 		Glib::thread_init();
-		context_switch.connect(sigc::ptr_fun(context_function));
 	}
 
 	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
@@ -98,10 +87,6 @@ void init(bool connect) {
 }
 	
 void close() {
-	/*m_studypool.clear();
-	m_seriespool.clear();
-	m_pool.clear();*/
-	
 	DJEncoderRegistration::cleanup();
 	DJDecoderRegistration::cleanup();
 
@@ -111,30 +96,9 @@ void close() {
 	net.DropNetwork();
 }
 
-Glib::RefPtr<ImagePool::Instance> create_instance(const std::string& filename, bool threaded) {
-	DcmFileFormat dfile;
-
-	OFCondition cond = dfile.loadFile(filename.c_str(), EXS_Unknown, EGL_noChange, DCM_MaxReadLength, false);
-	
-	if(!cond.good()) {
-		std::cout << "unable to open file !!!" << std::endl;
-		return Glib::RefPtr<ImagePool::Instance>();
-	}
-	dfile.loadAllDataIntoMemory();
-	std::cout << "opened file:" << filename << std::endl;
-
-	DcmDataset* dset = dfile.getAndRemoveDataset();
-	
-	Glib::RefPtr<ImagePool::Instance> r = ImagePool::create_instance(dset, threaded);
-	delete dset;
-	
-	return r;
-}
-
-Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset, bool threaded) {
-	context_mutex.lock();
-
+Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 	std::string sop;
+
 	if(dset->findAndGetOFString(DCM_SOPInstanceUID, sop).bad()) {
 		std::cout << "no SOPInstanceUID in instance !!!" << std::endl;
 		return Glib::RefPtr<ImagePool::Instance>();
@@ -143,7 +107,6 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset, bool threade
 	// check if this sop is already in the pool
 	if(m_pool[sop]) {
 		std::cout << "returning object from pool !!!" << std::endl;
-		context_mutex.unlock();
 		return m_pool[sop];
 	}
 
@@ -286,7 +249,6 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset, bool threade
 		std::cerr << "dcmImage->getOutputData(..) == FALSE" << std::endl;
 		delete m_image;
 		m_image = NULL;
-		context_mutex.unlock();
 		return Glib::RefPtr<ImagePool::Instance>();
 	}
 
@@ -320,54 +282,43 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset, bool threade
 	// set pixelspacing
 	if(dset->findAndGetOFString(DCM_PixelSpacing, value, 0).good()) {
 		r->m_spacing_x = strtod(value.c_str(), NULL);
-		//std::cout << "pixelspacing x: " << r->m_spacing_x << std::endl;
 	}
 
 	if(dset->findAndGetOFString(DCM_PixelSpacing, value, 1).good()) {
 		r->m_spacing_y = strtod(value.c_str(), NULL);
-		//std::cout << "pixelspacing y: " << r->m_spacing_y << std::endl;
 	}
 
 	// get ImagePositionPatient
 	if(dset->findAndGetOFString(DCM_ImagePositionPatient, value, 0).good()) {
 		r->m_position.x = strtod(value.c_str(), NULL);
-		//std::cout << "ImagePosition x: " << r->m_position.x << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImagePositionPatient, value, 1).good()) {
 		r->m_position.y = strtod(value.c_str(), NULL);
-		//std::cout << "ImagePosition y: " << r->m_position.y << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImagePositionPatient, value, 2).good()) {
 		r->m_position.z = strtod(value.c_str(), NULL);
-		//std::cout << "ImagePosition z: " << r->m_position.z << std::endl;
 	}
 	
 	// get ImageOrientationPatient / Row - Vector
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 0).good()) {
 		r->m_orientation.x.x = strtod(value.c_str(), NULL);
-		//std::cout << "Orientation-Row x: " << r->m_orientation.x.x << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 1).good()) {
 		r->m_orientation.x.y = strtod(value.c_str(), NULL);
-		//std::cout << "Orientation-Row y: " << r->m_orientation.x.y << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 2).good()) {
 		r->m_orientation.x.z = strtod(value.c_str(), NULL);
-		//std::cout << "Orientation-Row z: " << r->m_orientation.x.z << std::endl;
 	}
 
 	// get ImageOrientationPatient / Column - Vector
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 3).good()) {
 		r->m_orientation.y.x = strtod(value.c_str(), NULL);
-		//std::cout << "Orientation-Column x: " << r->m_orientation.y.x << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 4).good()) {
 		r->m_orientation.y.y = strtod(value.c_str(), NULL);
-		//std::cout << "Orientation-Column y: " << r->m_orientation.y.y << std::endl;
 	}
 	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 5).good()) {
 		r->m_orientation.y.z = strtod(value.c_str(), NULL);
-		//std::cout << "Orientation-Column z: " << r->m_orientation.y.z << std::endl;
 	}
 
 	std::cout << "slope: " << r->m_slope << std::endl;
@@ -393,84 +344,11 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset, bool threade
 
 	dset->findAndGetOFString(DCM_Modality, r->m_modality);
 
-	context_image.push(r);
-
-	if(threaded) {
-		context_switch();
+	if(r) {
+		m_pool[r->m_sopinstanceuid] = r;
 	}
-	else {
-		context_function();
-	}
-	
-	delete m_image;
-
-	context_mutex.unlock();
 
 	return r;
-}
-
-void context_function() {
-	if(context_image.size() == 0) {
-		return;
-	}
-
-	Glib::RefPtr<ImagePool::Instance> r = context_image.front();
-	context_image.pop();
-
-	OFString value;
-
-	// register study
-	Glib::RefPtr<ImagePool::Study> new_study = get_study(r->m_studyinstanceuid);
-	std::cout << "studysize: " << new_study->size() << std::endl;
-	if(new_study->size() == 0) {
-		new_study->m_studyinstanceuid = r->studyinstanceuid();
-		new_study->m_patientsname = r->m_patientsname;
-		new_study->m_patientsbirthdate = r->m_patientsbirthdate;
-		new_study->m_patientssex = r->m_patientssex;
-		new_study->m_studydescription = r->m_studydescription;
-		
-		std::cout << "emit: signal_study_added(" << r->m_studyinstanceuid << ")" << std::endl;
-		Signals::signal_study_added(new_study);
-	}
-
-	// register series
-	Glib::RefPtr<ImagePool::Series> new_series = get_series(r->m_seriesinstanceuid);
-	bool bEmit = (new_series->size() == 0);
-	if(new_series->size() == 0) {
-		new_series->m_studyinstanceuid = r->m_studyinstanceuid;
-		new_series->m_institutionname = r->m_institutionname;
-		new_series->m_description = r->m_seriesdescription;
-		new_series->m_modality = r->m_modality;
-		if(new_series->m_seriestime.empty()) {
-			new_series->m_seriestime = r->m_time;
-		}
-	}
-
-	new_study->at(r->m_seriesinstanceuid) = new_series;
-	new_series->m_seriesinstanceuid = r->m_seriesinstanceuid;
-
-	if(bEmit) {
-		new_study->signal_series_added(new_series);
-	}
-	
-	r->m_study = new_study;
-	r->m_series = new_series;
-
-	// check instancenumber
-	if(r->m_instancenumber == 0) {
-		r->m_instancenumber = new_series->size() + 1;
-	}
-
-	// register instance
-	new_series->at(r->m_sopinstanceuid) = r;
-	new_series->signal_instance_added(r);
-	
-	m_pool[r->m_sopinstanceuid] = r;
-
-	if(context_image.size() > 0) {
-		context_function();
-	}
-
 }
 
 void remove_instance(const std::string& sopinstanceuid) {

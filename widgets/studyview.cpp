@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 12:59:41 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -44,6 +44,7 @@
 
 StudyView::StudyView(const Glib::RefPtr<ImagePool::Study>& study) :
 Aeskulap::Tiler<SeriesView>(2, 1),
+m_btn_close(NULL),
 m_single_series(false),
 m_study(study),
 m_selected(NULL),
@@ -76,12 +77,6 @@ m_draw_reference_frame_ends(false) {
 
 	m_toolbar = manage(new Gtk::Toolbar);
 	m_toolbar->set_tooltips(true);
-
-	/*m_btn_close = manage(new Gtk::ToolButton(Gtk::Stock::CLOSE));
-	m_toolbar->append(*m_btn_close, sigc::mem_fun(*this, &StudyView::on_close));
-	m_btn_close->set_tooltip(m_tooltips, gettext("Close the current study"));
-	m_btn_close->set_sensitive(true);
-	m_btn_close->show();*/
 
 	m_series_layout = manage(new SeriesLayoutToolButton());
 	m_toolbar->append(*m_series_layout);
@@ -185,7 +180,6 @@ void StudyView::on_series_added(const Glib::RefPtr<ImagePool::Series>& series) {
 
 void StudyView::on_close() {	
 	get_parent()->remove(*this);
-	signal_close(m_study->studyinstanceuid());
 	delete this; // ???!
 }
 
@@ -508,6 +502,12 @@ void StudyView::on_toggle_refframe() {
 
 void StudyView::set_progress(unsigned int progress) {
 	if(progress >= 100) {
-		//m_btn_close->set_sensitive(true);
+		if(m_btn_close) {
+		m_btn_close->set_sensitive(true);
+		}
 	}
+}
+
+void StudyView::set_close_button(Gtk::ToolButton* close) {
+	m_btn_close = close;
 }

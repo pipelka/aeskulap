@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:42 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -34,19 +34,30 @@
 #include "dcdatset.h"
 #include "dcdeftag.h"
 #include "netclient.h"
+#include "netloader.h"
 
 namespace ImagePool {
 
 class DicomMover : public MoveAssociation {
+public:
+	sigc::signal<void, DcmDataset*> signal_response_received;
+
 protected:
 	void OnResponseReceived(DcmDataset *response) {
-		ImagePool::create_instance(response, true);
+		if(response != NULL) {
+			signal_response_received(response);
+		}
 	};
 };
 
+void NetLoader::load(const std::string& studyinstanceuid) {
+	m_studyinstanceuid = studyinstanceuid;
+	start();
+}
 
-static void net_loader_thread(const std::string& studyinstanceuid) {
+void NetLoader::run() {
 	NetClient<DicomMover> mover;
+	mover.signal_response_received.connect(sigc::mem_fun(*this, &NetLoader::add_image));
 	mover.SetMaxResults(1000);
 
 	DcmDataset query;
@@ -63,17 +74,12 @@ static void net_loader_thread(const std::string& studyinstanceuid) {
 	query.insert(e);
 
 	e = newDicomElement(DCM_StudyInstanceUID);
-	e->putString(studyinstanceuid.c_str());
+	e->putString(m_studyinstanceuid.c_str());
 	query.insert(e);
 
+	m_mutex.unlock();
+
 	mover.QueryServers(&query);
-	//progress(studyinstanceuid, 100);
 }
-
-void load_from_net(const std::string& studyinstanceuid) {
-	Glib::Thread *const loader = Glib::Thread::create(
-      sigc::bind(sigc::ptr_fun(net_loader_thread), studyinstanceuid), false);
-}
-
 
 } // namespace ImagePool

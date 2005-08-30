@@ -60,7 +60,6 @@ CONDITION FindAssociation::findSCU(T_ASC_Association *assoc, DcmDataset *query) 
 		return DIMSE_NOVALIDPRESENTATIONCONTEXTID;
 	}
 
-	//bzero((char*)&req, sizeof(req));
 	req.MessageID = msgId;
 	req.DataSetType = DIMSE_DATASET_PRESENT;
 	req.Priority = DIMSE_PRIORITY_LOW;
@@ -75,7 +74,6 @@ CONDITION FindAssociation::findSCU(T_ASC_Association *assoc, DcmDataset *query) 
 	
 	if (cond == DIMSE_NORMAL)  {
 			if (rsp.DimseStatus == STATUS_Success)  {
-				//AfxMessageBox(findresult);
 			}
 	}
 
@@ -91,10 +89,6 @@ void FindAssociation::findCallback(void* callbackData, T_DIMSE_C_FindRQ*, int re
 	FindAssociation* caller = (FindAssociation*)callbackData;
 
 	if(responseCount > caller->maxResults) {
-		//std::cerr << "Maximum number of responses (" << caller->maxResults << ") reached !!!" << std::endl;
-		//std::cerr << "terminating association,..." << std::endl;
-		//caller->Drop(DIMSE_PEERREQUESTEDRELEASE);
-		//caller->Destroy();
 		return;
 	}
 	
@@ -111,7 +105,6 @@ CONDITION FindAssociation::SendObject(DcmDataset *dataset) {
 }
 
 void FindAssociation::OnResponseReceived(DcmDataset *response) {
-	//response->print(COUT, DCMTypes::PF_shortenLongTagValues);
 }
 
 DcmStack* FindAssociation::GetResultStack() {

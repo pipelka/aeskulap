@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:43 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -227,14 +227,13 @@ bool SimpleDisplay::set_image(const Glib::RefPtr<ImagePool::Instance>& image, co
 		create_windowmap();
 	}
 	
-	if(m_disp_params->window_center != params->window_center || m_disp_params->window_width != params->window_width) {
+	//if(m_disp_params->window_center != params->window_center || m_disp_params->window_width != params->window_width) {
 		m_disp_params = params;
 		set_windowlevels(m_disp_params->window_center, m_disp_params->window_width);
-	}
-	else {
-		m_disp_params = params;
-		
-	}
+	//}
+	//else {
+		//m_disp_params = params;
+	//}
 
 	bitstretch(smooth);
 
@@ -248,40 +247,34 @@ void SimpleDisplay::create_windowmap() {
 	}
 
 	m_windowmap_size = 1 << m_windowmap_depth;
-	m_windowmap = (guint32*)malloc(sizeof(guint32)* m_windowmap_size);
+	m_windowmap = (guint8*)malloc(sizeof(guint8)* m_windowmap_size);
 }
 
 void SimpleDisplay::set_windowlevels(int c, int w) {
-	if(!m_image) {
-		return;
-	}
-
 	m_disp_params->window_center = c;
 	m_disp_params->window_width = w;
 
-	int intercept = m_image->intercept();
+	double intercept = m_image->intercept();
+	std::cout << "intercept: " << intercept << std::endl;
 	double slope = m_image->slope();
-	//bool is_signed = m_image->is_signed();
-	//int highbit = m_image->highbit();
+	std::cout << "slope: " << slope << std::endl;
 
 	// handle slope, intercept
-	c = (int)((c - intercept) / slope);
-	w = (int)(w / slope);
+	double cd = (((double)c - intercept) / slope);
+	double wd = ((double)w / slope);
 	
 	int ramp_start = 0;
 	int ramp_end = m_windowmap_size/* - 1*/;
 
-	float k = 256.0/(float)w;
+	double k = 256.0/wd;
 
-	float c0 = (k * ((float)c - (float)w/2.0)) * -1.0;
-	float g = 0;
-	int r;
-	guint32 v;
+	double c0 = (k * (cd - wd/2.0)) * -1.0;
+	double g = 0;
 
-	for(int i = ramp_start; i < ramp_end; i++) {
+	for(guint32 i = ramp_start; i < ramp_end; i++) {
 		
 		// get colorvalue
-		g = (k*(float)(i)) + c0;
+		g = k * (double)i + c0;
 	
 		if(g > 255) {
 			g = 255;
@@ -290,32 +283,27 @@ void SimpleDisplay::set_windowlevels(int c, int w) {
 			g = 0;
 		}
 
-		r = (int)g;
-
-		v = r;
-		v += (r<<8);
-		v += (r<<16);
-		v += (255<<24);
-
-		m_windowmap[i] = v;
+		m_windowmap[i] = (guint8)g;
 	}
 }
 
 void SimpleDisplay::get_zoom_wh(int& w, int& h) {
 	double dis_width = (double)get_width();
 	double dis_height = (double)get_height();
+	double img_width = (double)m_image->width();
+	double img_height = (double)m_image->height();
 
 	// try to scale on height
 
-	double zf = (double)m_image->height() / dis_height;
+	double zf = img_height / dis_height;
 
 	double zw = dis_width * zf;
 	double zh = dis_height * zf;
 
 	// scale on width
 
-	if(zw < m_image->width()) {
-		zf = (double)m_image->width() / dis_width;
+	if(zw < img_width) {
+		zf = img_width / dis_width;
 		zw = dis_width * zf;
 		zh = dis_height * zf;
 	}
@@ -323,22 +311,22 @@ void SimpleDisplay::get_zoom_wh(int& w, int& h) {
 	zw *= (100.0 / m_disp_params->zoom_factor);
 	zh *= (100.0 / m_disp_params->zoom_factor);
 
-	if(zw > m_image->width()) {
-		zw = m_image->width();
+	if(zw > img_width) {
+		zw = img_width;
 	}
 
-	if(zh > m_image->height()) {
-		zh = m_image->height();
+	if(zh > img_height) {
+		zh = img_height;
 	}
 
 	w = (int)zw;
 	h = (int)zh;
 }
 
-void SimpleDisplay::linestretch_24to24(int x1, int x2, int y1, int y2, int yr, int yw, guint8* src_pixels, guint8* dst_pixels, guint32* lut) {
+void SimpleDisplay::linestretch_24to24(int x1, int x2, int y1, int y2, int yr, int yw, guint8* src_pixels, guint8* dst_pixels, guint8* lut) {
 	int dx, dy, e, d, dx2;
 
-	guint32 p;
+	guint8 p;
 
 	dx = (x2 - x1);
 	dy = (y2 - y1);
@@ -384,15 +372,15 @@ void SimpleDisplay::rectstretch_24to24(guint8* src, int xs1, int ys1, int xs2, i
 	guint16 src_pitch = m_image->width() * src_bpp;
 	guint16 dst_pitch = pixbuf->get_rowstride();
 
-	long src_pixels = ((long)src + ys1 * src_pitch + xs1 * src_bpp);
-	long dst_pixels = ((long)dst + yd1 * dst_pitch + xd1 * dst_bpp);
-	guint32* lut = m_windowmap;
+	guint8* src_pixels = (src + ys1 * src_pitch + xs1 * src_bpp);
+	guint8* dst_pixels = (dst + yd1 * dst_pitch + xd1 * dst_bpp);
+	guint8* lut = m_windowmap;
 
 	int dst_h = m_pixbuf->get_height();
 
 	// Stretch with lookup table
 	for (d = 0; (d <= dx) && (yd1 < dst_h) && (ys1 < m_image->height()); d++) {
-		linestretch_24to24(xd1, xd2, xs1, xs2, ys1, yd1, (guint8*)src_pixels, (guint8*)dst_pixels, lut);
+		linestretch_24to24(xd1, xd2, xs1, xs2, ys1, yd1, src_pixels, dst_pixels, lut);
 
 		while (e >= 0) {
 			src_pixels += src_pitch;
@@ -407,10 +395,10 @@ void SimpleDisplay::rectstretch_24to24(guint8* src, int xs1, int ys1, int xs2, i
 }
 
 template < class ST >
-void SimpleDisplay::linestretch_24(int x1, int x2, int y1, int y2, int yr, int yw, ST src_pixels, guint8* dst_pixels, guint32* lut) {
+void SimpleDisplay::linestretch_24(int x1, int x2, int y1, int y2, int yr, int yw, ST src_pixels, guint8* dst_pixels, guint8* lut) {
 	int dx, dy, e, d, dx2;
 
-	guint32 p;
+	guint8 p;
 
 	dx = (x2 - x1);
 	dy = (y2 - y1);
@@ -453,15 +441,15 @@ void SimpleDisplay::rectstretch_24(ST src, int xs1, int ys1, int xs2, int ys2, c
 	guint16 src_pitch = m_image->width() * src_bpp;
 	guint16 dst_pitch = pixbuf->get_rowstride();
 
-	long src_pixels = ((long)src + ys1 * src_pitch + xs1 * src_bpp);
-	long dst_pixels = ((long)dst + yd1 * dst_pitch + xd1 * dst_bpp);
-	guint32* lut = m_windowmap;
+	guint8* src_pixels = ((guint8*)src + ys1 * src_pitch + xs1 * src_bpp);
+	guint8* dst_pixels = (dst + yd1 * dst_pitch + xd1 * dst_bpp);
+	guint8* lut = m_windowmap;
 
 	int dst_h = pixbuf->get_height();
 
 	// Stretch with lookup table
 	for (d = 0; (d <= dx) && (yd1 < dst_h) && (ys1 < m_image->height()); d++) {
-		linestretch_24(xd1, xd2, xs1, xs2, ys1, yd1, (ST)src_pixels, (guint8*)dst_pixels, lut);
+		linestretch_24(xd1, xd2, xs1, xs2, ys1, yd1, (ST)src_pixels, dst_pixels, lut);
 
 		while (e >= 0) {
 			src_pixels += src_pitch;

@@ -7,5 +7,5 @@ Icon=/usr/share/aeskulap/images/aeskulap.png
 Terminal=false
 Type=Application
 Categories=Application;Graphics;
-StartupNotify=false
+StartupNotify=true
 MimeType=image/dicom

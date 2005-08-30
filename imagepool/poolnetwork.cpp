@@ -252,28 +252,3 @@ T_ASC_Network* Network::GetDcmtkNet() {
 void Network::SetDcmtkNet(T_ASC_Network* n) {
 	net = n;
 }
-
-/*
-const char* Network::GetCurrDate() {
-	static char curr_date[10];
-	struct tm *l_time;
-	time_t now;
-																													  
-	time(&now);
-	l_time = localtime(&now);
-	strftime(curr_date, sizeof(curr_date), "%Y%m%d", l_time);
-
-	return curr_date;
-}                                                                                                                         
-                                                                                                                          
-const char* Network::GetCurrTime() {                                                                                               
-	static char curr_time[10];
-	struct tm *l_time;
-	time_t now;
-
-	time(&now);
-	l_time = localtime(&now);
-	strftime(curr_time, sizeof(curr_time), "%H%M%S.000", l_time);
-	return curr_time;
-}
-*/

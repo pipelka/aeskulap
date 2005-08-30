@@ -923,8 +923,7 @@ SC
 	      <child>
 		<widget class="GtkLabel" id="label18">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Study Manager
-Browse Studies</property>
+		  <property name="label" translatable="yes">Study Manager</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>

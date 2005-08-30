@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:43 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -95,12 +95,12 @@ private:
 
 	void init_display();
 
-	void linestretch_24to24(int x1, int x2, int y1, int y2, int yr, int yw, guint8* src_pixels, guint8* dst_pixels, guint32* lut);
+	void linestretch_24to24(int x1, int x2, int y1, int y2, int yr, int yw, guint8* src_pixels, guint8* dst_pixels, guint8* lut);
 
 	void rectstretch_24to24(guint8* src, int xs1, int ys1, int xs2, int ys2, const Glib::RefPtr<Gdk::Pixbuf>& pixbuf, int xd1, int yd1, int xd2, int yd2);
 
 	template < class ST >
-	void linestretch_24(int x1, int x2, int y1, int y2, int yr, int yw, ST src_pixels, guint8* dst_pixels, guint32* lut);
+	void linestretch_24(int x1, int x2, int y1, int y2, int yr, int yw, ST src_pixels, guint8* dst_pixels, guint8* lut);
 
 	template < class ST >
 	void rectstretch_24(ST src, int xs1, int ys1, int xs2, int ys2, const Glib::RefPtr<Gdk::Pixbuf>& pixbuf, int xd1, int yd1, int xd2, int yd2);
@@ -119,7 +119,7 @@ protected:
 
 	int m_windowmap_depth;
 
-	guint32* m_windowmap;
+	guint8* m_windowmap;
 
 	int m_windowmap_size;
 

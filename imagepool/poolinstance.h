@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:43 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -42,17 +42,18 @@ namespace ImagePool {
 
 class Series;
 class Study;
+class Loader;
 
 class Instance : public Glib::Object {
 protected:
 
 	Instance(const std::string& sopinstanceuid);
 
-	friend Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset, bool threaded);
-	
-	friend void context_function();
+	friend Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset);
 	
 	friend void ImagePool::remove_instance(const Glib::RefPtr<ImagePool::Instance>&);
+
+	friend class ImagePool::Loader;
 
 public:
 

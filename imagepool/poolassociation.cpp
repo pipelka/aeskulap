@@ -110,28 +110,6 @@ void Association::Destroy() {
 }
 
 CONDITION Association::SendObject(DcmDataset *dataset) {
-
-/*  OFCmdUnsignedInt opt_selection_value = 6;
-  OFCmdUnsignedInt opt_point_transform = 0;
-  OFCmdUnsignedInt opt_quality = 90;
-  OFBool           opt_huffmanOptimize = OFTrue;
-  OFCmdUnsignedInt opt_smoothing = 0;
-  int              opt_compressedBits = 0; // 0=auto, 8/12/16=force
-  E_CompressionColorSpaceConversion opt_compCSconversion = ECC_lossyYCbCr;
-  E_DecompressionColorSpaceConversion opt_decompCSconversion = EDC_photometricInterpretation;
-  E_SubSampling    opt_sampleFactors = ESS_444;
-  OFBool           opt_useYBR422 = OFFalse;*/
-// OFCmdUnsignedInt opt_fragmentSize = 0; // 0=unlimited
-/*  OFBool           opt_createOffsetTable = OFTrue;
-  int              opt_windowType = 0;
-  OFCmdUnsignedInt opt_windowParameter = 0;
-  OFCmdFloat       opt_windowCenter=0.0, opt_windowWidth=0.0;
-  E_UIDCreation    opt_uidcreation = EUC_default;
-  OFBool           opt_secondarycapture = OFFalse;
-  OFCmdUnsignedInt opt_roiLeft = 0, opt_roiTop = 0, opt_roiWidth = 0, opt_roiHeight = 0;
-  OFBool           opt_usePixelValues = OFTrue;
-  OFBool           opt_useModalityRescale = OFFalse;*/
-
 	CONDITION cond;
 	DcmDataset *statusDetail = NULL;
 
@@ -167,31 +145,6 @@ CONDITION Association::SendObject(DcmDataset *dataset) {
 	T_ASC_PresentationContext pc;
 	cond = ASC_findAcceptedPresentationContext(assoc->params, presId, &pc);
 	ASC_dumpPresentationContext(&pc, COUT);
-
-	/*
-	DJEncoderRegistration::registerCodecs(
-		opt_compCSconversion,
-		opt_uidcreation,
-		false,
-		opt_huffmanOptimize,
-		(int) opt_smoothing,
-		opt_compressedBits,
-		(Uint32) opt_fragmentSize,
-		opt_createOffsetTable,
-		opt_sampleFactors,
-		opt_useYBR422,
-		opt_secondarycapture,
-		opt_windowType,
-		opt_windowParameter,
-		opt_windowCenter,
-		opt_windowWidth,
-		opt_roiLeft,
-		opt_roiTop,
-		opt_roiWidth,
-		opt_roiHeight,
-		opt_usePixelValues,
-		opt_useModalityRescale);
-	*/
 
 	DJEncoderRegistration::registerCodecs(
 		ECC_lossyYCbCr,
@@ -239,36 +192,6 @@ CONDITION Association::SendObject(DcmDataset *dataset) {
 		if(cond.bad()) {
 			DimseCondition::dump(cond);
 		}
-
-		// OLD
-
-		/*if(opt_oxferSyn.getXfer() == EXS_JPEGProcess14SV1TransferSyntax) {
-			cond = dataset->chooseRepresentation(EXS_JPEGProcess14SV1TransferSyntax, &rp_lossless);
-			if(cond.bad()) {
-				DimseCondition::dump(cond);
-			}
-		}
-		else if(opt_oxferSyn.getXfer() == EXS_JPEGProcess1TransferSyntax) {
-			dataset->chooseRepresentation(EXS_JPEGProcess1TransferSyntax, &rp_lossy);
-		}
-		else if(opt_oxferSyn.getXfer() == EXS_JPEGProcess2_4TransferSyntax) {
-		    if(original_xfer.isEncapsulated()) {
-				std::cout << "DICOM file is already compressed, convert to uncompressed xfer syntax first\n";
-				if(EC_Normal != dataset->chooseRepresentation(EXS_LittleEndianExplicit, NULL)) {
-					std::cout << "No conversion from compressed original to uncompressed xfer syntax possible!\n";
-					return DIMSE_BADDATA;
-				}
-			}
-			std::cout << "recompressing image ..." << std::endl;
-			cond = dataset->chooseRepresentation(EXS_JPEGProcess2_4TransferSyntax, &rp_lossy);
-			if(cond.bad()) {
-				DimseCondition::dump(cond);
-			}
-		}
-		else {
-			std::cout << "decompressing image ..." << std::endl;
-			dataset->chooseRepresentation(opt_oxferSyn.getXfer(), NULL);
-		}*/
 	
 		if (dataset->canWriteXfer(opt_oxferSyn.getXfer())) {
 			std::cout << "Output transfer syntax " << opt_oxferSyn.getXferName() << " can be written" << std::endl;
