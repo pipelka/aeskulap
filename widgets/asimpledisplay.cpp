@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 19:47:55 $
+    Update Date:      $Date: 2005/08/30 20:12:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -255,9 +255,7 @@ void SimpleDisplay::set_windowlevels(int c, int w) {
 	m_disp_params->window_width = w;
 
 	double intercept = m_image->intercept();
-	std::cout << "intercept: " << intercept << std::endl;
 	double slope = m_image->slope();
-	std::cout << "slope: " << slope << std::endl;
 
 	// handle slope, intercept
 	double cd = (((double)c - intercept) / slope);
@@ -274,7 +272,7 @@ void SimpleDisplay::set_windowlevels(int c, int w) {
 	for(guint32 i = ramp_start; i < ramp_end; i++) {
 		
 		// get colorvalue
-		g = k * (double)i + c0;
+		g = k * i + c0;
 	
 		if(g > 255) {
 			g = 255;

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 19:47:55 $
+    Update Date:      $Date: 2005/08/30 20:12:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -192,7 +192,7 @@ void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	image2->show();
 	
 	Gtk::ToolButton* btn = manage(new Gtk::ToolButton(*image));
-	btn->set_tooltip(m_tooltips, gettext("Close this study"));
+	btn->set_tooltip(m_tooltips, gettext("Close study"));
 	btn->set_size_request(22, 22);
 	btn->signal_clicked().connect(sigc::mem_fun(*frame, &StudyView::on_close));
 	btn->set_sensitive(false);

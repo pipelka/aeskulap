@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-25 13:49+0200\n"
+"POT-Creation-Date: 2005-08-30 22:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: application/x-xml2pot; charset=UTF-8\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: ../imagepool/netquery.cpp:82
+#: ../imagepool/netquery.cpp:82 ../imagepool/netquery.cpp:101
 msgid "no description"
 msgstr ""
 
@@ -51,35 +51,31 @@ msgstr ""
 msgid "%i mm"
 msgstr ""
 
-#: ../widgets/studyview.cpp:82
-msgid "Close the current study"
-msgstr ""
-
-#: ../widgets/studyview.cpp:88
+#: ../widgets/studyview.cpp:83
 msgid "Rearrange the series of the current study"
 msgstr ""
 
-#: ../widgets/studyview.cpp:89
+#: ../widgets/studyview.cpp:84
 msgid "Display the series tiling menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:96
+#: ../widgets/studyview.cpp:91
 msgid "Toggle single series mode"
 msgstr ""
 
-#: ../widgets/studyview.cpp:97
+#: ../widgets/studyview.cpp:92
 msgid "Display the series selection menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:103
+#: ../widgets/studyview.cpp:98
 msgid "Rearrange the images of the selected series"
 msgstr ""
 
-#: ../widgets/studyview.cpp:104
+#: ../widgets/studyview.cpp:99
 msgid "Display the the image tiling menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:113
+#: ../widgets/studyview.cpp:108
 msgid "Display references of the selected series"
 msgstr ""
 
@@ -147,6 +143,10 @@ msgstr ""
 msgid "Any files"
 msgstr ""
 
+#: ../src/mainwindow.cpp:195
+msgid "Close study"
+msgstr ""
+
 #. c->add_attribute(m_tree_icon.property_stock_size(), m_Columns.m_iconsize);
 #: ../src/studymanager.cpp:107
 msgid "Patientsname"
@@ -174,10 +174,15 @@ msgstr ""
 
 #: ../src/studymanager.cpp:258
 #, c-format
-msgid "Series %i (%i Images)"
+msgid "Series %i (1 Image)"
 msgstr ""
 
 #: ../src/studymanager.cpp:261
+#, c-format
+msgid "Series %i (%i Images)"
+msgstr ""
+
+#: ../src/studymanager.cpp:264
 #, c-format
 msgid "Series %i"
 msgstr ""
