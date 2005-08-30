@@ -213,13 +213,13 @@ AC_ARG_ENABLE(debug,
     ;;
   *)
     AC_MSG_RESULT(no)
-    DEBUGCXXFLAGS="-O"
-    DEBUGCFLAGS="-O"
+    DEBUGCXXFLAGS=""
+    DEBUGCFLAGS=""
     ;;
   esac ],
   AC_MSG_RESULT(no)
-  DEBUGCXXFLAGS="-O"
-  DEBUGCFLAGS="-O"
+  DEBUGCXXFLAGS=""
+  DEBUGCFLAGS=""
 )
 
 dnl -------------------------------------------------------

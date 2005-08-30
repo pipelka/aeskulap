@@ -115,4 +115,6 @@ pixmaps/Makefile
 ])
 
 cd dcmtk
+export CFLAGS="$CFLAGS"
+export CXXFLAGS="$CXXFLAGS"
 sh ./configure
