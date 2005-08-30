@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 11:07:38 $
+    Update Date:      $Date: 2005/08/30 12:59:41 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -175,22 +175,29 @@ void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	StudyView* frame = manage(new StudyView(study));
 	m_studyview[study->studyinstanceuid()] = frame;
 
+	// create notebook tab widget
 	Gtk::Label* label = manage(new Gtk::Label(labeltext, Gtk::ALIGN_LEFT));
+	label->set_padding(2,0);
 	label->show();
 
-	Gtk::Image* image = manage(new Gtk::Image(Gtk::Stock::CLOSE, Gtk::ICON_SIZE_SMALL_TOOLBAR));
+	Gtk::Image* image = manage(new Gtk::Image(Gtk::Stock::CLOSE, Gtk::ICON_SIZE_MENU));
 	image->show();
 
 	Gtk::Image* image2 = manage(new Gtk::Image(Gtk::Stock::DND_MULTIPLE, Gtk::ICON_SIZE_LARGE_TOOLBAR));
 	image2->set_padding(2,0);
 	image2->show();
 	
-	Gtk::Button* btn = manage(new Gtk::Button);
-	btn->set_relief(Gtk::RELIEF_NONE);
-	btn->set_focus_on_click(false);
-	btn->add(*image);
+	//Gtk::Button* btn = manage(new Gtk::Button);
+	Gtk::ToolButton* btn = manage(new Gtk::ToolButton(*image));
+	//btn->set_relief(Gtk::RELIEF_NONE);
+	//btn->set_focus_on_click(false);
+	btn->set_tooltip(m_tooltips, gettext("Close this study"));
+	btn->set_size_request(22, 22);
+	//btn->add(*image);
+	btn->signal_clicked().connect(sigc::mem_fun(*frame, &StudyView::on_close));
 	btn->show();
-	
+
+
 	Gtk::HBox* hbox = manage(new Gtk::HBox);
 	hbox->pack_start(*image2);
 	hbox->pack_start(*label);

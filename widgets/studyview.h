@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:03 $
+    Update Date:      $Date: 2005/08/30 12:59:41 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -111,7 +111,7 @@ private:
 
 	Gtk::Table* m_table;
 	
-	Gtk::ToolButton* m_btn_close;
+	//Gtk::ToolButton* m_btn_close;
 
 	Gtk::Toolbar* m_toolbar;
 
