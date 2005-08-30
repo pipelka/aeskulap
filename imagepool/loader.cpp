@@ -20,31 +20,140 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
 #include "loader.h"
+#include "imagepool.h"
+#include "dcdatset.h"
 
 namespace ImagePool {
 	
-Loader::Loader() {
-	notify.connect(sigc::mem_fun(*this, &Loader::do_notify));
-
-	m_loader = Glib::Thread::create(sigc::mem_fun(*this, &Loader::thread), false);
+Loader::Loader() :
+m_loader(NULL)
+{
+	m_add_image.connect(sigc::mem_fun(*this, &Loader::add_image_callback));
+	m_finished.connect(sigc::mem_fun(*this, &Loader::finished));
 }
 
 Loader::~Loader() {
 }
 
+void Loader::start() {
+	m_loader = Glib::Thread::create(sigc::mem_fun(*this, &Loader::thread), false);
+}
+
+void Loader::stop() {
+}
+
+void Loader::add_image_callback() {
+	if(m_imagequeue.size() == 0) {
+		return;
+	}
+
+	Glib::RefPtr<ImagePool::Instance> r = m_imagequeue.front();
+	m_imagequeue.pop();
+
+	OFString value;
+
+	// register study
+	Glib::RefPtr<ImagePool::Study> new_study = get_study(r->m_studyinstanceuid);
+	std::cout << "studysize: " << new_study->size() << std::endl;
+	if(new_study->size() == 0) {
+		new_study->m_studyinstanceuid = r->studyinstanceuid();
+		new_study->m_patientsname = r->m_patientsname;
+		new_study->m_patientsbirthdate = r->m_patientsbirthdate;
+		new_study->m_patientssex = r->m_patientssex;
+		new_study->m_studydescription = r->m_studydescription;
+		
+		std::cout << "emit: signal_study_added(" << r->m_studyinstanceuid << ")" << std::endl;
+		signal_study_added(new_study);
+	}
+
+	// register series
+	Glib::RefPtr<ImagePool::Series> new_series = get_series(r->m_seriesinstanceuid);
+	bool bEmit = (new_series->size() == 0);
+	if(new_series->size() == 0) {
+		new_series->m_studyinstanceuid = r->m_studyinstanceuid;
+		new_series->m_institutionname = r->m_institutionname;
+		new_series->m_description = r->m_seriesdescription;
+		new_series->m_modality = r->m_modality;
+		if(new_series->m_seriestime.empty()) {
+			new_series->m_seriestime = r->m_time;
+		}
+	}
+
+	new_study->at(r->m_seriesinstanceuid) = new_series;
+	new_series->m_seriesinstanceuid = r->m_seriesinstanceuid;
+
+	if(bEmit) {
+		new_study->signal_series_added(new_series);
+	}
+	
+	r->m_study = new_study;
+	r->m_series = new_series;
+
+	// check instancenumber
+	if(r->m_instancenumber == 0) {
+		r->m_instancenumber = new_series->size() + 1;
+	}
+
+	// register instance
+	new_series->at(r->m_sopinstanceuid) = r;
+	new_series->signal_instance_added(r);
+	
+	if(m_imagequeue.size() > 0) {
+		add_image_callback();
+	}
+}
+
+void Loader::add_image(DcmDataset* dset) {
+	Glib::RefPtr<ImagePool::Instance> image = ImagePool::create_instance(dset);
+
+	if(!image) {
+		return;
+	}
+
+	data().loaded_studyinstanceuid[image->studyinstanceuid()] = true;
+
+	m_imagequeue.push(image);
+	m_add_image();
+}
+
 void Loader::run() {
 }
 
+void Loader::finished() {
+	signal_finished(m_current_studyinstanceuid);
+	m_mutex.unlock();
+}
+
 void Loader::thread() {
+	m_mutex.lock();
 	run();
-	delete this;
+
+	while(m_imagequeue.size() > 0) {
+		Glib::usleep(1000);
+	}
+
+	std::map < std::string, bool >::iterator i = data().loaded_studyinstanceuid.begin();
+	while(i != data().loaded_studyinstanceuid.end()) {
+		if(i->second) {
+			m_current_studyinstanceuid = i->first;
+			i->second = false;
+			m_mutex.lock();
+			m_finished();
+		}
+		i++;
+	}
+	m_data.erase(Glib::Thread::self());
+}
+
+Loader::Data& Loader::data() {
+	return m_data[Glib::Thread::self()];
 }
 
 } // namespace ImagePool

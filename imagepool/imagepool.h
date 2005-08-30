@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/25 12:09:17 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -44,9 +44,7 @@ namespace ImagePool {
 	
 	void close();
 
-	Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset, bool threaded = false);
-
-	Glib::RefPtr<ImagePool::Instance> create_instance(const std::string& filename, bool threaded = false);
+	Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset);
 
 	void remove_instance(const std::string& sopinstanceuid);
 
@@ -83,10 +81,7 @@ namespace ImagePool {
 				);
 
 	class Signals {
-	public:
-	
-		static sigc::signal< void, Glib::RefPtr<ImagePool::Study> > signal_study_added;
-
+	public:	
 		static sigc::signal< void, Glib::RefPtr<ImagePool::Study> > signal_study_removed;
 	};
 

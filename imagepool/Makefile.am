@@ -4,7 +4,9 @@ libimagepool_la_SOURCES = \
 	netclient.h \
 	loader.cpp \
 	loader.h \
+	fileloader.h \
 	fileloader.cpp \
+	netloader.h \
 	netloader.cpp \
 	netquery.cpp \
 	imagepool.h \

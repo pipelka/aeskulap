@@ -20,20 +20,26 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
-#ifndef LOADER_H
-#define LOADER_H
+#ifndef IMAGEPOOL_LOADER_H
+#define IMAGEPOOL_LOADER_H
 
 #include <glibmm.h>
-#include <vector>
+#include <queue>
+#include <map>
+
+class DcmDataset;
 
 namespace ImagePool {
-	
+
+class Instance;
+class Study;
+
 class Loader {
 public:
 
@@ -41,22 +47,51 @@ public:
 	
 	virtual ~Loader();
 	
+	void start();
+
+	void stop();
+
+	sigc::signal<void, std::string> signal_finished;
+
+	sigc::signal< void, Glib::RefPtr<ImagePool::Study> > signal_study_added;
+
 protected:
+
+	class Data {
+	public:
+		std::map < std::string, bool > loaded_studyinstanceuid;
+	};
 
 	virtual void run();
 	
-	virtual void do_notify();
+	virtual void finished();
+
+	Data& data();
+
+	void add_image(DcmDataset* dset);
+
+	void add_image_callback();
 	
 	Glib::Thread* m_loader;
 
-	Glib::Dispatcher notify;
+	Glib::Dispatcher m_add_image;
+
+	Glib::Dispatcher m_finished;
+
+	Glib::Mutex m_mutex;
 
 private:
 
 	void thread();
 	
+	std::string m_current_studyinstanceuid;
+
+	std::queue< Glib::RefPtr<ImagePool::Instance> > m_imagequeue;
+	
+	std::map< Glib::Thread*, Data > m_data;
+
 };
 
 } // namespace ImagePool
 
-#endif // LOADER_H
+#endif // IMAGEPOOL_LOADER_H

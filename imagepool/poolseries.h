@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolseries.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -112,9 +112,9 @@ private:
 	
 	friend Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset);
 
-	friend void context_function();
-
 	friend Glib::RefPtr< ImagePool::Series > create_query_series(DcmDataset* dset);
+
+	friend class ImagePool::Loader;
 
 };
 

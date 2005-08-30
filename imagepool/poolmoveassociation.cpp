@@ -36,9 +36,6 @@
 
 MoveAssociation::MoveAssociation() {
 	m_abstractSyntax = UID_MOVEPatientRootQueryRetrieveInformationModel;
-	//m_abstractSyntax = UID_FINDStudyRootQueryRetrieveInformationModel;
-	//m_abstractSyntaxMove = UID_MOVEStudyRootQueryRetrieveInformationModel;
-	//m_ourPort = 104;		// default port
 	m_maxReceivePDULength = ASC_DEFAULTMAXPDU;
 }
 
@@ -47,8 +44,6 @@ MoveAssociation::~MoveAssociation() {
 
 void MoveAssociation::Create(const char *title, const char *peer, int port, const char *ouraet, /*int ourPort,*/ const char *abstractSyntax/*, const char *abstractSyntaxMove*/) {
 	Association::Create(title, peer, port, ouraet, abstractSyntax);
-	//m_abstractSyntaxMove = abstractSyntaxMove;
-	//m_ourPort = ourPort;
 }
 
 CONDITION MoveAssociation::SendObject(DcmDataset *dataset) {
@@ -122,10 +117,6 @@ CONDITION MoveAssociation::moveSCU(DcmDataset *pdset) {
 }
 
 void MoveAssociation::moveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request, int responseCount, T_DIMSE_C_MoveRSP *response) {
-/*	MoveCallbackInfo* myCallbackData;
-
-	myCallbackData = (MoveCallbackInfo*)callbackData;
-	MoveAssociation* caller = myCallbackData->pCaller;*/
 }
 
 void MoveAssociation::subOpCallback(void *pCaller, T_ASC_Network *aNet, T_ASC_Association **subAssoc) {
@@ -185,7 +176,6 @@ CONDITION MoveAssociation::acceptSubAssoc(T_ASC_Network *aNet, T_ASC_Association
 			cond = ASC_acceptContextsWithPreferredTransferSyntaxes(
 					(*assoc)->params,
 					dcmStorageSOPClassUIDs, numberOfDcmStorageSOPClassUIDs,
-					/*GetDcmStorageSOPClassUIDs(), GetNumberOfDcmStorageSOPClassUIDs(),*/
 					transferSyntaxes, DIM_OF(transferSyntaxes));
 		}
 	}
@@ -272,7 +262,6 @@ CONDITION MoveAssociation::storeSCP(T_ASC_Association *assoc, T_DIMSE_Message *m
 void MoveAssociation::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *progress, T_DIMSE_C_StoreRQ *req, char *imageFileName, DcmDataset **imageDataSet, T_DIMSE_C_StoreRSP *rsp, DcmDataset **statusDetail) {
 	DIC_UI sopClass;
 	DIC_UI sopInstance;
-	DcmDataset* d = NULL;
 
 	StoreCallbackInfo *cbdata = (StoreCallbackInfo*) callbackData;
 	MoveAssociation* caller = cbdata->pCaller;
@@ -286,27 +275,7 @@ void MoveAssociation::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress
 		if ((imageDataSet)&&(*imageDataSet)) {
 			// do not duplicate the dataset, let the user do this
 			// if he wants to
-
-			d = cbdata->dataset;
-
-			/*// try to compress the dataset
-			//if(d->getOriginalXfer() != EXS_JPEGProcess14SV1TransferSyntax) {
-				DJEncoderRegistration::registerCodecs();
-				DcmXfer opt_oxferSyn(EXS_JPEGProcess14SV1TransferSyntax);
-
-				// create RepresentationParameter
-				DJ_RPLossless rp(6, 0);
-				d->chooseRepresentation(EXS_JPEGProcess14SV1TransferSyntax, &rp);
-				if (d->canWriteXfer(EXS_JPEGProcess14SV1TransferSyntax)) {
-					//d->print(COUT, DCMTypes::PF_shortenLongTagValues);
-					COUT << "MoveAssociation: Output transfer syntax " << opt_oxferSyn.getXferName() << " can be written\n";
-					}
-				else {
-					CERR << "MoveAssociation: No conversion to transfer syntax " << opt_oxferSyn.getXferName() << " possible!\n";
-				}
-			//}*/
-
-			caller->OnResponseReceived(d);
+			caller->OnResponseReceived(cbdata->dataset);
 		}
 
 		/* should really check the image to make sure it is consistent,
@@ -315,7 +284,7 @@ void MoveAssociation::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress
 		*/
 		if (rsp->DimseStatus == STATUS_Success) {
 			/* which SOP class and SOP instance ? */
-			if (! DU_findSOPClassAndInstanceInDataSet(d, sopClass, sopInstance)) {
+			if (! DU_findSOPClassAndInstanceInDataSet(cbdata->dataset, sopClass, sopInstance)) {
 				rsp->DimseStatus = STATUS_STORE_Error_CannotUnderstand;
 			}
 			else if (strcmp(sopClass, req->AffectedSOPClassUID) != 0) {
@@ -340,5 +309,4 @@ CONDITION MoveAssociation::echoSCP(T_ASC_Association *assoc, T_DIMSE_Message *ms
 }
 
 void MoveAssociation::OnResponseReceived(DcmDataset* response) {
-	//delete response;
 }

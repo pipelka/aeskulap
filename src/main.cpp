@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:43 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 	for(int c=1; c<argc; c++) {
     
 		if(argv[c][0] != '-') {
-			ImagePool::create_instance(argv[c]);
+			//ImagePool::create_instance(argv[c]);
 		}
 	}
 

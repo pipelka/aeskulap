@@ -20,36 +20,55 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/08/30 19:47:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/fileloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
 #include <gtkmm.h>
 
+#include "dcfilefo.h"
+
 #include "imagepool.h"
+#include "fileloader.h"
 
 namespace ImagePool {
 
-static void image_loader_thread(Glib::SListHandle<Glib::ustring>* list) {
-	Glib::SListHandle<Glib::ustring>::iterator i = list->begin();
+void FileLoader::load(const Glib::SListHandle< Glib::ustring >& filelist) {
+	m_filelist = new Glib::SListHandle< Glib::ustring >(filelist);
+	start();
+}
 
-	for(; i != list->end(); i++) {
-		ImagePool::create_instance((*i), true);
+void FileLoader::run() {
+	Glib::SListHandle< Glib::ustring >* filelist = m_filelist;
+	m_mutex.unlock();
+
+	Glib::SListHandle< Glib::ustring >::iterator i = filelist->begin();
+
+	for(; i != filelist->end(); i++) {
+		DcmFileFormat dfile;
+	
+		OFCondition cond = dfile.loadFile(
+							(*i).c_str(),
+							EXS_Unknown,
+							EGL_noChange,
+							DCM_MaxReadLength,
+							false);
+		
+		if(!cond.good()) {
+			std::cout << "unable to open file !!!" << std::endl;
+		}
+		else {
+			dfile.loadAllDataIntoMemory();
+			std::cout << "opened file:" << (*i) << std::endl;
+		
+			DcmDataset* dset = dfile.getDataset();
+			add_image(dset);
+		}
 	}
 	
-	delete list;
+	delete filelist;
 }
-
-void load_from_file(const Glib::SListHandle<Glib::ustring>& list) {
-	Glib::SListHandle<Glib::ustring>* my_list = new Glib::SListHandle<Glib::ustring>(list);
-
-	Glib::Thread *const loader = Glib::Thread::create(
-      sigc::bind(sigc::ptr_fun(image_loader_thread), my_list), false);
-      
-	//loader->join();
-}
-
 
 } // namespace ImagePool
