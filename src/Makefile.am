@@ -18,6 +18,7 @@ aeskulap_LDADD = \
 	$(GLADEMM_LIBS) \
 	$(GTHREAD_LIBS) \
 	$(GCONFMM_LIBS) \
+	$(DCMTK_LIBS) \
 	../widgets/libgtkdicom.la \
 	../imagepool/libimagepool.la
 
