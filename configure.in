@@ -37,11 +37,9 @@ AC_TYPE_MODE_T
 AC_TYPE_PID_T
 AC_HEADER_TIME
 
-dnl GETTEXT_PACKAGE=NetworkManager
-dnl AC_SUBST(GETTEXT_PACKAGE)
-dnl AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
-dnl ALL_LINGUAS="bs cs da de el en_CA es fr gu hr hu it ja nb ne nl no pa pt_BR rw sk sq sv uk wa zh_CN zh_TW"
-dnl AM_GLIB_GNU_GETTEXT
+AC_CHECK_LIB(jpeg,jpeg_read_header)
+AC_CHECK_LIB(tiff,TIFFClose)
+AC_CHECK_LIB(png,png_create_read_struct)
 
 AM_GNU_GETTEXT_VERSION(0.14.1)
 
