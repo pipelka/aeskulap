@@ -27,5 +27,16 @@
 </scannerInfoProvider>
 </profile>
 </item>
+<item id="org.eclipse.cdt.make.core.buildtargets">
+<buildTargets>
+<target name="all" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>make</buildCommand>
+<buildArguments></buildArguments>
+<buildTarget>all</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+</target>
+</buildTargets>
+</item>
 </data>
 </cdtproject>

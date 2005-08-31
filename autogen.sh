@@ -18,7 +18,13 @@ echo "Running autopoint ..."
 autopoint -f || ( echo "***ERROR*** autopoint failed." ; exit 1 )
 
 echo "Running intltoolize ..."
-intltoolize -c -f --automake
+intltoolize -c -f --automake || {
+    echo
+    echo "**Error**: intltoolize failed. This may mean that you have not"
+    echo "installed all of the packages you need. Please install the"
+    echo "'intltool' package."
+    exit 1
+}
 
 echo "Running libtoolize ..."
 libtoolize -f -c
