@@ -24,7 +24,6 @@ EXTRA_DIST = \
 	COPYING.LIB \
 	COPYING.DCMTK \
 	gettext.h \
-	m4/ChangeLog  \
 	autogen.sh \
 	intltool-extract.in \
 	intltool-merge.in \
@@ -39,3 +38,8 @@ dist-hook:
 	list=`find $(distdir)/dcmtk -name "CVS"` && rm -Rf $$list
 	list=`find $(distdir)/dcmtk -name ".cvsignore"` && rm -f $$list
 	list=`find $(distdir)/dcmtk -name ".#*"` && rm -f $$list
+
+distclean: distclean-recursive
+	cd dcmtk && make distclean
+	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
+	-rm -f Makefile

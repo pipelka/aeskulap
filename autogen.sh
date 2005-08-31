@@ -44,6 +44,7 @@ echo "Running autoconf ..."
 autoconf || ( echo "***ERROR*** autoconf failed." ; exit 1 )
 
 chmod +x `find . -name configure`
+chmod +x `find . -name mkinstalldirs`
 
 echo
 echo "Please run ./configure now."

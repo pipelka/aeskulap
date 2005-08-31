@@ -19,8 +19,10 @@ aeskulap_LDADD = \
 	$(GTHREAD_LIBS) \
 	$(GCONFMM_LIBS) \
 	../widgets/libgtkdicom.la \
-	../imagepool/libimagepool.la \
-	$(DCMTK_LIBS)
+	../imagepool/libimagepool.la
+
+aeskulap_LDFLAGS = \
+	-Wl,-rpath,${prefix}/lib/aeskulap
 
 schemadir = \
 	$(sysconfdir)/gconf/schemas
