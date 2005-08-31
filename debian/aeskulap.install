@@ -3,4 +3,6 @@ usr/share/aeskulap/glade/aeskulap.glade
 usr/share/aeskulap/images
 usr/share/applications/aeskulap.desktop
 etc/gconf/schemas/aeskulap.schema
-/usr/share/locale/
+usr/share/locale/
+usr/lib/aeskulap/lib*.so
+usr/lib/libimagepool.so.*

@@ -60,7 +60,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/tmp.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp sysconfdir=/etc
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp sysconfdir=/etc prefix=/usr
 	dh_install --sourcedir=debian/tmp
 
 # Build architecture-independent files here.
@@ -91,7 +91,7 @@ binary-arch: build install
 	dh_fixperms
 #	dh_perl
 #	dh_python
-#	dh_makeshlibs
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol

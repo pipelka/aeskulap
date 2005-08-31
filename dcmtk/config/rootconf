@@ -46,7 +46,7 @@ all: $makeall
 
 libsrc-all: $makelibsrcall
 
-install: 
+install: install-lib
 
 install-all: install install-lib install-html
 

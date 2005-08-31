@@ -7,3 +7,4 @@ autom4te.cache
 configure
 confmod
 configure.lineno
+Makefile.def.in.ori

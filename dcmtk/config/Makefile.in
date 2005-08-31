@@ -11,7 +11,7 @@ include @common_makefile@
 
 all:
 
-install:
+install: install-lib
 
 install-bin:
 
@@ -21,7 +21,7 @@ install-etc:
 
 install-include: include-install
 
-install-lib: include-install
+install-lib:
 
 install-support:
 

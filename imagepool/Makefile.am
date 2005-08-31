@@ -1,4 +1,4 @@
-noinst_LTLIBRARIES = libimagepool.la
+lib_LTLIBRARIES = libimagepool.la
 
 libimagepool_la_SOURCES = \
 	netclient.h \
@@ -26,7 +26,18 @@ libimagepool_la_SOURCES = \
 	poolnetwork.cpp \
 	poolnetwork.h
 
+libimagepool_la_LIBADD = \
+        $(GTKMM_LIBS) \
+        $(GTHREAD_LIBS) \
+        $(GCONFMM_LIBS) \
+        $(DCMTK_LIBS) \
+        -lpng -ltiff
+
+libimagepool_la_LDFLAGS = \
+        -Wl,-rpath,${prefix}/lib/aeskulap
+
 INCLUDES = \
 	$(DCMTK_CFLAGS) \
 	$(GTKMM_CFLAGS) \
 	$(GCONFMM_CFLAGS)
+
