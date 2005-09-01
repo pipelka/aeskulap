@@ -8,7 +8,7 @@ namespace ImagePool {
 class NetLoader : public Loader {
 public:
 
-	void load(const std::string& studyinstanceuid);
+	bool load(const std::string& studyinstanceuid);
 	
 protected:
 

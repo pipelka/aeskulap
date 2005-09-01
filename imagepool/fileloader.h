@@ -9,7 +9,7 @@ namespace ImagePool {
 class FileLoader: public Loader {
 public:
 
-	void load(const Glib::SListHandle< Glib::ustring >& filelist);
+	bool load(const Glib::SListHandle< Glib::ustring >& filelist);
 
 protected:
 

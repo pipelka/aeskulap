@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 06:49:44 $
+    Update Date:      $Date: 2005/09/01 09:44:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -357,6 +357,8 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 		new_study->m_studydescription = r->m_studydescription;
 	}
 	r->m_study = new_study;
+
+	delete m_image;
 
 	return r;
 }

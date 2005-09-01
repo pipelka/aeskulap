@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 06:49:44 $
+    Update Date:      $Date: 2005/09/01 09:44:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -61,7 +61,7 @@ protected:
 
 	void on_net_progress(const std::string& studyinstanceuid, unsigned int progress);
 
-	void on_load_finished(const std::string& studyinstanceuid);
+	//void on_load_finished(const std::string& studyinstanceuid);
 
 	void on_file_exit();
 	

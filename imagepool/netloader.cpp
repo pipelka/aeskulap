@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 08:36:40 $
+    Update Date:      $Date: 2005/09/01 09:44:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -50,7 +50,11 @@ protected:
 	};
 };
 
-void NetLoader::load(const std::string& studyinstanceuid) {
+bool NetLoader::load(const std::string& studyinstanceuid) {
+	if(busy()) {
+		return false;
+	}
+
 	m_studyinstanceuid = studyinstanceuid;
 	start();
 }
@@ -79,8 +83,6 @@ void NetLoader::run() {
 	e = newDicomElement(DCM_StudyInstanceUID);
 	e->putString(m_studyinstanceuid.c_str());
 	query.insert(e);
-
-	m_mutex.unlock();
 
 	mover.QueryServers(&query);
 }

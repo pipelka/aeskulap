@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 06:49:44 $
+    Update Date:      $Date: 2005/09/01 09:44:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -33,7 +33,8 @@
 namespace ImagePool {
 	
 Loader::Loader() :
-m_loader(NULL)
+m_loader(NULL),
+m_busy(false)
 {
 	m_add_image.connect(sigc::mem_fun(*this, &Loader::add_image_callback));
 	m_finished.connect(sigc::mem_fun(*this, &Loader::finished));
@@ -42,8 +43,13 @@ m_loader(NULL)
 Loader::~Loader() {
 }
 
-void Loader::start() {
+bool Loader::start() {
+	if(m_busy) {
+		return false;
+	}
 	m_loader = Glib::Thread::create(sigc::mem_fun(*this, &Loader::thread), false);
+	
+	return true;
 }
 
 void Loader::stop() {
@@ -119,7 +125,7 @@ void Loader::add_image(DcmDataset* dset, int imagecount) {
 	}
 
 	image->study()->set_instancecount(image->study()->get_instancecount()+1, imagecount);
-	data().loaded_study[image->study()] = true;
+	m_data.loaded_study[image->study()] = true;
 
 	m_imagequeue.push(image);
 	m_add_image();
@@ -129,34 +135,46 @@ void Loader::run() {
 }
 
 void Loader::finished() {
-	m_current_study->signal_progress(100);
-	m_current_study.clear();
-	m_mutex.unlock();
+	std::map < Glib::RefPtr<ImagePool::Study>, bool >::iterator i = m_data.loaded_study.begin();
+	while(i != m_data.loaded_study.end()) {
+		if(i->second) {
+			i->second = false;
+			i->first->signal_progress(100);
+		}
+		i++;
+	}
+
+	m_data.loaded_study.clear();
 }
 
 void Loader::thread() {
 	m_mutex.lock();
+	m_busy = true;
+	m_mutex.unlock();
+
 	run();
 
 	while(m_imagequeue.size() > 0) {
 		Glib::usleep(1000);
 	}
 
-	std::map < Glib::RefPtr<ImagePool::Study>, bool >::iterator i = data().loaded_study.begin();
-	while(i != data().loaded_study.end()) {
-		if(i->second) {
-			m_current_study = i->first;
-			i->second = false;
-			m_mutex.lock();
-			m_finished();
-		}
-		i++;
-	}
-	m_data.erase(Glib::Thread::self());
+	m_finished();
+
+	m_mutex.lock();
+	m_busy = false;
+	m_mutex.unlock();
 }
 
-Loader::Data& Loader::data() {
-	return m_data[Glib::Thread::self()];
+bool Loader::busy() {
+	m_mutex.lock();
+	bool rc = m_busy;
+	m_mutex.unlock();
+	
+	return rc;
 }
+
+/*Loader::Data& Loader::data() {
+	return m_data[Glib::Thread::self()];
+}*/
 
 } // namespace ImagePool

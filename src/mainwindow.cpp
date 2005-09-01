@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 06:49:44 $
+    Update Date:      $Date: 2005/09/01 09:44:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -107,6 +107,7 @@ m_raise_opened(true)
 }
 
 MainWindow::~MainWindow() {
+	delete m_settings;
 	delete m_cursor_watch;
 }
 
@@ -140,24 +141,19 @@ void MainWindow::on_file_open() {
 	}
 
 	set_busy_cursor();
-	m_fileloader.load(m_dialogFile.get_filenames());
+	if(!m_fileloader.load(m_dialogFile.get_filenames())) {
+		set_busy_cursor(false);
+	}
 }
 
 void MainWindow::on_net_open(const std::string& studyinstanceuid) {
 	m_raise_opened = true;
-	set_busy_cursor();
-	m_netloader.load(studyinstanceuid);
-	//ImagePool::load_from_net(studyinstanceuid);
-}
 
-/*void MainWindow::on_net_progress(const std::string& studyinstanceuid, unsigned int progress) {
-	std::cout << "MainWindow::on_net_progress('" << studyinstanceuid << ", " << progress << "')" << std::endl;
-	StudyView* v = m_studyview[studyinstanceuid];
-	if(v != NULL) {
-		v->set_progress(progress);
-		return;
+	set_busy_cursor();
+	if(!m_netloader.load(studyinstanceuid)) {
+		set_busy_cursor(false);
 	}
-}*/
+}
 
 void MainWindow::on_file_exit() {
 	Gtk::Main::quit();
@@ -178,38 +174,6 @@ void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	StudyView* frame = manage(new StudyView(study));
 	m_studyview[study->studyinstanceuid()] = frame;
 
-	/*std::string labeltext = study->patientsname().substr(0,20) + "\n" + study->studydescription().substr(0,20);
-
-	StudyView* frame = manage(new StudyView(study));
-	m_studyview[study->studyinstanceuid()] = frame;
-
-	// create notebook tab widget
-	Gtk::Label* label = manage(new Gtk::Label(labeltext, Gtk::ALIGN_LEFT));
-	label->set_padding(2,0);
-	label->show();
-
-	Gtk::Image* image = manage(new Gtk::Image(Gtk::Stock::CLOSE, Gtk::ICON_SIZE_MENU));
-	image->show();
-
-	Gtk::Image* image2 = manage(new Gtk::Image(Gtk::Stock::DND_MULTIPLE, Gtk::ICON_SIZE_LARGE_TOOLBAR));
-	image2->set_padding(2,0);
-	image2->show();
-	
-	Gtk::ToolButton* btn = manage(new Gtk::ToolButton(*image));
-	btn->set_tooltip(m_tooltips, gettext("Close study"));
-	btn->set_size_request(22, 22);
-	btn->signal_clicked().connect(sigc::mem_fun(*frame, &StudyView::on_close));
-	btn->set_sensitive(false);
-	btn->show();
-
-	Gtk::HBox* hbox = manage(new Gtk::HBox);
-	hbox->pack_start(*image2);
-	hbox->pack_start(*label);
-	hbox->pack_start(*btn);
-	hbox->show();
-
-	frame->set_close_button(btn);*/
-	
 	Aeskulap::StudyTab* tab = manage(new Aeskulap::StudyTab(study, frame));
 	tab->signal_close.connect(sigc::mem_fun(*this, &MainWindow::on_study_closed));
 	study->signal_progress.connect(sigc::mem_fun(*tab, &Aeskulap::StudyTab::on_progress));
@@ -251,11 +215,11 @@ const std::string& MainWindow::find_pageuid(Gtk::Widget* page) {
 	return empty;
 }
 
-void MainWindow::on_load_finished(const std::string& studyinstanceuid) {
+/*void MainWindow::on_load_finished(const std::string& studyinstanceuid) {
 	StudyView* v = m_studyview[studyinstanceuid];
 	if(v != NULL) {
 		set_busy_cursor(false);
 		//v->set_progress(100);
 		return;
 	}
-}
+}*/

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:06 $
+    Update Date:      $Date: 2005/09/01 09:44:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -41,6 +41,8 @@ class IconFactory : public Gtk::IconFactory {
 public:
 
 	IconFactory();
+
+	~IconFactory();
 
 	static Glib::RefPtr<Gdk::Pixbuf> load_from_file(const std::string& filename);
 

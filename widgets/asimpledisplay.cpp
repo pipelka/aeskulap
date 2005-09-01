@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 20:12:42 $
+    Update Date:      $Date: 2005/09/01 09:44:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -261,8 +261,8 @@ void SimpleDisplay::set_windowlevels(int c, int w) {
 	double cd = (((double)c - intercept) / slope);
 	double wd = ((double)w / slope);
 	
-	int ramp_start = 0;
-	int ramp_end = m_windowmap_size/* - 1*/;
+	guint32 ramp_start = 0;
+	guint32 ramp_end = m_windowmap_size/* - 1*/;
 
 	double k = 256.0/wd;
 
@@ -674,6 +674,8 @@ bool SimpleDisplay::screen_to_point(int x, int y, ImagePool::Instance::Point& p)
 	p.x = mx - (m_image->spacing_x() * (dx0-x)) / m_magnifier;
 	p.y = my - (m_image->spacing_y() * (dy0-y)) / m_magnifier;
 	p.z = 0;
+	
+	return true;
 }
 
 } // namespace Aeskulap
