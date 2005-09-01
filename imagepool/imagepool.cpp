@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 09:44:03 $
+    Update Date:      $Date: 2005/09/01 21:07:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -243,13 +243,17 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 	r->m_width = m_image->getWidth();
 	r->m_height = m_image->getHeight();
 
-	r->m_pixels = (void*)malloc(r->m_size);
-
-	if(!m_image->getOutputData(r->m_pixels, r->m_size, r->m_iscolor ? 8 : r->m_depth, 0)){
-		std::cerr << "dcmImage->getOutputData(..) == FALSE" << std::endl;
-		delete m_image;
-		m_image = NULL;
-		return Glib::RefPtr<ImagePool::Instance>();
+	for(int f=0; f<m_image->getFrameCount(); f++) {
+		void* pixels = (void*)malloc(r->m_size);
+		r->m_pixels.push_back(pixels);
+		std::cout << "frame: " << f << std::endl;
+	
+		if(!m_image->getOutputData(pixels, r->m_size, r->m_iscolor ? 8 : r->m_depth, f)){
+			std::cerr << "dcmImage->getOutputData(..) == FALSE" << std::endl;
+			delete m_image;
+			m_image = NULL;
+			return Glib::RefPtr<ImagePool::Instance>();
+		}
 	}
 
 	// set date
