@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 19:47:55 $
+    Update Date:      $Date: 2005/09/01 06:49:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -71,7 +71,7 @@ protected:
 
 	void on_study_added(const Glib::RefPtr<ImagePool::Study>& study);
 
-	void on_study_closed(Gtk::Widget* page);
+	void on_study_closed(StudyView* page);
 
 	void set_busy_cursor(bool busy = true);
 

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 20:12:42 $
+    Update Date:      $Date: 2005/09/01 06:49:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -35,6 +35,7 @@
 #include "studyview.h"
 #include "studymanager.h"
 #include "settings.h"
+#include "astudytab.h"
 
 #include "assert.h"
 #include "gettext.h"
@@ -98,9 +99,9 @@ m_raise_opened(true)
 
 	//ImagePool::Signals::signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
 	m_netloader.signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
-	m_netloader.signal_finished.connect(sigc::mem_fun(*this, &MainWindow::on_load_finished));
+	//m_netloader.signal_finished.connect(sigc::mem_fun(*this, &MainWindow::on_load_finished));
 	m_fileloader.signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
-	m_fileloader.signal_finished.connect(sigc::mem_fun(*this, &MainWindow::on_load_finished));
+	//m_fileloader.signal_finished.connect(sigc::mem_fun(*this, &MainWindow::on_load_finished));
 
 	m_cursor_watch = new Gdk::Cursor(Gdk::WATCH);
 }
@@ -149,14 +150,14 @@ void MainWindow::on_net_open(const std::string& studyinstanceuid) {
 	//ImagePool::load_from_net(studyinstanceuid);
 }
 
-void MainWindow::on_net_progress(const std::string& studyinstanceuid, unsigned int progress) {
+/*void MainWindow::on_net_progress(const std::string& studyinstanceuid, unsigned int progress) {
 	std::cout << "MainWindow::on_net_progress('" << studyinstanceuid << ", " << progress << "')" << std::endl;
 	StudyView* v = m_studyview[studyinstanceuid];
 	if(v != NULL) {
 		v->set_progress(progress);
 		return;
 	}
-}
+}*/
 
 void MainWindow::on_file_exit() {
 	Gtk::Main::quit();
@@ -174,7 +175,10 @@ void MainWindow::on_view_fullscreen() {
 void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	std::cout << "new study " << study->studyinstanceuid() << std::endl;
 
-	std::string labeltext = study->patientsname().substr(0,20) + "\n" + study->studydescription().substr(0,20);
+	StudyView* frame = manage(new StudyView(study));
+	m_studyview[study->studyinstanceuid()] = frame;
+
+	/*std::string labeltext = study->patientsname().substr(0,20) + "\n" + study->studydescription().substr(0,20);
 
 	StudyView* frame = manage(new StudyView(study));
 	m_studyview[study->studyinstanceuid()] = frame;
@@ -204,23 +208,28 @@ void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	hbox->pack_start(*btn);
 	hbox->show();
 
-	frame->set_close_button(btn);
+	frame->set_close_button(btn);*/
+	
+	Aeskulap::StudyTab* tab = manage(new Aeskulap::StudyTab(study, frame));
+	tab->signal_close.connect(sigc::mem_fun(*this, &MainWindow::on_study_closed));
+	study->signal_progress.connect(sigc::mem_fun(*tab, &Aeskulap::StudyTab::on_progress));
 
-	m_mainNotebook->append_page(*frame, *hbox);
+	m_mainNotebook->append_page(*frame, *tab);
 	frame->show();
 	if(m_raise_opened) {
 		m_raise_opened = false;
 		m_mainNotebook->set_current_page(-1);
 	}
 	study->signal_series_added.connect(sigc::mem_fun(*frame, &StudyView::on_series_added));
-	frame->signal_remove().connect(sigc::mem_fun(*this, &MainWindow::on_study_closed));
 
 	set_busy_cursor(false);
 }
 
-void MainWindow::on_study_closed(Gtk::Widget* page) {
+void MainWindow::on_study_closed(StudyView* page) {
 	std::cout << "MainWindow::on_study_closed" << std::endl;
+	m_mainNotebook->remove(*page);
 	m_studyview.erase(find_pageuid(page));
+	delete page;
 }
 
 void MainWindow::on_edit_settings() {
@@ -246,7 +255,7 @@ void MainWindow::on_load_finished(const std::string& studyinstanceuid) {
 	StudyView* v = m_studyview[studyinstanceuid];
 	if(v != NULL) {
 		set_busy_cursor(false);
-		v->set_progress(100);
+		//v->set_progress(100);
 		return;
 	}
 }

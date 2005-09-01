@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 19:47:55 $
+    Update Date:      $Date: 2005/09/01 06:49:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -104,20 +104,22 @@ void Loader::add_image_callback() {
 	// register instance
 	new_series->at(r->m_sopinstanceuid) = r;
 	new_series->signal_instance_added(r);
-	
+	new_study->emit_progress();
+
 	if(m_imagequeue.size() > 0) {
 		add_image_callback();
 	}
 }
 
-void Loader::add_image(DcmDataset* dset) {
+void Loader::add_image(DcmDataset* dset, int imagecount) {
 	Glib::RefPtr<ImagePool::Instance> image = ImagePool::create_instance(dset);
 
 	if(!image) {
 		return;
 	}
 
-	data().loaded_studyinstanceuid[image->studyinstanceuid()] = true;
+	image->study()->set_instancecount(image->study()->get_instancecount()+1, imagecount);
+	data().loaded_study[image->study()] = true;
 
 	m_imagequeue.push(image);
 	m_add_image();
@@ -127,7 +129,8 @@ void Loader::run() {
 }
 
 void Loader::finished() {
-	signal_finished(m_current_studyinstanceuid);
+	m_current_study->signal_progress(100);
+	m_current_study.clear();
 	m_mutex.unlock();
 }
 
@@ -139,10 +142,10 @@ void Loader::thread() {
 		Glib::usleep(1000);
 	}
 
-	std::map < std::string, bool >::iterator i = data().loaded_studyinstanceuid.begin();
-	while(i != data().loaded_studyinstanceuid.end()) {
+	std::map < Glib::RefPtr<ImagePool::Study>, bool >::iterator i = data().loaded_study.begin();
+	while(i != data().loaded_study.end()) {
 		if(i->second) {
-			m_current_studyinstanceuid = i->first;
+			m_current_study = i->first;
 			i->second = false;
 			m_mutex.lock();
 			m_finished();

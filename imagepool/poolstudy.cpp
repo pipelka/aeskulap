@@ -20,16 +20,20 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/09/01 06:49:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolstudy.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
 #include "poolstudy.h"
 #include "imagepool.h"
+#include <iostream>
 
 namespace ImagePool {
+
+Study::Study() : m_max_instances(0), m_cur_instances(0) {
+}
 
 Study::~Study() {
 	for(iterator i = begin(); i != end(); i++) {
@@ -64,6 +68,31 @@ const std::string& Study::studytime() {
 
 const std::string& Study::patientssex() {
 	return m_patientssex;
+}
+
+void Study::set_instancecount(int cur, int max) {
+	if(max != -1) {
+		m_max_instances = max;
+	}
+	
+	if(cur != -1) {
+		m_cur_instances = cur;
+	}
+	
+	std::cout << "instances current: " << m_cur_instances << std::endl;
+	std::cout << "instances max: " << m_max_instances << std::endl;
+}
+
+int Study::get_instancecount() {
+	return m_cur_instances;
+}
+
+void Study::emit_progress() {
+	if(m_max_instances == 0) {
+		return;
+	}
+
+	signal_progress((double)m_cur_instances / (double)m_max_instances);
 }
 
 }

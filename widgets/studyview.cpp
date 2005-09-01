@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 19:47:55 $
+    Update Date:      $Date: 2005/09/01 06:49:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -44,7 +44,7 @@
 
 StudyView::StudyView(const Glib::RefPtr<ImagePool::Study>& study) :
 Aeskulap::Tiler<SeriesView>(2, 1),
-m_btn_close(NULL),
+//m_btn_close(NULL),
 m_single_series(false),
 m_study(study),
 m_selected(NULL),
@@ -178,10 +178,10 @@ void StudyView::on_series_added(const Glib::RefPtr<ImagePool::Series>& series) {
 	add_series(series);	
 }
 
-void StudyView::on_close() {	
+/*void StudyView::on_close() {	
 	get_parent()->remove(*this);
 	delete this; // ???!
-}
+}*/
 
 void StudyView::set_layout(int tilex, int tiley) {
 	Aeskulap::Tiler<SeriesView>::set_layout(tilex, tiley);
@@ -500,14 +500,14 @@ void StudyView::on_toggle_refframe() {
 	queue_draw();
 }
 
-void StudyView::set_progress(unsigned int progress) {
+/*void StudyView::set_progress(unsigned int progress) {
 	if(progress >= 100) {
 		if(m_btn_close) {
 		m_btn_close->set_sensitive(true);
 		}
 	}
-}
+}*/
 
-void StudyView::set_close_button(Gtk::ToolButton* close) {
+/*void StudyView::set_close_button(Gtk::ToolButton* close) {
 	m_btn_close = close;
-}
+}*/

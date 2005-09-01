@@ -33,13 +33,13 @@ ACLOCAL_AMFLAGS = -I m4
 
 dist-hook:
 	mkdir -p $(distdir)/dcmtk
-	cp -Rf dcmtk/* $(distdir)/dcmtk
+	cp -Rf $(top_srcdir)/dcmtk/* $(distdir)/dcmtk
 	cd $(distdir)/dcmtk && make distclean
 	list=`find $(distdir)/dcmtk -name "CVS"` && rm -Rf $$list
 	list=`find $(distdir)/dcmtk -name ".cvsignore"` && rm -f $$list
 	list=`find $(distdir)/dcmtk -name ".#*"` && rm -f $$list
 
 distclean: distclean-recursive
-	cd dcmtk && make distclean
+	cd $(top_builddir)/dcmtk && make distclean
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
