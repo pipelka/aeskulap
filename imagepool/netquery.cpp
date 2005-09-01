@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/25 12:09:17 $
+    Update Date:      $Date: 2005/09/01 08:36:40 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -285,6 +285,37 @@ void query_series_from_net(const std::string& studyinstanceuid, const sigc::slot
 		dset->print(COUT);
 		resultslot(create_query_series(dset));
 	}
+}
+
+int query_study_instances(const std::string& studyinstanceuid) {
+	DcmDataset query;
+	DcmElement* e = NULL;
+	
+	e = newDicomElement(DCM_QueryRetrieveLevel);
+	e->putString("IMAGE");
+	query.insert(e);
+
+	e = newDicomElement(DCM_StudyInstanceUID);
+	e->putString(studyinstanceuid.c_str());
+	query.insert(e);
+
+	e = newDicomElement(DCM_SOPInstanceUID);
+	query.insert(e);
+
+	e = newDicomElement(DCM_InstanceNumber);
+	query.insert(e);
+
+	std::cout << "NEW QUERY:" << std::endl;
+	query.print(COUT);
+
+	NetClient<FindAssociation> a;
+	a.QueryServers(&query);
+
+	DcmStack* result = a.GetResultStack();
+
+	std::cout << result->card() << " Responses" << std::endl;
+	
+	return result->card();
 }
 
 } // namespace ImagePool
