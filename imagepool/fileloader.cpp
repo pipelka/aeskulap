@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 19:47:55 $
+    Update Date:      $Date: 2005/09/01 06:49:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/fileloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -45,6 +45,7 @@ void FileLoader::run() {
 	m_mutex.unlock();
 
 	Glib::SListHandle< Glib::ustring >::iterator i = filelist->begin();
+	int imagecount = filelist->size();
 
 	for(; i != filelist->end(); i++) {
 		DcmFileFormat dfile;
@@ -64,7 +65,7 @@ void FileLoader::run() {
 			std::cout << "opened file:" << (*i) << std::endl;
 		
 			DcmDataset* dset = dfile.getDataset();
-			add_image(dset);
+			add_image(dset, imagecount);
 		}
 	}
 	

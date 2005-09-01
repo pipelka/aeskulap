@@ -5,6 +5,8 @@ libgtkdicom_la_SOURCES = \
 	atiler.cpp \
 	aseriesmenu.h \
 	aseriesmenu.cpp \
+	astudytab.h \
+	astudytab.cpp \
 	imagelayouttoolbutton.h \
 	imagelayouttoolbutton.cpp \
 	serieslayouttoolbutton.h \
