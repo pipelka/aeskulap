@@ -64,7 +64,7 @@ StudyTab::StudyTab(const Glib::RefPtr<ImagePool::Study>& study, StudyView* view)
 	m_close->set_size_request(22, 22);
 	m_close->signal_clicked().connect(sigc::bind(signal_close, view));
 	m_close->set_sensitive(false);
-	m_close->show();
+	m_close->hide();
 
 	Gtk::VBox* vbox = manage(new Gtk::VBox);
 	vbox->show();
@@ -82,6 +82,7 @@ void StudyTab::on_progress(double p) {
 	if(p >= 100.0) {
 		m_close->set_sensitive(true);
 		m_progress->hide();
+		m_close->show();
 		std::string labeltext = m_study->patientsname().substr(0,20) + "\n" + m_study->studydescription().substr(0,20);
 		m_label->set_text(labeltext);
 	}

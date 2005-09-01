@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 19:47:55 $
+    Update Date:      $Date: 2005/09/01 08:36:40 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -79,6 +79,8 @@ namespace ImagePool {
 				const std::string& studyinstanceuid,
 				const sigc::slot< void, const Glib::RefPtr< ImagePool::Series >& >& resultslot
 				);
+
+	int query_study_instances(const std::string& studyinstanceuid);
 
 	class Signals {
 	public:	
