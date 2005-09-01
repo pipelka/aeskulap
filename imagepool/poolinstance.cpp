@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:43 $
+    Update Date:      $Date: 2005/09/01 21:07:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -40,7 +40,6 @@
 namespace ImagePool {
 	
 Instance::Instance(const std::string& sopinstanceuid) :
-m_pixels(NULL),
 m_size(0),
 m_depth(0),
 m_bpp(0),
@@ -62,15 +61,17 @@ m_index(1)
 }
 	
 Instance::~Instance() {
-	if(m_pixels != NULL) {
-		free(m_pixels);
+	for(int i=0; i<m_pixels.size(); i++) {
+		if(m_pixels[i] != NULL) {
+			free(m_pixels[i]);
+		}
 	}
 	
 	std::cout << "removed instance '" << m_sopinstanceuid << "'" << std::endl;
 }
 
-void* Instance::pixels() {
-	return m_pixels;
+void* Instance::pixels(int frame) {
+	return m_pixels[frame];
 }
 	
 int Instance::depth() {

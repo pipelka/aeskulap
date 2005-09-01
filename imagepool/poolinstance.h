@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 19:47:55 $
+    Update Date:      $Date: 2005/09/01 21:07:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -33,10 +33,10 @@
 #include <glibmm/object.h>
 
 #include <string>
+#include <vector>
 
 class DcmDataset;
 class DicomImage;
-
 
 namespace ImagePool {
 
@@ -77,7 +77,7 @@ public:
 	
 	~Instance();
 
-	void* pixels();
+	void* pixels(int frame=0);
 	
 	int depth();
 	
@@ -146,7 +146,7 @@ public:
 	
 private:
 
-	void* m_pixels;
+	std::vector<void*> m_pixels;
 
 	int m_size;
 
