@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:06 $
+    Update Date:      $Date: 2005/09/01 09:44:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -53,6 +53,14 @@ IconFactory::IconFactory() {
 	Stock::init_stock_items();
 
 	Gtk::IconFactory::add_default();
+}
+
+IconFactory::~IconFactory() {
+	std::vector<Gtk::IconSet*>::iterator i = m_iconset.begin();
+	for( ; i!= m_iconset.end(); i++) {
+		delete (*i);
+	}
+	m_iconset.clear();
 }
 
 void IconFactory::add(const Gtk::StockID& stock_id, const std::string& filename) {

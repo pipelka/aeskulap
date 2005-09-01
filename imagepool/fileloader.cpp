@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 06:49:44 $
+    Update Date:      $Date: 2005/09/01 09:44:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/fileloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -35,14 +35,19 @@
 
 namespace ImagePool {
 
-void FileLoader::load(const Glib::SListHandle< Glib::ustring >& filelist) {
+bool FileLoader::load(const Glib::SListHandle< Glib::ustring >& filelist) {
+	if(busy()) {
+		return false;
+	}
+
 	m_filelist = new Glib::SListHandle< Glib::ustring >(filelist);
 	start();
+	
+	return true;
 }
 
 void FileLoader::run() {
 	Glib::SListHandle< Glib::ustring >* filelist = m_filelist;
-	m_mutex.unlock();
 
 	Glib::SListHandle< Glib::ustring >::iterator i = filelist->begin();
 	int imagecount = filelist->size();
@@ -70,6 +75,7 @@ void FileLoader::run() {
 	}
 	
 	delete filelist;
+	m_filelist = NULL;
 }
 
 } // namespace ImagePool
