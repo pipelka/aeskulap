@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 06:49:44 $
+    Update Date:      $Date: 2005/09/02 09:04:23 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -63,15 +63,9 @@ public:
 
 	~StudyView();
 	
-	//void set_progress(unsigned int progress);
-
 	void set_layout(int tilex, int tiley);
 
 	void on_series_added(const Glib::RefPtr<ImagePool::Series>& series);
-
-	//void on_close();
-
-	//void set_close_button(Gtk::ToolButton* close);
 
 protected:
 
@@ -111,8 +105,6 @@ private:
 
 	Gtk::Table* m_table;
 	
-	//Gtk::ToolButton* m_btn_close;
-
 	Gtk::Toolbar* m_toolbar;
 
 	Gtk::Toolbar* m_toolbar_measure;

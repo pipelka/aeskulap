@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 06:38:48 $
+    Update Date:      $Date: 2005/09/02 09:04:23 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -139,11 +139,7 @@ protected:
 	
 	Glib::RefPtr<Pango::Context> m_pangoctx;
 
-	Gtk::Frame* m_bin;
-
 	Glib::RefPtr<Gdk::Window> m_window;
-
-	Glib::RefPtr<Gdk::Window> m_bin_window;
 
 	Glib::RefPtr<Gdk::Colormap> m_colormap;
 
