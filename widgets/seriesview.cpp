@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 10:13:12 $
+    Update Date:      $Date: 2005/09/02 13:11:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -50,13 +50,21 @@ m_selected(false) {
 	m_scrollbar->set_value(0);
 	m_scrollbar->signal_change_value().connect(sigc::mem_fun(*this, &SeriesView::on_change_value));
 
+	m_control_handle = manage(new Gtk::HandleBox);
+
+	Gtk::VBox* vbox = manage(new Gtk::VBox);
+	vbox->pack_start(*m_table);
+	vbox->pack_start(*m_control_handle, Gtk::PACK_SHRINK);
+	
 	pack_end(*m_scrollbar, false, false);
-	pack_end(*m_table);
+	pack_end(*vbox);
 	
 	set_layout(m_tile_x, m_tile_y);
 	
 	m_table->show();
 	m_scrollbar->show();
+	//m_control_handle->show();
+	vbox->show();
 }
 
 SeriesView::~SeriesView() {
@@ -173,6 +181,10 @@ void SeriesView::scroll_down() {
 }
 
 bool SeriesView::on_scroll_event(GdkEventScroll* event) {
+	if(event == NULL) {
+		return false;
+	}
+
 	select(true);
 
 	if(event->direction == GDK_SCROLL_UP) {
@@ -219,6 +231,10 @@ void SeriesView::on_image_selected(unsigned int index) {
 	
 	m_selected_image = index;
 	
+	Gtk::Widget* control = m_widgets[m_selected_image - m_offset]->get_control();
+	on_control_changed(control);
+	signal_control_changed(control);
+
 	select(true);
 	signal_update(this);
 }
@@ -240,12 +256,12 @@ void SeriesView::on_image_changed(unsigned int index, bool smooth) {
 }
 
 unsigned int SeriesView::get_max_scrollpos() {
-	unsigned int rc = m_instancecount - max_size();
+	int rc = m_instancecount - max_size();
 	if(rc < 0) {
 		rc = 0;
 	}
 	
-	return rc;
+	return (unsigned int)rc;
 }
 
 void SeriesView::scroll_to(unsigned int pos) {
@@ -261,6 +277,10 @@ void SeriesView::scroll_to(unsigned int pos) {
 	m_dispparam[m_selected_image]->selected = true;
 
 	m_scrollbar->set_value(m_offset);
+
+	Gtk::Widget* control = m_widgets[m_selected_image - m_offset]->get_control();
+	on_control_changed(control);
+	signal_control_changed(control);
 
 	update();	
 }
@@ -348,4 +368,30 @@ void SeriesView::schedule_repaint(int timeout) {
 
 void SeriesView::on_draw_instance(Aeskulap::Display* d, const Glib::RefPtr<Gdk::Window>& w, const Glib::RefPtr<Gdk::GC>& gc) {
 	signal_draw(this, d, w, gc);
+}
+
+void SeriesView::on_control_changed(Gtk::Widget* widget) {
+	if(m_control_handle == NULL) {
+		return;
+	}
+
+	Gtk::Widget* child = m_control_handle->get_child();
+
+	if(child == widget) {
+		return;
+	}
+	
+	m_control_handle->remove();
+
+	if(widget == NULL) {
+		m_control_handle->hide();
+		return;
+	}
+	
+	m_control_handle->add(*widget);
+	widget->show();
+	m_control_handle->show();
+	if(child != NULL) {
+		child->hide();
+	}
 }
