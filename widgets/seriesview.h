@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 10:13:12 $
+    Update Date:      $Date: 2005/09/02 13:11:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -67,13 +67,13 @@ public:
 
 	sigc::signal< void, SeriesView*, bool > signal_selected;
 
-	//sigc::signal< void, Aeskulap::Display*, const Glib::RefPtr<ImagePool::Series>& > signal_display_added;
-
 	sigc::signal<void, SeriesView*, Aeskulap::Display*, const Glib::RefPtr<Gdk::Window>&, const Glib::RefPtr<Gdk::GC>&> signal_draw;
 
 	sigc::signal<void, SeriesView*> signal_update;
 
 	sigc::signal<void, GdkEventButton*, SeriesView*> signal_popup;
+
+	sigc::signal<void, Gtk::Widget*> signal_control_changed;
 
 protected:
 
@@ -95,6 +95,8 @@ protected:
 
 	bool on_timeout(int timer);
 
+	virtual void on_control_changed(Gtk::Widget* widget);
+
 	void on_draw_instance(Aeskulap::Display* d, const Glib::RefPtr<Gdk::Window>& w, const Glib::RefPtr<Gdk::GC>& gc);
 
 	void add_instance(const Glib::RefPtr<ImagePool::Instance>& instance);
@@ -108,6 +110,8 @@ protected:
 	void update(bool immediate = true, bool redraw = true, bool smooth = false);
 
 	bool m_selected;
+
+	Gtk::HandleBox* m_control_handle;
 
 private:
 

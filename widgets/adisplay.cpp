@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 09:04:23 $
+    Update Date:      $Date: 2005/09/02 13:11:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -502,6 +502,10 @@ void Display::draw_ruler_h() {
 }
 
 void Display::draw_line(const ImagePool::Instance::Point& p0, const ImagePool::Instance::Point& p1) {
+	if(!m_image) {
+		return;
+	}
+
 	int x0;
 	int y0;
 	int x1;
@@ -533,6 +537,10 @@ void Display::draw_line(const ImagePool::Instance::Point& p0, const ImagePool::I
 }
 
 void Display::draw_point(const ImagePool::Instance::Point& p) {
+	if(!m_image) {
+		return;
+	}
+
 	int x;
 	int y;
 	ImagePool::Instance::Point p1;

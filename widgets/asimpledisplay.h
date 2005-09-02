@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 09:04:23 $
+    Update Date:      $Date: 2005/09/02 13:11:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -70,6 +70,10 @@ public:
 	bool point_to_screen(const ImagePool::Instance::Point& p, int& x, int& y);
 
 	bool screen_to_point(int x, int y, ImagePool::Instance::Point& p);
+
+	void set_control(Gtk::Widget* control);
+	
+	Gtk::Widget* get_control();
 
 protected:
 
@@ -144,6 +148,8 @@ protected:
 	Glib::RefPtr<Gdk::Colormap> m_colormap;
 
 	Gdk::Color m_colorBackground;
+	
+	Gtk::Widget* m_control;
 };
 
 } // namespace Aeskulap
