@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:03 $
+    Update Date:      $Date: 2005/09/02 09:04:23 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -65,10 +65,6 @@ public:
 	sigc::signal< void, int > signal_selected;
 
 	sigc::signal< void, int, bool > signal_changed;
-
-	sigc::signal< void, Display* > signal_scroll_up;
-
-	sigc::signal< void, Display* > signal_scroll_down;
 
 	sigc::signal<void, Display*, const Glib::RefPtr<Gdk::Window>&, const Glib::RefPtr<Gdk::GC>&> signal_draw;
 

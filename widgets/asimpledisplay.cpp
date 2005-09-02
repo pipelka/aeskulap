@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 09:44:03 $
+    Update Date:      $Date: 2005/09/02 09:04:23 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -79,26 +79,21 @@ void SimpleDisplay::init_display() {
 	m_id = 0;
 
 	m_pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, 64, 64);
-	//bitstretch();
-
-	m_bin = manage(new Gtk::Frame);
-	add(*m_bin);
-	m_bin->show();
 }
 
 void SimpleDisplay::on_realize() {
 	Gtk::EventBox::on_realize();
 
-	m_window = get_parent_window();
+	m_window = get_window();
 
-	m_bin_window = m_bin->get_parent_window();
-
-	m_colormap = m_bin->get_default_colormap();
+	m_colormap = get_default_colormap();
 
 	m_colorBackground = Gdk::Color("black");
 	m_colormap->alloc_color(m_colorBackground);
 
-	m_GC = Gdk::GC::create(m_bin_window);
+	modify_bg(Gtk::STATE_NORMAL, Gdk::Color("black"));
+
+	m_GC = Gdk::GC::create(m_window);
 
 	m_pangoctx = create_pango_context();
 }
@@ -129,10 +124,6 @@ void SimpleDisplay::on_size_allocate(Gtk::Allocation& allocation) {
 	if(m_window) {
 		m_window->move_resize( allocation.get_x(), allocation.get_y(), allocation.get_width(), allocation.get_height() );
 	}
-	
-	if(m_bin_window) {
-		m_bin_window->move_resize( allocation.get_x(), allocation.get_y(), allocation.get_width(), allocation.get_height() );
-	}
 }
 
 bool SimpleDisplay::on_expose_event(GdkEventExpose* event) {
@@ -141,7 +132,7 @@ bool SimpleDisplay::on_expose_event(GdkEventExpose* event) {
 	}
 
 	if(m_image) {
-		m_bin_window->draw_pixbuf(
+		m_window->draw_pixbuf(
 			m_GC, 
 			m_pixbuf, 
 			event->area.x, 
@@ -157,7 +148,7 @@ bool SimpleDisplay::on_expose_event(GdkEventExpose* event) {
 	else {
 		m_GC->set_foreground(m_colorBackground);
 		m_GC->set_background(m_colorBackground);
-		m_bin_window->draw_rectangle(
+		m_window->draw_rectangle(
 			m_GC,
 			true,
 			event->area.x, 
@@ -227,13 +218,8 @@ bool SimpleDisplay::set_image(const Glib::RefPtr<ImagePool::Instance>& image, co
 		create_windowmap();
 	}
 	
-	//if(m_disp_params->window_center != params->window_center || m_disp_params->window_width != params->window_width) {
-		m_disp_params = params;
-		set_windowlevels(m_disp_params->window_center, m_disp_params->window_width);
-	//}
-	//else {
-		//m_disp_params = params;
-	//}
+	m_disp_params = params;
+	set_windowlevels(m_disp_params->window_center, m_disp_params->window_width);
 
 	bitstretch(smooth);
 
@@ -617,8 +603,8 @@ void SimpleDisplay::update() {
 	}
 
 	Gdk::Rectangle r(0,0,get_width(),get_height());
-	m_bin_window->invalidate_rect(r, false);
-	m_bin_window->process_updates(false);
+	m_window->invalidate_rect(r, false);
+	m_window->process_updates(false);
 }
 
 void SimpleDisplay::refresh(bool smooth) {

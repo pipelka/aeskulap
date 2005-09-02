@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:43 $
+    Update Date:      $Date: 2005/09/02 09:04:23 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -131,13 +131,13 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 
 	if(m_disp_params && m_disp_params->selected) {
 		m_GC->set_foreground(m_colorSelected);
-		m_bin_window->draw_rectangle(m_GC, false, 2, 2, get_width()-5, get_height()-5);
+		m_window->draw_rectangle(m_GC, false, 2, 2, get_width()-5, get_height()-5);
 	}
 	else if(m_disp_params && m_disp_params->series_selected) {
 		m_GC->set_foreground(m_colorSeriesSelected);
 	}
 
-	m_bin_window->draw_rectangle(m_GC, false, 1, 1, get_width()-3, get_height()-3);
+	m_window->draw_rectangle(m_GC, false, 1, 1, get_width()-3, get_height()-3);
 
 	if(m_image) {
 		m_GC->set_foreground(m_colorText);
@@ -180,15 +180,15 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 		int sh = 0;
 		m_layoutB->get_pixel_size(sw, sh);
 		
-		m_bin_window->draw_layout(m_GC, 10, 5, m_layoutL);
-		m_bin_window->draw_layout(m_GC, get_width()/2, 5, m_layoutR);
-		m_bin_window->draw_layout(m_GC, 10, get_height()-5-sh, m_layoutB);
+		m_window->draw_layout(m_GC, 10, 5, m_layoutL);
+		m_window->draw_layout(m_GC, get_width()/2, 5, m_layoutR);
+		m_window->draw_layout(m_GC, 10, get_height()-5-sh, m_layoutB);
 
 		draw_ruler_v();
 		draw_ruler_h();
 	}
 
-	signal_draw(this, m_bin_window, m_GC);
+	signal_draw(this, m_window, m_GC);
 
 	return true;
 }
@@ -417,7 +417,7 @@ void Display::draw_ruler_v() {
 	
 	int offset = (get_height() - ruler_height) / 2;
 
-	m_bin_window->draw_line(m_GC, get_width()-10, offset, get_width()-10, offset+ruler_height);
+	m_window->draw_line(m_GC, get_width()-10, offset, get_width()-10, offset+ruler_height);
 	
 	int ym = 0;
 	for(int y=0; y<mm+1; y+=10) {
@@ -428,7 +428,7 @@ void Display::draw_ruler_v() {
 		if(result.rem == 0) {
 			lw = line_width2;
 		}
-		m_bin_window->draw_line(
+		m_window->draw_line(
 			m_GC,
 			get_width()-10-lw,
 			offset+ym,
@@ -441,7 +441,7 @@ void Display::draw_ruler_v() {
 	m_layoutR->set_text(buffer);
 	m_layoutR->set_width(100 * PANGO_SCALE);
 
-	m_bin_window->draw_layout(m_GC, get_width()-110, offset + ym + 3, m_layoutR);
+	m_window->draw_layout(m_GC, get_width()-110, offset + ym + 3, m_layoutR);
 
 }
 
@@ -469,7 +469,7 @@ void Display::draw_ruler_h() {
 	
 	int offset = (get_width() - ruler_width) / 2;
 
-	m_bin_window->draw_line(m_GC, offset, get_height()-10, offset+ruler_width, get_height()-10);
+	m_window->draw_line(m_GC, offset, get_height()-10, offset+ruler_width, get_height()-10);
 	
 	int xm = 0;
 	for(int x=0; x<mm+1; x+=10) {
@@ -480,7 +480,7 @@ void Display::draw_ruler_h() {
 		if(result.rem == 0) {
 			lh = line_height2;
 		}
-		m_bin_window->draw_line(
+		m_window->draw_line(
 			m_GC,
 			offset+xm,
 			get_height()-10-lh,
@@ -497,7 +497,7 @@ void Display::draw_ruler_h() {
 	int th = 0;
 	m_layoutL->get_pixel_size(tw, th);
 
-	m_bin_window->draw_layout(m_GC, offset + xm + 3, get_height()-10-th, m_layoutL);
+	m_window->draw_layout(m_GC, offset + xm + 3, get_height()-10-th, m_layoutL);
 
 }
 
@@ -529,8 +529,7 @@ void Display::draw_line(const ImagePool::Instance::Point& p0, const ImagePool::I
 		return;
 	}
 
-	//m_GC->set_foreground(m_colorSelected);
-	m_bin_window->draw_line(m_GC, x0, y0, x1, y1);
+	m_window->draw_line(m_GC, x0, y0, x1, y1);
 }
 
 void Display::draw_point(const ImagePool::Instance::Point& p) {
@@ -554,9 +553,7 @@ void Display::draw_point(const ImagePool::Instance::Point& p) {
 	//std::cout << "T-Point: " << t1.x << "/" << t1.y << "/" << t1.z << std::endl;
 	//std::cout << "Screen: " << x << "/" << y << std::endl;
 	
-
-	//m_GC->set_foreground(m_colorSelected);
-	m_bin_window->draw_rectangle(m_GC, false, x-1, y-1, 2, 2);
+	m_window->draw_rectangle(m_GC, false, x-1, y-1, 2, 2);
 }
 
 
