@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:03 $
+    Update Date:      $Date: 2005/09/02 10:13:12 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -34,6 +34,7 @@
 #include <gtkmm.h>
 #include <vector>
 #include "atiler.h"
+#include "instanceview.h"
 
 namespace Aeskulap {
 	class Display;
@@ -45,8 +46,9 @@ namespace ImagePool {
 }
 
 class DisplayParameters;
+class InstanceView;
 
-class SeriesView : public Gtk::HBox, public Aeskulap::Tiler<Aeskulap::Display> {
+class SeriesView : public Gtk::HBox, public Aeskulap::Tiler<InstanceView> {
 public:
 
 	SeriesView();
@@ -65,7 +67,7 @@ public:
 
 	sigc::signal< void, SeriesView*, bool > signal_selected;
 
-	sigc::signal< void, Aeskulap::Display*, const Glib::RefPtr<ImagePool::Series>& > signal_display_added;
+	//sigc::signal< void, Aeskulap::Display*, const Glib::RefPtr<ImagePool::Series>& > signal_display_added;
 
 	sigc::signal<void, SeriesView*, Aeskulap::Display*, const Glib::RefPtr<Gdk::Window>&, const Glib::RefPtr<Gdk::GC>&> signal_draw;
 
@@ -134,6 +136,8 @@ private:
 	sigc::connection m_repaint_source;
 	
 	friend class StudyView;
+	
+	friend InstanceView* InstanceView::create(InstanceView::Type type, SeriesView* seriesview);
 };
 
 #endif // STUDYVIEW_H

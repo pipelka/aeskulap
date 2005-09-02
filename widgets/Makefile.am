@@ -13,6 +13,8 @@ libgtkdicom_la_SOURCES = \
 	serieslayouttoolbutton.cpp \
 	displayparameters.h \
 	displayparameters.cpp \
+	instanceview.h \
+	instanceview.cpp \
 	seriesview.h \
 	seriesview.cpp \
 	studyview.h \
