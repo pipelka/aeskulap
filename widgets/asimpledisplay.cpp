@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/03 21:10:46 $
+    Update Date:      $Date: 2005/09/03 21:39:04 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -82,6 +82,9 @@ void SimpleDisplay::init_display() {
 	m_id = 0;
 
 	m_pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, 64, 64);
+	
+	m_filmholes_left = Aeskulap::IconFactory::load_from_file("filmholes-big-left.png");
+	m_filmholes_right = Aeskulap::IconFactory::load_from_file("filmholes-big-right.png");
 }
 
 void SimpleDisplay::on_realize() {
@@ -147,6 +150,38 @@ bool SimpleDisplay::on_expose_event(GdkEventExpose* event) {
 			Gdk::RGB_DITHER_NONE, 
 			0, 
 			0);
+		
+		if(m_image->get_framecount() > 1) {
+			for(int y=0; y<(get_height() / m_filmholes_left->get_height())+1; y++) {
+				m_window->draw_pixbuf(
+					m_GC, 
+					m_filmholes_left, 
+					0, 
+					0, 
+					0, 
+					y*m_filmholes_left->get_height(), 
+					m_filmholes_left->get_width(), 
+					m_filmholes_left->get_height(), 
+					Gdk::RGB_DITHER_NONE, 
+					0, 
+					0);
+			}
+
+			for(int y=0; y<(get_height() / m_filmholes_right->get_height())+1; y++) {
+				m_window->draw_pixbuf(
+					m_GC, 
+					m_filmholes_right, 
+					0, 
+					0, 
+					get_width()-m_filmholes_right->get_width(), 
+					y*m_filmholes_right->get_height(), 
+					m_filmholes_right->get_width(), 
+					m_filmholes_right->get_height(), 
+					Gdk::RGB_DITHER_NONE, 
+					0, 
+					0);
+			}
+		}
 	}
 	else {
 		m_GC->set_foreground(m_colorBackground);

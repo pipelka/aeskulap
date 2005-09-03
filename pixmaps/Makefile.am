@@ -14,7 +14,9 @@ images_DATA = \
 	stock-tool-eraser-22.png \
 	cursor_pan.png \
 	cursor_windowlevel.png \
-	cursor_zoom.png
+	cursor_zoom.png \
+	filmholes-big-left.png \
+	filmholes-big-right.png
 
 EXTRA_DIST = \
 	README \

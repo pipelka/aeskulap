@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/03 09:54:50 $
+    Update Date:      $Date: 2005/09/03 21:39:04 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -162,6 +162,10 @@ protected:
 	bool m_playing;
 	
 	int m_current_frame;
+
+	Glib::RefPtr<Gdk::Pixbuf> m_filmholes_left;
+
+	Glib::RefPtr<Gdk::Pixbuf> m_filmholes_right;
 
 	sigc::connection m_animation_source;
 
