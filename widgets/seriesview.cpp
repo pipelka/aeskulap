@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 13:11:52 $
+    Update Date:      $Date: 2005/09/03 09:54:50 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -34,7 +34,7 @@
 #include "poolinstance.h"
 #include <iostream>
 
-SeriesView::SeriesView() : Aeskulap::Tiler<InstanceView>(1, 1),
+SeriesView::SeriesView() : Aeskulap::Tiler<Aeskulap::Display>(1, 1),
 m_selected(false) {
 	m_instancecount = 0;
 	m_offset = 0;
@@ -89,12 +89,9 @@ void SeriesView::add_instance(const Glib::RefPtr<ImagePool::Instance>& instance)
 
 	// all views occupied ?
 	if(m_instancecount < max_size()) {
-		Aeskulap::Display* d = m_widgets[m_instancecount]->get_display();
+		Aeskulap::Display* d = m_widgets[m_instancecount];
 		if(d != NULL) {
 			d->set_image(instance, p, true);
-			//d->signal_draw.connect(sigc::mem_fun(*this, &SeriesView::on_draw_instance));
-			//d->signal_popup.connect(sigc::bind(signal_popup, this));
-			//signal_display_added(d, instance->series());
 		}
 	}
 	m_instancecount++;
@@ -120,7 +117,7 @@ void SeriesView::update_scrollbar() {
 }
 
 void SeriesView::set_layout(int tilex, int tiley) {
-	Aeskulap::Tiler<InstanceView>::set_layout(tilex, tiley);
+	Aeskulap::Tiler<Aeskulap::Display>::set_layout(tilex, tiley);
 
 	m_offset = m_selected_image;
 
@@ -144,7 +141,8 @@ void SeriesView::set_layout(int tilex, int tiley) {
 	unsigned int i=0;
 	for(int y = 0; y < m_tile_y; y++) {
 		for(int x = 0; x < m_tile_x; x++) {
-			/*Aeskulap::Display* w = new Aeskulap::Display;
+
+			Aeskulap::Display* w = new Aeskulap::Display;
 
 			w->signal_scroll_event().connect(sigc::mem_fun(*this, &SeriesView::on_scroll_event));
 			w->signal_selected.connect(sigc::mem_fun(*this, &SeriesView::on_image_selected));
@@ -152,15 +150,13 @@ void SeriesView::set_layout(int tilex, int tiley) {
 			w->signal_draw.connect(sigc::mem_fun(*this, &SeriesView::on_draw_instance));
 			w->signal_popup.connect(sigc::bind(signal_popup, this));
 
-			m_widgets.push_back(w);*/
-			InstanceView* w = InstanceView::create(InstanceView::SINGLE, this);
 			m_widgets.push_back(w);
 
 			m_table->attach(*w, x, x+1, y, y+1);
 			if(m_offset + i < m_instancecount) {
 				if(m_instance[m_offset + i]) {
-					w->get_display()->set_image(m_instance[m_offset + i], m_dispparam[m_offset + i], false);
-					w->get_display()->set_id(m_offset + i);
+					w->set_image(m_instance[m_offset + i], m_dispparam[m_offset + i], false);
+					w->set_id(m_offset + i);
 				}
 			}
 			w->show();
@@ -222,19 +218,15 @@ void SeriesView::on_image_selected(unsigned int index) {
 	m_dispparam[index]->selected = true;
 
 	if(index >= m_offset && index < m_offset + max_size()) {
-		m_widgets[index - m_offset]->get_display()->update();
+		m_widgets[index - m_offset]->update();
 	}
 
 	if(m_selected_image >= m_offset && m_selected_image < m_offset + max_size()) {
-		m_widgets[m_selected_image - m_offset]->get_display()->update();
+		m_widgets[m_selected_image - m_offset]->update();
 	}
 	
 	m_selected_image = index;
 	
-	Gtk::Widget* control = m_widgets[m_selected_image - m_offset]->get_control();
-	on_control_changed(control);
-	signal_control_changed(control);
-
 	select(true);
 	signal_update(this);
 }
@@ -251,7 +243,7 @@ void SeriesView::on_image_changed(unsigned int index, bool smooth) {
 	}
 
 	for(unsigned int i = 0; i < m_widgets.size(); i++) {
-		m_widgets[i]->get_display()->refresh(smooth);
+		m_widgets[i]->refresh(smooth);
 	}
 }
 
@@ -278,10 +270,6 @@ void SeriesView::scroll_to(unsigned int pos) {
 
 	m_scrollbar->set_value(m_offset);
 
-	Gtk::Widget* control = m_widgets[m_selected_image - m_offset]->get_control();
-	on_control_changed(control);
-	signal_control_changed(control);
-
 	update();	
 }
 
@@ -292,14 +280,14 @@ void SeriesView::update(bool immediate, bool redraw, bool smooth) {
 			if(m_offset + i < m_instancecount) {
 				if(m_instance[m_offset + i]) {
 					if(redraw) {
-						m_widgets[i]->get_display()->set_image(m_instance[m_offset + i], m_dispparam[m_offset + i], smooth);
-						m_widgets[i]->get_display()->set_id(m_offset + i);
+						m_widgets[i]->set_image(m_instance[m_offset + i], m_dispparam[m_offset + i], smooth);
+						m_widgets[i]->set_id(m_offset + i);
 					}
 					if(!immediate) {
-						m_widgets[i]->get_display()->queue_draw();
+						m_widgets[i]->queue_draw();
 					}
 					else {
-						m_widgets[i]->get_display()->update();
+						m_widgets[i]->update();
 					}
 				}
 			}
@@ -368,30 +356,4 @@ void SeriesView::schedule_repaint(int timeout) {
 
 void SeriesView::on_draw_instance(Aeskulap::Display* d, const Glib::RefPtr<Gdk::Window>& w, const Glib::RefPtr<Gdk::GC>& gc) {
 	signal_draw(this, d, w, gc);
-}
-
-void SeriesView::on_control_changed(Gtk::Widget* widget) {
-	if(m_control_handle == NULL) {
-		return;
-	}
-
-	Gtk::Widget* child = m_control_handle->get_child();
-
-	if(child == widget) {
-		return;
-	}
-	
-	m_control_handle->remove();
-
-	if(widget == NULL) {
-		m_control_handle->hide();
-		return;
-	}
-	
-	m_control_handle->add(*widget);
-	widget->show();
-	m_control_handle->show();
-	if(child != NULL) {
-		child->hide();
-	}
 }

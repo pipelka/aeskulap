@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 21:07:59 $
+    Update Date:      $Date: 2005/09/03 09:54:50 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -56,6 +56,13 @@ protected:
 	friend class ImagePool::Loader;
 
 public:
+
+	typedef enum Type {
+		SINGLE,
+		MULTIFRAME,
+		MPEG
+	};
+
 
 	typedef struct _Point {
 		_Point() {
@@ -144,6 +151,10 @@ public:
 
 	void clear();
 	
+	Type get_type();
+
+	int get_framecount();
+
 private:
 
 	std::vector<void*> m_pixels;
@@ -213,6 +224,7 @@ private:
 	Point m_position;
 
 	Orientation m_orientation;
+	
 };
 
 }

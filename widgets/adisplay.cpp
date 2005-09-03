@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 13:11:52 $
+    Update Date:      $Date: 2005/09/03 09:54:50 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -139,7 +139,7 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 
 	m_window->draw_rectangle(m_GC, false, 1, 1, get_width()-3, get_height()-3);
 
-	if(m_image) {
+	if(m_image && !m_playing) {
 		m_GC->set_foreground(m_colorText);
 	
 		m_GC->set_background(m_colorText);
@@ -257,6 +257,7 @@ bool Display::on_button_release_event(GdkEventButton* button) {
 	if(m_image && !m_disp_params->selected) {
 		if(button->button == 1) {
 			m_disp_params->selected = true;
+
 			signal_selected(get_id());
 		}
 	}
