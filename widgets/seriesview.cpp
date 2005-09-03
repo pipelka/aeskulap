@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/03 09:54:50 $
+    Update Date:      $Date: 2005/09/03 21:10:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -96,9 +96,13 @@ void SeriesView::add_instance(const Glib::RefPtr<ImagePool::Instance>& instance)
 	}
 	m_instancecount++;
 
-	reorder_by_instancenumber();
-
-	update(false, false);
+	if(m_instancecount == 1) {
+		update(true, true, true);
+	}
+	else {
+		reorder_by_instancenumber();
+		update(false, false);
+	}
 
 	update_scrollbar();
 }
@@ -167,11 +171,13 @@ void SeriesView::set_layout(int tilex, int tiley) {
 }
 
 void SeriesView::scroll_up() {
+	//Sstd::cout << "SeriesView::scroll_up()" << std::endl;
 	scroll_to(m_offset - 1);
 	schedule_repaint(1000);
 }
 	
 void SeriesView::scroll_down() {
+	//std::cout << "SeriesView::scroll_down()" << std::endl;
 	scroll_to(m_offset + 1);
 	schedule_repaint(1000);
 }
@@ -196,6 +202,10 @@ bool SeriesView::on_scroll_event(GdkEventScroll* event) {
 }
 
 bool SeriesView::on_change_value(Gtk::ScrollType type, double value) {
+	if((int)value == m_offset) {
+		return true;
+	}
+
 	select(true);
 	scroll_to((int)value);
 	schedule_repaint(1000);
@@ -205,6 +215,7 @@ bool SeriesView::on_change_value(Gtk::ScrollType type, double value) {
 bool SeriesView::on_timeout(int timer) {
 	if(timer == 1) {
 		update(true, true, true);
+		m_repaint_source.disconnect();
 	}
 	
 	return false;
@@ -243,8 +254,10 @@ void SeriesView::on_image_changed(unsigned int index, bool smooth) {
 	}
 
 	for(unsigned int i = 0; i < m_widgets.size(); i++) {
-		m_widgets[i]->refresh(smooth);
+		m_widgets[i]->refresh(false);
 	}
+	
+	schedule_repaint(1000);
 }
 
 unsigned int SeriesView::get_max_scrollpos() {
@@ -261,6 +274,11 @@ void SeriesView::scroll_to(unsigned int pos) {
 		return;
 	}
 
+
+	if(pos == m_offset) {
+		return;
+	}
+
 	int diff = pos - m_offset;
 	m_offset = pos;
 
@@ -268,12 +286,14 @@ void SeriesView::scroll_to(unsigned int pos) {
 	m_selected_image += diff;
 	m_dispparam[m_selected_image]->selected = true;
 
-	m_scrollbar->set_value(m_offset);
+	update();
 
-	update();	
+	m_scrollbar->set_value(m_offset);
 }
 
 void SeriesView::update(bool immediate, bool redraw, bool smooth) {
+	//std::cout << "SeriesView::update()" << std::endl;
+
 	int i=0;
 	for(int y = 0; y < m_tile_y; y++) {
 		for(int x = 0; x < m_tile_x; x++) {
@@ -327,6 +347,7 @@ void SeriesView::reorder_by_instancenumber() {
 }
 
 void SeriesView::select(bool s) {
+	//std::cout << "SeriesView::select()" << std::endl;
 	if(m_selected == s) {
 		return;
 	}
@@ -351,7 +372,7 @@ void SeriesView::select(bool s) {
 
 void SeriesView::schedule_repaint(int timeout) {
 	m_repaint_source.disconnect();
-	m_repaint_source = Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(*this, &SeriesView::on_timeout), 1), 1000);
+	m_repaint_source = Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(*this, &SeriesView::on_timeout), 1), timeout);
 }
 
 void SeriesView::on_draw_instance(Aeskulap::Display* d, const Glib::RefPtr<Gdk::Window>& w, const Glib::RefPtr<Gdk::GC>& gc) {

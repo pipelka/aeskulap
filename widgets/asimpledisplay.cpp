@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/03 09:54:50 $
+    Update Date:      $Date: 2005/09/03 21:10:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -121,7 +121,7 @@ void SimpleDisplay::on_size_allocate(Gtk::Allocation& allocation) {
 
     if(allocation.get_width() != m_pixbuf->get_width() || allocation.get_height() != m_pixbuf->get_height()) {
 	    m_pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, allocation.get_width(), allocation.get_height());
-	    bitstretch(true);
+	    bitstretch(false);
     }
 
 	if(m_window) {
@@ -198,7 +198,7 @@ bool SimpleDisplay::set_image(const Glib::RefPtr<ImagePool::Instance>& image, bo
 	set_windowlevels(m_disp_params->window_center, m_disp_params->window_width);
 	bitstretch(smooth);
 
-	queue_draw();
+	//queue_draw();
 	return true;
 }
 
@@ -718,6 +718,10 @@ void SimpleDisplay::play() {
 }
 
 void SimpleDisplay::stop() {
+	if(!m_playing) {
+		return;
+	}
+
 	m_animation_source.disconnect();
 	m_playing = false;
 	bitstretch(true);
@@ -725,6 +729,10 @@ void SimpleDisplay::stop() {
 }
 
 bool SimpleDisplay::on_next_frame() {
+	if(!m_playing) {
+		return false;
+	}
+
 	int frame = get_current_frame();
 	frame++;
 	
