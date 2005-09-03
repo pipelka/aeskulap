@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 09:04:23 $
+    Update Date:      $Date: 2005/09/03 21:39:04 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -218,6 +218,7 @@ void StudyView::set_layout(int tilex, int tiley) {
 			w->show();
 			m_table->attach(*w, x-1, x, y-1, y);
 		}
+		((SeriesView*)w)->schedule_repaint(1000);
 	}
 	
 	// fill space with empty seriesviews
@@ -372,6 +373,8 @@ void StudyView::view_single_series(SeriesView* view) {
 	view->select(true);
 	
 	m_single_series = true;
+	view->schedule_repaint(1000);
+	
 }
 
 void StudyView::on_popup_series(GdkEventButton* button, SeriesView* view) {
