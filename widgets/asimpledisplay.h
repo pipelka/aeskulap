@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 13:11:52 $
+    Update Date:      $Date: 2005/09/03 09:54:50 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -71,9 +71,15 @@ public:
 
 	bool screen_to_point(int x, int y, ImagePool::Instance::Point& p);
 
-	void set_control(Gtk::Widget* control);
+	void set_current_frame(int frame);
 	
-	Gtk::Widget* get_control();
+	int get_current_frame();
+
+	int get_framecount();
+
+	void play();
+	
+	void stop();
 
 protected:
 
@@ -90,6 +96,8 @@ protected:
 	void on_size_allocate(Gtk::Allocation& allocation);
 
 	bool on_expose_event(GdkEventExpose* event);
+
+	bool on_next_frame();
 
 	void bitstretch(bool smooth = false);
 
@@ -149,7 +157,14 @@ protected:
 
 	Gdk::Color m_colorBackground;
 	
-	Gtk::Widget* m_control;
+	// multiframe
+
+	bool m_playing;
+	
+	int m_current_frame;
+
+	sigc::connection m_animation_source;
+
 };
 
 } // namespace Aeskulap

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 13:11:52 $
+    Update Date:      $Date: 2005/09/03 09:54:50 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -39,8 +39,7 @@
 
 namespace Aeskulap {
 
-SimpleDisplay::SimpleDisplay() : m_control(NULL) {
-	
+SimpleDisplay::SimpleDisplay() {	
 	m_disp_params = DisplayParameters::create();
 
 	// set default display parameters
@@ -64,12 +63,16 @@ SimpleDisplay::SimpleDisplay(const Glib::RefPtr<DisplayParameters>& params) {
 }
 
 SimpleDisplay::~SimpleDisplay() {
+	stop();
 	if(m_windowmap != NULL) {
 		free(m_windowmap);
 	}
 }
 
 void SimpleDisplay::init_display() {
+
+	m_playing = false;
+	m_current_frame = 0;
 
 	m_windowmap = NULL;
 	m_windowmap_depth = 0;
@@ -165,6 +168,7 @@ bool SimpleDisplay::set_image(const Glib::RefPtr<ImagePool::Instance>& image, bo
 		return false;
 	}
 
+	stop();
 	m_image = image;
 	
 	if(m_image->iscolor()) {
@@ -203,6 +207,7 @@ bool SimpleDisplay::set_image(const Glib::RefPtr<ImagePool::Instance>& image, co
 		return false;
 	}
 
+	stop();
 	m_image = image;
 	
 	int m_new_windowmap_depth;
@@ -452,23 +457,25 @@ void SimpleDisplay::rectstretch_24(ST src, int xs1, int ys1, int xs2, int ys2, c
 }
 
 void SimpleDisplay::rect_stretch8(int xs1, int ys1, int xs2, int ys2, int xd1, int yd1, int xd2, int yd2, const Glib::RefPtr<Gdk::Pixbuf>& pixbuf) {
-	guint8* src_pixels = (guint8*)m_image->pixels();
+	guint8* src_pixels = (guint8*)m_image->pixels(m_current_frame);
 	rectstretch_24(src_pixels, xs1, ys1, xs2, ys2, pixbuf, xd1, yd1, xd2, yd2);
 }
 
 void SimpleDisplay::rect_stretch16(int xs1, int ys1, int xs2, int ys2, int xd1, int yd1, int xd2, int yd2, const Glib::RefPtr<Gdk::Pixbuf>& pixbuf) {
-	guint16* src_pixels = (guint16*)m_image->pixels();
+	guint16* src_pixels = (guint16*)m_image->pixels(m_current_frame);
 
 	rectstretch_24(src_pixels, xs1, ys1, xs2, ys2, pixbuf, xd1, yd1, xd2, yd2);
 }
 
 void SimpleDisplay::rect_stretch24(int xs1, int ys1, int xs2, int ys2, int xd1, int yd1, int xd2, int yd2, const Glib::RefPtr<Gdk::Pixbuf>& pixbuf) {
-	guint8* src_pixels = (guint8*)m_image->pixels();
+	guint8* src_pixels = (guint8*)m_image->pixels(m_current_frame);
 
 	rectstretch_24to24(src_pixels, xs1, ys1, xs2, ys2, pixbuf, xd1, yd1, xd2, yd2);
 }
 
 void SimpleDisplay::render(Glib::RefPtr<Gdk::Pixbuf>& pixbuf, bool smooth) {
+	//m_mutex.lock();
+
 	int sx0,sy0,sx1,sy1;
 	int dx0,dy0,dx1,dy1;
 
@@ -481,7 +488,7 @@ void SimpleDisplay::render(Glib::RefPtr<Gdk::Pixbuf>& pixbuf, bool smooth) {
 	}
 
 	// do a smooth scale (slow)
-	if(smooth) {
+	if(smooth && !m_playing) {
 		Glib::RefPtr<Gdk::Pixbuf> pixbuf_save = pixbuf;
 	    pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, sx1-sx0/*+1*/, sy1-sy0/*+1*/);
 
@@ -508,6 +515,7 @@ void SimpleDisplay::render(Glib::RefPtr<Gdk::Pixbuf>& pixbuf, bool smooth) {
 		pixbuf_scaled->copy_area(0, 0, dx1-dx0+1, dy1-dy0+1, pixbuf_save, dx0, dy0);
 		
 		pixbuf = pixbuf_save;
+		//m_mutex.unlock();
 		return;
 	}
 	
@@ -524,6 +532,8 @@ void SimpleDisplay::render(Glib::RefPtr<Gdk::Pixbuf>& pixbuf, bool smooth) {
 	else if(bpp == 16) {
 		rect_stretch16(sx0, sy0, sx1, sy1, dx0,  dy0, dx1, dy1, pixbuf);
 	}
+
+	//m_mutex.unlock();
 }
 
 bool SimpleDisplay::get_blit_rectangles(const Glib::RefPtr<Gdk::Pixbuf>& pixbuf, int& sx0, int& sy0, int& sx1, int& sy1, int& dx0, int& dy0, int& dx1, int& dy1) {
@@ -665,6 +675,69 @@ bool SimpleDisplay::screen_to_point(int x, int y, ImagePool::Instance::Point& p)
 	p.y = my - (m_image->spacing_y() * (dy0-y)) / m_magnifier;
 	p.z = 0;
 	
+	return true;
+}
+
+void SimpleDisplay::set_current_frame(int frame) {
+	if(frame > get_framecount()-1) {
+		frame = get_framecount()-1;
+	}
+
+	//m_mutex.lock();
+	m_current_frame = frame;
+	//m_mutex.unlock();
+}
+
+int SimpleDisplay::get_current_frame() {
+	//m_mutex.lock();
+	int rc = m_current_frame;
+	//m_mutex.unlock();
+	
+	return rc;
+}
+
+int SimpleDisplay::get_framecount() {
+	if(!m_image) {
+		return 0;
+	}
+	
+	return m_image->get_framecount();
+}
+
+void SimpleDisplay::play() {
+	std::cout << "SimpleDisplay::play()" << std::endl;
+	m_animation_source.disconnect();
+
+	if(get_framecount() <= 1) {
+		std::cout << "not enough frames to play" << std::endl;
+		return;
+	}
+
+	m_playing = true;
+	m_animation_source = Glib::signal_timeout().connect(sigc::mem_fun(*this, &SimpleDisplay::on_next_frame), 80);
+}
+
+void SimpleDisplay::stop() {
+	m_animation_source.disconnect();
+	m_playing = false;
+	bitstretch(true);
+	update();
+}
+
+bool SimpleDisplay::on_next_frame() {
+	int frame = get_current_frame();
+	frame++;
+	
+	if(frame > get_framecount()-1) {
+		frame = 0;
+	}
+
+	set_current_frame(frame);
+	bitstretch(false);
+	update();
+	
+	Gtk::Main::iteration(false);
+
 	return true;
 }
 
