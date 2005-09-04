@@ -20,7 +20,10 @@ libgtkdicom_la_SOURCES = \
 	asimpledisplay.h \
 	asimpledisplay.cpp \
 	adisplay.h \
-	adisplay.cpp
+	adisplay.cpp \
+	aframectrl.h \
+	amultiframectrl.h \
+	amultiframectrl.cpp
 
 #libgtkdicom_la_LIBADD = \
 #	$(GTKMM_LIBS)

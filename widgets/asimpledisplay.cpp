@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/03 21:39:04 $
+    Update Date:      $Date: 2005/09/04 20:48:16 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -70,6 +70,9 @@ SimpleDisplay::~SimpleDisplay() {
 }
 
 void SimpleDisplay::init_display() {
+
+	m_offset_left = 10;
+	m_offset_right = 10;
 
 	m_playing = false;
 	m_current_frame = 0;
@@ -137,6 +140,9 @@ bool SimpleDisplay::on_expose_event(GdkEventExpose* event) {
 		return false;
 	}
 
+	Gdk::Rectangle rect(1, 1, get_width()-2, get_height()-2);
+	m_GC->set_clip_rectangle(rect);
+
 	if(m_image) {
 		m_window->draw_pixbuf(
 			m_GC, 
@@ -152,6 +158,8 @@ bool SimpleDisplay::on_expose_event(GdkEventExpose* event) {
 			0);
 		
 		if(m_image->get_framecount() > 1) {
+			m_offset_left = m_filmholes_left->get_width() + 5;
+			m_offset_right = m_filmholes_right->get_width() + 5;
 			for(int y=0; y<(get_height() / m_filmholes_left->get_height())+1; y++) {
 				m_window->draw_pixbuf(
 					m_GC, 
@@ -181,6 +189,10 @@ bool SimpleDisplay::on_expose_event(GdkEventExpose* event) {
 					0, 
 					0);
 			}
+		}
+		else {
+			m_offset_left = 10;
+			m_offset_right = 10;
 		}
 	}
 	else {
@@ -718,17 +730,14 @@ void SimpleDisplay::set_current_frame(int frame) {
 		frame = get_framecount()-1;
 	}
 
-	//m_mutex.lock();
 	m_current_frame = frame;
-	//m_mutex.unlock();
+
+	bitstretch(false);
+	update();
 }
 
 int SimpleDisplay::get_current_frame() {
-	//m_mutex.lock();
-	int rc = m_current_frame;
-	//m_mutex.unlock();
-	
-	return rc;
+	return m_current_frame;
 }
 
 int SimpleDisplay::get_framecount() {
@@ -750,6 +759,8 @@ void SimpleDisplay::play() {
 
 	m_playing = true;
 	m_animation_source = Glib::signal_timeout().connect(sigc::mem_fun(*this, &SimpleDisplay::on_next_frame), 80);
+	
+	signal_play();
 }
 
 void SimpleDisplay::stop() {
@@ -761,6 +772,8 @@ void SimpleDisplay::stop() {
 	m_playing = false;
 	bitstretch(true);
 	update();
+	
+	signal_stop();
 }
 
 bool SimpleDisplay::on_next_frame() {
@@ -776,12 +789,15 @@ bool SimpleDisplay::on_next_frame() {
 	}
 
 	set_current_frame(frame);
-	bitstretch(false);
-	update();
-	
+	signal_next_frame(frame);
+
 	Gtk::Main::iteration(false);
 
 	return true;
+}
+
+bool SimpleDisplay::get_playing() {
+	return m_playing;
 }
 
 } // namespace Aeskulap
