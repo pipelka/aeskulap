@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/03 21:10:46 $
+    Update Date:      $Date: 2005/09/04 20:48:16 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -32,6 +32,8 @@
 #include "adisplay.h"
 #include "imagepool.h"
 #include "poolinstance.h"
+#include "amultiframectrl.h"
+
 #include <iostream>
 
 SeriesView::SeriesView() : Aeskulap::Tiler<Aeskulap::Display>(1, 1),
@@ -50,11 +52,12 @@ m_selected(false) {
 	m_scrollbar->set_value(0);
 	m_scrollbar->signal_change_value().connect(sigc::mem_fun(*this, &SeriesView::on_change_value));
 
-	m_control_handle = manage(new Gtk::HandleBox);
+	//m_control_handle = manage(new Gtk::HandleBox);
+	m_ctrl_frame = manage(new Aeskulap::MultiFrameCtrl);
 
 	Gtk::VBox* vbox = manage(new Gtk::VBox);
 	vbox->pack_start(*m_table);
-	vbox->pack_start(*m_control_handle, Gtk::PACK_SHRINK);
+	vbox->pack_start(*m_ctrl_frame, Gtk::PACK_SHRINK);
 	
 	pack_end(*m_scrollbar, false, false);
 	pack_end(*vbox);
@@ -65,6 +68,8 @@ m_selected(false) {
 	m_scrollbar->show();
 	//m_control_handle->show();
 	vbox->show();
+	
+	//m_control_handle->add(*m_ctrl_frame);
 }
 
 SeriesView::~SeriesView() {
@@ -237,6 +242,15 @@ void SeriesView::on_image_selected(unsigned int index) {
 	}
 	
 	m_selected_image = index;
+
+	if(m_widgets[m_selected_image - m_offset]->get_framecount() > 1) {
+		m_ctrl_frame->disconnect();
+		m_ctrl_frame->connect(m_widgets[m_selected_image - m_offset]);
+		m_ctrl_frame->show();
+	}
+	else {
+		m_ctrl_frame->hide();
+	}	
 	
 	select(true);
 	signal_update(this);

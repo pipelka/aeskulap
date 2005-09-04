@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/03 09:54:50 $
+    Update Date:      $Date: 2005/09/04 20:48:16 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -159,7 +159,7 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 		
 		m_layoutR->set_font_description(m_fntdesc);
 		m_layoutR->set_text(text);
-		m_layoutR->set_width((get_width()/2 - 10) * PANGO_SCALE);
+		m_layoutR->set_width((get_width()/2 - m_offset_right) * PANGO_SCALE);
 		
 		text = m_image->model() + "\n";
 		sprintf(buffer, gettext("Image: %i / %i"), m_image->get_index(), m_image->series()->size());
@@ -167,7 +167,7 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 	
 		m_layoutL->set_font_description(m_fntdesc);
 		m_layoutL->set_text(text);
-		m_layoutL->set_width((get_width()/2 - 10) * PANGO_SCALE);
+		m_layoutL->set_width((get_width()/2 - m_offset_left) * PANGO_SCALE);
 
 		sprintf(buffer, "C: %i\nW: %i", m_disp_params->window_center, m_disp_params->window_width);
 
@@ -175,14 +175,14 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 
 		m_layoutB->set_font_description(m_fntdesc);
 		m_layoutB->set_text(text);
-		m_layoutB->set_width((get_width()/2 - 10) * PANGO_SCALE);
+		m_layoutB->set_width((get_width()/2 - m_offset_left) * PANGO_SCALE);
 		int sw = 0;
 		int sh = 0;
 		m_layoutB->get_pixel_size(sw, sh);
 		
-		m_window->draw_layout(m_GC, 10, 5, m_layoutL);
+		m_window->draw_layout(m_GC, m_offset_left, 5, m_layoutL);
 		m_window->draw_layout(m_GC, get_width()/2, 5, m_layoutR);
-		m_window->draw_layout(m_GC, 10, get_height()-5-sh, m_layoutB);
+		m_window->draw_layout(m_GC, m_offset_left, get_height()-5-sh, m_layoutB);
 
 		draw_ruler_v();
 		draw_ruler_h();
@@ -418,7 +418,7 @@ void Display::draw_ruler_v() {
 	
 	int offset = (get_height() - ruler_height) / 2;
 
-	m_window->draw_line(m_GC, get_width()-10, offset, get_width()-10, offset+ruler_height);
+	m_window->draw_line(m_GC, get_width()-m_offset_right, offset, get_width()-m_offset_right, offset+ruler_height);
 	
 	int ym = 0;
 	for(int y=0; y<mm+1; y+=10) {
@@ -431,9 +431,9 @@ void Display::draw_ruler_v() {
 		}
 		m_window->draw_line(
 			m_GC,
-			get_width()-10-lw,
+			get_width()-m_offset_right-lw,
 			offset+ym,
-			get_width()-10,
+			get_width()-m_offset_right,
 			offset+ym);
 	}
 
@@ -442,7 +442,7 @@ void Display::draw_ruler_v() {
 	m_layoutR->set_text(buffer);
 	m_layoutR->set_width(100 * PANGO_SCALE);
 
-	m_window->draw_layout(m_GC, get_width()-110, offset + ym + 3, m_layoutR);
+	m_window->draw_layout(m_GC, get_width()-100-m_offset_right, offset + ym + 3, m_layoutR);
 
 }
 
