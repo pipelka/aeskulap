@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/04 20:48:16 $
+    Update Date:      $Date: 2005/09/08 12:05:45 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -157,7 +157,7 @@ bool SimpleDisplay::on_expose_event(GdkEventExpose* event) {
 			0, 
 			0);
 		
-		if(m_image->get_framecount() > 1) {
+		if(m_image->get_framecount() > 1 && !m_playing) {
 			m_offset_left = m_filmholes_left->get_width() + 5;
 			m_offset_right = m_filmholes_right->get_width() + 5;
 			for(int y=0; y<(get_height() / m_filmholes_left->get_height())+1; y++) {
@@ -726,6 +726,9 @@ bool SimpleDisplay::screen_to_point(int x, int y, ImagePool::Instance::Point& p)
 }
 
 void SimpleDisplay::set_current_frame(int frame) {
+	if(frame < 0) {
+		frame = 0;
+	}
 	if(frame > get_framecount()-1) {
 		frame = get_framecount()-1;
 	}

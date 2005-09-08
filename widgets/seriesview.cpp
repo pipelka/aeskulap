@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/04 20:48:16 $
+    Update Date:      $Date: 2005/09/08 12:05:45 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -66,10 +66,8 @@ m_selected(false) {
 	
 	m_table->show();
 	m_scrollbar->show();
-	//m_control_handle->show();
+	//m_ctrl_frame->show();
 	vbox->show();
-	
-	//m_control_handle->add(*m_ctrl_frame);
 }
 
 SeriesView::~SeriesView() {

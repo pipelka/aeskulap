@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/04 20:48:16 $
+    Update Date:      $Date: 2005/09/08 12:05:45 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -272,7 +272,7 @@ bool Display::on_button_release_event(GdkEventButton* button) {
 	m_drag_button = 0;
 	remove_modal_grab();
 	
-	if(m_changed) {
+	if(m_changed && !m_playing) {
 		signal_changed(get_id(), true);
 
 		bitstretch(true);

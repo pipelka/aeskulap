@@ -23,6 +23,8 @@ protected:
 	
 	void on_stop();
 	
+	void on_signal_stop();
+
 	bool on_change_value(Gtk::ScrollType type, double v);
 
 	void on_next_frame(int frame);
@@ -32,6 +34,8 @@ protected:
 	sigc::connection m_conn_change_value;
 
 	sigc::connection m_conn_next_frame;
+
+	sigc::connection m_conn_signal_stop;
 
 	Display* m_display;
 
