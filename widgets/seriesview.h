@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/04 20:48:16 $
+    Update Date:      $Date: 2005/09/08 12:05:45 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -105,8 +105,6 @@ protected:
 	void update(bool immediate = true, bool redraw = true, bool smooth = false);
 
 	bool m_selected;
-
-	Gtk::HandleBox* m_control_handle;
 
 private:
 

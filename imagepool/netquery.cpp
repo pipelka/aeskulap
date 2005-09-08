@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 08:36:40 $
+    Update Date:      $Date: 2005/09/08 12:05:45 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -167,6 +167,11 @@ void query_from_net(
 		date = date_from;
 	}
 
+	std::string station;
+	if(!stationname.empty()) {
+		station = "*" + stationname + "*";
+	}
+
 	DcmDataset query;
 	DcmElement* e = NULL;
 	
@@ -213,7 +218,7 @@ void query_from_net(
 	query.insert(e);
 
 	e = newDicomElement(DCM_StationName);
-	e->putString(stationname.c_str());
+	e->putString(station.c_str());
 	query.insert(e);
 
 	std::cout << "NEW QUERY:" << std::endl;
