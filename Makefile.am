@@ -38,6 +38,8 @@ dist-hook:
 	list=`find $(distdir)/dcmtk -name "CVS"` && rm -Rf $$list
 	list=`find $(distdir)/dcmtk -name ".cvsignore"` && rm -f $$list
 	list=`find $(distdir)/dcmtk -name ".#*"` && rm -f $$list
+	list=`find $(distdir)/dcmtk -name "*.a"` && rm -f $$list
+	list=`find $(distdir)/dcmtk -name "*.so"` && rm -f $$list
 
 distclean: distclean-recursive
 	cd $(top_builddir)/dcmtk && make distclean
