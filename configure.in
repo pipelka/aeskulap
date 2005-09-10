@@ -113,4 +113,4 @@ pixmaps/Makefile
 cd dcmtk
 export CFLAGS="$CFLAGS"
 export CXXFLAGS="$CXXFLAGS"
-sh ./configure --prefix=${prefix} --libdir=${prefix}/lib/aeskulap
+sh ./configure --without-openssl --without-zlib --without-libwrap --prefix=${prefix} --libdir=${prefix}/lib/aeskulap
