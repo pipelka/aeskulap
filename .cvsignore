@@ -33,3 +33,4 @@ intltool-update.in
 mkinstalldirs
 *.tar.gz
 aeskulap-0.1.0
+*.tar.gz.sig
