@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/08 12:05:45 $
+    Update Date:      $Date: 2005/09/10 16:18:20 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -205,12 +205,12 @@ bool SeriesView::on_scroll_event(GdkEventScroll* event) {
 }
 
 bool SeriesView::on_change_value(Gtk::ScrollType type, double value) {
-	if((int)value == m_offset) {
+	if((unsigned int)value == m_offset) {
 		return true;
 	}
 
 	select(true);
-	scroll_to((int)value);
+	scroll_to((unsigned int)value);
 	schedule_repaint(1000);
 	return true;
 }
