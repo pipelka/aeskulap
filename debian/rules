@@ -14,8 +14,8 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 CC=gcc
 CXX=g++
-CFLAGS = -Wall -O3 -march=i686 -mmmx -msse -mfpmath=sse
-CXXFLAGS = -Wall -O3 -march=i686 -mmmx -msse -mfpmath=sse
+CFLAGS = $(CFLAGS) -Wall -O3 -march=i686 -mmmx -msse -mfpmath=sse
+CXXFLAGS = $(CXXFLAGS) -Wall -O3 -march=i686 -mmmx -msse -mfpmath=sse
 INSTALL_PROGRAM += -s
 
 configure:
