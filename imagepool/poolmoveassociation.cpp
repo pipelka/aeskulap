@@ -35,7 +35,7 @@
 
 
 MoveAssociation::MoveAssociation() {
-	m_abstractSyntax = UID_MOVEPatientRootQueryRetrieveInformationModel;
+	m_abstractSyntax = UID_MOVEStudyRootQueryRetrieveInformationModel;
 	m_maxReceivePDULength = ASC_DEFAULTMAXPDU;
 }
 

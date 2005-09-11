@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/08 12:05:45 $
+    Update Date:      $Date: 2005/09/11 14:31:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -282,7 +282,7 @@ void query_series_from_net(const std::string& studyinstanceuid, const sigc::slot
 	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
 
 	NetClient<FindAssociation> a;
-	a.QueryServers(&query);
+	a.QueryServers(&query, UID_FINDStudyRootQueryRetrieveInformationModel);
 
 	DcmStack* result = a.GetResultStack();
 	for(unsigned int i=0; i<result->card(); i++) {
@@ -304,8 +304,20 @@ int query_study_instances(const std::string& studyinstanceuid) {
 	e->putString(studyinstanceuid.c_str());
 	query.insert(e);
 
+	e = newDicomElement(DCM_SeriesInstanceUID);
+	query.insert(e);
+
 	e = newDicomElement(DCM_SOPInstanceUID);
 	query.insert(e);
+
+/*	e = newDicomElement(DCM_SeriesNumber);
+	query.insert(e);
+
+	e = newDicomElement(DCM_StudyDate);
+	query.insert(e);
+
+	e = newDicomElement(DCM_StudyTime);
+	query.insert(e);*/
 
 	e = newDicomElement(DCM_InstanceNumber);
 	query.insert(e);
@@ -314,7 +326,8 @@ int query_study_instances(const std::string& studyinstanceuid) {
 	query.print(COUT);
 
 	NetClient<FindAssociation> a;
-	a.QueryServers(&query);
+	a.QueryServers(&query, UID_FINDStudyRootQueryRetrieveInformationModel);
+	//a.QueryServers(&query, UID_FINDPatientRootQueryRetrieveInformationModel);
 
 	DcmStack* result = a.GetResultStack();
 

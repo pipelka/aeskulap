@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/24 21:55:43 $
+    Update Date:      $Date: 2005/09/11 14:31:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netclient.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -40,7 +40,7 @@ extern Network net;
 template<class T>
 class NetClient : public T {
 public:
-	void QueryServers(DcmDataset* query) {
+	void QueryServers(DcmDataset* query, const char* syntax = NULL) {
 		Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
 	
 		Gnome::Conf::SListHandle_ValueString aet_list = client->get_string_list("/apps/aeskulap/preferences/server_aet");
@@ -56,7 +56,8 @@ public:
 					(*a).c_str(),
 					(*h).c_str(),
 					(*p),
-					client->get_string("/apps/aeskulap/preferences/local_aet").c_str()
+					client->get_string("/apps/aeskulap/preferences/local_aet").c_str(),
+					syntax
 					);
 		
 			bool rc = SUCCESS(T::Connect(&net));
