@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 09:44:03 $
+    Update Date:      $Date: 2005/09/11 14:31:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -82,6 +82,9 @@ void NetLoader::run() {
 
 	e = newDicomElement(DCM_StudyInstanceUID);
 	e->putString(m_studyinstanceuid.c_str());
+	query.insert(e);
+
+	e = newDicomElement(DCM_SeriesInstanceUID);
 	query.insert(e);
 
 	mover.QueryServers(&query);
