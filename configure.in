@@ -1,6 +1,6 @@
 AC_PREREQ(2.52)
 
-AC_INIT(aeskulap, 0.1.0, pipelka@teleweb.at, aeskulap)
+AC_INIT(aeskulap, 0.1.1, pipelka@teleweb.at, aeskulap)
 AM_INIT_AUTOMAKE([subdir-objects])
 dnl AM_MAINTAINER_MODE
 

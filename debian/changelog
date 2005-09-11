@@ -1,3 +1,9 @@
+aeskulap (0.1.1-1) unstable; urgency=low
+
+  * rebuild for new version
+
+ -- Alexander Pipelka <pipelka@shuttle.pipelka.net>  Sun, 11 Sep 2005 16:33:15 +0200
+
 aeskulap (0.1.0-2) unstable; urgency=low
 
   * added locale files
