@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/04 20:48:16 $
+    Update Date:      $Date: 2005/09/12 18:00:50 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -107,7 +107,7 @@ protected:
 
 	bool on_next_frame();
 
-	void bitstretch(bool smooth = false);
+	virtual void bitstretch(bool smooth = false);
 
 	void get_zoom_wh(int& w, int& h);
 

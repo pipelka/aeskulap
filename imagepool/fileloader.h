@@ -3,6 +3,8 @@
 
 #include "loader.h"
 #include <vector>
+#include <map>
+#include <string>
 
 namespace ImagePool {
 
@@ -15,9 +17,14 @@ protected:
 
 	void run();
 
+	void prescan_files(Glib::SListHandle< Glib::ustring >* filelist);
+
 private:
 
 	Glib::SListHandle< Glib::ustring >* m_filelist;
+	
+	std::map< std::string, int > m_studysize;
+
 };
 
 } // namespace ImagePool

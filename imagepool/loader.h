@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 09:44:03 $
+    Update Date:      $Date: 2005/09/12 18:00:51 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -31,7 +31,7 @@
 
 #include <glibmm.h>
 #include <queue>
-#include <map>
+#include <list>
 
 class DcmDataset;
 
@@ -61,7 +61,7 @@ protected:
 
 	class Data {
 	public:
-		std::map < Glib::RefPtr<ImagePool::Study>, bool > loaded_study;
+		std::list < Glib::RefPtr<ImagePool::Study> > loaded_study;
 	};
 
 	virtual void run();

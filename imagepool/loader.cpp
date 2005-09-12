@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 09:44:03 $
+    Update Date:      $Date: 2005/09/12 18:00:51 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -124,8 +124,9 @@ void Loader::add_image(DcmDataset* dset, int imagecount) {
 		return;
 	}
 
-	image->study()->set_instancecount(image->study()->get_instancecount()+1, imagecount);
-	m_data.loaded_study[image->study()] = true;
+	int count = image->study()->get_instancecount()+1;
+	image->study()->set_instancecount(count, imagecount);
+	m_data.loaded_study.push_front(image->study());
 
 	m_imagequeue.push(image);
 	m_add_image();
@@ -135,15 +136,12 @@ void Loader::run() {
 }
 
 void Loader::finished() {
-	std::map < Glib::RefPtr<ImagePool::Study>, bool >::iterator i = m_data.loaded_study.begin();
+	std::list < Glib::RefPtr<ImagePool::Study> >::iterator i = m_data.loaded_study.begin();
 	while(i != m_data.loaded_study.end()) {
-		if(i->second) {
-			i->second = false;
-			i->first->signal_progress(100);
-		}
+		std::cout << "finished: " << (*i)->studyinstanceuid() << std::endl;
+		(*i)->signal_progress(100);
 		i++;
 	}
-
 	m_data.loaded_study.clear();
 }
 
@@ -155,10 +153,11 @@ void Loader::thread() {
 	run();
 
 	while(m_imagequeue.size() > 0) {
-		Glib::usleep(1000);
+		Glib::usleep(1000*100);
 	}
 
 	m_finished();
+	Glib::usleep(1000*1000);
 
 	m_mutex.lock();
 	m_busy = false;
@@ -172,9 +171,5 @@ bool Loader::busy() {
 	
 	return rc;
 }
-
-/*Loader::Data& Loader::data() {
-	return m_data[Glib::Thread::self()];
-}*/
 
 } // namespace ImagePool
