@@ -1,23 +1,24 @@
-# translation of de.po to
-# Copyright (C) 2005 Free Software Foundation, Inc.
-# Alexander Pipelka <pipelka@pipelka.net>, 2005.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: de\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-09-12 22:10+0200\n"
-"PO-Revision-Date: 2005-08-15 16:51+0200\n"
-"Last-Translator: Alexander Pipelka <pipelka@pipelka.net>\n"
-"Language-Team:  <en@li.org>\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: application/x-xml2pot; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.10\n"
 
 #: ../imagepool/netquery.cpp:82 ../imagepool/netquery.cpp:101
 msgid "no description"
-msgstr "Keine Beschreibung"
+msgstr ""
 
 #: ../widgets/aseriesmenu.cpp:45
 #, c-format
@@ -25,8 +26,6 @@ msgid ""
 "Series %i (%s)\n"
 "%s"
 msgstr ""
-"Serie %i (%s)\n"
-"%s"
 
 #: ../widgets/aseriesmenu.cpp:48
 #, c-format
@@ -34,170 +33,168 @@ msgid ""
 "Series %i (%s)\n"
 "No description"
 msgstr ""
-"Serie %i (%s)\n"
-"Keine Beschreibung"
 
 #: ../widgets/adisplay.cpp:150
 msgid "Acc:\n"
-msgstr "Aufn.:\n"
+msgstr ""
 
 #: ../widgets/adisplay.cpp:152
 msgid "Acq Tm: "
-msgstr "Aufn. Zeit:"
+msgstr ""
 
 #: ../widgets/adisplay.cpp:165
 #, c-format
 msgid "Image: %i / %i"
-msgstr "Bild: %i / %i"
+msgstr ""
 
 #: ../widgets/adisplay.cpp:449 ../widgets/adisplay.cpp:501
 #, c-format
 msgid "%i mm"
-msgstr "%i mm"
+msgstr ""
 
 #: ../widgets/studyview.cpp:82
 msgid "Rearrange the series of the current study"
-msgstr "Serien der Studie umordnen"
+msgstr ""
 
 #: ../widgets/studyview.cpp:83
 msgid "Display the series tiling menu"
-msgstr "Layout der Series ändern"
+msgstr ""
 
 #: ../widgets/studyview.cpp:90
 msgid "Toggle single series mode"
-msgstr "Nur aktuelle Serie anzeigen"
+msgstr ""
 
 #: ../widgets/studyview.cpp:91
 msgid "Display the series selection menu"
-msgstr "Zeigt das Auswahlmenü für Serien an"
+msgstr ""
 
 #: ../widgets/studyview.cpp:97
 msgid "Rearrange the images of the selected series"
-msgstr "Bilder der Serie umordnen"
+msgstr ""
 
 #: ../widgets/studyview.cpp:98
 msgid "Display the the image tiling menu"
-msgstr "Layout der Serie ändern"
+msgstr ""
 
 #: ../widgets/studyview.cpp:107
 msgid "Display references of the selected series"
-msgstr "Referenzbilder anzeigen"
+msgstr ""
 
 #: ../src/astockids.cpp:61
 msgid "1 Image"
-msgstr "1 Bild"
+msgstr ""
 
 #: ../src/astockids.cpp:62
 msgid "1x2 Images"
-msgstr "1x2 Bilder"
+msgstr ""
 
 #: ../src/astockids.cpp:63
 msgid "2x1 Images"
-msgstr "2x1 Bilder"
+msgstr ""
 
 #: ../src/astockids.cpp:64
 msgid "2x2 Images"
-msgstr "2x2 Bilder"
+msgstr ""
 
 #: ../src/astockids.cpp:65
 msgid "4x4 Images"
-msgstr "4x4 Bilder"
+msgstr ""
 
 #: ../src/astockids.cpp:66
 msgid "Single"
-msgstr "Einzeln"
+msgstr ""
 
 #: ../src/astockids.cpp:67
 msgid "All"
-msgstr "Alle"
+msgstr ""
 
 #: ../src/astockids.cpp:68
 msgid "1 Series"
-msgstr "1 Serie"
+msgstr ""
 
 #: ../src/astockids.cpp:69
 msgid "2x1 Series"
-msgstr "2x1 Serien"
+msgstr ""
 
 #: ../src/astockids.cpp:70
 msgid "2x2 Series"
-msgstr "2x2 Serien"
+msgstr ""
 
 #: ../src/astockids.cpp:71
 msgid "Reference"
-msgstr "Referenz"
+msgstr ""
 
 #: ../src/astockids.cpp:72
 msgid "Delete item"
-msgstr "Objekt löschen"
+msgstr ""
 
 #: ../src/mainwindow.cpp:48
 msgid "Open DICOM Image files"
-msgstr "DICOM Bilder öffnen"
+msgstr ""
 
 #: ../src/mainwindow.cpp:86
 msgid "Bring opened files to front"
-msgstr "Geöffnete Dateien anzeigen"
+msgstr ""
 
 #: ../src/mainwindow.cpp:95
 msgid "DICOM files"
-msgstr "DICOM Dateien"
+msgstr ""
 
 #: ../src/mainwindow.cpp:100
 msgid "Any files"
-msgstr "Alle Dateien"
+msgstr ""
 
 #. c->add_attribute(m_tree_icon.property_stock_size(), m_Columns.m_iconsize);
 #: ../src/studymanager.cpp:107
 msgid "Patientsname"
-msgstr "Patientenname"
+msgstr ""
 
 #: ../src/studymanager.cpp:108
 msgid "Birthdate"
-msgstr "Geburtsdatum"
+msgstr ""
 
 #: ../src/studymanager.cpp:109
 msgid "Description"
-msgstr "Beschreibung"
+msgstr ""
 
 #: ../src/studymanager.cpp:110
 msgid "Modality"
-msgstr "Modalität"
+msgstr ""
 
 #: ../src/studymanager.cpp:111
 msgid "Date/Time"
-msgstr "Datum/Zeit"
+msgstr ""
 
 #: ../src/studymanager.cpp:112
 msgid "Station"
-msgstr "Station"
+msgstr ""
 
 #: ../src/studymanager.cpp:258
 #, c-format
 msgid "Series %i (1 Image)"
-msgstr "Serie %i (1 Bild)"
+msgstr ""
 
 #: ../src/studymanager.cpp:261
 #, c-format
 msgid "Series %i (%i Images)"
-msgstr "Serie %i (%i Bilder)"
+msgstr ""
 
 #: ../src/studymanager.cpp:264
 #, c-format
 msgid "Series %i"
-msgstr "Serie %i"
+msgstr ""
 
 #: ../src/settings.cpp:68
 msgid "AET"
-msgstr "AET"
+msgstr ""
 
 #: ../src/settings.cpp:69 ../src/aeskulap.glade.h:21
 msgid "Port"
-msgstr "Port"
+msgstr ""
 
 #: ../src/settings.cpp:70
 msgid "Hostname"
-msgstr "Hostname"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:1
 msgid "(C) 2005 Alexander Pipelka"
@@ -205,43 +202,43 @@ msgstr ""
 
 #: ../src/aeskulap.glade.h:2
 msgid "<b>Filter</b>"
-msgstr "<b>Filter</b>"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:3
 msgid "<b>Modality:</b>"
-msgstr "<b>Modalität:</b>"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:4
 msgid "<b>Name:</b>"
-msgstr "<b>Name:</b>"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:5
 msgid "<b>Patient ID:</b>"
-msgstr "<b>Patienten ID</b>:"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:6
 msgid "<b>Prescanning files ...</b>"
-msgstr "<b>Voruntersuchung der Dateien ...</b>"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:7
 msgid "<b>Stationname:</b>"
-msgstr "<b>Stationsname:</b>"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:8
 msgid "<b>Study Description:</b>"
-msgstr "<b>Studienbeschreibung:</b>"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:9
 msgid "<b>Study List</b>"
-msgstr "<b>Studien</b>"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:10
 msgid "Accessionnumber:"
-msgstr "Aufnahmezahl:"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:11
 msgid "Aeskulap"
-msgstr "Aeskulap"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:12
 msgid "Aeskulap Viewer"
@@ -249,48 +246,47 @@ msgstr ""
 
 #: ../src/aeskulap.glade.h:13
 msgid "Clear Filter"
-msgstr "Filter löschen"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:14
 msgid "DICOM Servers"
-msgstr "DICOM Server"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:15
 msgid "DICOM Settings"
-msgstr "DICOM Einstellungen"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:16
 msgid "From:"
-msgstr "Von:"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:17
 msgid "Fullscreen"
-msgstr "Vollbild"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:18
 msgid "Local AET"
-msgstr "Lokaler AET"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:19
 msgid "Medical image viewer and DICOM network client\n"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:22
-#, fuzzy
 msgid "Scanning files"
-msgstr "Untersuche Dateien"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:23
 msgid "Search"
-msgstr "Suchen"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:24
 msgid "Settings"
-msgstr "Einstellungen"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:25
 msgid "Study Manager"
-msgstr "Studienverwaltung"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:26
 msgid ""
@@ -308,11 +304,11 @@ msgstr ""
 
 #: ../src/aeskulap.glade.h:36
 msgid "To:"
-msgstr "Bis:"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:37
 msgid "Today"
-msgstr "Heute"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:38
 msgid ""
@@ -326,7 +322,7 @@ msgstr ""
 
 #: ../src/aeskulap.glade.h:45
 msgid "Yesterday"
-msgstr "Gestern"
+msgstr ""
 
 #: ../src/aeskulap.glade.h:46
 msgid "_Ansicht"
@@ -352,24 +348,3 @@ msgstr ""
 #: ../src/aeskulap.glade.h:52
 msgid "translator-credits"
 msgstr ""
-
-#~ msgid "Close study"
-#~ msgstr "Studie schließen"
-
-#~ msgid "Preview"
-#~ msgstr "Vorschau"
-
-#~ msgid "Queue"
-#~ msgstr "Warteschlange"
-
-#~ msgid "Retrieve"
-#~ msgstr "Empfangen"
-
-#~ msgid "Servertype"
-#~ msgstr "Servertyp"
-
-#~ msgid "Study Desc.:"
-#~ msgstr "Sudienbeschreibung:"
-
-#~ msgid "View"
-#~ msgstr "Ansicht"
