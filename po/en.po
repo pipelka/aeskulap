@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-30 22:11+0200\n"
+"POT-Creation-Date: 2005-09-12 22:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,36 +46,36 @@ msgstr ""
 msgid "Image: %i / %i"
 msgstr ""
 
-#: ../widgets/adisplay.cpp:440 ../widgets/adisplay.cpp:492
+#: ../widgets/adisplay.cpp:449 ../widgets/adisplay.cpp:501
 #, c-format
 msgid "%i mm"
 msgstr ""
 
-#: ../widgets/studyview.cpp:83
+#: ../widgets/studyview.cpp:82
 msgid "Rearrange the series of the current study"
 msgstr ""
 
-#: ../widgets/studyview.cpp:84
+#: ../widgets/studyview.cpp:83
 msgid "Display the series tiling menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:91
+#: ../widgets/studyview.cpp:90
 msgid "Toggle single series mode"
 msgstr ""
 
-#: ../widgets/studyview.cpp:92
+#: ../widgets/studyview.cpp:91
 msgid "Display the series selection menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:98
+#: ../widgets/studyview.cpp:97
 msgid "Rearrange the images of the selected series"
 msgstr ""
 
-#: ../widgets/studyview.cpp:99
+#: ../widgets/studyview.cpp:98
 msgid "Display the the image tiling menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:108
+#: ../widgets/studyview.cpp:107
 msgid "Display references of the selected series"
 msgstr ""
 
@@ -127,24 +127,20 @@ msgstr ""
 msgid "Delete item"
 msgstr ""
 
-#: ../src/mainwindow.cpp:46
+#: ../src/mainwindow.cpp:48
 msgid "Open DICOM Image files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:81
+#: ../src/mainwindow.cpp:86
 msgid "Bring opened files to front"
 msgstr ""
 
-#: ../src/mainwindow.cpp:90
+#: ../src/mainwindow.cpp:95
 msgid "DICOM files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:95
+#: ../src/mainwindow.cpp:100
 msgid "Any files"
-msgstr ""
-
-#: ../src/mainwindow.cpp:195
-msgid "Close study"
 msgstr ""
 
 #. c->add_attribute(m_tree_icon.property_stock_size(), m_Columns.m_iconsize);
@@ -191,7 +187,7 @@ msgstr ""
 msgid "AET"
 msgstr ""
 
-#: ../src/settings.cpp:69 ../src/aeskulap.glade.h:20
+#: ../src/settings.cpp:69 ../src/aeskulap.glade.h:21
 msgid "Port"
 msgstr ""
 
@@ -220,70 +216,78 @@ msgid "<b>Patient ID:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:6
-msgid "<b>Stationname:</b>"
+msgid "<b>Prescanning files ...</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:7
-msgid "<b>Study Description:</b>"
+msgid "<b>Stationname:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:8
-msgid "<b>Study List</b>"
+msgid "<b>Study Description:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:9
-msgid "Accessionnumber:"
+msgid "<b>Study List</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:10
-msgid "Aeskulap"
+msgid "Accessionnumber:"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:11
-msgid "Aeskulap Viewer"
+msgid "Aeskulap"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:12
-msgid "Clear Filter"
+msgid "Aeskulap Viewer"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:13
-msgid "DICOM Servers"
+msgid "Clear Filter"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:14
-msgid "DICOM Settings"
+msgid "DICOM Servers"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:15
-msgid "From:"
+msgid "DICOM Settings"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:16
-msgid "Fullscreen"
+msgid "From:"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:17
-msgid "Local AET"
+msgid "Fullscreen"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:18
+msgid "Local AET"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:19
 msgid "Medical image viewer and DICOM network client\n"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:21
-msgid "Search"
-msgstr ""
-
 #: ../src/aeskulap.glade.h:22
-msgid "Settings"
+msgid "Scanning files"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:23
-msgid "Study Manager"
+msgid "Search"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:24
+msgid "Settings"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:25
+msgid "Study Manager"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:26
 msgid ""
 "The Aeskulap source code is licensed under the following terms:\n"
 "\n"
@@ -297,15 +301,15 @@ msgid ""
 "BSD/MIT"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:34
+#: ../src/aeskulap.glade.h:36
 msgid "To:"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:35
+#: ../src/aeskulap.glade.h:37
 msgid "Today"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:36
+#: ../src/aeskulap.glade.h:38
 msgid ""
 "XA\n"
 "CT\n"
@@ -315,31 +319,31 @@ msgid ""
 "SC\n"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:43
+#: ../src/aeskulap.glade.h:45
 msgid "Yesterday"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:44
+#: ../src/aeskulap.glade.h:46
 msgid "_Ansicht"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:45
+#: ../src/aeskulap.glade.h:47
 msgid "_Bearbeiten"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:46
+#: ../src/aeskulap.glade.h:48
 msgid "_Datei"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:47
+#: ../src/aeskulap.glade.h:49
 msgid "_Hilfe"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:48
+#: ../src/aeskulap.glade.h:50
 msgid "_Info"
 msgstr ""
 
 #. TRANSLATORS: Replace this string with your names, one name per line.
-#: ../src/aeskulap.glade.h:50
+#: ../src/aeskulap.glade.h:52
 msgid "translator-credits"
 msgstr ""
