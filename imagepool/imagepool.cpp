@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 21:07:59 $
+    Update Date:      $Date: 2005/09/12 21:15:16 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -51,8 +51,6 @@
 #include <queue>
 
 namespace ImagePool {
-
-void context_function();
 
 Network net;
 
