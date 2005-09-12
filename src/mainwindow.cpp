@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 09:44:03 $
+    Update Date:      $Date: 2005/09/12 19:26:20 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -36,6 +36,7 @@
 #include "studymanager.h"
 #include "settings.h"
 #include "astudytab.h"
+#include "prescandialog.h"
 
 #include "assert.h"
 #include "gettext.h"
@@ -48,6 +49,9 @@ m_dialogFile(gettext("Open DICOM Image files")),
 m_raise_opened(true)
 {
 	set_icon(Aeskulap::IconFactory::load_from_file("aeskulap.png"));
+
+	m_prescandialog = NULL;
+	m_refGlade->get_widget_derived("prescandialog", m_prescandialog);
 
 	m_studymanager = NULL;
 	m_refGlade->get_widget_derived("vbox_studymanager", m_studymanager);
@@ -97,11 +101,10 @@ m_raise_opened(true)
 	filter_any.add_pattern("*");
 	m_dialogFile.add_filter(filter_any);
 
-	//ImagePool::Signals::signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
 	m_netloader.signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
-	//m_netloader.signal_finished.connect(sigc::mem_fun(*this, &MainWindow::on_load_finished));
+
 	m_fileloader.signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
-	//m_fileloader.signal_finished.connect(sigc::mem_fun(*this, &MainWindow::on_load_finished));
+	m_fileloader.signal_prescan_progress.connect(sigc::mem_fun(*m_prescandialog, &PrescanDialog::set_progress));
 
 	m_cursor_watch = new Gdk::Cursor(Gdk::WATCH);
 }
@@ -109,6 +112,7 @@ m_raise_opened(true)
 MainWindow::~MainWindow() {
 	delete m_settings;
 	delete m_cursor_watch;
+	delete m_prescandialog;
 }
 
 void MainWindow::set_busy_cursor(bool busy) {
@@ -141,9 +145,16 @@ void MainWindow::on_file_open() {
 	}
 
 	set_busy_cursor();
+	
+	m_prescandialog->show();
+
+	while(Gtk::Main::events_pending()) Gtk::Main::iteration(false);
+
 	if(!m_fileloader.load(m_dialogFile.get_filenames())) {
 		set_busy_cursor(false);
 	}
+
+	m_prescandialog->hide();
 }
 
 void MainWindow::on_net_open(const std::string& studyinstanceuid) {

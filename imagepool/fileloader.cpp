@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/12 18:00:51 $
+    Update Date:      $Date: 2005/09/12 19:26:20 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/fileloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -37,7 +37,7 @@
 namespace ImagePool {
 
 bool FileLoader::load(const Glib::SListHandle< Glib::ustring >& filelist) {
-	if(busy()) {
+	if(busy() || filelist.size() == 0) {
 		return false;
 	}
 
@@ -58,10 +58,14 @@ bool FileLoader::load(const Glib::SListHandle< Glib::ustring >& filelist) {
 void FileLoader::prescan_files(Glib::SListHandle< Glib::ustring >* filelist) {
 	std::string studyinstanceuid;
 	Glib::SListHandle< Glib::ustring >::iterator i = filelist->begin();
+	unsigned int curr = 0;
+	unsigned int max = filelist->size();
 
 	for(; i != filelist->end(); i++) {
+
+		signal_prescan_progress((double)(++curr) / (double)max);
+
 		DcmFileFormat dfile;
-	
 		OFCondition cond = dfile.loadFile(
 							(*i).c_str(),
 							EXS_Unknown,

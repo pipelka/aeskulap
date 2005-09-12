@@ -11,6 +11,8 @@ aeskulap_SOURCES = \
 	studymanager.h \
 	settings.cpp \
 	settings.h \
+	prescandialog.cpp \
+	prescandialog.h \
 	main.cpp
 
 aeskulap_LDADD = \

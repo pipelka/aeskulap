@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 09:44:03 $
+    Update Date:      $Date: 2005/09/12 19:26:20 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.h,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -45,6 +45,7 @@ namespace ImagePool {
 class StudyManager;
 class Settings;
 class StudyView;
+class PrescanDialog;
 
 class MainWindow : public Gtk::Window {
 public:
@@ -90,6 +91,8 @@ private:
 	Gtk::CheckButton* m_dialog_check;
 
 	StudyManager* m_studymanager;
+
+	PrescanDialog* m_prescandialog;
 
 	Settings* m_settings;
 
