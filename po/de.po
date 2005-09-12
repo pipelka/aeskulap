@@ -276,7 +276,6 @@ msgid "Medical image viewer and DICOM network client\n"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:22
-#, fuzzy
 msgid "Scanning files"
 msgstr "Untersuche Dateien"
 
