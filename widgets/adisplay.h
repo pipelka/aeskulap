@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/02 09:04:23 $
+    Update Date:      $Date: 2005/09/12 18:00:50 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -81,6 +81,8 @@ protected:
 	bool on_button_release_event(GdkEventButton* button);
 
 	bool on_motion_notify_event(GdkEventMotion* event);
+
+	virtual void bitstretch(bool smooth = false);
 
 	void draw_ruler_v();
 

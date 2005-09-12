@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/08 12:05:45 $
+    Update Date:      $Date: 2005/09/12 18:00:50 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -191,6 +191,14 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 	signal_draw(this, m_window, m_GC);
 
 	return true;
+}
+
+void Display::bitstretch(bool smooth) {
+	if(m_drag_active && smooth) {
+		return;
+	}
+
+	Aeskulap::SimpleDisplay::bitstretch(smooth);
 }
 
 bool Display::on_button_press_event(GdkEventButton* button) {
