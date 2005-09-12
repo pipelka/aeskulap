@@ -13,6 +13,8 @@ public:
 
 	bool load(const Glib::SListHandle< Glib::ustring >& filelist);
 
+	sigc::signal< void, double > signal_prescan_progress;
+
 protected:
 
 	void run();
