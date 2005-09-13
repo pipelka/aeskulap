@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/13 17:55:28 $
+    Update Date:      $Date: 2005/09/13 18:27:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -75,15 +75,15 @@ int main(int argc, char* argv[]) {
 	mainWindow->maximize();
 	mainWindow->show();
 
-	std::list< std::string > list;
+	std::list< Glib::ustring > list;
 	for(int c=1; c<argc; c++) {
 		if(argv[c][0] != '-') {
-			list.push_front(argv[c]);
+			list.push_back(argv[c]);
 		}
 	}
 	
 	if(list.size() > 0) {
-		mainWindow->	load_files(list);
+		mainWindow->load_files(list);
 		list.clear();
 	}
 
