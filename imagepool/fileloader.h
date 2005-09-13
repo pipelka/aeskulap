@@ -2,7 +2,7 @@
 #define IMAGEPOOL_FILELOADER_H
 
 #include "loader.h"
-#include <vector>
+#include <list>
 #include <map>
 #include <string>
 
@@ -11,7 +11,7 @@ namespace ImagePool {
 class FileLoader: public Loader {
 public:
 
-	bool load(const Glib::SListHandle< Glib::ustring >& filelist);
+	bool load(const std::list< Glib::ustring >& filelist);
 
 	sigc::signal< void, double > signal_prescan_progress;
 
@@ -19,11 +19,11 @@ protected:
 
 	void run();
 
-	void prescan_files(Glib::SListHandle< Glib::ustring >* filelist);
+	void prescan_files(std::list< Glib::ustring >* filelist);
 
 private:
 
-	Glib::SListHandle< Glib::ustring >* m_filelist;
+	std::list< Glib::ustring >* m_filelist;
 	
 	std::map< std::string, int > m_studysize;
 

@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/12 19:26:20 $
+    Update Date:      $Date: 2005/09/13 18:27:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/fileloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -36,12 +36,12 @@
 
 namespace ImagePool {
 
-bool FileLoader::load(const Glib::SListHandle< Glib::ustring >& filelist) {
+bool FileLoader::load(const std::list< Glib::ustring >& filelist) {
 	if(busy() || filelist.size() == 0) {
 		return false;
 	}
 
-	m_filelist = new Glib::SListHandle< Glib::ustring >(filelist);
+	m_filelist = new std::list< Glib::ustring >(filelist);
 	
 	m_studysize.clear();
 	prescan_files(m_filelist);
@@ -55,9 +55,9 @@ bool FileLoader::load(const Glib::SListHandle< Glib::ustring >& filelist) {
 	return true;
 }
 
-void FileLoader::prescan_files(Glib::SListHandle< Glib::ustring >* filelist) {
+void FileLoader::prescan_files(std::list< Glib::ustring >* filelist) {
 	std::string studyinstanceuid;
-	Glib::SListHandle< Glib::ustring >::iterator i = filelist->begin();
+	std::list< Glib::ustring >::iterator i = filelist->begin();
 	unsigned int curr = 0;
 	unsigned int max = filelist->size();
 
@@ -80,8 +80,8 @@ void FileLoader::prescan_files(Glib::SListHandle< Glib::ustring >* filelist) {
 }
 
 void FileLoader::run() {
-	Glib::SListHandle< Glib::ustring >* filelist = m_filelist;
-	Glib::SListHandle< Glib::ustring >::iterator i = filelist->begin();
+	std::list< Glib::ustring >* filelist = m_filelist;
+	std::list< Glib::ustring >::iterator i = filelist->begin();
 	std::string studyinstanceuid;
 
 	for(; i != filelist->end(); i++) {

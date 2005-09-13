@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/13 17:55:28 $
+    Update Date:      $Date: 2005/09/13 18:27:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -54,7 +54,7 @@ public:
 	
 	~MainWindow();
 
-	void load_files(std::list< std::string > list);
+	void load_files(std::list< Glib::ustring > list);
 
 protected:
 

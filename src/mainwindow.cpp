@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/13 17:55:28 $
+    Update Date:      $Date: 2005/09/13 18:27:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -147,7 +147,7 @@ void MainWindow::on_file_open() {
 	load_files(m_dialogFile.get_filenames());
 }
 
-void MainWindow::load_files(std::list< std::string > list) {
+void MainWindow::load_files(std::list< Glib::ustring > list) {
 	set_busy_cursor();
 	
 	m_prescandialog->show();
