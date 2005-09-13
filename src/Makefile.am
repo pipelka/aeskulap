@@ -28,7 +28,7 @@ aeskulap_LDFLAGS = \
 	-Wl,-rpath,${prefix}/lib/aeskulap
 
 schemadir = \
-	$(sysconfdir)/gconf/schemas
+	$(datadir)/gconf/schemas
 
 schema_DATA = \
 	aeskulap.schema
