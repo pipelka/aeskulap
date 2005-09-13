@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/12 19:26:20 $
+    Update Date:      $Date: 2005/09/13 17:55:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -144,13 +144,17 @@ void MainWindow::on_file_open() {
 		return;
 	}
 
+	load_files(m_dialogFile.get_filenames());
+}
+
+void MainWindow::load_files(std::list< std::string > list) {
 	set_busy_cursor();
 	
 	m_prescandialog->show();
 
 	while(Gtk::Main::events_pending()) Gtk::Main::iteration(false);
 
-	if(!m_fileloader.load(m_dialogFile.get_filenames())) {
+	if(!m_fileloader.load(list)) {
 		set_busy_cursor(false);
 	}
 

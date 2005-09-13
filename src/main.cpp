@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 19:47:55 $
+    Update Date:      $Date: 2005/09/13 17:55:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -75,11 +75,16 @@ int main(int argc, char* argv[]) {
 	mainWindow->maximize();
 	mainWindow->show();
 
+	std::list< std::string > list;
 	for(int c=1; c<argc; c++) {
-    
 		if(argv[c][0] != '-') {
-			//ImagePool::create_instance(argv[c]);
+			list.push_front(argv[c]);
 		}
+	}
+	
+	if(list.size() > 0) {
+		mainWindow->	load_files(list);
+		list.clear();
 	}
 
 	kit.run(*mainWindow);
