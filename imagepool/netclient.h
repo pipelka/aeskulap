@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/11 14:31:14 $
+    Update Date:      $Date: 2005/09/16 19:26:18 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netclient.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -40,7 +40,7 @@ extern Network net;
 template<class T>
 class NetClient : public T {
 public:
-	void QueryServers(DcmDataset* query, const char* syntax = NULL) {
+	bool QueryServers(DcmDataset* query, const char* syntax = NULL) {
 		Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
 	
 		Gnome::Conf::SListHandle_ValueString aet_list = client->get_string_list("/apps/aeskulap/preferences/server_aet");
@@ -51,6 +51,7 @@ public:
 		Gnome::Conf::SListHandle_ValueInt::iterator p = port_list.begin();
 		Gnome::Conf::SListHandle_ValueString::iterator h = hostname_list.begin();
 	
+		bool rc = false;
 		for(; h != hostname_list.end() && a != aet_list.end() && p != port_list.end(); a++, p++, h++) {
 			T::Create(
 					(*a).c_str(),
@@ -60,14 +61,18 @@ public:
 					syntax
 					);
 		
-			bool rc = SUCCESS(T::Connect(&net));
+			bool r = SUCCESS(T::Connect(&net));
 		
-			if(rc == true) {
+			if(r == true) {
 				rc = T::SendObject(query).good();
 			}
 	
+			rc |= r;
+	
 			T::Drop();	
 		}
+		
+		return rc;
 	}
 };
 	

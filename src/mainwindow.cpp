@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/13 18:27:17 $
+    Update Date:      $Date: 2005/09/16 19:26:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -49,6 +49,13 @@ m_dialogFile(gettext("Open DICOM Image files")),
 m_raise_opened(true)
 {
 	set_icon(Aeskulap::IconFactory::load_from_file("aeskulap.png"));
+
+	m_network_error_dialog = NULL;
+	m_refGlade->get_widget("networkerrordialog", m_network_error_dialog);
+
+	Gtk::Button* network_error_ok = NULL;
+	m_refGlade->get_widget("network_error_ok", network_error_ok);
+	network_error_ok->signal_clicked().connect(sigc::mem_fun(*m_network_error_dialog, &Gtk::Window::hide));
 
 	m_prescandialog = NULL;
 	m_refGlade->get_widget_derived("prescandialog", m_prescandialog);
@@ -102,6 +109,7 @@ m_raise_opened(true)
 	m_dialogFile.add_filter(filter_any);
 
 	m_netloader.signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
+	m_netloader.signal_error.connect(sigc::mem_fun(*this, &MainWindow::on_network_error));
 
 	m_fileloader.signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
 	m_fileloader.signal_prescan_progress.connect(sigc::mem_fun(*m_prescandialog, &PrescanDialog::set_progress));
@@ -165,9 +173,16 @@ void MainWindow::on_net_open(const std::string& studyinstanceuid) {
 	m_raise_opened = true;
 
 	set_busy_cursor();
+
 	if(!m_netloader.load(studyinstanceuid)) {
 		set_busy_cursor(false);
 	}
+}
+
+void MainWindow::on_network_error() {
+	std::cout << "MainWindow::on_network_error()" << std::endl;
+	set_busy_cursor(false);
+	m_network_error_dialog->show();
 }
 
 void MainWindow::on_file_exit() {

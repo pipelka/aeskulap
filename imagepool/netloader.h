@@ -12,7 +12,7 @@ public:
 	
 protected:
 
-	void run();
+	bool run();
 
 private:
 

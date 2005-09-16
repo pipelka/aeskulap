@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/12 18:00:51 $
+    Update Date:      $Date: 2005/09/16 19:26:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -132,7 +132,7 @@ void Loader::add_image(DcmDataset* dset, int imagecount) {
 	m_add_image();
 }
 
-void Loader::run() {
+bool Loader::run() {
 }
 
 void Loader::finished() {
@@ -150,7 +150,10 @@ void Loader::thread() {
 	m_busy = true;
 	m_mutex.unlock();
 
-	run();
+	if(!run()) {
+		// throw error
+		signal_error();
+	}
 
 	while(m_imagequeue.size() > 0) {
 		Glib::usleep(1000*100);

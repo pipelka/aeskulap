@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/12 18:00:51 $
+    Update Date:      $Date: 2005/09/16 19:26:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.h,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -57,6 +57,8 @@ public:
 
 	sigc::signal< void, Glib::RefPtr<ImagePool::Study> > signal_study_added;
 
+	Glib::Dispatcher signal_error;
+
 protected:
 
 	class Data {
@@ -64,7 +66,7 @@ protected:
 		std::list < Glib::RefPtr<ImagePool::Study> > loaded_study;
 	};
 
-	virtual void run();
+	virtual bool run();
 	
 	virtual void finished();
 
@@ -79,7 +81,7 @@ protected:
 	Glib::Dispatcher m_add_image;
 
 	Glib::Dispatcher m_finished;
-
+	
 	Glib::Mutex m_mutex;
 
 	bool m_busy;

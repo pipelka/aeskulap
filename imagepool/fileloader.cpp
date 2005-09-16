@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/13 18:27:17 $
+    Update Date:      $Date: 2005/09/16 19:26:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/fileloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -79,7 +79,7 @@ void FileLoader::prescan_files(std::list< Glib::ustring >* filelist) {
 	}
 }
 
-void FileLoader::run() {
+bool FileLoader::run() {
 	std::list< Glib::ustring >* filelist = m_filelist;
 	std::list< Glib::ustring >::iterator i = filelist->begin();
 	std::string studyinstanceuid;
@@ -111,6 +111,8 @@ void FileLoader::run() {
 	delete filelist;
 	m_filelist = NULL;
 	m_studysize.clear();
+	
+	return true;
 }
 
 } // namespace ImagePool
