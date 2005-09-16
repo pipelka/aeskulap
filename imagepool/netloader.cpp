@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/11 14:31:14 $
+    Update Date:      $Date: 2005/09/16 19:26:18 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -40,12 +40,19 @@ namespace ImagePool {
 
 class DicomMover : public MoveAssociation {
 public:
+
+	DicomMover() : responsecount(0) {
+	};
+
 	sigc::signal<void, DcmDataset*> signal_response_received;
+
+	int responsecount;
 
 protected:
 	void OnResponseReceived(DcmDataset *response) {
 		if(response != NULL) {
 			signal_response_received(response);
+			responsecount++;
 		}
 	};
 };
@@ -59,11 +66,12 @@ bool NetLoader::load(const std::string& studyinstanceuid) {
 	start();
 }
 
-void NetLoader::run() {
+bool NetLoader::run() {
 
 	int instancecount = query_study_instances(m_studyinstanceuid);
 	
 	NetClient<DicomMover> mover;
+
 	mover.signal_response_received.connect(sigc::bind(sigc::mem_fun(*this, &NetLoader::add_image), instancecount));
 	mover.SetMaxResults(1000);
 
@@ -87,7 +95,11 @@ void NetLoader::run() {
 	e = newDicomElement(DCM_SeriesInstanceUID);
 	query.insert(e);
 
-	mover.QueryServers(&query);
+	if(!mover.QueryServers(&query)) {
+		return false;
+	}
+	
+	return (mover.responsecount != 0);
 }
 
 } // namespace ImagePool

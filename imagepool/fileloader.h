@@ -17,7 +17,7 @@ public:
 
 protected:
 
-	void run();
+	bool run();
 
 	void prescan_files(std::list< Glib::ustring >* filelist);
 
