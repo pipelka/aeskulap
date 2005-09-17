@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:06 $
+    Update Date:      $Date: 2005/09/17 18:29:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -54,9 +54,15 @@ protected:
 
 	void on_server_remove();
 
+	void on_server_activated();
+
+	void on_server_apply();
+
 	void save_settings();
 
 	void restore_settings();
+
+	void set_server_detail_sensitive(bool sensitive = true);
 
 	class ModelColumns : public Gtk::TreeModel::ColumnRecord {
 	public:
@@ -65,11 +71,15 @@ protected:
 			add(m_aet);
 			add(m_port);
 			add(m_hostname);
+			add(m_group);
+			add(m_description);
 		}
 		
 		Gtk::TreeModelColumn<Glib::ustring> m_aet;
 		Gtk::TreeModelColumn<guint> m_port;
 		Gtk::TreeModelColumn<Glib::ustring> m_hostname;
+		Gtk::TreeModelColumn<Glib::ustring> m_group;
+		Gtk::TreeModelColumn<Glib::ustring> m_description;
 	};
 	
 	ModelColumns m_Columns;
@@ -80,9 +90,28 @@ protected:
 
 private:
 
+	// dicom settings
+	
 	Gtk::Entry* m_local_aet;
 
 	Gtk::Entry* m_local_port;
+
+	// server details
+	
+	Gtk::Entry* m_server_detail_server;
+	
+	Gtk::Entry* m_server_detail_aet;
+	
+	Gtk::Entry* m_server_detail_port;
+	
+	Gtk::ComboBoxEntry* m_server_detail_group;
+	
+	Gtk::Entry* m_server_detail_description;
+
+	Gtk::Button* m_server_detail_echo;
+	
+	Gtk::Label* m_server_detail_echostatus;
+
 
 	Glib::RefPtr<Gnome::Glade::Xml> m_refGlade;
 
