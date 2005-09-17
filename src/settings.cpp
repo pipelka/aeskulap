@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:06 $
+    Update Date:      $Date: 2005/09/17 18:29:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -40,9 +40,36 @@ m_refGlade(refGlade) {
 	m_conf_client = Gnome::Conf::Client::get_default_client();
 	m_conf_client->add_dir("/apps/aeskulap/preferences");
 	
+	// dicom settings
+
 	m_refGlade->get_widget("local_aet", m_local_aet);
 	
 	m_refGlade->get_widget("local_port", m_local_port);
+
+	// server details
+
+	m_refGlade->get_widget("server_detail_server", m_server_detail_server);
+	m_server_detail_server->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_server_apply));
+	
+	m_refGlade->get_widget("server_detail_aet", m_server_detail_aet);
+	m_server_detail_aet->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_server_apply));
+	
+	m_refGlade->get_widget("server_detail_port", m_server_detail_port);
+	m_server_detail_port->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_server_apply));
+	
+	m_refGlade->get_widget("server_detail_group", m_server_detail_group);
+	m_server_detail_group->get_entry()->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_server_apply));
+
+	m_refGlade->get_widget("server_detail_description", m_server_detail_description);
+	m_server_detail_description->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_server_apply));
+
+	m_refGlade->get_widget("server_detail_echo", m_server_detail_echo);
+	
+	m_refGlade->get_widget("server_detail_echostatus", m_server_detail_echostatus);
+
+	// disable server detail
+	
+	set_server_detail_sensitive(false);
 
 	// connect buttons
 	Gtk::Button* button;
@@ -62,18 +89,26 @@ m_refGlade(refGlade) {
 	m_refGlade->get_widget("serverlist", m_list_servers);
 
 	m_refTreeModel = Gtk::ListStore::create(m_Columns);
-	m_refTreeModel->set_sort_column(m_Columns.m_aet, Gtk::SORT_ASCENDING);
+	m_refTreeModel->set_sort_column(m_Columns.m_description, Gtk::SORT_ASCENDING);
 
 	m_list_servers->set_model(m_refTreeModel);
-	m_list_servers->append_column_editable(gettext("AET"), m_Columns.m_aet);
-	m_list_servers->append_column_numeric_editable(gettext("Port"), m_Columns.m_port, "%i");
-	m_list_servers->append_column_editable(gettext("Hostname"), m_Columns.m_hostname);
 
-	m_list_servers->get_column(0)->set_sort_column(m_Columns.m_aet);
+	m_list_servers->append_column(gettext("Description"), m_Columns.m_description);
+	m_list_servers->append_column(gettext("AET"), m_Columns.m_aet);
+	m_list_servers->append_column_numeric(gettext("Port"), m_Columns.m_port, "%i");
+	m_list_servers->append_column(gettext("Hostname"), m_Columns.m_hostname);
+	m_list_servers->append_column(gettext("Group"), m_Columns.m_group);
+
+	m_list_servers->get_column(0)->set_sort_column(m_Columns.m_description);
 	m_list_servers->get_column(0)->property_sort_indicator().set_value(true);
 	m_list_servers->get_column(0)->set_sort_order(Gtk::SORT_ASCENDING);
-	m_list_servers->get_column(1)->set_sort_column(m_Columns.m_port);
-	m_list_servers->get_column(2)->set_sort_column(m_Columns.m_hostname);
+	m_list_servers->get_column(1)->set_sort_column(m_Columns.m_aet);
+	m_list_servers->get_column(2)->set_sort_column(m_Columns.m_port);
+	m_list_servers->get_column(3)->set_sort_column(m_Columns.m_hostname);
+	m_list_servers->get_column(3)->set_sort_column(m_Columns.m_group);
+
+	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection = m_list_servers->get_selection();
+	refTreeSelection->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_server_activated));
 
 	restore_settings();
 }
@@ -111,17 +146,23 @@ void Settings::save_settings() {
 	std::vector< Glib::ustring > aet_list;
 	std::vector< Glib::ustring > hostname_list;
 	std::vector< int > port_list;
+	std::vector< Glib::ustring > description_list;
+	std::vector< Glib::ustring > group_list;
 
 	Gtk::TreeModel::Children::iterator i = m_refTreeModel->children().begin();
 	for(; i != m_refTreeModel->children().end(); i++) {
 		aet_list.push_back((*i)[m_Columns.m_aet]);
 		hostname_list.push_back((*i)[m_Columns.m_hostname]);
 		port_list.push_back((*i)[m_Columns.m_port]);
+		description_list.push_back((*i)[m_Columns.m_description]);
+		group_list.push_back((*i)[m_Columns.m_group]);
 	}
 
 	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_aet", aet_list);
 	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_hostname", hostname_list);
 	m_conf_client->set_int_list("/apps/aeskulap/preferences/server_port", port_list);
+	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_description", description_list);
+	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_group", group_list);
 }
 
 void Settings::restore_settings() {
@@ -150,10 +191,14 @@ void Settings::restore_settings() {
 	Gnome::Conf::SListHandle_ValueString aet_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_aet");
 	Gnome::Conf::SListHandle_ValueInt port_list = m_conf_client->get_int_list("/apps/aeskulap/preferences/server_port");
 	Gnome::Conf::SListHandle_ValueString hostname_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_hostname");
+	Gnome::Conf::SListHandle_ValueString description_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_description");
+	Gnome::Conf::SListHandle_ValueString group_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_group");
 
 	Gnome::Conf::SListHandle_ValueString::iterator a = aet_list.begin();
 	Gnome::Conf::SListHandle_ValueInt::iterator p = port_list.begin();
 	Gnome::Conf::SListHandle_ValueString::iterator h = hostname_list.begin();
+	Gnome::Conf::SListHandle_ValueString::iterator d = description_list.begin();
+	Gnome::Conf::SListHandle_ValueString::iterator g = group_list.begin();
 
 	Gtk::TreeModel::Children::iterator i = m_refTreeModel->children().begin();
 	for(; i != m_refTreeModel->children().end();) {
@@ -166,21 +211,105 @@ void Settings::restore_settings() {
 		row[m_Columns.m_aet] = *a;
 		row[m_Columns.m_port] = *p;
 		row[m_Columns.m_hostname] = *h;
+		
+		if(d != description_list.end()) {
+			row[m_Columns.m_description] = *d;
+			d++;
+		}
+		if(g != group_list.end()) {
+			row[m_Columns.m_group] = *g;
+			g++;
+		}
 	}
 }
 
 void Settings::on_server_add() {
 	Gtk::TreeModel::Row row = *(m_refTreeModel->append());
+	Glib::RefPtr<Gtk::TreeSelection> selection = m_list_servers->get_selection();
 
+	set_server_detail_sensitive(false);
+
+	row[m_Columns.m_description] = "New Server";
 	row[m_Columns.m_aet] = "AET";
 	row[m_Columns.m_port] = 6100;
 	row[m_Columns.m_hostname] = "hostname";
 
 	Gtk::TreePath path(row);
 	m_list_servers->row_activated (path, *(m_list_servers->get_column(0)));
+	selection->select(row);
 }
 
 void Settings::on_server_remove() {
 	Glib::RefPtr<Gtk::TreeSelection> selection = m_list_servers->get_selection();
 	m_refTreeModel->erase(selection->get_selected());
+}
+
+void Settings::set_server_detail_sensitive(bool sensitive) {
+	m_server_detail_server->set_sensitive(sensitive);
+	m_server_detail_aet->set_sensitive(sensitive);
+	m_server_detail_port->set_sensitive(sensitive);
+	m_server_detail_group->set_sensitive(sensitive);
+	m_server_detail_description->set_sensitive(sensitive);
+	m_server_detail_echo->set_sensitive(sensitive);
+
+	if(!sensitive) {
+		m_server_detail_server->set_text("");		
+		m_server_detail_aet->set_text("");
+		m_server_detail_port->set_text("");
+		m_server_detail_group->get_entry()->set_text("");
+		m_server_detail_description->set_text("");
+	}
+}
+
+void Settings::on_server_activated() {
+	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection = m_list_servers->get_selection();
+	Gtk::TreeModel::iterator iter = refTreeSelection->get_selected();
+
+	if(!iter) {
+		set_server_detail_sensitive(false);
+		return;
+	}
+	Gtk::TreeModel::Row row = *iter;
+
+	m_server_detail_server->set_text(row[m_Columns.m_hostname]);
+	
+	m_server_detail_aet->set_text(row[m_Columns.m_aet]);
+	
+	char buffer[10];
+	guint i = row[m_Columns.m_port];
+	sprintf(buffer, "%i", i);
+	m_server_detail_port->set_text(buffer);
+	
+	m_server_detail_group->get_entry()->set_text(row[m_Columns.m_group]);
+	
+	m_server_detail_description->set_text(row[m_Columns.m_description]);
+
+	set_server_detail_sensitive(true);
+}
+
+void Settings::on_server_apply() {
+	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection = m_list_servers->get_selection();
+	Gtk::TreeModel::iterator iter = refTreeSelection->get_selected();
+
+	if(!iter) {
+		return;
+	}
+	Gtk::TreeModel::Row row = *iter;
+
+	if(m_server_detail_server->is_sensitive()) {
+		row[m_Columns.m_hostname] = m_server_detail_server->get_text();
+	}
+	if(m_server_detail_aet->is_sensitive()) {
+		row[m_Columns.m_aet] = m_server_detail_aet->get_text();
+	}
+	if(m_server_detail_port->is_sensitive()) {
+		guint i = atoi(m_server_detail_port->get_text().c_str());
+		row[m_Columns.m_port] = i;
+	}
+	if(m_server_detail_group->is_sensitive()) {
+		row[m_Columns.m_group] = m_server_detail_group->get_entry()->get_text();
+	}
+	if(m_server_detail_description->is_sensitive()) {
+		row[m_Columns.m_description] = m_server_detail_description->get_text();
+	}
 }
