@@ -20,6 +20,7 @@ DIST_SUBDIRS = \
 EXTRA_DIST = \
 	config.rpath \
 	mkinstalldirs  \
+	README \
 	COPYING \
 	COPYING.LIB \
 	COPYING.DCMTK \
