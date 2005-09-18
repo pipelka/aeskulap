@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/17 18:29:44 $
+    Update Date:      $Date: 2005/09/18 19:52:35 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -64,7 +64,8 @@ m_refGlade(refGlade) {
 	m_server_detail_description->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_server_apply));
 
 	m_refGlade->get_widget("server_detail_echo", m_server_detail_echo);
-	
+	m_server_detail_echo->signal_clicked().connect(sigc::mem_fun(*this, &Settings::on_echotest));
+
 	m_refGlade->get_widget("server_detail_echostatus", m_server_detail_echostatus);
 
 	// disable server detail
@@ -72,10 +73,10 @@ m_refGlade(refGlade) {
 	set_server_detail_sensitive(false);
 
 	// connect buttons
-	Gtk::Button* button;
-	m_refGlade->get_widget("settings_ok", button);
-	button->signal_clicked().connect(sigc::mem_fun(*this, &Settings::on_settings_save));
+	m_refGlade->get_widget("settings_ok", m_settings_ok);
+	m_settings_ok->signal_clicked().connect(sigc::mem_fun(*this, &Settings::on_settings_save));
 
+	Gtk::Button* button;
 	m_refGlade->get_widget("settings_cancel", button);
 	button->signal_clicked().connect(sigc::mem_fun(*this, &Settings::on_settings_cancel));	
 
@@ -224,12 +225,16 @@ void Settings::restore_settings() {
 }
 
 void Settings::on_server_add() {
+	static int count = m_refTreeModel->children().size();
+	set_server_detail_sensitive(false);
+
 	Gtk::TreeModel::Row row = *(m_refTreeModel->append());
 	Glib::RefPtr<Gtk::TreeSelection> selection = m_list_servers->get_selection();
 
-	set_server_detail_sensitive(false);
+	char servername[50];
+	sprintf(servername, "Server%i", ++count);
 
-	row[m_Columns.m_description] = "New Server";
+	row[m_Columns.m_description] = servername;
 	row[m_Columns.m_aet] = "AET";
 	row[m_Columns.m_port] = 6100;
 	row[m_Columns.m_hostname] = "hostname";
@@ -262,11 +267,11 @@ void Settings::set_server_detail_sensitive(bool sensitive) {
 }
 
 void Settings::on_server_activated() {
+	set_server_detail_sensitive(false);
 	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection = m_list_servers->get_selection();
 	Gtk::TreeModel::iterator iter = refTreeSelection->get_selected();
 
 	if(!iter) {
-		set_server_detail_sensitive(false);
 		return;
 	}
 	Gtk::TreeModel::Row row = *iter;
@@ -310,6 +315,67 @@ void Settings::on_server_apply() {
 		row[m_Columns.m_group] = m_server_detail_group->get_entry()->get_text();
 	}
 	if(m_server_detail_description->is_sensitive()) {
-		row[m_Columns.m_description] = m_server_detail_description->get_text();
+		Glib::ustring desc = m_server_detail_description->get_text();
+		row[m_Columns.m_description] = desc;
+		if(desc.empty()) {
+			m_settings_ok->set_sensitive(false);
+		}
+		else {
+			m_settings_ok->set_sensitive(true);
+		}
 	}
+	
+	// enable echo button
+	if(!m_server_detail_aet->get_text().empty() &&
+		!m_server_detail_server->get_text().empty() &&
+		!m_server_detail_port->get_text().empty()) {
+			m_server_detail_echo->set_sensitive(true);
+	}
+	else {
+			m_server_detail_echo->set_sensitive(false);
+	}
+}
+
+void Settings::on_echotest() {
+	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection = m_list_servers->get_selection();
+	Gtk::TreeModel::iterator iter = refTreeSelection->get_selected();
+	Gtk::TreeModel::Row row = *iter;
+
+	m_server_detail_echo->set_sensitive(false);
+	while(Gtk::Main::events_pending()) Gtk::Main::iteration(false);
+
+	Glib::ustring hostname = row[m_Columns.m_hostname];
+	Glib::ustring aet = row[m_Columns.m_aet];
+	unsigned int port = row[m_Columns.m_port];
+	std::string status;
+
+	if(!ImagePool::send_echorequest(hostname, aet, port, status)) {
+		Gtk::MessageDialog error(
+					*this,
+					gettext("<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n\n")
+					+ status,
+					true,
+					Gtk::MESSAGE_ERROR,
+					Gtk::BUTTONS_OK,
+					true);
+					
+		error.show();
+		error.run();
+		error.hide();
+	}
+	else {
+		Gtk::MessageDialog msg(
+					*this,
+					gettext("<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"),
+					true,
+					Gtk::MESSAGE_INFO,
+					Gtk::BUTTONS_OK,
+					true);
+					
+		msg.show();
+		msg.run();
+		msg.hide();
+	}
+
+	m_server_detail_echo->set_sensitive(true);
 }

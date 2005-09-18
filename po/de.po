@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-17 20:34+0200\n"
-"PO-Revision-Date: 2005-09-17 20:39+0200\n"
+"POT-Creation-Date: 2005-09-18 09:33+0200\n"
+"PO-Revision-Date: 2005-09-18 09:34+0200\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
 "Language-Team:  <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,6 +19,14 @@ msgstr ""
 #: ../imagepool/netquery.cpp:82 ../imagepool/netquery.cpp:101
 msgid "no description"
 msgstr "Keine Beschreibung"
+
+#: ../imagepool/netquery.cpp:348
+msgid "Unable to create association"
+msgstr "Verbindung konnte nicht hergestellt werden"
+
+#: ../imagepool/netquery.cpp:353
+msgid "no response for echo request"
+msgstr "Keine Antwort auf Anfrage"
 
 #: ../widgets/aseriesmenu.cpp:45
 #, c-format
@@ -136,19 +144,19 @@ msgstr "Objekt löschen"
 msgid "Open DICOM Image files"
 msgstr "DICOM Bilder öffnen"
 
-#: ../src/mainwindow.cpp:93
+#: ../src/mainwindow.cpp:86
 msgid "Bring opened files to front"
 msgstr "Geöffnete Dateien anzeigen"
 
-#: ../src/mainwindow.cpp:102
+#: ../src/mainwindow.cpp:95
 msgid "DICOM files"
 msgstr "DICOM Dateien"
 
-#: ../src/mainwindow.cpp:107
+#: ../src/mainwindow.cpp:100
 msgid "Any files"
 msgstr "Alle Dateien"
 
-#. c->add_attribute(m_tree_icon.property_stock_size(), m_Columns.m_iconsize);
+#. c->add_attribute(m_tree_icon.property_stock_size(), m_ColumnsStudy.m_iconsize);
 #: ../src/studymanager.cpp:107
 msgid "Patientsname"
 msgstr "Patientenname"
@@ -157,8 +165,7 @@ msgstr "Patientenname"
 msgid "Birthdate"
 msgstr "Geburtsdatum"
 
-#: ../src/studymanager.cpp:109 ../src/settings.cpp:96
-#: ../src/aeskulap.glade.h:22
+#: ../src/studymanager.cpp:109 ../src/settings.cpp:97
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -174,36 +181,52 @@ msgstr "Datum/Zeit"
 msgid "Station"
 msgstr "Station"
 
-#: ../src/studymanager.cpp:258
+#: ../src/studymanager.cpp:113 ../src/aeskulap.glade.h:33
+msgid "Server"
+msgstr "Server"
+
+#: ../src/studymanager.cpp:260
 #, c-format
 msgid "Series %i (1 Image)"
 msgstr "Serie %i (1 Bild)"
 
-#: ../src/studymanager.cpp:261
+#: ../src/studymanager.cpp:263
 #, c-format
 msgid "Series %i (%i Images)"
 msgstr "Serie %i (%i Bilder)"
 
-#: ../src/studymanager.cpp:264
+#: ../src/studymanager.cpp:266
 #, c-format
 msgid "Series %i"
 msgstr "Serie %i"
 
-#: ../src/settings.cpp:97
+#: ../src/settings.cpp:98 ../src/aeskulap.glade.h:14
 msgid "AET"
 msgstr "AET"
 
-#: ../src/settings.cpp:98 ../src/aeskulap.glade.h:30
+#: ../src/settings.cpp:99 ../src/aeskulap.glade.h:30
 msgid "Port"
 msgstr "Port"
 
-#: ../src/settings.cpp:99
+#: ../src/settings.cpp:100
 msgid "Hostname"
 msgstr "Hostname"
 
-#: ../src/settings.cpp:100 ../src/aeskulap.glade.h:26
+#: ../src/settings.cpp:101 ../src/aeskulap.glade.h:24
 msgid "Group"
 msgstr "Gruppe"
+
+#: ../src/settings.cpp:355
+msgid ""
+"<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
+"\n"
+msgstr ""
+"<span weight=\"bold\" size=\"larger\">Echo test fehlgeschlagen!</span>\n"
+"\n"
+
+#: ../src/settings.cpp:369
+msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
+msgstr "<span weight=\"bold\" size=\"larger\">Echo erfolgreich</span>"
 
 #: ../src/aeskulap.glade.h:1
 msgid "(C) 2005 Alexander Pipelka"
@@ -238,73 +261,76 @@ msgid "<b>Prescanning files ...</b>"
 msgstr "<b>Voruntersuchung der Dateien ...</b>"
 
 #: ../src/aeskulap.glade.h:9
+msgid "<b>Servergroups</b>"
+msgstr "<b>Servergruppen</b>"
+
+#: ../src/aeskulap.glade.h:10
 msgid "<b>Stationname:</b>"
 msgstr "<b>Stationsname:</b>"
 
-#: ../src/aeskulap.glade.h:10
+#: ../src/aeskulap.glade.h:11
 msgid "<b>Study Description:</b>"
 msgstr "<b>Studienbeschreibung:</b>"
 
-#: ../src/aeskulap.glade.h:11
+#: ../src/aeskulap.glade.h:12
 msgid "<b>Study List</b>"
 msgstr "<b>Studien</b>"
 
-#: ../src/aeskulap.glade.h:12
-msgid ""
-"<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
-"requested images</span>\n"
-"\n"
-"The request was sent to the server but no response has been received."
-msgstr ""
-"<span weight=\"bold\" size=\"larger\">Die angeforderten Bilder\n"
-"konnten nicht empfangen werden</span>\n"
-"\n"
-"Die Anfrage wurde zum Server gesandt, aber es wurden keine "
-"Ergebnisse empfangen."
+#: ../src/aeskulap.glade.h:13
+msgid "<b>required</b>"
+msgstr "<b>erforderlich</b>"
 
-#: ../src/aeskulap.glade.h:16
+#: ../src/aeskulap.glade.h:15
 msgid "Accessionnumber:"
 msgstr "Aufnahmezahl:"
 
-#: ../src/aeskulap.glade.h:17
+#: ../src/aeskulap.glade.h:16
 msgid "Aeskulap"
 msgstr "Aeskulap"
 
-#: ../src/aeskulap.glade.h:18
+#: ../src/aeskulap.glade.h:17
 msgid "Aeskulap Viewer"
 msgstr "Aeskulap Betrachter"
 
-#: ../src/aeskulap.glade.h:19
-msgid "Application Entity Title"
-msgstr "Application Entity Title"
+#: ../src/aeskulap.glade.h:18
+msgid "Clear"
+msgstr "Löschen"
 
-#: ../src/aeskulap.glade.h:20
+#: ../src/aeskulap.glade.h:19
 msgid "Clear Filter"
 msgstr "Filter löschen"
 
-#: ../src/aeskulap.glade.h:21
+#: ../src/aeskulap.glade.h:20
 msgid "DICOM Settings"
 msgstr "DICOM Einstellungen"
 
-#: ../src/aeskulap.glade.h:23
+#: ../src/aeskulap.glade.h:21
 msgid "Echotest"
 msgstr "Echotest"
 
-#: ../src/aeskulap.glade.h:24
+#: ../src/aeskulap.glade.h:22
 msgid "From:"
 msgstr "Von:"
 
-#: ../src/aeskulap.glade.h:25
+#: ../src/aeskulap.glade.h:23
 msgid "Fullscreen"
 msgstr "Vollbild"
 
-#: ../src/aeskulap.glade.h:27
+#: ../src/aeskulap.glade.h:25
+msgid "IP / Hostname"
+msgstr "IP / Hostname"
+
+#: ../src/aeskulap.glade.h:26
 msgid "Local AET"
 msgstr "Lokaler AET"
 
-#: ../src/aeskulap.glade.h:28
+#: ../src/aeskulap.glade.h:27
 msgid "Medical image viewer and DICOM network client\n"
 msgstr ""
+
+#: ../src/aeskulap.glade.h:29
+msgid "Name"
+msgstr "Name"
 
 #: ../src/aeskulap.glade.h:31
 msgid "Scanning files"
@@ -313,10 +339,6 @@ msgstr "Untersuche Dateien"
 #: ../src/aeskulap.glade.h:32
 msgid "Search"
 msgstr "Suchen"
-
-#: ../src/aeskulap.glade.h:33
-msgid "Server"
-msgstr "Server"
 
 #: ../src/aeskulap.glade.h:34
 msgid "Servers"

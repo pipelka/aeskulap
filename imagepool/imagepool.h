@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 08:36:40 $
+    Update Date:      $Date: 2005/09/18 19:52:36 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -35,6 +35,7 @@
 
 #include <glibmm/slisthandle.h>
 #include <string>
+#include <set>
 
 class DcmDataset;
 
@@ -81,6 +82,14 @@ namespace ImagePool {
 				);
 
 	int query_study_instances(const std::string& studyinstanceuid);
+
+	const std::set<std::string>& get_servergroups();
+
+	std::set<std::string> get_serverlist(const std::string& groupfilter = "");
+
+	std::string get_ouraet();
+
+	bool send_echorequest(const std::string& hostname, const std::string& aet, unsigned int port, std::string& status);
 
 	class Signals {
 	public:	

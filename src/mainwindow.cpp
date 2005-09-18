@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/16 19:26:17 $
+    Update Date:      $Date: 2005/09/18 19:52:36 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -49,13 +49,6 @@ m_dialogFile(gettext("Open DICOM Image files")),
 m_raise_opened(true)
 {
 	set_icon(Aeskulap::IconFactory::load_from_file("aeskulap.png"));
-
-	m_network_error_dialog = NULL;
-	m_refGlade->get_widget("networkerrordialog", m_network_error_dialog);
-
-	Gtk::Button* network_error_ok = NULL;
-	m_refGlade->get_widget("network_error_ok", network_error_ok);
-	network_error_ok->signal_clicked().connect(sigc::mem_fun(*m_network_error_dialog, &Gtk::Window::hide));
 
 	m_prescandialog = NULL;
 	m_refGlade->get_widget_derived("prescandialog", m_prescandialog);
@@ -182,7 +175,20 @@ void MainWindow::on_net_open(const std::string& studyinstanceuid) {
 void MainWindow::on_network_error() {
 	std::cout << "MainWindow::on_network_error()" << std::endl;
 	set_busy_cursor(false);
-	m_network_error_dialog->show();
+
+	Gtk::MessageDialog error(
+				*this,
+				"<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
+				"requested images</span>\n\n"
+				"The request was sent to the server but no response has been received.",
+				true,
+				Gtk::MESSAGE_ERROR,
+				Gtk::BUTTONS_OK,
+				true);
+				
+	error.show();
+	error.run();
+	error.hide();
 }
 
 void MainWindow::on_file_exit() {
