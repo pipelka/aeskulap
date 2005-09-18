@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/16 19:26:18 $
+    Update Date:      $Date: 2005/09/18 19:52:36 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netclient.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -57,7 +57,8 @@ public:
 					(*a).c_str(),
 					(*h).c_str(),
 					(*p),
-					client->get_string("/apps/aeskulap/preferences/local_aet").c_str(),
+					get_ouraet().c_str(),
+					//client->get_string("/apps/aeskulap/preferences/local_aet").c_str(),
 					syntax
 					);
 		

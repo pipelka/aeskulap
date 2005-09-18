@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/17 18:29:44 $
+    Update Date:      $Date: 2005/09/18 19:52:35 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -57,6 +57,8 @@ protected:
 	void on_server_activated();
 
 	void on_server_apply();
+
+	void on_echotest();
 
 	void save_settings();
 
@@ -111,6 +113,10 @@ private:
 	Gtk::Button* m_server_detail_echo;
 	
 	Gtk::Label* m_server_detail_echostatus;
+
+	// main buttons
+	
+	Gtk::Button* m_settings_ok;
 
 
 	Glib::RefPtr<Gnome::Glade::Xml> m_refGlade;

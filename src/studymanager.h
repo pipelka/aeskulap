@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/25 12:09:16 $
+    Update Date:      $Date: 2005/09/18 19:52:35 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -64,6 +64,9 @@ protected:
 
 	bool on_test_study_expand(const Gtk::TreeModel::iterator& iter, const Gtk::TreeModel::Path& path);
 
+	void update_grouplist();
+
+
 	Gtk::Button* m_button_filter_search;
 	
 	Gtk::Button* m_button_filter_today;
@@ -90,10 +93,12 @@ protected:
 
 	Gtk::Entry* m_entry_filter_stationname;
 
-	class ModelColumns : public Gtk::TreeModel::ColumnRecord {
+	// studylist
+
+	class ModelColumnsStudy : public Gtk::TreeModel::ColumnRecord {
 	public:
 	
-		ModelColumns() {
+		ModelColumnsStudy() {
 			add(m_icon);
 			add(m_iconsize);
 			add(m_studyinstanceuid);
@@ -103,6 +108,7 @@ protected:
 			add(m_patientsname);
 			add(m_modality);
 			add(m_station);
+			add(m_server);
 		}
 		
 		Gtk::TreeModelColumn<std::string> m_studyinstanceuid;
@@ -114,15 +120,34 @@ protected:
 		Gtk::TreeModelColumn<Glib::ustring> m_icon;
 		Gtk::TreeModelColumn<guint> m_iconsize;
 		Gtk::TreeModelColumn<Glib::ustring> m_station;
+		Gtk::TreeModelColumn<Glib::ustring> m_server;
 	};
 	
-	ModelColumns m_Columns;
+	ModelColumnsStudy m_ColumnsStudy;
 
-	Glib::RefPtr< Gtk::TreeStore > m_refTreeModel;
+	Glib::RefPtr< Gtk::TreeStore > m_refTreeModelStudy;
 
 	Gtk::TreeView* m_treeview_studylist;
 
 	Gtk::CellRendererPixbuf m_tree_icon;
+
+	// grouplist
+
+	class ModelColumnsGroup : public Gtk::TreeModel::ColumnRecord {
+	public:
+	
+		ModelColumnsGroup() {
+			add(m_group);
+		}
+		
+		Gtk::TreeModelColumn<Glib::ustring> m_group;
+	};
+	
+	ModelColumnsGroup m_ColumnsGroup;
+
+	Glib::RefPtr< Gtk::ListStore > m_refTreeModelGroup;
+
+	Gtk::TreeView* m_treeview_grouplist;
 
 private:
 

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 20:12:42 $
+    Update Date:      $Date: 2005/09/18 19:52:36 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -90,10 +90,10 @@ m_refGlade(refGlade)
 	m_treeview_studylist = NULL;
 	m_refGlade->get_widget("treeview_studylist", m_treeview_studylist);
 
-	m_refTreeModel = Gtk::TreeStore::create(m_Columns);
-	m_refTreeModel->set_sort_column(m_Columns.m_patientsname, Gtk::SORT_ASCENDING);
+	m_refTreeModelStudy = Gtk::TreeStore::create(m_ColumnsStudy);
+	m_refTreeModelStudy->set_sort_column(m_ColumnsStudy.m_patientsname, Gtk::SORT_ASCENDING);
 
-	m_treeview_studylist->set_model(m_refTreeModel);
+	m_treeview_studylist->set_model(m_refTreeModelStudy);
 	m_treeview_studylist->signal_row_activated().connect(sigc::mem_fun(*this, &StudyManager::on_study_activated));
 	m_treeview_studylist->signal_row_expanded().connect(sigc::mem_fun(*this, &StudyManager::on_study_expanded));
 	m_treeview_studylist->signal_test_expand_row().connect(sigc::mem_fun(*this, &StudyManager::on_test_study_expand));
@@ -101,25 +101,43 @@ m_refGlade(refGlade)
 
 	m_treeview_studylist->append_column("", m_tree_icon);
 	Gtk::TreeViewColumn* c = m_treeview_studylist->get_column(0);
-	c->add_attribute(m_tree_icon.property_stock_id(), m_Columns.m_icon);
-	//c->add_attribute(m_tree_icon.property_stock_size(), m_Columns.m_iconsize);
+	c->add_attribute(m_tree_icon.property_stock_id(), m_ColumnsStudy.m_icon);
 	
-	m_treeview_studylist->append_column(gettext("Patientsname"), m_Columns.m_patientsname);
-	m_treeview_studylist->append_column(gettext("Birthdate"), m_Columns.m_patientsbirthdate);
-	m_treeview_studylist->append_column(gettext("Description"), m_Columns.m_studydescription);
-	m_treeview_studylist->append_column(gettext("Modality"), m_Columns.m_modality);
-	m_treeview_studylist->append_column(gettext("Date/Time"), m_Columns.m_studydate);
-	m_treeview_studylist->append_column(gettext("Station"), m_Columns.m_station);
+	m_treeview_studylist->append_column(gettext("Patientsname"), m_ColumnsStudy.m_patientsname);
+	m_treeview_studylist->append_column(gettext("Birthdate"), m_ColumnsStudy.m_patientsbirthdate);
+	m_treeview_studylist->append_column(gettext("Description"), m_ColumnsStudy.m_studydescription);
+	m_treeview_studylist->append_column(gettext("Modality"), m_ColumnsStudy.m_modality);
+	m_treeview_studylist->append_column(gettext("Date/Time"), m_ColumnsStudy.m_studydate);
+	m_treeview_studylist->append_column(gettext("Station"), m_ColumnsStudy.m_station);
+	m_treeview_studylist->append_column(gettext("Server"), m_ColumnsStudy.m_server);
 	
-	m_treeview_studylist->get_column(1)->set_sort_column(m_Columns.m_patientsname);
+	m_treeview_studylist->get_column(1)->set_sort_column(m_ColumnsStudy.m_patientsname);
 	m_treeview_studylist->get_column(1)->property_sort_indicator().set_value(true);
 	m_treeview_studylist->get_column(1)->set_sort_order(Gtk::SORT_ASCENDING);
 
-	m_treeview_studylist->get_column(2)->set_sort_column(m_Columns.m_patientsbirthdate);
-	m_treeview_studylist->get_column(3)->set_sort_column(m_Columns.m_studydescription);
-	m_treeview_studylist->get_column(4)->set_sort_column(m_Columns.m_modality);
-	m_treeview_studylist->get_column(5)->set_sort_column(m_Columns.m_studydate);
-	m_treeview_studylist->get_column(6)->set_sort_column(m_Columns.m_station);
+	m_treeview_studylist->get_column(2)->set_sort_column(m_ColumnsStudy.m_patientsbirthdate);
+	m_treeview_studylist->get_column(3)->set_sort_column(m_ColumnsStudy.m_studydescription);
+	m_treeview_studylist->get_column(4)->set_sort_column(m_ColumnsStudy.m_modality);
+	m_treeview_studylist->get_column(5)->set_sort_column(m_ColumnsStudy.m_studydate);
+	m_treeview_studylist->get_column(6)->set_sort_column(m_ColumnsStudy.m_station);
+	m_treeview_studylist->get_column(6)->set_sort_column(m_ColumnsStudy.m_server);
+	
+	// grouplist
+
+	m_treeview_grouplist = NULL;
+	m_refGlade->get_widget("treeview_servergroup", m_treeview_grouplist);
+
+	m_refTreeModelGroup = Gtk::ListStore::create(m_ColumnsGroup);
+	m_refTreeModelGroup->set_sort_column(m_ColumnsGroup.m_group, Gtk::SORT_ASCENDING);
+
+	m_treeview_grouplist->set_model(m_refTreeModelGroup);
+	m_treeview_grouplist->append_column(gettext("Group"), m_ColumnsGroup.m_group);
+	
+	m_treeview_grouplist->get_column(0)->set_sort_column(m_ColumnsGroup.m_group);
+	m_treeview_grouplist->get_column(0)->property_sort_indicator().set_value(true);
+	m_treeview_grouplist->get_column(0)->set_sort_order(Gtk::SORT_ASCENDING);
+
+	update_grouplist();
 }
 
 StudyManager::~StudyManager() {
@@ -128,7 +146,7 @@ StudyManager::~StudyManager() {
 void StudyManager::on_filter_search() {
 	std::cout << "StudyManager::on_filter_search()" << std::endl;
 	
-	remove_rows(m_refTreeModel->children());
+	remove_rows(m_refTreeModelStudy->children());
 	
 	char date_from[20];
 	char date_to[20];
@@ -166,7 +184,7 @@ void StudyManager::on_filter_search() {
 void StudyManager::remove_rows(const Gtk::TreeModel::Children& list) {
 	Gtk::TreeModel::Children::iterator i = list.begin();
 	for(; i != list.end();) {
-		i = m_refTreeModel->erase(i);
+		i = m_refTreeModelStudy->erase(i);
 	}
 }
 
@@ -217,29 +235,29 @@ void StudyManager::on_filter_clearfilter() {
 }
 
 void StudyManager::on_queryresult_study(const Glib::RefPtr< ImagePool::Study >& study) {
-	Gtk::TreeModel::Row row = *(m_refTreeModel->append());
+	Gtk::TreeModel::Row row = *(m_refTreeModelStudy->append());
 
-	row[m_Columns.m_icon] = Gtk::Stock::OPEN.id;
-	row[m_Columns.m_iconsize] = 22;
-	row[m_Columns.m_patientsname] = study->patientsname();
-	row[m_Columns.m_patientsbirthdate] = study->patientsbirthdate();
-	row[m_Columns.m_studydescription] = study->studydescription();
-	row[m_Columns.m_studydate] = study->studydate();
-	row[m_Columns.m_studyinstanceuid] = study->studyinstanceuid();
+	row[m_ColumnsStudy.m_icon] = Gtk::Stock::OPEN.id;
+	row[m_ColumnsStudy.m_iconsize] = 22;
+	row[m_ColumnsStudy.m_patientsname] = study->patientsname();
+	row[m_ColumnsStudy.m_patientsbirthdate] = study->patientsbirthdate();
+	row[m_ColumnsStudy.m_studydescription] = study->studydescription();
+	row[m_ColumnsStudy.m_studydate] = study->studydate();
+	row[m_ColumnsStudy.m_studyinstanceuid] = study->studyinstanceuid();
 	
 	// add dummy child
-	Gtk::TreeModel::Row child = *(m_refTreeModel->append(row.children()));
+	Gtk::TreeModel::Row child = *(m_refTreeModelStudy->append(row.children()));
 	
 }
 
 void StudyManager::on_study_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column) {
 	std::cout << "StudyManager::on_study_activated()" << std::endl;
-	Gtk::TreeModel::iterator iter = m_refTreeModel->get_iter(path);
+	Gtk::TreeModel::iterator iter = m_refTreeModelStudy->get_iter(path);
 	if(!iter) {
 		return;
 	}
 	Gtk::TreeModel::Row row = *iter;
-	std::string studyinstanceuid = row[m_Columns.m_studyinstanceuid];
+	std::string studyinstanceuid = row[m_ColumnsStudy.m_studyinstanceuid];
 	
 	if(studyinstanceuid.empty()) {
 		return;
@@ -249,7 +267,7 @@ void StudyManager::on_study_activated(const Gtk::TreeModel::Path& path, Gtk::Tre
 
 void StudyManager::on_queryresult_series(const Glib::RefPtr< ImagePool::Series >& series, Gtk::TreeModel::Row& row) {
 	std::cout << "StudyManager::on_queryresult_series()" << std::endl;
-	Gtk::TreeModel::Row child = *(m_refTreeModel->append(row.children()));
+	Gtk::TreeModel::Row child = *(m_refTreeModelStudy->append(row.children()));
 
 	int count = row.children().size();
 	char buffer[50];
@@ -264,20 +282,20 @@ void StudyManager::on_queryresult_series(const Glib::RefPtr< ImagePool::Series >
 		sprintf(buffer, gettext("Series %i"), count);
 	}
 	
-	child[m_Columns.m_icon] = Gtk::Stock::DND_MULTIPLE.id;
-	child[m_Columns.m_iconsize] = 16;
-	child[m_Columns.m_patientsname] = buffer;
-	child[m_Columns.m_studydescription] = series->description();
-	child[m_Columns.m_modality] = series->modality();
-	child[m_Columns.m_studydate] = series->seriestime();
-	child[m_Columns.m_station] = series->stationname();
+	child[m_ColumnsStudy.m_icon] = Gtk::Stock::DND_MULTIPLE.id;
+	child[m_ColumnsStudy.m_iconsize] = 16;
+	child[m_ColumnsStudy.m_patientsname] = buffer;
+	child[m_ColumnsStudy.m_studydescription] = series->description();
+	child[m_ColumnsStudy.m_modality] = series->modality();
+	child[m_ColumnsStudy.m_studydate] = series->seriestime();
+	child[m_ColumnsStudy.m_station] = series->stationname();
 }
 
 bool StudyManager::on_test_study_expand(const Gtk::TreeModel::iterator& iter, const Gtk::TreeModel::Path& path) {
 	std::cout << "StudyManager::on_test_study_expand()" << std::endl;
 
 	Gtk::TreeModel::Row row = *iter;
-	std::string studyinstanceuid = row[m_Columns.m_studyinstanceuid];
+	std::string studyinstanceuid = row[m_ColumnsStudy.m_studyinstanceuid];
 
 	remove_rows(row.children());
 
@@ -291,4 +309,20 @@ bool StudyManager::on_test_study_expand(const Gtk::TreeModel::iterator& iter, co
 
 void StudyManager::on_study_expanded(const Gtk::TreeModel::iterator& iter, const Gtk::TreeModel::Path& path) {
 	std::cout << "StudyManager::on_study_expanded()" << std::endl;
+}
+
+void StudyManager::update_grouplist() {
+	Gtk::TreeModel::Children list = m_refTreeModelGroup->children();
+	Gtk::TreeModel::Children::iterator i = list.begin();
+
+	for(; i != list.end();) {
+		i = m_refTreeModelGroup->erase(i);
+	}
+	
+	std::set< std::string > groups = ImagePool::get_servergroups();
+	std::set< std::string >::iterator g = groups.begin();
+	for( ; g != groups.end(); g++) {
+		Gtk::TreeModel::Row row = *(m_refTreeModelGroup->append());	
+		row[m_ColumnsGroup.m_group] = (*g);
+	}
 }

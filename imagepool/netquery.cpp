@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/11 14:31:14 $
+    Update Date:      $Date: 2005/09/18 19:52:36 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -334,6 +334,31 @@ int query_study_instances(const std::string& studyinstanceuid) {
 	std::cout << result->card() << " Responses" << std::endl;
 	
 	return result->card();
+}
+
+std::string get_ouraet() {
+	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
+	return client->get_string("/apps/aeskulap/preferences/local_aet");
+}
+
+bool send_echorequest(const std::string& hostname, const std::string& aet, unsigned int port, std::string& status) {
+	Association a;
+	a.Create(aet.c_str(), hostname.c_str(), port, get_ouraet().c_str());
+	if(a.Connect(&net).bad()) {
+		status = gettext("Unable to create association");
+		return false;
+	}
+
+	if(!a.SendEchoRequest()) {
+		status = gettext("no response for echo request");
+		return false;
+	}
+	
+	a.Drop();
+	a.Destroy();
+
+	status = "echotest succeeded";
+	return true;
 }
 
 } // namespace ImagePool
