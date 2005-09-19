@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/18 19:52:35 $
+    Update Date:      $Date: 2005/09/19 15:23:27 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -74,14 +74,14 @@ protected:
 			add(m_port);
 			add(m_hostname);
 			add(m_group);
-			add(m_description);
+			add(m_name);
 		}
 		
 		Gtk::TreeModelColumn<Glib::ustring> m_aet;
 		Gtk::TreeModelColumn<guint> m_port;
 		Gtk::TreeModelColumn<Glib::ustring> m_hostname;
 		Gtk::TreeModelColumn<Glib::ustring> m_group;
-		Gtk::TreeModelColumn<Glib::ustring> m_description;
+		Gtk::TreeModelColumn<Glib::ustring> m_name;
 	};
 	
 	ModelColumns m_Columns;

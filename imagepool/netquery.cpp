@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/18 19:52:36 $
+    Update Date:      $Date: 2005/09/19 15:23:27 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -67,9 +67,10 @@ static void fix_time(std::string& time) {
 	time = h + ":" + m + ":" + s;
 }
 
-Glib::RefPtr< ImagePool::Study > create_query_study(DcmDataset* dset) {
+Glib::RefPtr< ImagePool::Study > create_query_study(DcmDataset* dset, const std::string& server) {
 	Glib::RefPtr< ImagePool::Study > result = Glib::RefPtr< ImagePool::Study >(new Study);
 
+	result->m_server = server;
 	dset->findAndGetOFString(DCM_StudyInstanceUID, result->m_studyinstanceuid);
 	dset->findAndGetOFString(DCM_PatientsName, result->m_patientsname);
 	dset->findAndGetOFString(DCM_PatientsBirthDate, result->m_patientsbirthdate);
@@ -120,6 +121,13 @@ Glib::RefPtr< ImagePool::Series > create_query_series(DcmDataset* dset) {
 	fix_time(result->m_seriestime);
 
 	return result;
+}
+
+static void on_query_from_net_result(DcmStack* resultstack, const std::string& server, const sigc::slot< void, const Glib::RefPtr< ImagePool::Study > >& resultslot) {
+	for(unsigned int i=0; i<resultstack->card(); i++) {
+		DcmDataset* dset = (DcmDataset*)resultstack->elem(i);
+		resultslot(create_query_study(dset, server));
+	}
 }
 
 void query_from_net(
@@ -224,19 +232,19 @@ void query_from_net(
 	std::cout << "NEW QUERY:" << std::endl;
 	query.print(COUT);
 
-	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
-
 	NetClient<FindAssociation> a;
-	a.QueryServers(&query);
+	a.signal_server_result.connect(sigc::bind(sigc::ptr_fun(on_query_from_net_result), resultslot));
 
-	DcmStack* result = a.GetResultStack();
-	for(unsigned int i=0; i<result->card(); i++) {
-		DcmDataset* dset = (DcmDataset*)result->elem(i);
-		resultslot(create_query_study(dset));
+	std::set<std::string> groups = get_servergroups();
+	std::set<std::string>::iterator i = groups.begin();
+
+	while(i != groups.end()) {
+		a.QueryServerGroup(&query, *i);
+		i++;
 	}
 }
 
-void query_series_from_net(const std::string& studyinstanceuid, const sigc::slot< void, const Glib::RefPtr< ImagePool::Series >& >& resultslot) {
+void query_series_from_net(const std::string& studyinstanceuid, const std::string& server, const sigc::slot< void, const Glib::RefPtr< ImagePool::Series >& >& resultslot) {
 	DcmDataset query;
 	DcmElement* e = NULL;
 	
@@ -282,7 +290,8 @@ void query_series_from_net(const std::string& studyinstanceuid, const sigc::slot
 	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
 
 	NetClient<FindAssociation> a;
-	a.QueryServers(&query, UID_FINDStudyRootQueryRetrieveInformationModel);
+	a.QueryServer(&query, server, UID_FINDStudyRootQueryRetrieveInformationModel);
+	//a.QueryServers(&query, UID_FINDStudyRootQueryRetrieveInformationModel);
 
 	DcmStack* result = a.GetResultStack();
 	for(unsigned int i=0; i<result->card(); i++) {
@@ -292,7 +301,7 @@ void query_series_from_net(const std::string& studyinstanceuid, const sigc::slot
 	}
 }
 
-int query_study_instances(const std::string& studyinstanceuid) {
+int query_study_instances(const std::string& studyinstanceuid, const std::string& server) {
 	DcmDataset query;
 	DcmElement* e = NULL;
 	
@@ -310,15 +319,6 @@ int query_study_instances(const std::string& studyinstanceuid) {
 	e = newDicomElement(DCM_SOPInstanceUID);
 	query.insert(e);
 
-/*	e = newDicomElement(DCM_SeriesNumber);
-	query.insert(e);
-
-	e = newDicomElement(DCM_StudyDate);
-	query.insert(e);
-
-	e = newDicomElement(DCM_StudyTime);
-	query.insert(e);*/
-
 	e = newDicomElement(DCM_InstanceNumber);
 	query.insert(e);
 
@@ -326,8 +326,8 @@ int query_study_instances(const std::string& studyinstanceuid) {
 	query.print(COUT);
 
 	NetClient<FindAssociation> a;
-	a.QueryServers(&query, UID_FINDStudyRootQueryRetrieveInformationModel);
-	//a.QueryServers(&query, UID_FINDPatientRootQueryRetrieveInformationModel);
+	a.QueryServer(&query, server, UID_FINDStudyRootQueryRetrieveInformationModel);
+	//a.QueryServers(&query, UID_FINDStudyRootQueryRetrieveInformationModel);
 
 	DcmStack* result = a.GetResultStack();
 
@@ -343,7 +343,7 @@ std::string get_ouraet() {
 
 bool send_echorequest(const std::string& hostname, const std::string& aet, unsigned int port, std::string& status) {
 	Association a;
-	a.Create(aet.c_str(), hostname.c_str(), port, get_ouraet().c_str());
+	a.Create(aet.c_str(), hostname.c_str(), port, get_ouraet().c_str(), UID_VerificationSOPClass);
 	if(a.Connect(&net).bad()) {
 		status = gettext("Unable to create association");
 		return false;

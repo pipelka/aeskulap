@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/18 19:52:36 $
+    Update Date:      $Date: 2005/09/19 15:23:27 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -162,12 +162,12 @@ void MainWindow::load_files(std::list< Glib::ustring > list) {
 	m_prescandialog->hide();
 }
 
-void MainWindow::on_net_open(const std::string& studyinstanceuid) {
+void MainWindow::on_net_open(const std::string& studyinstanceuid, const std::string& server) {
 	m_raise_opened = true;
 
 	set_busy_cursor();
 
-	if(!m_netloader.load(studyinstanceuid)) {
+	if(!m_netloader.load(studyinstanceuid, server)) {
 		set_busy_cursor(false);
 	}
 }

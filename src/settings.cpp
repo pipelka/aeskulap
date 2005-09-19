@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/18 19:52:35 $
+    Update Date:      $Date: 2005/09/19 15:23:27 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -90,17 +90,17 @@ m_refGlade(refGlade) {
 	m_refGlade->get_widget("serverlist", m_list_servers);
 
 	m_refTreeModel = Gtk::ListStore::create(m_Columns);
-	m_refTreeModel->set_sort_column(m_Columns.m_description, Gtk::SORT_ASCENDING);
+	m_refTreeModel->set_sort_column(m_Columns.m_name, Gtk::SORT_ASCENDING);
 
 	m_list_servers->set_model(m_refTreeModel);
 
-	m_list_servers->append_column(gettext("Description"), m_Columns.m_description);
+	m_list_servers->append_column(gettext("Name"), m_Columns.m_name);
 	m_list_servers->append_column(gettext("AET"), m_Columns.m_aet);
 	m_list_servers->append_column_numeric(gettext("Port"), m_Columns.m_port, "%i");
 	m_list_servers->append_column(gettext("Hostname"), m_Columns.m_hostname);
 	m_list_servers->append_column(gettext("Group"), m_Columns.m_group);
 
-	m_list_servers->get_column(0)->set_sort_column(m_Columns.m_description);
+	m_list_servers->get_column(0)->set_sort_column(m_Columns.m_name);
 	m_list_servers->get_column(0)->property_sort_indicator().set_value(true);
 	m_list_servers->get_column(0)->set_sort_order(Gtk::SORT_ASCENDING);
 	m_list_servers->get_column(1)->set_sort_column(m_Columns.m_aet);
@@ -155,7 +155,7 @@ void Settings::save_settings() {
 		aet_list.push_back((*i)[m_Columns.m_aet]);
 		hostname_list.push_back((*i)[m_Columns.m_hostname]);
 		port_list.push_back((*i)[m_Columns.m_port]);
-		description_list.push_back((*i)[m_Columns.m_description]);
+		description_list.push_back((*i)[m_Columns.m_name]);
 		group_list.push_back((*i)[m_Columns.m_group]);
 	}
 
@@ -189,7 +189,23 @@ void Settings::restore_settings() {
 	sprintf(buffer, "%i", local_port_setting);
 	m_local_port->set_text(buffer);
 
-	Gnome::Conf::SListHandle_ValueString aet_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_aet");
+	Gtk::TreeModel::Children::iterator i = m_refTreeModel->children().begin();
+	for(; i != m_refTreeModel->children().end();) {
+		i = m_refTreeModel->erase(i);
+	}
+
+	Glib::RefPtr<ImagePool::ServerList> list = ImagePool::get_serverlist();
+	for(ImagePool::ServerList::iterator i = list->begin(); i != list->end(); i++) {
+		Gtk::TreeModel::Row row = *(m_refTreeModel->append());
+
+		row[m_Columns.m_aet] = i->second.m_aet;
+		row[m_Columns.m_port] = i->second.m_port;
+		row[m_Columns.m_hostname] = i->second.m_hostname;
+		row[m_Columns.m_name] = i->second.m_name;
+		row[m_Columns.m_group] = i->second.m_group;
+	}
+
+	/*Gnome::Conf::SListHandle_ValueString aet_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_aet");
 	Gnome::Conf::SListHandle_ValueInt port_list = m_conf_client->get_int_list("/apps/aeskulap/preferences/server_port");
 	Gnome::Conf::SListHandle_ValueString hostname_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_hostname");
 	Gnome::Conf::SListHandle_ValueString description_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_description");
@@ -214,14 +230,14 @@ void Settings::restore_settings() {
 		row[m_Columns.m_hostname] = *h;
 		
 		if(d != description_list.end()) {
-			row[m_Columns.m_description] = *d;
+			row[m_Columns.m_name] = *d;
 			d++;
 		}
 		if(g != group_list.end()) {
 			row[m_Columns.m_group] = *g;
 			g++;
 		}
-	}
+	}*/
 }
 
 void Settings::on_server_add() {
@@ -234,7 +250,7 @@ void Settings::on_server_add() {
 	char servername[50];
 	sprintf(servername, "Server%i", ++count);
 
-	row[m_Columns.m_description] = servername;
+	row[m_Columns.m_name] = servername;
 	row[m_Columns.m_aet] = "AET";
 	row[m_Columns.m_port] = 6100;
 	row[m_Columns.m_hostname] = "hostname";
@@ -287,7 +303,7 @@ void Settings::on_server_activated() {
 	
 	m_server_detail_group->get_entry()->set_text(row[m_Columns.m_group]);
 	
-	m_server_detail_description->set_text(row[m_Columns.m_description]);
+	m_server_detail_description->set_text(row[m_Columns.m_name]);
 
 	set_server_detail_sensitive(true);
 }
@@ -316,7 +332,7 @@ void Settings::on_server_apply() {
 	}
 	if(m_server_detail_description->is_sensitive()) {
 		Glib::ustring desc = m_server_detail_description->get_text();
-		row[m_Columns.m_description] = desc;
+		row[m_Columns.m_name] = desc;
 		if(desc.empty()) {
 			m_settings_ok->set_sensitive(false);
 		}

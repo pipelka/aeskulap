@@ -270,14 +270,19 @@ bool Association::SendEchoRequest()
 	DIC_US status;
 	DcmDataset *statusDetail = NULL;
 
-	CONDITION cond = DIMSE_echoUser(assoc, msgId, DIMSE_NONBLOCKING, 10,
-		&status, &statusDetail);
-
-	if(SUCCESS(cond)) {
+	OFCondition cond = DIMSE_echoUser(assoc, ++msgId, DIMSE_BLOCKING, 0, &status, &statusDetail);
+	if (cond.good()) {
+		std::cout << "Complete [Status: " << DU_cstoreStatusString(status) << "]" << std::endl;
+	} else {
+		std::cout << "Failed:" << std::endl;
+		DimseCondition::dump(cond);
+	}
+ 
+	if(statusDetail != NULL) {
 		delete statusDetail;
 	}
 
-	return SUCCESS(cond);	
+	return cond.good();
 }
 
 bool Association::AddKey(DcmDataset *query, const DcmTagKey& tag, int value) {
