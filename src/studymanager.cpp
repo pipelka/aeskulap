@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 15:23:27 $
+    Update Date:      $Date: 2005/09/19 17:04:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -136,6 +136,8 @@ m_refGlade(refGlade)
 	m_treeview_grouplist->get_column(0)->set_sort_column(m_ColumnsGroup.m_group);
 	m_treeview_grouplist->get_column(0)->property_sort_indicator().set_value(true);
 	m_treeview_grouplist->get_column(0)->set_sort_order(Gtk::SORT_ASCENDING);
+
+	m_refGlade->get_widget("frame_servergroups", m_frame_servergroups);
 
 	update_grouplist();
 }
@@ -328,4 +330,12 @@ void StudyManager::update_grouplist() {
 		Gtk::TreeModel::Row row = *(m_refTreeModelGroup->append());	
 		row[m_ColumnsGroup.m_group] = (*g);
 	}
+
+	if(groups.size() == 0) {
+		m_frame_servergroups->hide();
+	}
+	else {
+		m_frame_servergroups->show();
+	}
+
 }

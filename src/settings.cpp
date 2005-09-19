@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 15:23:27 $
+    Update Date:      $Date: 2005/09/19 17:04:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -128,8 +128,9 @@ void Settings::on_settings_save() {
 	ImagePool::close();
 	ImagePool::init(false);
 	hide();
+	signal_apply();
 }
-	
+
 void Settings::on_settings_cancel() {
 	restore_settings();
 	hide();
