@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 15:23:27 $
+    Update Date:      $Date: 2005/09/19 16:47:25 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -234,6 +234,9 @@ void MainWindow::on_study_closed(StudyView* page) {
 
 void MainWindow::on_edit_settings() {
 	m_settings->show();
+	std::cout << "after show()" << std::endl;
+	
+	m_studymanager->update_grouplist();
 }
 
 const std::string& MainWindow::find_pageuid(Gtk::Widget* page) {

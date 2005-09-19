@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 15:23:27 $
+    Update Date:      $Date: 2005/09/19 16:47:25 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -238,9 +238,17 @@ void query_from_net(
 	std::set<std::string> groups = get_servergroups();
 	std::set<std::string>::iterator i = groups.begin();
 
-	while(i != groups.end()) {
-		a.QueryServerGroup(&query, *i);
-		i++;
+	// do we have groups defined ?
+	if(groups.size() > 0) {
+		while(i != groups.end()) {
+			a.QueryServerGroup(&query, *i);
+			i++;
+		}
+	}
+	
+	// no query all servers
+	else {
+		a.QueryServerGroup(&query, "");
 	}
 }
 
