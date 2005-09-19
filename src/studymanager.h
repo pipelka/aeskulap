@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/18 19:52:35 $
+    Update Date:      $Date: 2005/09/19 15:23:27 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -42,7 +42,7 @@ public:
 	
 	~StudyManager();
 
-	sigc::signal<void, const std::string&> signal_open_study;
+	sigc::signal<void, const std::string&, const std::string&> signal_open_study;
 
 protected:
 
@@ -120,7 +120,7 @@ protected:
 		Gtk::TreeModelColumn<Glib::ustring> m_icon;
 		Gtk::TreeModelColumn<guint> m_iconsize;
 		Gtk::TreeModelColumn<Glib::ustring> m_station;
-		Gtk::TreeModelColumn<Glib::ustring> m_server;
+		Gtk::TreeModelColumn<std::string> m_server;
 	};
 	
 	ModelColumnsStudy m_ColumnsStudy;

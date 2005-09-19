@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/18 19:52:36 $
+    Update Date:      $Date: 2005/09/19 15:23:27 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -244,10 +244,10 @@ void StudyManager::on_queryresult_study(const Glib::RefPtr< ImagePool::Study >& 
 	row[m_ColumnsStudy.m_studydescription] = study->studydescription();
 	row[m_ColumnsStudy.m_studydate] = study->studydate();
 	row[m_ColumnsStudy.m_studyinstanceuid] = study->studyinstanceuid();
+	row[m_ColumnsStudy.m_server] = study->server();
 	
 	// add dummy child
-	Gtk::TreeModel::Row child = *(m_refTreeModelStudy->append(row.children()));
-	
+	Gtk::TreeModel::Row child = *(m_refTreeModelStudy->append(row.children()));	
 }
 
 void StudyManager::on_study_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column) {
@@ -258,11 +258,12 @@ void StudyManager::on_study_activated(const Gtk::TreeModel::Path& path, Gtk::Tre
 	}
 	Gtk::TreeModel::Row row = *iter;
 	std::string studyinstanceuid = row[m_ColumnsStudy.m_studyinstanceuid];
+	std::string server = row[m_ColumnsStudy.m_server];
 	
 	if(studyinstanceuid.empty()) {
 		return;
 	}
-	signal_open_study(studyinstanceuid);
+	signal_open_study(studyinstanceuid, server);
 }
 
 void StudyManager::on_queryresult_series(const Glib::RefPtr< ImagePool::Series >& series, Gtk::TreeModel::Row& row) {
@@ -296,11 +297,13 @@ bool StudyManager::on_test_study_expand(const Gtk::TreeModel::iterator& iter, co
 
 	Gtk::TreeModel::Row row = *iter;
 	std::string studyinstanceuid = row[m_ColumnsStudy.m_studyinstanceuid];
+	std::string server = row[m_ColumnsStudy.m_server];
 
 	remove_rows(row.children());
 
 	query_series_from_net(
 				studyinstanceuid,
+				server,
 				sigc::bind(sigc::mem_fun(*this, &StudyManager::on_queryresult_series), row)
 				);
 

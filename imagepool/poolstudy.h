@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 06:49:44 $
+    Update Date:      $Date: 2005/09/19 15:23:27 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolstudy.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -82,6 +82,7 @@ public:
 
 	const std::string& studydescription();
 
+	const std::string& server();
 
 	sigc::signal< void, const Glib::RefPtr<ImagePool::Series>& > signal_series_added;
 
@@ -118,10 +119,12 @@ private:
 	std::string m_studytime;
 
 	std::string m_patientssex;
+
+	std::string m_server;
 	
 	friend Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset);
 
-	friend Glib::RefPtr< ImagePool::Study > create_query_study(DcmDataset* dset);
+	friend Glib::RefPtr< ImagePool::Study > create_query_study(DcmDataset* dset, const std::string& server);
 
 	friend class ImagePool::Loader;
 

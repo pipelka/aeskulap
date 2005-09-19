@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/18 19:52:36 $
+    Update Date:      $Date: 2005/09/19 15:23:27 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netclient.h,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -32,6 +32,7 @@
 #include <gconfmm.h>
 #include "dcdatset.h"
 #include "poolnetwork.h"
+#include <iostream>
 
 namespace ImagePool {
 
@@ -40,6 +41,57 @@ extern Network net;
 template<class T>
 class NetClient : public T {
 public:
+
+	sigc::signal< void, DcmStack*, std::string > signal_server_result;
+
+	bool QueryServer(DcmDataset* query, const std::string& server, const char* syntax = NULL) {
+		Glib::RefPtr<ServerList> list = get_serverlist();
+		ServerList::iterator i = list->find(server);
+
+		std::cout << "QueryServer(" << server << ")" << std::endl;
+
+		if(i == list->end()) {
+			return false;
+		}
+		
+		Server& s = i->second;
+		
+		T::Create(
+				s.m_aet.c_str(),
+				s.m_hostname.c_str(),
+				s.m_port,
+				get_ouraet().c_str(),
+				syntax
+				);
+
+		bool r = T::Connect(&net).good();
+
+		if(r == true) {
+			r = T::SendObject(query).good();
+		}
+
+		T::Drop();
+		T::Destroy();
+
+		if(r) {
+			signal_server_result(T::GetResultStack(), server);
+		}
+		return r;
+	}
+
+	bool QueryServerGroup(DcmDataset* query, const std::string& group, const char* syntax = NULL) {
+		Glib::RefPtr<ServerList> list = get_serverlist(group);
+		bool rc = false;
+		
+		std::cout << "QueryServerGroup(" << group << ")" << std::endl;
+
+		for(ServerList::iterator i = list->begin(); i != list->end(); i++) {
+			rc |= QueryServer(query, i->first, syntax);
+		}
+		
+		return rc;
+	}
+
 	bool QueryServers(DcmDataset* query, const char* syntax = NULL) {
 		Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
 	
@@ -58,14 +110,13 @@ public:
 					(*h).c_str(),
 					(*p),
 					get_ouraet().c_str(),
-					//client->get_string("/apps/aeskulap/preferences/local_aet").c_str(),
 					syntax
 					);
 		
 			bool r = SUCCESS(T::Connect(&net));
 		
 			if(r == true) {
-				rc = T::SendObject(query).good();
+				r = T::SendObject(query).good();
 			}
 	
 			rc |= r;

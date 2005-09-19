@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/16 19:26:18 $
+    Update Date:      $Date: 2005/09/19 15:23:27 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -57,18 +57,19 @@ protected:
 	};
 };
 
-bool NetLoader::load(const std::string& studyinstanceuid) {
+bool NetLoader::load(const std::string& studyinstanceuid, const std::string& server) {
 	if(busy()) {
 		return false;
 	}
 
 	m_studyinstanceuid = studyinstanceuid;
+	m_server = server;
 	start();
 }
 
 bool NetLoader::run() {
 
-	int instancecount = query_study_instances(m_studyinstanceuid);
+	int instancecount = query_study_instances(m_studyinstanceuid, m_server);
 	
 	NetClient<DicomMover> mover;
 
@@ -95,7 +96,7 @@ bool NetLoader::run() {
 	e = newDicomElement(DCM_SeriesInstanceUID);
 	query.insert(e);
 
-	if(!mover.QueryServers(&query)) {
+	if(!mover.QueryServer(&query, m_server)) {
 		return false;
 	}
 	
