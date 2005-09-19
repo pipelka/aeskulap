@@ -98,6 +98,7 @@ const std::set<std::string>& get_servergroups() {
 	static std::set<std::string> groups;
 	update_serverlist();
 
+	groups.clear();
 	for(ServerList::iterator i = m_serverlist.begin(); i != m_serverlist.end(); i++) {
 		if(!i->second.m_group.empty()) {
 			groups.insert(i->second.m_group);

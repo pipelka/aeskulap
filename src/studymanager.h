@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 16:47:25 $
+    Update Date:      $Date: 2005/09/19 17:04:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -148,6 +148,8 @@ protected:
 	Glib::RefPtr< Gtk::ListStore > m_refTreeModelGroup;
 
 	Gtk::TreeView* m_treeview_grouplist;
+
+	Gtk::Frame* m_frame_servergroups;
 
 private:
 

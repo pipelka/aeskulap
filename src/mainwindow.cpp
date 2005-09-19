@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 16:47:25 $
+    Update Date:      $Date: 2005/09/19 17:04:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.15 $
+    CVS/RCS Revision: $Revision: 1.16 $
     Status:           $State: Exp $
 */
 
@@ -61,6 +61,7 @@ m_raise_opened(true)
 	m_settings = NULL;
 	m_refGlade->get_widget_derived("settingswindow", m_settings);
 	assert(m_settings != NULL);
+	m_settings->signal_apply.connect(sigc::mem_fun(*this, &MainWindow::on_edit_settings_apply));
 
 	m_mainNotebook = NULL;
 	m_refGlade->get_widget("notebook_main", m_mainNotebook);
@@ -234,8 +235,9 @@ void MainWindow::on_study_closed(StudyView* page) {
 
 void MainWindow::on_edit_settings() {
 	m_settings->show();
-	std::cout << "after show()" << std::endl;
-	
+}
+
+void MainWindow::on_edit_settings_apply() {
 	m_studymanager->update_grouplist();
 }
 
