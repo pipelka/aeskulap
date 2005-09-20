@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 12:39:02 $
+    Update Date:      $Date: 2005/09/20 12:49:20 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -173,6 +173,8 @@ void StudyManager::on_filter_search() {
 		m_calendar_filter_to->get_date(year, month, day);
 		sprintf(date_to, "%04i%02i%02i", year, month, day);
 	}
+
+	update_selected_groups();
 
 	ImagePool::query_from_net(
 					m_entry_filter_patientid->get_text(),
