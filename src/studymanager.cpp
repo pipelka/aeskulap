@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 07:03:07 $
+    Update Date:      $Date: 2005/09/20 12:39:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -182,7 +182,7 @@ void StudyManager::on_filter_search() {
 					date_to,
 					m_entry_filter_studydescription->get_text(),
 					m_entry_filter_stationname->get_text(),
-					get_servergroups(),
+					m_selected_groups,
 					sigc::mem_fun(*this, &StudyManager::on_queryresult_study)
 					);
 }
@@ -328,7 +328,7 @@ void StudyManager::update_grouplist() {
 		i = m_refTreeModelGroup->erase(i);
 	}
 	
-	std::set< std::string > groups = ImagePool::get_servergroups();
+	std::set< std::string > groups = ImagePool::ServerList::get_groups();
 	std::set< std::string >::iterator g = groups.begin();
 	for( ; g != groups.end(); g++) {
 		Gtk::TreeModel::Row row = *(m_refTreeModelGroup->append());	
@@ -344,27 +344,17 @@ void StudyManager::update_grouplist() {
 
 }
 
-const std::set<std::string>& StudyManager::get_servergroups() {
-	static std::set<std::string> groups;
-	groups.clear();
-
-	return groups;
-
-	// get selected rows
-	
+void StudyManager::update_selected_groups() {
 	Glib::RefPtr<Gtk::TreeSelection> selection = m_treeview_grouplist->get_selection();
-	//std::list<Gtk::TreePath> list = selection->get_selected_rows();
-    Gtk::TreeModel::iterator selected = selection->get_selected();
+	m_selected_groups.clear();
+	selection->selected_foreach_iter(sigc::mem_fun(*this, &StudyManager::selected_group_callback));
+}
 
-	// push groups
-	while(selected) {
-		//Gtk::TreeModel::RowReference row(m_refTreeModelGroup, *i);
-		Gtk::TreeModel::Row row = *selected;
-		std::string group = row[m_ColumnsGroup.m_group];
-		std::cout << "Group: " << group << std::endl;
-		groups.insert(group);
-		selected++;
-	}
+void StudyManager::selected_group_callback(const Gtk::TreeModel::iterator& iter) {
+	Gtk::TreeModel::Row row = *iter;
 
-	return groups;
+	std::string group = row[m_ColumnsGroup.m_group];
+	std::cout << "Group: " << group << std::endl;
+
+	m_selected_groups.insert(row[m_ColumnsGroup.m_group]);
 }

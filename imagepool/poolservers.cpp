@@ -19,11 +19,11 @@
     Alexander Pipelka
     pipelka@teleweb.at
 
-    Last Update:      $Author$
-    Update Date:      $Date$
-    Source File:      $Source$
-    CVS/RCS Revision: $Revision$
-    Status:           $State$
+    Last Update:      $Author: braindead $
+    Update Date:      $Date: 2005/09/20 12:39:03 $
+    Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolservers.cpp,v $
+    CVS/RCS Revision: $Revision: 1.1 $
+    Status:           $State: Exp $
 */
 
 #include <gconfmm.h>
@@ -32,10 +32,11 @@
 
 namespace ImagePool {
 
-static ServerList m_serverlist;
+ServerList ServerList::m_serverlist;
+std::set< std::string > ServerList::m_servergroups;
 
-Glib::RefPtr<ImagePool::ServerList> get_serverlist(const std::string groupfilter) {
-	update_serverlist();
+Glib::RefPtr<ImagePool::ServerList> ServerList::get(const std::string groupfilter) {
+	update();
 
 	ImagePool::ServerList* list = new ServerList;
 	for(ServerList::iterator i = m_serverlist.begin(); i != m_serverlist.end(); i++) {
@@ -51,7 +52,7 @@ Glib::RefPtr<ImagePool::ServerList> get_serverlist(const std::string groupfilter
 	return Glib::RefPtr<ImagePool::ServerList>(list);
 }
 
-void update_serverlist() {
+void ServerList::update() {
 	m_serverlist.clear();
 
 	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
@@ -94,18 +95,17 @@ void update_serverlist() {
 	}
 }
 
-const std::set<std::string>& get_servergroups() {
-	static std::set<std::string> groups;
-	update_serverlist();
+const std::set<std::string>& ServerList::get_groups() {
+	update();
 
-	groups.clear();
+	m_servergroups.clear();
 	for(ServerList::iterator i = m_serverlist.begin(); i != m_serverlist.end(); i++) {
 		if(!i->second.m_group.empty()) {
-			groups.insert(i->second.m_group);
+			m_servergroups.insert(i->second.m_group);
 		}
 	}
 
-	return groups;
+	return m_servergroups;
 }
 
 } // namespace ImagePool

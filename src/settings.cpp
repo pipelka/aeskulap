@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 17:04:28 $
+    Update Date:      $Date: 2005/09/20 12:39:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -195,7 +195,7 @@ void Settings::restore_settings() {
 		i = m_refTreeModel->erase(i);
 	}
 
-	Glib::RefPtr<ImagePool::ServerList> list = ImagePool::get_serverlist();
+	Glib::RefPtr<ImagePool::ServerList> list = ImagePool::ServerList::get();
 	for(ImagePool::ServerList::iterator i = list->begin(); i != list->end(); i++) {
 		Gtk::TreeModel::Row row = *(m_refTreeModel->append());
 
@@ -205,40 +205,6 @@ void Settings::restore_settings() {
 		row[m_Columns.m_name] = i->second.m_name;
 		row[m_Columns.m_group] = i->second.m_group;
 	}
-
-	/*Gnome::Conf::SListHandle_ValueString aet_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_aet");
-	Gnome::Conf::SListHandle_ValueInt port_list = m_conf_client->get_int_list("/apps/aeskulap/preferences/server_port");
-	Gnome::Conf::SListHandle_ValueString hostname_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_hostname");
-	Gnome::Conf::SListHandle_ValueString description_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_description");
-	Gnome::Conf::SListHandle_ValueString group_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_group");
-
-	Gnome::Conf::SListHandle_ValueString::iterator a = aet_list.begin();
-	Gnome::Conf::SListHandle_ValueInt::iterator p = port_list.begin();
-	Gnome::Conf::SListHandle_ValueString::iterator h = hostname_list.begin();
-	Gnome::Conf::SListHandle_ValueString::iterator d = description_list.begin();
-	Gnome::Conf::SListHandle_ValueString::iterator g = group_list.begin();
-
-	Gtk::TreeModel::Children::iterator i = m_refTreeModel->children().begin();
-	for(; i != m_refTreeModel->children().end();) {
-		i = m_refTreeModel->erase(i);
-	}
-
-	for(; h != hostname_list.end() && a != aet_list.end() && p != port_list.end(); a++, p++, h++) {
-		Gtk::TreeModel::Row row = *(m_refTreeModel->append());
-
-		row[m_Columns.m_aet] = *a;
-		row[m_Columns.m_port] = *p;
-		row[m_Columns.m_hostname] = *h;
-		
-		if(d != description_list.end()) {
-			row[m_Columns.m_name] = *d;
-			d++;
-		}
-		if(g != group_list.end()) {
-			row[m_Columns.m_group] = *g;
-			g++;
-		}
-	}*/
 }
 
 void Settings::on_server_add() {

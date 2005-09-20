@@ -1,7 +1,8 @@
 lib_LTLIBRARIES = libimagepool.la
 
 libimagepool_la_SOURCES = \
-	servers.cpp \
+	poolservers.h \
+	poolservers.cpp \
 	netclient.h \
 	loader.cpp \
 	loader.h \
