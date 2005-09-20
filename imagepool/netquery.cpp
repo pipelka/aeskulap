@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 16:47:25 $
+    Update Date:      $Date: 2005/09/20 07:02:50 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -138,6 +138,7 @@ void query_from_net(
 			const std::string& date_to,
 			const std::string& studydescription,
 			const std::string& stationname,
+			const std::set<std::string>& groups,
 			const sigc::slot< void, const Glib::RefPtr< ImagePool::Study >& >& resultslot
 			)
 {
@@ -235,7 +236,7 @@ void query_from_net(
 	NetClient<FindAssociation> a;
 	a.signal_server_result.connect(sigc::bind(sigc::ptr_fun(on_query_from_net_result), resultslot));
 
-	std::set<std::string> groups = get_servergroups();
+	//std::set<std::string> groups = get_servergroups();
 	std::set<std::string>::iterator i = groups.begin();
 
 	// do we have groups defined ?
