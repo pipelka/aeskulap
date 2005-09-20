@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 07:02:49 $
+    Update Date:      $Date: 2005/09/20 12:39:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -44,7 +44,7 @@ public:
 
 	void update_grouplist();
 
-	const std::set<std::string>& get_servergroups();
+	void update_selected_groups();
 
 	sigc::signal<void, const std::string&, const std::string&> signal_open_study;
 
@@ -67,6 +67,8 @@ protected:
 	void on_study_expanded(const Gtk::TreeModel::iterator& iter, const Gtk::TreeModel::Path& path);
 
 	bool on_test_study_expand(const Gtk::TreeModel::iterator& iter, const Gtk::TreeModel::Path& path);
+
+	void selected_group_callback(const Gtk::TreeModel::iterator& iter);
 
 
 	Gtk::Button* m_button_filter_search;
@@ -159,6 +161,7 @@ private:
 
 	Glib::RefPtr<Gnome::Glade::Xml> m_refGlade;
 
+	std::set< std::string > m_selected_groups;
 };
 
 #endif // AESKULAP_STUDYMANAGER_H

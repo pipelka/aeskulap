@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 07:02:49 $
+    Update Date:      $Date: 2005/09/20 12:39:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -32,6 +32,7 @@
 #include "poolinstance.h"
 #include "poolseries.h"
 #include "poolstudy.h"
+#include "poolservers.h"
 
 #include <glibmm/slisthandle.h>
 #include <string>
@@ -85,7 +86,7 @@ namespace ImagePool {
 
 	int query_study_instances(const std::string& studyinstanceuid, const std::string& server);
 
-	const std::set<std::string>& get_servergroups();
+	//const std::set<std::string>& get_servergroups();
 
 	std::string get_ouraet();
 
@@ -96,25 +97,9 @@ namespace ImagePool {
 		static sigc::signal< void, Glib::RefPtr<ImagePool::Study> > signal_study_removed;
 	};
 
-	class Server {
-	public:
-		std::string m_name;
-		std::string m_hostname;
-		std::string m_aet;
-		guint m_port;
-		std::string m_group;
-	};
+	//Glib::RefPtr<ImagePool::ServerList> get_serverlist(const std::string groupfilter = "");
 
-	class ServerList : public std::map< std::string, Server >, public Glib::Object {
-	public:
-		void reference() const {
-			Glib::Object::reference();
-		}
-	};
-
-	Glib::RefPtr<ImagePool::ServerList> get_serverlist(const std::string groupfilter = "");
-
-	void update_serverlist();
+	//void update_serverlist();
 }
 
 #endif // NAMESPACE_IMAGEPOOL_H
