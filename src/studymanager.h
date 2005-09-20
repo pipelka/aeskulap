@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 17:04:28 $
+    Update Date:      $Date: 2005/09/20 07:02:49 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -43,6 +43,8 @@ public:
 	~StudyManager();
 
 	void update_grouplist();
+
+	const std::set<std::string>& get_servergroups();
 
 	sigc::signal<void, const std::string&, const std::string&> signal_open_study;
 
@@ -140,7 +142,7 @@ protected:
 			add(m_group);
 		}
 		
-		Gtk::TreeModelColumn<Glib::ustring> m_group;
+		Gtk::TreeModelColumn<std::string> m_group;
 	};
 	
 	ModelColumnsGroup m_ColumnsGroup;

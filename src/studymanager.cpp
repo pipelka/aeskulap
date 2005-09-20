@@ -22,16 +22,17 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 17:04:28 $
+    Update Date:      $Date: 2005/09/20 07:02:49 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
 #include "imagepool.h"
 #include "studymanager.h"
-#include <iostream>
 #include "gettext.h"
+#include <iostream>
+#include <list>
 
 StudyManager::StudyManager(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade) : 
 Gtk::VBox(cobject),
@@ -137,6 +138,8 @@ m_refGlade(refGlade)
 	m_treeview_grouplist->get_column(0)->property_sort_indicator().set_value(true);
 	m_treeview_grouplist->get_column(0)->set_sort_order(Gtk::SORT_ASCENDING);
 
+	m_treeview_grouplist->get_selection()->set_mode(Gtk::SELECTION_MULTIPLE);
+
 	m_refGlade->get_widget("frame_servergroups", m_frame_servergroups);
 
 	update_grouplist();
@@ -179,6 +182,7 @@ void StudyManager::on_filter_search() {
 					date_to,
 					m_entry_filter_studydescription->get_text(),
 					m_entry_filter_stationname->get_text(),
+					get_servergroups(),
 					sigc::mem_fun(*this, &StudyManager::on_queryresult_study)
 					);
 }
@@ -338,4 +342,29 @@ void StudyManager::update_grouplist() {
 		m_frame_servergroups->show();
 	}
 
+}
+
+const std::set<std::string>& StudyManager::get_servergroups() {
+	static std::set<std::string> groups;
+	groups.clear();
+
+	return;
+
+	// get selected rows
+	
+	Glib::RefPtr<Gtk::TreeSelection> selection = m_treeview_grouplist->get_selection();
+	//std::list<Gtk::TreePath> list = selection->get_selected_rows();
+    Gtk::TreeModel::iterator selected = selection->get_selected();
+
+	// push groups
+	while(selected) {
+		//Gtk::TreeModel::RowReference row(m_refTreeModelGroup, *i);
+		Gtk::TreeModel::Row row = *selected;
+		std::string group = row[m_ColumnsGroup.m_group];
+		std::cout << "Group: " << group << std::endl;
+		groups.insert(group);
+		selected++;
+	}
+
+	return groups;
 }

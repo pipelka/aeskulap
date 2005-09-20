@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 15:23:27 $
+    Update Date:      $Date: 2005/09/20 07:02:49 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -73,6 +73,7 @@ namespace ImagePool {
 				const std::string& date_to,
 				const std::string& studydescription,
 				const std::string& stationname,
+				const std::set<std::string>& groups,
 				const sigc::slot< void, const Glib::RefPtr< ImagePool::Study >& >& resultslot
 				);
 
