@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 07:02:49 $
+    Update Date:      $Date: 2005/09/20 07:03:07 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -348,7 +348,7 @@ const std::set<std::string>& StudyManager::get_servergroups() {
 	static std::set<std::string> groups;
 	groups.clear();
 
-	return;
+	return groups;
 
 	// get selected rows
 	
