@@ -49,6 +49,7 @@ StudyTab::StudyTab(const Glib::RefPtr<ImagePool::Study>& study, StudyView* view)
 	m_label->show();
 
 	m_progress = manage(new Gtk::ProgressBar);
+	m_progress->set_fraction(0);
 	m_progress->set_size_request(-1, 14);
 	m_progress->show();
 
@@ -79,7 +80,7 @@ StudyTab::StudyTab(const Glib::RefPtr<ImagePool::Study>& study, StudyView* view)
 
 void StudyTab::on_progress(double p) {
 	m_progress->set_fraction(p);
-	if(p >= 100.0) {
+	if(p >= 1) {
 		m_close->set_sensitive(true);
 		m_progress->hide();
 		m_close->show();

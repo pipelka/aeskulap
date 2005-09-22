@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/16 19:26:17 $
+    Update Date:      $Date: 2005/09/22 15:40:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.h,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -72,7 +72,7 @@ protected:
 
 	//Data& data();
 
-	void add_image(DcmDataset* dset, int imagecount=0);
+	void add_image(DcmDataset* dset, int imagecount=0, int seriescount=0);
 
 	void add_image_callback();
 	

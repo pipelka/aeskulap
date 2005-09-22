@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/16 19:26:17 $
+    Update Date:      $Date: 2005/09/22 15:40:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -67,15 +67,13 @@ void Loader::add_image_callback() {
 
 	// register study
 	Glib::RefPtr<ImagePool::Study> new_study = get_study(r->m_studyinstanceuid);
-	std::cout << "studysize: " << new_study->size() << std::endl;
 	if(new_study->size() == 0) {
 		new_study->m_studyinstanceuid = r->studyinstanceuid();
 		new_study->m_patientsname = r->m_patientsname;
 		new_study->m_patientsbirthdate = r->m_patientsbirthdate;
 		new_study->m_patientssex = r->m_patientssex;
 		new_study->m_studydescription = r->m_studydescription;
-		
-		std::cout << "emit: signal_study_added(" << r->m_studyinstanceuid << ")" << std::endl;
+
 		signal_study_added(new_study);
 	}
 
@@ -117,7 +115,7 @@ void Loader::add_image_callback() {
 	}
 }
 
-void Loader::add_image(DcmDataset* dset, int imagecount) {
+void Loader::add_image(DcmDataset* dset, int imagecount, int seriescount) {
 	Glib::RefPtr<ImagePool::Instance> image = ImagePool::create_instance(dset);
 
 	if(!image) {
@@ -126,6 +124,7 @@ void Loader::add_image(DcmDataset* dset, int imagecount) {
 
 	int count = image->study()->get_instancecount()+1;
 	image->study()->set_instancecount(count, imagecount);
+	image->study()->set_seriescount(seriescount);
 	m_data.loaded_study.push_front(image->study());
 
 	m_imagequeue.push(image);
@@ -138,8 +137,7 @@ bool Loader::run() {
 void Loader::finished() {
 	std::list < Glib::RefPtr<ImagePool::Study> >::iterator i = m_data.loaded_study.begin();
 	while(i != m_data.loaded_study.end()) {
-		std::cout << "finished: " << (*i)->studyinstanceuid() << std::endl;
-		(*i)->signal_progress(100);
+		(*i)->signal_progress(1);
 		i++;
 	}
 	m_data.loaded_study.clear();

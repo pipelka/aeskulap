@@ -6,9 +6,11 @@ images_DATA = \
 	grid-2h.png \
 	grid-2v.png \
 	grid-4.png \
-	series-1.png \
-	series-2h.png \
-	series-4.png \
+	series-1x1.png \
+	series-2x1.png \
+	series-2x2.png \
+	series-3x2.png \
+	series-3x3.png \
 	stock-layers-24.png \
 	stock-tool-scale-22.png \
 	stock-tool-eraser-22.png \

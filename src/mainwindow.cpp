@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 06:53:01 $
+    Update Date:      $Date: 2005/09/22 15:40:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.17 $
+    CVS/RCS Revision: $Revision: 1.18 $
     Status:           $State: Exp $
 */
 
@@ -179,9 +179,9 @@ void MainWindow::on_network_error() {
 
 	Gtk::MessageDialog error(
 				*this,
-				"<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
+				gettext("<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
 				"requested images</span>\n\n"
-				"The request was sent to the server but no response has been received.",
+				"The request was sent to the server but no response has been received."),
 				true,
 				Gtk::MESSAGE_ERROR,
 				Gtk::BUTTONS_OK,
@@ -257,12 +257,3 @@ const std::string& MainWindow::find_pageuid(Gtk::Widget* page) {
 	
 	return empty;
 }
-
-/*void MainWindow::on_load_finished(const std::string& studyinstanceuid) {
-	StudyView* v = m_studyview[studyinstanceuid];
-	if(v != NULL) {
-		set_busy_cursor(false);
-		//v->set_progress(100);
-		return;
-	}
-}*/

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:06 $
+    Update Date:      $Date: 2005/09/22 15:40:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/astockids.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -57,6 +57,10 @@ public:
 	static Gtk::StockID SERIES_2X1;
 
 	static Gtk::StockID SERIES_2X2;
+
+	static Gtk::StockID SERIES_3X2;
+
+	static Gtk::StockID SERIES_3X3;
 
 	static Gtk::StockID REFFRAME;
 

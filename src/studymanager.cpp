@@ -22,49 +22,40 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 06:53:01 $
+    Update Date:      $Date: 2005/09/22 15:40:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
 #include "imagepool.h"
 #include "studymanager.h"
+#include "asimpledisplay.h"
+#include "adatefilter.h"
 #include "gettext.h"
+
 #include <iostream>
 #include <list>
 
 StudyManager::StudyManager(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade) : 
 Gtk::VBox(cobject),
-m_refGlade(refGlade)
+m_refGlade(refGlade),
+m_new_query(false)
 {
+	m_hbox_datefilter = NULL;
+	m_refGlade->get_widget("hbox_datefilter", m_hbox_datefilter);
+
+	m_datefilter = manage(new Aeskulap::DateFilter);
+	m_datefilter->show();
+	m_hbox_datefilter->pack_start(*m_datefilter, Gtk::PACK_SHRINK);
+
 	m_button_filter_search = NULL;
 	m_refGlade->get_widget("button_filter_search", m_button_filter_search);
 	m_button_filter_search->signal_clicked().connect(sigc::mem_fun(*this, &StudyManager::on_filter_search));
 
-	//m_button_filter_today = NULL;
-	//m_refGlade->get_widget("button_filter_today", m_button_filter_today);
-	//m_button_filter_today->signal_clicked().connect(sigc::mem_fun(*this, &StudyManager::on_filter_today));
-
-	//m_button_filter_yesterday = NULL;
-	//m_refGlade->get_widget("button_filter_yesterday", m_button_filter_yesterday);
-	//m_button_filter_yesterday->signal_clicked().connect(sigc::mem_fun(*this, &StudyManager::on_filter_yesterday));
-
 	m_button_filter_clearfilter = NULL;
 	m_refGlade->get_widget("button_filter_clearfilter", m_button_filter_clearfilter);
 	m_button_filter_clearfilter->signal_clicked().connect(sigc::mem_fun(*this, &StudyManager::on_filter_clearfilter));
-
-	//m_checkbutton_filter_from = NULL;
-	//m_refGlade->get_widget("checkbutton_filter_from", m_checkbutton_filter_from);
-
-	//m_checkbutton_filter_to = NULL;
-	//m_refGlade->get_widget("checkbutton_filter_to", m_checkbutton_filter_to);
-
-	//m_calendar_filter_from = NULL;
-	//m_refGlade->get_widget("calendar_filter_from", m_calendar_filter_from);
-
-	//m_calendar_filter_to = NULL;
-	//m_refGlade->get_widget("calendar_filter_to", m_calendar_filter_to);
 
 	m_entry_filter_patientid = NULL;
 	m_refGlade->get_widget("entry_filter_patientid", m_entry_filter_patientid);
@@ -151,42 +142,35 @@ StudyManager::~StudyManager() {
 void StudyManager::on_filter_search() {
 	std::cout << "StudyManager::on_filter_search()" << std::endl;
 	
-	remove_rows(m_refTreeModelStudy->children());
-	
-	char date_from[20];
-	char date_to[20];
-	date_from[0] = 0;
-	date_to[0] = 0;
-
-	/*if(m_checkbutton_filter_from->get_active()) {
-		guint year;
-		guint month;
-		guint day;
-		m_calendar_filter_from->get_date(year, month, day);
-		sprintf(date_from, "%04i%02i%02i", year, month, day);
-	}
-
-	if(m_checkbutton_filter_to->get_active()) {
-		guint year;
-		guint month;
-		guint day;
-		m_calendar_filter_to->get_date(year, month, day);
-		sprintf(date_to, "%04i%02i%02i", year, month, day);
-	}*/
-
 	update_selected_groups();
+
+	m_new_query = true;
 
 	ImagePool::query_from_net(
 					m_entry_filter_patientid->get_text(),
 					m_entry_filter_name->get_text(),
 					m_entry_filter_modality->get_entry()->get_text(),
-					date_from,
-					date_to,
+					m_datefilter->get_startdate(),
+					m_datefilter->get_enddate(),
 					m_entry_filter_studydescription->get_text(),
 					m_entry_filter_stationname->get_text(),
 					m_selected_groups,
 					sigc::mem_fun(*this, &StudyManager::on_queryresult_study)
 					);
+	
+	if(m_new_query) {
+		std::cout << "no results !!!" << std::endl;
+		Gtk::MessageDialog error(
+					gettext("<span weight=\"bold\" size=\"larger\">No results for this query</span>"),
+					true,
+					Gtk::MESSAGE_INFO,
+					Gtk::BUTTONS_OK,
+					true);
+					
+		error.show();
+		error.run();
+		error.hide();
+	}
 }
 
 void StudyManager::remove_rows(const Gtk::TreeModel::Children& list) {
@@ -196,45 +180,8 @@ void StudyManager::remove_rows(const Gtk::TreeModel::Children& list) {
 	}
 }
 
-/*void StudyManager::on_filter_today() {
-	m_checkbutton_filter_from->set_active();
-	m_checkbutton_filter_to->set_active();
-
-	struct tm *l_time;
-	time_t now;
-
-	time(&now);
-	l_time = localtime(&now);
-	
-	m_calendar_filter_from->select_month(l_time->tm_mon, l_time->tm_year+1900);
-	m_calendar_filter_from->select_day(l_time->tm_mday);
-
-	m_calendar_filter_to->select_month(l_time->tm_mon, l_time->tm_year+1900);
-	m_calendar_filter_to->select_day(l_time->tm_mday);
-}
-
-void StudyManager::on_filter_yesterday() {
-	m_checkbutton_filter_from->set_active();
-	m_checkbutton_filter_to->set_active();
-
-	struct tm *l_time;
-	time_t now;
-
-	time(&now);
-	now += (-1 * 60 * 60 * 24);
-	l_time = localtime(&now);
-	
-	m_calendar_filter_from->select_month(l_time->tm_mon, l_time->tm_year+1900);
-	m_calendar_filter_from->select_day(l_time->tm_mday);
-
-	m_calendar_filter_to->select_month(l_time->tm_mon, l_time->tm_year+1900);
-	m_calendar_filter_to->select_day(l_time->tm_mday);
-}*/
-
 void StudyManager::on_filter_clearfilter() {
-	//m_checkbutton_filter_from->set_active(false);
-	//m_checkbutton_filter_to->set_active(false);
-
+	m_datefilter->clear();
 	m_entry_filter_patientid->set_text("");
 	m_entry_filter_name->set_text("");
 	m_entry_filter_modality->get_entry()->set_text("");
@@ -243,6 +190,11 @@ void StudyManager::on_filter_clearfilter() {
 }
 
 void StudyManager::on_queryresult_study(const Glib::RefPtr< ImagePool::Study >& study) {
+	if(m_new_query) {
+		remove_rows(m_refTreeModelStudy->children());
+		m_new_query = false;
+	}
+
 	Gtk::TreeModel::Row row = *(m_refTreeModelStudy->append());
 
 	row[m_ColumnsStudy.m_icon] = Gtk::Stock::OPEN.id;
