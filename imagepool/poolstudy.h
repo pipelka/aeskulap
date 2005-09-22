@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 15:23:27 $
+    Update Date:      $Date: 2005/09/22 15:40:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolstudy.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -96,11 +96,17 @@ public:
 
 	int get_instancecount();
 
+	int seriescount();
+
+	int set_seriescount(int series);
+
 protected:
 
 	std::map< std::string, Glib::RefPtr<ImagePool::Series> > m_list;
 	
 private:
+
+	int m_max_series;
 
 	int m_max_instances;
 	

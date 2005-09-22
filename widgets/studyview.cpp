@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 06:53:01 $
+    Update Date:      $Date: 2005/09/22 15:40:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -54,6 +54,28 @@ m_draw_reference_frame_ends(false) {
 	Gtk::HBox* hbox = manage(new Gtk::HBox);
 	hbox->show();
 
+	// SET LAYOUT (BASED ON STUDYDATA)
+	
+	int count = study->seriescount();
+	if(count != 0) {
+		if(count == 1) {
+			Aeskulap::Tiler<SeriesView>::set_layout(1, 1);
+			m_single_series = true;
+		}
+		else if(count == 2) {
+			Aeskulap::Tiler<SeriesView>::set_layout(2, 1);
+		}
+		else if(count <= 4) {
+			Aeskulap::Tiler<SeriesView>::set_layout(2, 2);
+		}		
+		else if(count <= 6) {
+			Aeskulap::Tiler<SeriesView>::set_layout(3, 2);
+		}
+		else if(count <= 9) {
+			Aeskulap::Tiler<SeriesView>::set_layout(3, 3);
+		}
+	}
+
 	// SERIES TABLE
 	
 	m_table = manage(new Gtk::Table(m_tile_y, m_tile_x, true));
@@ -79,10 +101,13 @@ m_draw_reference_frame_ends(false) {
 
 	m_series_layout = manage(new SeriesLayoutToolButton());
 	m_toolbar->append(*m_series_layout);
+	m_series_layout->set_layout(m_tile_x, m_tile_y);
 	m_series_layout->set_tooltip(m_tooltips, gettext("Rearrange the series of the current study"));
 	m_series_layout->set_arrow_tooltip(m_tooltips, gettext("Display the series tiling menu"), "");
 	m_series_layout->signal_change_layout.connect(sigc::mem_fun(*this, &StudyView::on_change_layout));
-	m_series_layout->show();
+	if(count != 1) {
+		m_series_layout->show();
+	}
 
 	m_toggle_full = manage(new Gtk::MenuToolButton(Aeskulap::Stock::SERIES_SINGLE));
 	m_toggle_full->signal_show_menu().connect(sigc::mem_fun(*this, &StudyView::on_popup_full));
@@ -90,7 +115,9 @@ m_draw_reference_frame_ends(false) {
 	m_toggle_full->set_tooltip(m_tooltips, gettext("Toggle single series mode"));
 	m_toggle_full->set_arrow_tooltip(m_tooltips, gettext("Display the series selection menu"), "");
 	m_toggle_full->set_menu(m_series_menu);
-	m_toggle_full->show();
+	if(count != 1) {
+		m_toggle_full->show();
+	}
 
 	m_image_layout = manage(new ImageLayoutToolButton());
 	m_toolbar->append(*m_image_layout);

@@ -23,39 +23,61 @@
 
     Last Update:      $Author: braindead $
     Update Date:      $Date: 2005/09/22 15:40:46 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/imagelayouttoolbutton.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adatefilter.h,v $
+    CVS/RCS Revision: $Revision: 1.1 $
     Status:           $State: Exp $
 */
 
-#ifndef AESKULAP_IMAGELAYOUTTOOLBUTTON_H
-#define AESKULAP_IMAGELAYOUTTOOLBUTTON_H
+#ifndef AESKULAP_DATEFILTER_H
+#define AESKULAP_DATEFILTER_H
 
 #include <gtkmm.h>
-#include <gtkmm/menutoolbutton.h>
+#include <string>
 
-class ImageLayoutToolButton : public Gtk::MenuToolButton {
+namespace Aeskulap {
+
+class DateFilter : public Gtk::HBox {
 public:
 
-	ImageLayoutToolButton();
+	DateFilter();
 
-	void accelerate(Gtk::Window& window);
+	void clear();
 
-	sigc::signal<void, int, int> signal_change_layout;
+	const std::string& get_startdate();
 
-	void set_layout(int tilex, int tiley);
+	const std::string& get_enddate();
 
 protected:
 
-	void on_clicked();
+	void set_today();
 
-	void on_change_layout(int index);
+	void set_yesterday();
 
-	Gtk::Menu m_menu;
+	bool select_date(const Glib::ustring& title, std::string& isodate);
 
-private:
+	void update_labels();
 
-	int m_index;
+	void on_select_date(bool rangestart);
+
+	void on_filtertype_changed();
+
+	// filter widgets
+
+	Gtk::ComboBoxText* m_filter_type;
+	
+	Gtk::Button* m_filter_popup_from;
+
+	Gtk::Button* m_filter_popup_to;
+	
+	Gtk::HBox* m_filter_date;
+	
+	Gtk::HBox* m_filter_range;
+
+	std::string m_startdate;
+
+	std::string m_enddate;
 };
 
-#endif // AESKULAP_IMAGELAYOUTTOOLBUTTON_H
+} // namespace Aeskulap
+
+#endif // AESKULAP_DATEFILTER_H

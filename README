@@ -29,6 +29,10 @@ Aeskulap version history:
 - new preferences dialog
 - added C-Echo test
 - added servergroups
+- fixed querying and loading from different servers
+- added DateFilter widgets
+- new query form (much simpler)
+- autolayout (currently based on number of series)
 
 
 0.1.1 - 20050911

@@ -1,6 +1,8 @@
 noinst_LTLIBRARIES = libgtkdicom.la
 
 libgtkdicom_la_SOURCES = \
+	adatefilter.h \
+	adatefilter.cpp \
 	atiler.h \
 	atiler.cpp \
 	aseriesmenu.h \

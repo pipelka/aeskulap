@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 06:53:01 $
+    Update Date:      $Date: 2005/09/22 15:40:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -33,7 +33,13 @@
 
 #include <gtkmm.h>
 #include <libglademm/xml.h>
-#include "asimpledisplay.h"
+
+namespace Aeskulap {
+	class SimpleDisplay;
+	class DateFilter;
+}
+
+//#include "asimpledisplay.h"
 
 class StudyManager : public Gtk::VBox {
 public:
@@ -52,10 +58,6 @@ protected:
 
 	void on_filter_search();
 
-	//void on_filter_today();
-
-	//void on_filter_yesterday();
-
 	void on_filter_clearfilter();
 
 	void on_queryresult_study(const Glib::RefPtr< ImagePool::Study >& study);
@@ -71,21 +73,13 @@ protected:
 	void selected_group_callback(const Gtk::TreeModel::iterator& iter);
 
 
+	Gtk::HBox* m_hbox_datefilter;
+
+	Aeskulap::DateFilter* m_datefilter;
+
 	Gtk::Button* m_button_filter_search;
 	
-	//Gtk::Button* m_button_filter_today;
-
-	//Gtk::Button* m_button_filter_yesterday;
-
 	Gtk::Button* m_button_filter_clearfilter;
-
-	//Gtk::CheckButton* m_checkbutton_filter_from;
-
-	//Gtk::CheckButton* m_checkbutton_filter_to;
-
-	//Gtk::Calendar* m_calendar_filter_from;
-
-	//Gtk::Calendar* m_calendar_filter_to;
 
 	Gtk::Entry* m_entry_filter_patientid;
 
@@ -162,6 +156,8 @@ private:
 	Glib::RefPtr<Gnome::Glade::Xml> m_refGlade;
 
 	std::set< std::string > m_selected_groups;
+	
+	bool m_new_query;
 };
 
 #endif // AESKULAP_STUDYMANAGER_H

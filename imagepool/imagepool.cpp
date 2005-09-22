@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/12 21:15:16 $
+    Update Date:      $Date: 2005/09/22 15:40:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -161,16 +161,16 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 	else {
 		r->m_depth = m_image->getDepth();
 	}
-	std::cout << "depth: " << r->m_depth << std::endl;
+	//std::cout << "depth: " << r->m_depth << std::endl;
 
-	std::cout << "m_default_windowcenter = " << r->m_default_windowcenter << std::endl;
-	std::cout << "m_default_windowwidth = " << r->m_default_windowwidth << std::endl;
+	//std::cout << "m_default_windowcenter = " << r->m_default_windowcenter << std::endl;
+	//std::cout << "m_default_windowwidth = " << r->m_default_windowwidth << std::endl;
 
 	// get signed / unsigned
 	Uint16 value1 = 0;
 	if(dset->findAndGetUint16(DCM_PixelRepresentation, value1).good()) {
 		r->m_is_signed = (value1 == 1);
-		std::cout << "pixel representation: " << r->m_is_signed << std::endl;
+		//std::cout << "pixel representation: " << r->m_is_signed << std::endl;
 		if(r->m_is_signed) {
 			r->m_intercept -= (1 << r->m_depth) / 2 - 1;
 		}
@@ -189,7 +189,7 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 
 	if(dset->findAndGetUint16(DCM_HighBit, value1).good()) {
 		r->m_highbit = value1;
-		std::cout << "highbit: " << r->m_highbit << std::endl;
+		//std::cout << "highbit: " << r->m_highbit << std::endl;
 	}
 	
 	// correct depth
@@ -197,7 +197,7 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 	if(r->m_bpp > 8 and r->m_bpp < 16) {
 		r->m_bpp = 16;
 	}
-	std::cout << "bpp: " << r->m_bpp << std::endl;
+	//std::cout << "bpp: " << r->m_bpp << std::endl;
 
 	if(r->m_default_windowwidth == 0 && r->m_default_windowcenter == 0) {
 		// try LargestImagePixelValue / SmallestImagePixelValue
@@ -219,8 +219,8 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 		double max = 0;
 		if(m_image->getMinMaxValues(min, max) == 1) {
 
-			std::cout << "min = " << min << std::endl;
-			std::cout << "max = " << max << std::endl;
+			//std::cout << "min = " << min << std::endl;
+			//std::cout << "max = " << max << std::endl;
 			r->m_default_windowwidth = (int)(max - min);
 			r->m_default_windowcenter = (int)((min + max) / 2);
 		}
@@ -229,7 +229,7 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 	// get rawdata
 
 	if(r->m_iscolor) {
-		std::cout << "detected color image" << std::endl;
+		//std::cout << "detected color image" << std::endl;
 		r->m_size = m_image->getWidth()*3*m_image->getHeight();
 		r->m_default_windowwidth = 256;
 		r->m_default_windowcenter = 127;
@@ -244,7 +244,7 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 	for(int f=0; f<m_image->getFrameCount(); f++) {
 		void* pixels = (void*)malloc(r->m_size);
 		r->m_pixels.push_back(pixels);
-		std::cout << "frame: " << f << std::endl;
+		//std::cout << "frame: " << f << std::endl;
 	
 		if(!m_image->getOutputData(pixels, r->m_size, r->m_iscolor ? 8 : r->m_depth, f)){
 			std::cerr << "dcmImage->getOutputData(..) == FALSE" << std::endl;
@@ -323,8 +323,8 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 		r->m_orientation.y.z = strtod(value.c_str(), NULL);
 	}
 
-	std::cout << "slope: " << r->m_slope << std::endl;
-	std::cout << "intercept: " << r->m_intercept << std::endl;
+	//std::cout << "slope: " << r->m_slope << std::endl;
+	//std::cout << "intercept: " << r->m_intercept << std::endl;
 
 	// study params
 	dset->findAndGetOFString(DCM_PatientsName, r->m_patientsname);

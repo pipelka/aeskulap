@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-18 09:33+0200\n"
+"POT-Creation-Date: 2005-09-22 17:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,15 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../imagepool/netquery.cpp:82 ../imagepool/netquery.cpp:101
+#: ../imagepool/netquery.cpp:83 ../imagepool/netquery.cpp:102
 msgid "no description"
 msgstr ""
 
-#: ../imagepool/netquery.cpp:348
+#: ../imagepool/netquery.cpp:388
 msgid "Unable to create association"
 msgstr ""
 
-#: ../imagepool/netquery.cpp:353
+#: ../imagepool/netquery.cpp:393
 msgid "no response for echo request"
 msgstr ""
 
@@ -60,79 +60,116 @@ msgstr ""
 msgid "%i mm"
 msgstr ""
 
-#: ../widgets/studyview.cpp:82
+#: ../widgets/studyview.cpp:105
 msgid "Rearrange the series of the current study"
 msgstr ""
 
-#: ../widgets/studyview.cpp:83
+#: ../widgets/studyview.cpp:106
 msgid "Display the series tiling menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:90
+#: ../widgets/studyview.cpp:115
 msgid "Toggle single series mode"
 msgstr ""
 
-#: ../widgets/studyview.cpp:91
+#: ../widgets/studyview.cpp:116
 msgid "Display the series selection menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:97
+#: ../widgets/studyview.cpp:124
 msgid "Rearrange the images of the selected series"
 msgstr ""
 
-#: ../widgets/studyview.cpp:98
+#: ../widgets/studyview.cpp:125
 msgid "Display the the image tiling menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:107
+#: ../widgets/studyview.cpp:134
 msgid "Display references of the selected series"
 msgstr ""
 
-#: ../src/astockids.cpp:61
-msgid "1 Image"
+#: ../widgets/adatefilter.cpp:44 ../widgets/adatefilter.cpp:49
+#: ../widgets/adatefilter.cpp:91 ../widgets/adatefilter.cpp:97
+msgid "None"
 msgstr ""
 
-#: ../src/astockids.cpp:62
-msgid "1x2 Images"
+#: ../widgets/adatefilter.cpp:45 ../widgets/adatefilter.cpp:104
+msgid "Today"
 msgstr ""
 
-#: ../src/astockids.cpp:63
-msgid "2x1 Images"
+#: ../widgets/adatefilter.cpp:46 ../widgets/adatefilter.cpp:110
+msgid "Yesterday"
 msgstr ""
 
-#: ../src/astockids.cpp:64
-msgid "2x2 Images"
+#: ../widgets/adatefilter.cpp:47 ../widgets/adatefilter.cpp:116
+msgid "Date"
+msgstr ""
+
+#: ../widgets/adatefilter.cpp:48 ../widgets/adatefilter.cpp:125
+msgid "Range"
+msgstr ""
+
+#: ../widgets/adatefilter.cpp:177
+msgid "Select date"
+msgstr ""
+
+#: ../widgets/adatefilter.cpp:183
+msgid "Select Enddate"
 msgstr ""
 
 #: ../src/astockids.cpp:65
-msgid "4x4 Images"
+msgid "1 Image"
 msgstr ""
 
 #: ../src/astockids.cpp:66
-msgid "Single"
+msgid "1x2 Images"
 msgstr ""
 
 #: ../src/astockids.cpp:67
-msgid "All"
+msgid "2x1 Images"
 msgstr ""
 
 #: ../src/astockids.cpp:68
-msgid "1 Series"
+msgid "2x2 Images"
 msgstr ""
 
 #: ../src/astockids.cpp:69
-msgid "2x1 Series"
+msgid "4x4 Images"
 msgstr ""
 
 #: ../src/astockids.cpp:70
-msgid "2x2 Series"
+msgid "Single"
 msgstr ""
 
 #: ../src/astockids.cpp:71
-msgid "Reference"
+msgid "All"
 msgstr ""
 
 #: ../src/astockids.cpp:72
+msgid "1 Series"
+msgstr ""
+
+#: ../src/astockids.cpp:73
+msgid "2x1 Series"
+msgstr ""
+
+#: ../src/astockids.cpp:74
+msgid "2x2 Series"
+msgstr ""
+
+#: ../src/astockids.cpp:75
+msgid "3x2 Series"
+msgstr ""
+
+#: ../src/astockids.cpp:76
+msgid "3x3 Series"
+msgstr ""
+
+#: ../src/astockids.cpp:77
+msgid "Reference"
+msgstr ""
+
+#: ../src/astockids.cpp:78
 msgid "Delete item"
 msgstr ""
 
@@ -140,63 +177,83 @@ msgstr ""
 msgid "Open DICOM Image files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:86
+#: ../src/mainwindow.cpp:87
 msgid "Bring opened files to front"
 msgstr ""
 
-#: ../src/mainwindow.cpp:95
+#: ../src/mainwindow.cpp:96
 msgid "DICOM files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:100
+#: ../src/mainwindow.cpp:101
 msgid "Any files"
 msgstr ""
 
-#. c->add_attribute(m_tree_icon.property_stock_size(), m_ColumnsStudy.m_iconsize);
-#: ../src/studymanager.cpp:107
+#: ../src/mainwindow.cpp:182
+msgid ""
+"<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
+"requested images</span>\n"
+"\n"
+"The request was sent to the server but no response has been received."
+msgstr ""
+
+#: ../src/studymanager.cpp:98
 msgid "Patientsname"
 msgstr ""
 
-#: ../src/studymanager.cpp:108
+#: ../src/studymanager.cpp:99
 msgid "Birthdate"
 msgstr ""
 
-#: ../src/studymanager.cpp:109 ../src/settings.cpp:97
+#: ../src/studymanager.cpp:100
 msgid "Description"
 msgstr ""
 
-#: ../src/studymanager.cpp:110
+#: ../src/studymanager.cpp:101
 msgid "Modality"
 msgstr ""
 
-#: ../src/studymanager.cpp:111
+#: ../src/studymanager.cpp:102
 msgid "Date/Time"
 msgstr ""
 
-#: ../src/studymanager.cpp:112
+#: ../src/studymanager.cpp:103
 msgid "Station"
 msgstr ""
 
-#: ../src/studymanager.cpp:113 ../src/aeskulap.glade.h:33
+#: ../src/studymanager.cpp:104 ../src/aeskulap.glade.h:33
 msgid "Server"
 msgstr ""
 
-#: ../src/studymanager.cpp:260
+#: ../src/studymanager.cpp:126 ../src/settings.cpp:101
+#: ../src/aeskulap.glade.h:24
+msgid "Group"
+msgstr ""
+
+#: ../src/studymanager.cpp:164
+msgid "<span weight=\"bold\" size=\"larger\">No results for this query</span>"
+msgstr ""
+
+#: ../src/studymanager.cpp:237
 #, c-format
 msgid "Series %i (1 Image)"
 msgstr ""
 
-#: ../src/studymanager.cpp:263
+#: ../src/studymanager.cpp:240
 #, c-format
 msgid "Series %i (%i Images)"
 msgstr ""
 
-#: ../src/studymanager.cpp:266
+#: ../src/studymanager.cpp:243
 #, c-format
 msgid "Series %i"
 msgstr ""
 
-#: ../src/settings.cpp:98 ../src/aeskulap.glade.h:14
+#: ../src/settings.cpp:97 ../src/aeskulap.glade.h:29
+msgid "Name"
+msgstr ""
+
+#: ../src/settings.cpp:98 ../src/aeskulap.glade.h:15
 msgid "AET"
 msgstr ""
 
@@ -208,17 +265,13 @@ msgstr ""
 msgid "Hostname"
 msgstr ""
 
-#: ../src/settings.cpp:101 ../src/aeskulap.glade.h:24
-msgid "Group"
-msgstr ""
-
-#: ../src/settings.cpp:355
+#: ../src/settings.cpp:338
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
 msgstr ""
 
-#: ../src/settings.cpp:369
+#: ../src/settings.cpp:352
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
 msgstr ""
 
@@ -227,83 +280,83 @@ msgid "(C) 2005 Alexander Pipelka"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:2
-msgid "<b>Details</b>"
+msgid "<b>Accessionnumber:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:3
-msgid "<b>Filter</b>"
+msgid "<b>Date:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:4
-msgid "<b>Local DICOM Settings</b>"
+msgid "<b>Details</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:5
-msgid "<b>Modality:</b>"
+msgid "<b>Local DICOM Settings</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:6
-msgid "<b>Name:</b>"
+msgid "<b>Modality:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:7
-msgid "<b>Patient ID:</b>"
+msgid "<b>Name:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:8
-msgid "<b>Prescanning files ...</b>"
+msgid "<b>Patient ID:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:9
-msgid "<b>Servergroups</b>"
+msgid "<b>Prescanning files ...</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:10
-msgid "<b>Stationname:</b>"
+msgid "<b>Servergroups</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:11
-msgid "<b>Study Description:</b>"
+msgid "<b>Stationname:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:12
-msgid "<b>Study List</b>"
+msgid "<b>Study Description:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:13
+msgid "<b>Study List</b>"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:14
 msgid "<b>required</b>"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:15
-msgid "Accessionnumber:"
-msgstr ""
-
 #: ../src/aeskulap.glade.h:16
-msgid "Aeskulap"
+msgid "Advanced query options"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:17
-msgid "Aeskulap Viewer"
+msgid "Aeskulap"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:18
-msgid "Clear"
+msgid "Aeskulap Viewer"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:19
-msgid "Clear Filter"
+msgid "Clear"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:20
-msgid "DICOM Settings"
+msgid "Clear Filter"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:21
-msgid "Echotest"
+msgid "DICOM Settings"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:22
-msgid "From:"
+msgid "Echotest"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:23
@@ -320,10 +373,6 @@ msgstr ""
 
 #: ../src/aeskulap.glade.h:27
 msgid "Medical image viewer and DICOM network client\n"
-msgstr ""
-
-#: ../src/aeskulap.glade.h:29
-msgid "Name"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:31
@@ -361,14 +410,6 @@ msgid ""
 msgstr ""
 
 #: ../src/aeskulap.glade.h:47
-msgid "To:"
-msgstr ""
-
-#: ../src/aeskulap.glade.h:48
-msgid "Today"
-msgstr ""
-
-#: ../src/aeskulap.glade.h:49
 msgid ""
 "XA\n"
 "CT\n"
@@ -378,31 +419,27 @@ msgid ""
 "SC\n"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:56
-msgid "Yesterday"
-msgstr ""
-
-#: ../src/aeskulap.glade.h:57
+#: ../src/aeskulap.glade.h:54
 msgid "_Ansicht"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:58
+#: ../src/aeskulap.glade.h:55
 msgid "_Bearbeiten"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:59
+#: ../src/aeskulap.glade.h:56
 msgid "_Datei"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:60
+#: ../src/aeskulap.glade.h:57
 msgid "_Hilfe"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:61
+#: ../src/aeskulap.glade.h:58
 msgid "_Info"
 msgstr ""
 
 #. TRANSLATORS: Replace this string with your names, one name per line.
-#: ../src/aeskulap.glade.h:63
+#: ../src/aeskulap.glade.h:60
 msgid "translator-credits"
 msgstr ""

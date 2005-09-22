@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 15:23:27 $
+    Update Date:      $Date: 2005/09/22 15:40:46 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolstudy.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -32,7 +32,10 @@
 
 namespace ImagePool {
 
-Study::Study() : m_max_instances(0), m_cur_instances(0) {
+Study::Study() : 
+m_max_series(0),
+m_max_instances(0),
+m_cur_instances(0) {
 }
 
 Study::~Study() {
@@ -79,8 +82,8 @@ void Study::set_instancecount(int cur, int max) {
 		m_cur_instances = cur;
 	}
 	
-	std::cout << "instances current: " << m_cur_instances << std::endl;
-	std::cout << "instances max: " << m_max_instances << std::endl;
+	//std::cout << "instances current: " << m_cur_instances << std::endl;
+	//std::cout << "instances max: " << m_max_instances << std::endl;
 }
 
 int Study::get_instancecount() {
@@ -99,4 +102,12 @@ const std::string& Study::server() {
 	return m_server;
 }
 
+int Study::seriescount() {
+	return m_max_series;
 }
+
+int Study::set_seriescount(int series) {
+	m_max_series = series;
+}
+
+} // namespace ImagePool

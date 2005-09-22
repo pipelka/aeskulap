@@ -9,6 +9,7 @@ widgets/atiler.cpp
 widgets/serieslayouttoolbutton.cpp
 widgets/adisplay.cpp
 widgets/studyview.cpp
+widgets/adatefilter.cpp
 src/main.cpp
 src/astockids.cpp
 src/mainwindow.cpp
