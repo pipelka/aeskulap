@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/03 21:39:04 $
+    Update Date:      $Date: 2005/09/22 06:53:01 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -123,6 +123,11 @@ m_draw_reference_frame_ends(false) {
 StudyView::~StudyView() {
 	ImagePool::remove_study(m_study);
 	m_study.clear();
+}
+
+void StudyView::accelerate(Gtk::Window& window) {
+	m_image_layout->accelerate(window);
+	m_series_layout->accelerate(window);
 }
 
 SeriesView* StudyView::create_seriesview() {

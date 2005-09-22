@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 17:04:28 $
+    Update Date:      $Date: 2005/09/22 06:53:01 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -209,6 +209,8 @@ void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	std::cout << "new study " << study->studyinstanceuid() << std::endl;
 
 	StudyView* frame = manage(new StudyView(study));
+	frame->accelerate(*this);
+
 	m_studyview[study->studyinstanceuid()] = frame;
 
 	Aeskulap::StudyTab* tab = manage(new Aeskulap::StudyTab(study, frame));
