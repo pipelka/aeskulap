@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 12:49:20 $
+    Update Date:      $Date: 2005/09/22 06:53:01 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -42,29 +42,29 @@ m_refGlade(refGlade)
 	m_refGlade->get_widget("button_filter_search", m_button_filter_search);
 	m_button_filter_search->signal_clicked().connect(sigc::mem_fun(*this, &StudyManager::on_filter_search));
 
-	m_button_filter_today = NULL;
-	m_refGlade->get_widget("button_filter_today", m_button_filter_today);
-	m_button_filter_today->signal_clicked().connect(sigc::mem_fun(*this, &StudyManager::on_filter_today));
+	//m_button_filter_today = NULL;
+	//m_refGlade->get_widget("button_filter_today", m_button_filter_today);
+	//m_button_filter_today->signal_clicked().connect(sigc::mem_fun(*this, &StudyManager::on_filter_today));
 
-	m_button_filter_yesterday = NULL;
-	m_refGlade->get_widget("button_filter_yesterday", m_button_filter_yesterday);
-	m_button_filter_yesterday->signal_clicked().connect(sigc::mem_fun(*this, &StudyManager::on_filter_yesterday));
+	//m_button_filter_yesterday = NULL;
+	//m_refGlade->get_widget("button_filter_yesterday", m_button_filter_yesterday);
+	//m_button_filter_yesterday->signal_clicked().connect(sigc::mem_fun(*this, &StudyManager::on_filter_yesterday));
 
 	m_button_filter_clearfilter = NULL;
 	m_refGlade->get_widget("button_filter_clearfilter", m_button_filter_clearfilter);
 	m_button_filter_clearfilter->signal_clicked().connect(sigc::mem_fun(*this, &StudyManager::on_filter_clearfilter));
 
-	m_checkbutton_filter_from = NULL;
-	m_refGlade->get_widget("checkbutton_filter_from", m_checkbutton_filter_from);
+	//m_checkbutton_filter_from = NULL;
+	//m_refGlade->get_widget("checkbutton_filter_from", m_checkbutton_filter_from);
 
-	m_checkbutton_filter_to = NULL;
-	m_refGlade->get_widget("checkbutton_filter_to", m_checkbutton_filter_to);
+	//m_checkbutton_filter_to = NULL;
+	//m_refGlade->get_widget("checkbutton_filter_to", m_checkbutton_filter_to);
 
-	m_calendar_filter_from = NULL;
-	m_refGlade->get_widget("calendar_filter_from", m_calendar_filter_from);
+	//m_calendar_filter_from = NULL;
+	//m_refGlade->get_widget("calendar_filter_from", m_calendar_filter_from);
 
-	m_calendar_filter_to = NULL;
-	m_refGlade->get_widget("calendar_filter_to", m_calendar_filter_to);
+	//m_calendar_filter_to = NULL;
+	//m_refGlade->get_widget("calendar_filter_to", m_calendar_filter_to);
 
 	m_entry_filter_patientid = NULL;
 	m_refGlade->get_widget("entry_filter_patientid", m_entry_filter_patientid);
@@ -158,7 +158,7 @@ void StudyManager::on_filter_search() {
 	date_from[0] = 0;
 	date_to[0] = 0;
 
-	if(m_checkbutton_filter_from->get_active()) {
+	/*if(m_checkbutton_filter_from->get_active()) {
 		guint year;
 		guint month;
 		guint day;
@@ -172,7 +172,7 @@ void StudyManager::on_filter_search() {
 		guint day;
 		m_calendar_filter_to->get_date(year, month, day);
 		sprintf(date_to, "%04i%02i%02i", year, month, day);
-	}
+	}*/
 
 	update_selected_groups();
 
@@ -196,7 +196,7 @@ void StudyManager::remove_rows(const Gtk::TreeModel::Children& list) {
 	}
 }
 
-void StudyManager::on_filter_today() {
+/*void StudyManager::on_filter_today() {
 	m_checkbutton_filter_from->set_active();
 	m_checkbutton_filter_to->set_active();
 
@@ -229,11 +229,11 @@ void StudyManager::on_filter_yesterday() {
 
 	m_calendar_filter_to->select_month(l_time->tm_mon, l_time->tm_year+1900);
 	m_calendar_filter_to->select_day(l_time->tm_mday);
-}
+}*/
 
 void StudyManager::on_filter_clearfilter() {
-	m_checkbutton_filter_from->set_active(false);
-	m_checkbutton_filter_to->set_active(false);
+	//m_checkbutton_filter_from->set_active(false);
+	//m_checkbutton_filter_to->set_active(false);
 
 	m_entry_filter_patientid->set_text("");
 	m_entry_filter_name->set_text("");

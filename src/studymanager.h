@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 12:39:02 $
+    Update Date:      $Date: 2005/09/22 06:53:01 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -52,9 +52,9 @@ protected:
 
 	void on_filter_search();
 
-	void on_filter_today();
+	//void on_filter_today();
 
-	void on_filter_yesterday();
+	//void on_filter_yesterday();
 
 	void on_filter_clearfilter();
 
@@ -73,19 +73,19 @@ protected:
 
 	Gtk::Button* m_button_filter_search;
 	
-	Gtk::Button* m_button_filter_today;
+	//Gtk::Button* m_button_filter_today;
 
-	Gtk::Button* m_button_filter_yesterday;
+	//Gtk::Button* m_button_filter_yesterday;
 
 	Gtk::Button* m_button_filter_clearfilter;
 
-	Gtk::CheckButton* m_checkbutton_filter_from;
+	//Gtk::CheckButton* m_checkbutton_filter_from;
 
-	Gtk::CheckButton* m_checkbutton_filter_to;
+	//Gtk::CheckButton* m_checkbutton_filter_to;
 
-	Gtk::Calendar* m_calendar_filter_from;
+	//Gtk::Calendar* m_calendar_filter_from;
 
-	Gtk::Calendar* m_calendar_filter_to;
+	//Gtk::Calendar* m_calendar_filter_to;
 
 	Gtk::Entry* m_entry_filter_patientid;
 
