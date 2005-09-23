@@ -26,8 +26,8 @@
  *           multi-thread APIs.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2005/09/23 16:00:45 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -177,7 +177,7 @@ private:
 #endif
 
   /** thread identifier */
-  pthread_t theThread;
+  unsigned long theThread;
 
   /** unimplemented private copy constructor */
   OFThread(const OFThread& arg);
@@ -503,14 +503,8 @@ private:
  *
  * CVS/RCS Log:
  * $Log: ofthread.h,v $
- * Revision 1.1  2005/08/23 19:31:59  braindead
- * - initial savannah import
- *
- * Revision 1.2  2005/07/27 18:39:28  pipelka
- * - GCC 4 build fixes
- *
- * Revision 1.1  2005/06/26 19:25:53  pipelka
- * - added dcmtk
+ * Revision 1.2  2005/09/23 16:00:45  braindead
+ * - dcmtk fix
  *
  * Revision 1.7  2003/12/05 10:37:41  joergr
  * Removed leading underscore characters from preprocessor symbols (reserved
