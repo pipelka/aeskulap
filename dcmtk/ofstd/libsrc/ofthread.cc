@@ -26,9 +26,9 @@
  *           multi-thread APIs.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
+ *  Update Date:      $Date: 2005/09/23 16:00:45 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/ofstd/libsrc/ofthread.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -145,7 +145,7 @@ int OFThread::start()
 #elif defined(POSIX_INTERFACE)
   pthread_t tid=0;
   int result = pthread_create(&tid, NULL, thread_stub, OFstatic_cast(void *, this));
-  if (0 == result) theThread = tid; else theThread = 0;      
+  if (0 == result) theThread = static_cast<unsigned long>(tid); else theThread = 0;      
   return result;     
 #elif defined(SOLARIS_INTERFACE)
   thread_t tid=0;
@@ -164,7 +164,7 @@ int OFThread::join()
   else return (int)GetLastError();
 #elif defined(POSIX_INTERFACE)
   void *retcode=NULL;
-  return pthread_join(theThread, &retcode);
+  return pthread_join(static_cast<pthread_t>(theThread), &retcode);
 #elif defined(SOLARIS_INTERFACE)
   void *retcode=NULL;
   // reinterpret_cast does not work for gcc 3.x
@@ -188,7 +188,7 @@ OFBool OFThread::equal(unsigned long /* tID */ )
 #ifdef WINDOWS_INTERFACE
   if (theThread == tID) return OFTrue; else return OFFalse;
 #elif defined(POSIX_INTERFACE)
-  if (pthread_equal(theThread, tID)) return OFTrue; else return OFFalse;
+  if (pthread_equal(static_cast<pthread_t>(theThread), static_cast<pthread_t>(tID))) return OFTrue; else return OFFalse;
 #elif defined(SOLARIS_INTERFACE)
   if (OFstatic_cast(thread_t, theThread) == OFstatic_cast(thread_t, tID)) return OFTrue; else return OFFalse;
 #else
@@ -214,7 +214,7 @@ unsigned long OFThread::self()
 #ifdef WINDOWS_INTERFACE
   return OFstatic_cast(unsigned long, GetCurrentThreadId());
 #elif defined(POSIX_INTERFACE)
-  return pthread_self();
+  return OFstatic_cast(unsigned long, pthread_self());
 #elif defined(SOLARIS_INTERFACE)
   return OFstatic_cast(unsigned long, thr_self());
 #else
@@ -921,14 +921,8 @@ void OFReadWriteLock::errorstr(OFString& description, int /* code */ )
  *
  * CVS/RCS Log:
  * $Log: ofthread.cc,v $
- * Revision 1.1  2005/08/23 19:32:00  braindead
- * - initial savannah import
- *
- * Revision 1.2  2005/07/27 18:39:28  pipelka
- * - GCC 4 build fixes
- *
- * Revision 1.1  2005/06/26 19:26:16  pipelka
- * - added dcmtk
+ * Revision 1.2  2005/09/23 16:00:45  braindead
+ * - dcmtk fix
  *
  * Revision 1.13  2004/04/22 10:45:33  joergr
  * Changed typecast from OFreinterpret_cast to OFstatic_cast to avoid compilation
