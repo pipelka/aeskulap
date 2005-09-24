@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 12:39:02 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -332,7 +332,9 @@ void Settings::on_echotest() {
 	unsigned int port = row[m_Columns.m_port];
 	std::string status;
 
-	if(!ImagePool::send_echorequest(hostname, aet, port, status)) {
+	ImagePool::Server server(hostname, aet, port);
+	
+	if(!server.send_echo(status)) {
 		Gtk::MessageDialog error(
 					*this,
 					gettext("<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n\n")

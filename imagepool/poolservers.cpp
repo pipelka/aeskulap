@@ -20,20 +20,59 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 12:39:03 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolservers.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
 #include <gconfmm.h>
 
 #include "imagepool.h"
+#include "poolassociation.h"
 
 namespace ImagePool {
 
+extern Network net;
+
 ServerList ServerList::m_serverlist;
 std::set< std::string > ServerList::m_servergroups;
+
+
+Server::Server() {
+}
+
+Server::Server(const std::string& hostname, const std::string& aet, int port) :
+m_hostname(hostname),
+m_aet(aet),
+m_port(port) {
+}
+
+bool Server::send_echo(std::string& status) {
+	Association a;
+	a.Create(m_aet.c_str(), m_hostname.c_str(), m_port, get_ouraet().c_str(), UID_VerificationSOPClass);
+	if(a.Connect(&net).bad()) {
+		status = gettext("Unable to create association");
+		return false;
+	}
+
+	if(!a.SendEchoRequest()) {
+		status = gettext("no response for echo request");
+		return false;
+	}
+	
+	a.Drop();
+	a.Destroy();
+
+	status = "echotest succeeded";
+	return true;
+}
+	
+bool Server::send_echo() {
+	static std::string dummystatus;
+	return send_echo(dummystatus);
+}
+
 
 Glib::RefPtr<ImagePool::ServerList> ServerList::get(const std::string groupfilter) {
 	update();
@@ -50,6 +89,15 @@ Glib::RefPtr<ImagePool::ServerList> ServerList::get(const std::string groupfilte
 		}
 	}	
 	return Glib::RefPtr<ImagePool::ServerList>(list);
+}
+
+ImagePool::Server* ServerList::find_server(const std::string& name) {
+	ServerList::iterator i = m_serverlist.find(name);
+	if(i == m_serverlist.end()) {
+		return NULL;
+	}
+	
+	return &(i->second);
 }
 
 void ServerList::update() {

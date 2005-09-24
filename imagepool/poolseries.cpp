@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:31:54 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolseries.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -32,7 +32,7 @@
 namespace ImagePool {
 
 Series::Series() :
-m_instancecount(-1) 
+m_instancecount(-1)
 {
 }
 
@@ -73,6 +73,14 @@ int Series::instancecount() {
 	}
 	
 	return m_list.size();
+}
+
+bool Series::has_3d_information() {
+	if(m_list.size() == 0) {
+		return false;
+	}
+	
+	return begin()->second->has_3d_information();
 }
 
 }

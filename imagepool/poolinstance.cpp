@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 15:47:12 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -232,6 +232,17 @@ int Instance::min_value() {
 	
 int Instance::max_value() {
 	return m_max;
+}
+
+bool Instance::has_3d_information() {
+	return (
+		m_orientation.x.x != 0 ||
+		m_orientation.x.y != 0 ||
+		m_orientation.x.z != 0 ||
+		m_orientation.y.x != 0 ||
+		m_orientation.y.y != 0 ||
+		m_orientation.y.z != 0
+		);
 }
 
 }

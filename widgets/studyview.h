@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 06:53:01 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -93,6 +93,8 @@ protected:
 
 	void on_toggle_refframe();
 
+	void on_instance_added(const Glib::RefPtr<ImagePool::Instance>& instance);
+
 	void add_series(const Glib::RefPtr<ImagePool::Series>& series);
 
 	void view_single_series(SeriesView* view);
@@ -118,6 +120,8 @@ private:
 	Gtk::MenuToolButton* m_toggle_full;
 
 	Aeskulap::SeriesMenu m_series_menu;
+
+	Gtk::ToggleToolButton* m_refframe;
 
 	bool m_single_series;
 

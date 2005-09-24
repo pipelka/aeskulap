@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 10:36:55 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netclient.h,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -97,7 +97,7 @@ public:
 		return rc;
 	}
 
-	bool QueryServers(DcmDataset* query, const char* syntax = NULL) {
+	/*bool QueryServers(DcmDataset* query, const char* syntax = NULL) {
 		Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
 	
 		Gnome::Conf::SListHandle_ValueString aet_list = client->get_string_list("/apps/aeskulap/preferences/server_aet");
@@ -130,7 +130,7 @@ public:
 		}
 		
 		return rc;
-	}
+	}*/
 };
 	
 } // namespace ImagePool

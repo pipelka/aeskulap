@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/30 19:47:55 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolseries.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -83,6 +83,8 @@ public:
 
 	int instancecount();
 
+	bool has_3d_information();
+
 	sigc::signal< void, const Glib::RefPtr<ImagePool::Instance>& > signal_instance_added;
 
 	sigc::signal< void, const Glib::RefPtr<ImagePool::Instance>& > signal_instance_removed;
@@ -92,7 +94,6 @@ protected:
 	std::map< std::string, Glib::RefPtr<ImagePool::Instance> > m_list;
 	
 private:
-
 
 	std::string m_studyinstanceuid;
 
@@ -109,7 +110,7 @@ private:
 	std::string m_stationname;
 
 	int m_instancecount;
-	
+
 	friend Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset);
 
 	friend Glib::RefPtr< ImagePool::Series > create_query_series(DcmDataset* dset);

@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 12:39:03 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolservers.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -41,6 +41,15 @@ namespace ImagePool {
 	
 class Server {
 public:
+
+	Server();
+
+	Server(const std::string& hostname, const std::string& aet, int port);
+
+	bool send_echo(std::string& status);
+	
+	bool send_echo();
+
 	std::string m_name;
 	std::string m_hostname;
 	std::string m_aet;
@@ -76,9 +85,11 @@ public:
 		return m_map.find(key);
 	}
 
-        static Glib::RefPtr<ImagePool::ServerList> get(const std::string groupfilter = "");
+	static Glib::RefPtr<ImagePool::ServerList> get(const std::string groupfilter = "");
 
-        static void update();
+	static ImagePool::Server* find_server(const std::string& name);
+
+	static void update();
 
 	static const std::set< std::string >& get_groups();
 

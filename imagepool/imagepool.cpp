@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 15:47:12 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -53,8 +53,6 @@
 namespace ImagePool {
 
 Network net;
-
-sigc::signal< void, Glib::RefPtr<ImagePool::Study> > Signals::signal_study_removed;
 
 static std::map< std::string, Glib::RefPtr<ImagePool::Instance> > m_pool;
 
@@ -153,7 +151,7 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 
 	m_image->setNoDisplayFunction();
 	m_image->hideAllOverlays();
-	//m_image->setNoVoiTransformation();
+	m_image->setNoVoiTransformation();
 	
 	//dset->print(COUT, DCMTypes::PF_shortenLongTagValues);
 
