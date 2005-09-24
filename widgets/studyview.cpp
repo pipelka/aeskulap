@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -130,10 +130,9 @@ m_draw_reference_frame_ends(false) {
 	m_toolbar->append(*seperator);
 	seperator->show();
 	
-	Gtk::ToggleToolButton* m_refframe = manage(new Gtk::ToggleToolButton(Aeskulap::Stock::REFFRAME));
+	m_refframe = manage(new Gtk::ToggleToolButton(Aeskulap::Stock::REFFRAME));
 	m_refframe->set_tooltip(m_tooltips, gettext("Display references of the selected series"));
 	m_toolbar->append(*m_refframe, sigc::mem_fun(*this, &StudyView::on_toggle_refframe));
-	m_refframe->show();
 
 	hbox->pack_end(*m_table);
 	hbox->pack_end(*m_toolbar_measure, false, false);
@@ -180,6 +179,7 @@ void StudyView::add_series(const Glib::RefPtr<ImagePool::Series>& series) {
 
 	series->signal_instance_added.connect(sigc::mem_fun(*w, &SeriesView::on_instance_added));
 	series->signal_instance_added.connect(sigc::mem_fun(m_series_menu, &Aeskulap::SeriesMenu::set_thumbnail));
+	series->signal_instance_added.connect(sigc::mem_fun(*this, &StudyView::on_instance_added));
 
 	if(m_widgets.size() >= m_seriescount) {
 		delete m_widgets[m_seriescount-1];
@@ -202,6 +202,14 @@ void StudyView::add_series(const Glib::RefPtr<ImagePool::Series>& series) {
 
 	if(m_selected == NULL) {
 		w->select(true);
+	}
+}
+
+void StudyView::on_instance_added(const Glib::RefPtr<ImagePool::Instance>& instance) {
+	if(!m_refframe->is_visible()) {
+		if(m_study->has_3d_information() > 1) {
+			m_refframe->show();
+		}
 	}
 }
 

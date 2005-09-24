@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -36,7 +36,7 @@
 
 #include <glibmm/slisthandle.h>
 #include <string>
-#include <set>
+
 
 class DcmDataset;
 
@@ -62,10 +62,6 @@ namespace ImagePool {
 
 	const Glib::RefPtr<ImagePool::Study>& get_study(const std::string& studyinstanceuid);
 
-	void load_from_file(const Glib::SListHandle<Glib::ustring>& list);
-
-	void load_from_net(const std::string& studyinstanceuid);
-
 	void query_from_net(
 				const std::string& patientid,
 				const std::string& lastname,
@@ -90,16 +86,6 @@ namespace ImagePool {
 
 	std::string get_ouraet();
 
-	bool send_echorequest(const std::string& hostname, const std::string& aet, unsigned int port, std::string& status);
-
-	class Signals {
-	public:	
-		static sigc::signal< void, Glib::RefPtr<ImagePool::Study> > signal_study_removed;
-	};
-
-	//Glib::RefPtr<ImagePool::ServerList> get_serverlist(const std::string groupfilter = "");
-
-	//void update_serverlist();
 }
 
 #endif // NAMESPACE_IMAGEPOOL_H

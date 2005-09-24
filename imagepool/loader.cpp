@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 10:36:55 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -66,14 +66,8 @@ void Loader::add_image_callback() {
 	OFString value;
 
 	// register study
-	Glib::RefPtr<ImagePool::Study> new_study = get_study(r->m_studyinstanceuid);
+	Glib::RefPtr<ImagePool::Study> new_study = r->study();
 	if(new_study->size() == 0) {
-		new_study->m_studyinstanceuid = r->studyinstanceuid();
-		new_study->m_patientsname = r->m_patientsname;
-		new_study->m_patientsbirthdate = r->m_patientsbirthdate;
-		new_study->m_patientssex = r->m_patientssex;
-		new_study->m_studydescription = r->m_studydescription;
-
 		signal_study_added(new_study);
 	}
 

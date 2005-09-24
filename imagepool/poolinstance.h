@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 15:47:12 $
+    Update Date:      $Date: 2005/09/24 19:09:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -158,6 +158,8 @@ public:
 	int min_value();
 	
 	int max_value();
+
+	bool has_3d_information();
 
 private:
 
