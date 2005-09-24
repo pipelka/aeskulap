@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/03 09:54:50 $
+    Update Date:      $Date: 2005/09/24 15:47:12 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -155,6 +155,10 @@ public:
 
 	int get_framecount();
 
+	int min_value();
+	
+	int max_value();
+
 private:
 
 	std::vector<void*> m_pixels;
@@ -224,7 +228,10 @@ private:
 	Point m_position;
 
 	Orientation m_orientation;
+
+	int m_min;
 	
+	int m_max;	
 };
 
 }
