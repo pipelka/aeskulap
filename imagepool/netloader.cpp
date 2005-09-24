@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2005/09/24 10:36:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -69,12 +69,12 @@ bool NetLoader::load(const std::string& studyinstanceuid, const std::string& ser
 
 bool NetLoader::run() {
 
-	int instancecount = query_study_instances(m_studyinstanceuid, m_server);
-	int seriescount = query_study_series(m_studyinstanceuid, m_server);
-	
+	m_cache[m_studyinstanceuid].m_instancecount = query_study_instances(m_studyinstanceuid, m_server);
+	m_cache[m_studyinstanceuid].m_seriescount = query_study_series(m_studyinstanceuid, m_server);
+
 	NetClient<DicomMover> mover;
 
-	mover.signal_response_received.connect(sigc::bind(sigc::mem_fun(*this, &NetLoader::add_image), instancecount, seriescount));
+	mover.signal_response_received.connect(sigc::mem_fun(*this, &NetLoader::add_image));
 	mover.SetMaxResults(1000);
 
 	DcmDataset query;
@@ -98,9 +98,11 @@ bool NetLoader::run() {
 	query.insert(e);
 
 	if(!mover.QueryServer(&query, m_server)) {
+		std::cerr << "C-MOVE failed !" << std::endl;
 		return false;
 	}
-	
+
+	std::cout << "C-MOVE: " << mover.responsecount << " responses" << std::endl;
 	return (mover.responsecount != 0);
 }
 

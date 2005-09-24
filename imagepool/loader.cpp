@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2005/09/24 10:36:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -115,32 +115,43 @@ void Loader::add_image_callback() {
 	}
 }
 
-void Loader::add_image(DcmDataset* dset, int imagecount, int seriescount) {
+void Loader::add_image(DcmDataset* dset) {
 	Glib::RefPtr<ImagePool::Instance> image = ImagePool::create_instance(dset);
 
 	if(!image) {
 		return;
 	}
 
+	std::string studyinstanceuid = image->studyinstanceuid();
+
+	int imagecount = m_cache[studyinstanceuid].m_instancecount;
+	int seriescount = m_cache[studyinstanceuid].m_seriescount;
 	int count = image->study()->get_instancecount()+1;
+
 	image->study()->set_instancecount(count, imagecount);
 	image->study()->set_seriescount(seriescount);
-	m_data.loaded_study.push_front(image->study());
+	
+	// add to cache
+	m_cache[studyinstanceuid].m_study = image->study();
 
 	m_imagequeue.push(image);
 	m_add_image();
 }
 
 bool Loader::run() {
+	return false;
 }
 
 void Loader::finished() {
-	std::list < Glib::RefPtr<ImagePool::Study> >::iterator i = m_data.loaded_study.begin();
-	while(i != m_data.loaded_study.end()) {
-		(*i)->signal_progress(1);
+	std::map<std::string, CacheEntry>::iterator i = m_cache.begin();
+	while(i != m_cache.end()) {
+		if(i->second.m_study) {
+			i->second.m_study->signal_progress(1);
+		}
 		i++;
 	}
-	m_data.loaded_study.clear();
+
+	m_cache.clear();
 }
 
 void Loader::thread() {
@@ -148,21 +159,37 @@ void Loader::thread() {
 	m_busy = true;
 	m_mutex.unlock();
 
-	if(!run()) {
-		// throw error
-		signal_error();
-	}
+	bool rc = run();
 
+	std::cout << "wait for imagequeue ";
 	while(m_imagequeue.size() > 0) {
+		std::cout << ".";
 		Glib::usleep(1000*100);
 	}
+	std::cout << std::endl;
 
+	std::cout << "finished" << std::endl;
 	m_finished();
-	Glib::usleep(1000*1000);
+
+	// wait for finished() (clears m_cache)
+	std::cout << "wait for cache ";
+	while(m_cache.size() > 0) {
+		std::cout << ".";
+		Glib::usleep(1000*100);
+	}
+	std::cout << std::endl;
 
 	m_mutex.lock();
 	m_busy = false;
 	m_mutex.unlock();
+
+	// throw error
+	if(!rc) {
+		std::cout << "signal_error()" << std::endl;
+		signal_error();
+	}
+
+	std::cout << "thread finished" << std::endl;
 }
 
 bool Loader::busy() {

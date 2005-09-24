@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2005/09/24 10:36:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -95,6 +95,10 @@ void close() {
 }
 
 Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
+	if(dset == NULL) {
+		return Glib::RefPtr<ImagePool::Instance>();
+	}
+	
 	std::string sop;
 
 	if(dset->findAndGetOFString(DCM_SOPInstanceUID, sop).bad()) {
@@ -149,7 +153,7 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 
 	m_image->setNoDisplayFunction();
 	m_image->hideAllOverlays();
-	m_image->setNoVoiTransformation();
+	//m_image->setNoVoiTransformation();
 	
 	//dset->print(COUT, DCMTypes::PF_shortenLongTagValues);
 

@@ -3,7 +3,6 @@
 
 #include "loader.h"
 #include <list>
-#include <map>
 #include <string>
 
 namespace ImagePool {
@@ -25,8 +24,6 @@ private:
 
 	std::list< Glib::ustring >* m_filelist;
 	
-	std::map< std::string, int > m_studysize;
-
 };
 
 } // namespace ImagePool
