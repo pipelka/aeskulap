@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/20 12:39:03 $
+    Update Date:      $Date: 2005/09/24 10:36:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netclient.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -67,14 +67,19 @@ public:
 		bool r = T::Connect(&net).good();
 
 		if(r == true) {
+			std::cout << "T::SendObject()" << std::endl;
 			r = T::SendObject(query).good();
 		}
 
+		std::cout << "T::Drop()" << std::endl;
 		T::Drop();
+		std::cout << "T::Destroy()" << std::endl;
 		T::Destroy();
 
-		if(r) {
-			signal_server_result(T::GetResultStack(), server);
+		DcmStack* result = T::GetResultStack();
+		if(r && result != NULL && result->card() > 0) {
+			std::cout << "signal_server_result('" << server << "')" << std::endl;
+			signal_server_result(result, server);
 		}
 		return r;
 	}

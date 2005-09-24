@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2005/09/24 10:36:55 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -31,7 +31,8 @@
 
 #include <glibmm.h>
 #include <queue>
-#include <list>
+#include <set>
+#include <map>
 
 class DcmDataset;
 
@@ -53,26 +54,33 @@ public:
 
 	bool busy();
 
-	//sigc::signal<void, std::string> signal_finished;
-
 	sigc::signal< void, Glib::RefPtr<ImagePool::Study> > signal_study_added;
 
 	Glib::Dispatcher signal_error;
 
 protected:
 
-	class Data {
+	class CacheEntry {
 	public:
-		std::list < Glib::RefPtr<ImagePool::Study> > loaded_study;
+
+		CacheEntry() : m_instancecount(0), m_seriescount(0) {
+		};
+
+		Glib::RefPtr<ImagePool::Study> m_study;
+
+		guint m_instancecount;
+
+		std::set< std::string > m_seriesuid;
+		
+		guint m_seriescount;
+
 	};
 
 	virtual bool run();
 	
 	virtual void finished();
 
-	//Data& data();
-
-	void add_image(DcmDataset* dset, int imagecount=0, int seriescount=0);
+	void add_image(DcmDataset* dset);
 
 	void add_image_callback();
 	
@@ -86,16 +94,14 @@ protected:
 
 	bool m_busy;
 
+	std::map<std::string, CacheEntry> m_cache;
+
 private:
 
 	void thread();
 	
-	//Glib::RefPtr<ImagePool::Study> m_current_study;
-
 	std::queue< Glib::RefPtr<ImagePool::Instance> > m_imagequeue;
 	
-	Data m_data;
-
 };
 
 } // namespace ImagePool
