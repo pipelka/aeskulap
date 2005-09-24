@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 10:36:55 $
+    Update Date:      $Date: 2005/09/24 15:47:12 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -217,17 +217,19 @@ Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset) {
 		}
 	}	
 
+	double min = 0;
+	double max = 0;
+	if(m_image->getMinMaxValues(min, max) == 1) {
+		r->m_min = (int)min;
+		r->m_max = (int)max;
+	}
+
 	// get Min / Max from image
 	if(r->m_default_windowwidth == 0 && r->m_default_windowcenter == 0) {
-		double min = 0;
-		double max = 0;
-		if(m_image->getMinMaxValues(min, max) == 1) {
-
 			//std::cout << "min = " << min << std::endl;
 			//std::cout << "max = " << max << std::endl;
 			r->m_default_windowwidth = (int)(max - min);
 			r->m_default_windowcenter = (int)((min + max) / 2);
-		}
 	}
 
 	// get rawdata

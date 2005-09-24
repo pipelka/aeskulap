@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/03 09:54:50 $
+    Update Date:      $Date: 2005/09/24 15:47:12 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -56,7 +56,9 @@ m_instancenumber(0),
 m_sopinstanceuid(sopinstanceuid),
 m_spacing_x(0),
 m_spacing_y(0),
-m_index(1)
+m_index(1),
+m_min(0),
+m_max(0)
 {
 }
 	
@@ -222,6 +224,14 @@ Instance::Type Instance::get_type() {
 
 int Instance::get_framecount() {
 	return m_pixels.size();
+}
+
+int Instance::min_value() {
+	return m_min;
+}
+	
+int Instance::max_value() {
+	return m_max;
 }
 
 }
