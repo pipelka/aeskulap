@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/08 12:05:45 $
+    Update Date:      $Date: 2005/09/25 19:38:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -682,8 +682,8 @@ int SimpleDisplay::get_id() {
 	return m_id;
 }
 
-bool SimpleDisplay::point_to_screen(const ImagePool::Instance::Point& p, int& x, int& y) {
-	if(m_image->spacing_x() == 0 || m_image->spacing_y() == 0) {
+bool SimpleDisplay::point_to_screen(const ImagePool::Instance::Point& p, int& x, int& y, const Glib::RefPtr<ImagePool::Instance>& image) {
+	if(image->spacing_x() == 0 || image->spacing_y() == 0) {
 		return false;
 	}
 
@@ -694,17 +694,25 @@ bool SimpleDisplay::point_to_screen(const ImagePool::Instance::Point& p, int& x,
 		return false;
 	}
 
-	double mx = (double)m_disp_params->move_x * m_image->spacing_x();
-	double my = (double)m_disp_params->move_y * m_image->spacing_y();
+	double mx = (double)m_disp_params->move_x * image->spacing_x();
+	double my = (double)m_disp_params->move_y * image->spacing_y();
 	
-	x = dx0 + (int)(((p.x - mx) / m_image->spacing_x()) * m_magnifier);
-	y = dy0 + (int)(((p.y - my) / m_image->spacing_y()) * m_magnifier);
+	x = dx0 + (int)(((p.x - mx) / image->spacing_x()) * m_magnifier);
+	y = dy0 + (int)(((p.y - my) / image->spacing_y()) * m_magnifier);
 
 	return true;
 }
 
+bool SimpleDisplay::point_to_screen(const ImagePool::Instance::Point& p, int& x, int& y) {
+	return point_to_screen(p, x, y, m_image);
+}
+
 bool SimpleDisplay::screen_to_point(int x, int y, ImagePool::Instance::Point& p) {
-	if(m_image->spacing_x() == 0 || m_image->spacing_y() == 0) {
+	return screen_to_point(x, y, p, m_image);
+}
+
+bool SimpleDisplay::screen_to_point(int x, int y, ImagePool::Instance::Point& p, const Glib::RefPtr<ImagePool::Instance>& image) {
+	if(image->spacing_x() == 0 || image->spacing_y() == 0) {
 		return false;
 	}
 
@@ -715,11 +723,11 @@ bool SimpleDisplay::screen_to_point(int x, int y, ImagePool::Instance::Point& p)
 		return false;
 	}
 
-	double mx = (double)m_disp_params->move_x * m_image->spacing_x();
-	double my = (double)m_disp_params->move_y * m_image->spacing_y();
+	double mx = (double)m_disp_params->move_x * image->spacing_x();
+	double my = (double)m_disp_params->move_y * image->spacing_y();
 
-	p.x = mx - (m_image->spacing_x() * (dx0-x)) / m_magnifier;
-	p.y = my - (m_image->spacing_y() * (dy0-y)) / m_magnifier;
+	p.x = mx - (image->spacing_x() * (dx0-x)) / m_magnifier;
+	p.y = my - (image->spacing_y() * (dy0-y)) / m_magnifier;
 	p.z = 0;
 	
 	return true;
