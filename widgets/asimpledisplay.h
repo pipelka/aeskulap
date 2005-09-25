@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/12 18:00:50 $
+    Update Date:      $Date: 2005/09/25 19:38:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -69,7 +69,11 @@ public:
 
 	bool point_to_screen(const ImagePool::Instance::Point& p, int& x, int& y);
 
+	bool point_to_screen(const ImagePool::Instance::Point& p, int& x, int& y, const Glib::RefPtr<ImagePool::Instance>& image);
+
 	bool screen_to_point(int x, int y, ImagePool::Instance::Point& p);
+
+	bool screen_to_point(int x, int y, ImagePool::Instance::Point& p, const Glib::RefPtr<ImagePool::Instance>& image);
 
 	void set_current_frame(int frame);
 	
