@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/09/28 20:32:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolseries.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -84,6 +84,8 @@ public:
 	int instancecount();
 
 	bool has_3d_information();
+
+	Glib::RefPtr<ImagePool::Instance> find_nearest_instance(const Instance::Point& p);
 
 	sigc::signal< void, const Glib::RefPtr<ImagePool::Instance>& > signal_instance_added;
 

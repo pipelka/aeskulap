@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/10 16:18:20 $
+    Update Date:      $Date: 2005/09/28 20:32:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -36,8 +36,10 @@
 
 #include <iostream>
 
-SeriesView::SeriesView() : Aeskulap::Tiler<Aeskulap::Display>(1, 1),
-m_selected(false) {
+SeriesView::SeriesView(const Glib::RefPtr<ImagePool::Series>& series) : 
+Aeskulap::Tiler<Aeskulap::Display>(1, 1),
+m_selected(false),
+m_series(series) {
 	m_instancecount = 0;
 	m_offset = 0;
 	m_selected_image = 0;
@@ -389,4 +391,18 @@ void SeriesView::schedule_repaint(int timeout) {
 
 void SeriesView::on_draw_instance(Aeskulap::Display* d, const Glib::RefPtr<Gdk::Window>& w, const Glib::RefPtr<Gdk::GC>& gc) {
 	signal_draw(this, d, w, gc);
+}
+
+const Glib::RefPtr<ImagePool::Series>& SeriesView::get_series() {
+	return m_series;
+}
+
+Aeskulap::Display* SeriesView::scroll_to(const Glib::RefPtr<ImagePool::Instance>& instance) {
+	for(int i=0; i<m_instance.size(); i++) {
+		if(m_instance[i] == instance) {
+			scroll_to(i);
+			return m_widgets[i - m_offset];
+		}
+	}
+	return NULL;
 }

@@ -20,14 +20,15 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/09/28 20:32:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolseries.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
 #include "poolseries.h"
 #include "imagepool.h"
+#include <cmath>
 
 namespace ImagePool {
 
@@ -81,6 +82,37 @@ bool Series::has_3d_information() {
 	}
 	
 	return begin()->second->has_3d_information();
+}
+
+Glib::RefPtr<ImagePool::Instance> Series::find_nearest_instance(const Instance::Point& p) {
+	Instance::Point v;
+	Instance::Point r;
+	double min = 1000000;
+	Glib::RefPtr<ImagePool::Instance> result;
+	
+	for(iterator i = begin(); i != end(); i++) {
+		
+		// transform world point p into viewport coordinate v
+		if(!i->second->transform_to_viewport(p, v)) {
+			continue;
+		}
+		
+		// transform viewport coord. to world
+		if(!i->second->transform_to_world(v, r)) {
+			continue;
+		}
+
+		// get distance p - r
+		double d = sqrt(pow(p.x - r.x, 2) + pow(p.y - r.y, 2) + pow(p.z - r.z, 2));
+		
+		// new minimum =
+		if(d < min) {
+			min = d;
+			result = i->second;
+		}
+	}
+
+	return result;
 }
 
 }

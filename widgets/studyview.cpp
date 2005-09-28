@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/09/28 20:32:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -48,7 +48,8 @@ m_single_series(false),
 m_study(study),
 m_selected(NULL),
 m_draw_reference_frames(false),
-m_draw_reference_frame_ends(false) {
+m_draw_reference_frame_ends(false),
+m_3dcursor_enabled(false) {
 	m_seriescount = 0;
 
 	Gtk::HBox* hbox = manage(new Gtk::HBox);
@@ -156,8 +157,8 @@ void StudyView::accelerate(Gtk::Window& window) {
 	m_series_layout->accelerate(window);
 }
 
-SeriesView* StudyView::create_seriesview() {
-	SeriesView* r = new SeriesView;
+SeriesView* StudyView::create_seriesview(const Glib::RefPtr<ImagePool::Series>& series) {
+	SeriesView* r = new SeriesView(series);
 	r->signal_draw.connect(sigc::mem_fun(*this, &StudyView::on_draw_instance));
 	r->signal_selected.connect(sigc::mem_fun(*this, &StudyView::on_series_selected));
 	r->signal_update.connect(sigc::mem_fun(*this, &StudyView::on_series_update));
@@ -175,7 +176,7 @@ void StudyView::add_series(const Glib::RefPtr<ImagePool::Series>& series) {
 
 	get_xy_from_pos(m_seriescount, x, y);
 
-	SeriesView* w = create_seriesview();
+	SeriesView* w = create_seriesview(series);
 
 	series->signal_instance_added.connect(sigc::mem_fun(*w, &SeriesView::on_instance_added));
 	series->signal_instance_added.connect(sigc::mem_fun(m_series_menu, &Aeskulap::SeriesMenu::set_thumbnail));
@@ -345,6 +346,7 @@ void StudyView::on_draw_instance(SeriesView* s, Aeskulap::Display* d, const Glib
 		return;
 	}
 
+	// draw reference frames
 	Glib::RefPtr<ImagePool::Instance> inst;
 	
 	if(m_draw_reference_frame_ends) {
@@ -361,6 +363,15 @@ void StudyView::on_draw_instance(SeriesView* s, Aeskulap::Display* d, const Glib
 
 	gc->set_foreground(d->m_colorSelected);
 	draw_reference(d, inst);
+	
+	// draw 3d cursor
+	if(m_3dcursor_enabled) {
+		Glib::RefPtr<ImagePool::Instance> instance = s->get_series()->find_nearest_instance(m_3dcursor);
+		Aeskulap::Display* d = s->scroll_to(instance);
+		
+		if(d != NULL) {
+		}
+	}
 }
 
 void StudyView::on_change_layout(int x, int y) {
