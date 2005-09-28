@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/08 12:05:45 $
+    Update Date:      $Date: 2005/09/28 20:32:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -50,7 +50,7 @@ class DisplayParameters;
 class SeriesView : public Gtk::HBox, public Aeskulap::Tiler<Aeskulap::Display> {
 public:
 
-	SeriesView();
+	SeriesView(const Glib::RefPtr<ImagePool::Series>& series = Glib::RefPtr<ImagePool::Series>());
 
 	~SeriesView();
 	
@@ -63,6 +63,10 @@ public:
 	void scroll_up();
 	
 	void scroll_down();
+
+	const Glib::RefPtr<ImagePool::Series>& get_series();
+
+	Aeskulap::Display* scroll_to(const Glib::RefPtr<ImagePool::Instance>& instance);
 
 	sigc::signal< void, SeriesView*, bool > signal_selected;
 
@@ -133,6 +137,8 @@ private:
 	sigc::connection m_repaint_source;
 	
 	Aeskulap::MultiFrameCtrl* m_ctrl_frame;
+
+	Glib::RefPtr<ImagePool::Series> m_series;
 
 	friend class StudyView;
 

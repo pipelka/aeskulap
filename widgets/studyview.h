@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/09/28 20:32:03 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -37,6 +37,8 @@
 #include <vector>
 #include <map>
 
+#include "poolinstance.h"
+
 // forward declarations
 
 namespace Aeskulap {
@@ -46,7 +48,6 @@ namespace Aeskulap {
 namespace ImagePool {
 	class Series;
 	class Study;
-	class Instance;
 }
 
 class SeriesView;
@@ -103,7 +104,7 @@ protected:
 
 private:
 
-	SeriesView* create_seriesview();
+	SeriesView* create_seriesview(const Glib::RefPtr<ImagePool::Series>& series);
 
 	Gtk::Tooltips m_tooltips;
 
@@ -136,7 +137,10 @@ private:
 	bool m_draw_reference_frames;
 
 	bool m_draw_reference_frame_ends;
-	
+
+	bool m_3dcursor_enabled;
+
+	ImagePool::Instance::Point m_3dcursor;	
 };
 
 #endif // STUDYVIEW_H
