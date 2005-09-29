@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 15:47:12 $
+    Update Date:      $Date: 2005/09/29 13:42:48 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -38,12 +38,13 @@
 
 namespace Aeskulap {
 
-Display::Display() : SimpleDisplay() ,
+Display::Display() : SimpleDisplay(),
+m_drag_active(false),
 m_cursor_pan(NULL),
 m_cursor_windowlevel(NULL),
 m_cursor_zoom(NULL)
 {
-	set_events(Gdk::BUTTON_PRESS_MASK);
+	set_events(Gdk::BUTTON_PRESS_MASK | Gdk::POINTER_MOTION_MASK);
 }
 
 Display::Display(const Glib::RefPtr<DisplayParameters>& params) : SimpleDisplay(params) ,
@@ -298,6 +299,10 @@ bool Display::on_motion_notify_event(GdkEventMotion* event) {
 		return false;
 	}
 
+	if(!m_drag_active && !block) {
+		signal_motion(event);
+	}
+
 	if(!m_drag_active || block) {
 		return true;
 	}
@@ -398,6 +403,14 @@ void Display::set_window_palette(gdouble x, gdouble y) {
 
 	set_windowlevels((int)c, (int)w);
 	bitstretch();
+}
+
+bool Display::get_selected() {
+	if(!m_disp_params) {
+		return false;
+	}
+	
+	return m_disp_params->selected;
 }
 
 void Display::set_selected(bool selected) {
@@ -548,7 +561,7 @@ void Display::draw_line(const ImagePool::Instance::Point& p0, const ImagePool::I
 	m_window->draw_line(m_GC, x0, y0, x1, y1);
 }
 
-void Display::draw_point(const ImagePool::Instance::Point& p) {
+void Display::draw_cross(const ImagePool::Instance::Point& p) {
 	if(!m_image) {
 		return;
 	}
@@ -565,13 +578,26 @@ void Display::draw_point(const ImagePool::Instance::Point& p) {
 		return;
 	}
 	
-	//ImagePool::Instance::Point t, t1;
-	//screen_to_point(x, y, t);
-	//m_image->transform_to_world(t, t1);
+	m_window->draw_line(m_GC, x-5, y, x+5, y);
+	m_window->draw_line(m_GC, x, y-5, x, y+5);
+}
+
+void Display::draw_point(const ImagePool::Instance::Point& p) {
+	if(!m_image) {
+		return;
+	}
+
+	int x;
+	int y;
+	ImagePool::Instance::Point p1;
 	
-	//std::cout << "O-Point: " << p.x << "/" << p.y << "/" << p.z << std::endl;
-	//std::cout << "T-Point: " << t1.x << "/" << t1.y << "/" << t1.z << std::endl;
-	//std::cout << "Screen: " << x << "/" << y << std::endl;
+	if(!m_image->transform_to_viewport(p, p1)) {
+		return;
+	}
+
+	if(!point_to_screen(p1, x, y)) {
+		return;
+	}
 	
 	m_window->draw_rectangle(m_GC, false, x-1, y-1, 2, 2);
 }

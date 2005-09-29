@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/28 20:32:03 $
+    Update Date:      $Date: 2005/09/29 13:42:48 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -163,6 +163,7 @@ SeriesView* StudyView::create_seriesview(const Glib::RefPtr<ImagePool::Series>& 
 	r->signal_selected.connect(sigc::mem_fun(*this, &StudyView::on_series_selected));
 	r->signal_update.connect(sigc::mem_fun(*this, &StudyView::on_series_update));
 	r->signal_popup.connect(sigc::mem_fun(*this, &StudyView::on_popup_series));
+	r->signal_motion.connect(sigc::bind(sigc::mem_fun(*this, &StudyView::on_signal_motion), r));
 
 	return r;
 }
@@ -335,10 +336,6 @@ void StudyView::draw_reference(Aeskulap::Display* display, const Glib::RefPtr<Im
 }
 
 void StudyView::on_draw_instance(SeriesView* s, Aeskulap::Display* d, const Glib::RefPtr<Gdk::Window>& w, const Glib::RefPtr<Gdk::GC>& gc) {
-	if(!m_draw_reference_frames) {
-		return;
-	}
-
 	if(s == m_selected) {
 		return;
 	}
@@ -349,20 +346,22 @@ void StudyView::on_draw_instance(SeriesView* s, Aeskulap::Display* d, const Glib
 	// draw reference frames
 	Glib::RefPtr<ImagePool::Instance> inst;
 	
-	if(m_draw_reference_frame_ends) {
-		gc->set_foreground(d->m_colorReference);
-		inst = m_selected->m_instance[0];
+	if(m_draw_reference_frames) {
+		if(m_draw_reference_frame_ends) {
+			gc->set_foreground(d->m_colorReference);
+			inst = m_selected->m_instance[0];
+		
+			draw_reference(d, inst);
+		
+			inst = m_selected->m_instance[m_selected->m_instancecount-1];
+			draw_reference(d, inst);
+		}
 	
-		draw_reference(d, inst);
+		inst = m_selected->m_instance[m_selected->m_selected_image];
 	
-		inst = m_selected->m_instance[m_selected->m_instancecount-1];
+		gc->set_foreground(d->m_colorSelected);
 		draw_reference(d, inst);
 	}
-
-	inst = m_selected->m_instance[m_selected->m_selected_image];
-
-	gc->set_foreground(d->m_colorSelected);
-	draw_reference(d, inst);
 	
 	// draw 3d cursor
 	if(m_3dcursor_enabled) {
@@ -370,6 +369,8 @@ void StudyView::on_draw_instance(SeriesView* s, Aeskulap::Display* d, const Glib
 		Aeskulap::Display* d = s->scroll_to(instance);
 		
 		if(d != NULL) {
+			gc->set_foreground(d->m_colorSelected);
+			d->draw_cross(m_3dcursor);
 		}
 	}
 }
@@ -541,4 +542,29 @@ bool StudyView::on_key_press_event(GdkEventKey* event) {
 void StudyView::on_toggle_refframe() {
 	m_draw_reference_frames = !m_draw_reference_frames;
 	queue_draw();
+}
+
+void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, SeriesView* s) {
+
+	int x,y;
+	d->get_pointer(x, y);
+
+	if(x < 0 || y < 0 || x > d->get_width() || y > d->get_height()) {
+		return;
+	}
+
+	if(m_3dcursor_enabled && d->get_selected()) {
+		ImagePool::Instance::Point p;
+		if(!d->screen_to_point(x, y, p)) {
+			return;
+		}
+		const Glib::RefPtr<ImagePool::Instance>& i = d->get_image();
+		if(!i) {
+			return;
+		}
+		if(!i->transform_to_world(p, m_3dcursor)) {
+			return;
+		}
+		queue_draw();
+	}
 }
