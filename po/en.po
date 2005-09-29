@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-22 17:23+0200\n"
+"POT-Creation-Date: 2005-09-29 10:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,6 @@ msgstr ""
 
 #: ../imagepool/netquery.cpp:83 ../imagepool/netquery.cpp:102
 msgid "no description"
-msgstr ""
-
-#: ../imagepool/netquery.cpp:388
-msgid "Unable to create association"
-msgstr ""
-
-#: ../imagepool/netquery.cpp:393
-msgid "no response for echo request"
 msgstr ""
 
 #: ../widgets/aseriesmenu.cpp:45
@@ -54,36 +46,36 @@ msgstr ""
 msgid "Image: %i / %i"
 msgstr ""
 
-#: ../widgets/adisplay.cpp:449 ../widgets/adisplay.cpp:501
+#: ../widgets/adisplay.cpp:452 ../widgets/adisplay.cpp:504
 #, c-format
 msgid "%i mm"
 msgstr ""
 
-#: ../widgets/studyview.cpp:105
+#: ../widgets/studyview.cpp:106
 msgid "Rearrange the series of the current study"
 msgstr ""
 
-#: ../widgets/studyview.cpp:106
+#: ../widgets/studyview.cpp:107
 msgid "Display the series tiling menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:115
+#: ../widgets/studyview.cpp:116
 msgid "Toggle single series mode"
 msgstr ""
 
-#: ../widgets/studyview.cpp:116
+#: ../widgets/studyview.cpp:117
 msgid "Display the series selection menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:124
+#: ../widgets/studyview.cpp:125
 msgid "Rearrange the images of the selected series"
 msgstr ""
 
-#: ../widgets/studyview.cpp:125
+#: ../widgets/studyview.cpp:126
 msgid "Display the the image tiling menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:134
+#: ../widgets/studyview.cpp:135
 msgid "Display references of the selected series"
 msgstr ""
 
@@ -264,13 +256,13 @@ msgstr ""
 msgid "Hostname"
 msgstr ""
 
-#: ../src/settings.cpp:338
+#: ../src/settings.cpp:340
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
 msgstr ""
 
-#: ../src/settings.cpp:352
+#: ../src/settings.cpp:354
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
 msgstr ""
 

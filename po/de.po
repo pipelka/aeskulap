@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-22 17:23+0200\n"
+"POT-Creation-Date: 2005-09-29 10:52+0200\n"
 "PO-Revision-Date: 2005-09-22 17:23+0200\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
 "Language-Team:  <en@li.org>\n"
@@ -19,14 +19,6 @@ msgstr ""
 #: ../imagepool/netquery.cpp:83 ../imagepool/netquery.cpp:102
 msgid "no description"
 msgstr "Keine Beschreibung"
-
-#: ../imagepool/netquery.cpp:388
-msgid "Unable to create association"
-msgstr "Verbindung konnte nicht hergestellt werden"
-
-#: ../imagepool/netquery.cpp:393
-msgid "no response for echo request"
-msgstr "Keine Antwort auf Anfrage"
 
 #: ../widgets/aseriesmenu.cpp:45
 #, c-format
@@ -59,36 +51,36 @@ msgstr "Aufn. Zeit:"
 msgid "Image: %i / %i"
 msgstr "Bild: %i / %i"
 
-#: ../widgets/adisplay.cpp:449 ../widgets/adisplay.cpp:501
+#: ../widgets/adisplay.cpp:452 ../widgets/adisplay.cpp:504
 #, c-format
 msgid "%i mm"
 msgstr "%i mm"
 
-#: ../widgets/studyview.cpp:105
+#: ../widgets/studyview.cpp:106
 msgid "Rearrange the series of the current study"
 msgstr "Serien der Studie umordnen"
 
-#: ../widgets/studyview.cpp:106
+#: ../widgets/studyview.cpp:107
 msgid "Display the series tiling menu"
 msgstr "Layout der Series ändern"
 
-#: ../widgets/studyview.cpp:115
+#: ../widgets/studyview.cpp:116
 msgid "Toggle single series mode"
 msgstr "Nur aktuelle Serie anzeigen"
 
-#: ../widgets/studyview.cpp:116
+#: ../widgets/studyview.cpp:117
 msgid "Display the series selection menu"
 msgstr "Zeigt das Auswahlmenü für Serien an"
 
-#: ../widgets/studyview.cpp:124
+#: ../widgets/studyview.cpp:125
 msgid "Rearrange the images of the selected series"
 msgstr "Bilder der Serie umordnen"
 
-#: ../widgets/studyview.cpp:125
+#: ../widgets/studyview.cpp:126
 msgid "Display the the image tiling menu"
 msgstr "Layout der Serie ändern"
 
-#: ../widgets/studyview.cpp:134
+#: ../widgets/studyview.cpp:135
 msgid "Display references of the selected series"
 msgstr "Referenzbilder anzeigen"
 
@@ -275,7 +267,7 @@ msgstr "Port"
 msgid "Hostname"
 msgstr "Hostname"
 
-#: ../src/settings.cpp:338
+#: ../src/settings.cpp:340
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
@@ -283,7 +275,7 @@ msgstr ""
 "<span weight=\"bold\" size=\"larger\">Echo test fehlgeschlagen!</span>\n"
 "\n"
 
-#: ../src/settings.cpp:352
+#: ../src/settings.cpp:354
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
 msgstr "<span weight=\"bold\" size=\"larger\">Echo erfolgreich</span>"
 
@@ -456,3 +448,8 @@ msgstr ""
 msgid "translator-credits"
 msgstr ""
 
+#~ msgid "Unable to create association"
+#~ msgstr "Verbindung konnte nicht hergestellt werden"
+
+#~ msgid "no response for echo request"
+#~ msgstr "Keine Antwort auf Anfrage"
