@@ -22,15 +22,15 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2005/09/29 08:51:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.18 $
+    CVS/RCS Revision: $Revision: 1.19 $
     Status:           $State: Exp $
 */
 
+#include "imagepool.h"
 #include "mainwindow.h"
 #include "aiconfactory.h"
-#include "imagepool.h"
 #include "poolstudy.h"
 #include "studyview.h"
 #include "studymanager.h"
