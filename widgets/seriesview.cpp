@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/28 20:32:03 $
+    Update Date:      $Date: 2005/09/29 13:42:48 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -158,7 +158,8 @@ void SeriesView::set_layout(int tilex, int tiley) {
 			w->signal_changed.connect(sigc::mem_fun(*this, &SeriesView::on_image_changed));
 			w->signal_draw.connect(sigc::mem_fun(*this, &SeriesView::on_draw_instance));
 			w->signal_popup.connect(sigc::bind(signal_popup, this));
-
+			w->signal_motion.connect(sigc::bind(signal_motion, w));
+	
 			m_widgets.push_back(w);
 
 			m_table->attach(*w, x, x+1, y, y+1);
@@ -283,7 +284,7 @@ unsigned int SeriesView::get_max_scrollpos() {
 	return (unsigned int)rc;
 }
 
-void SeriesView::scroll_to(unsigned int pos) {
+void SeriesView::scroll_to(unsigned int pos, bool select) {
 	if(pos > get_max_scrollpos() || pos < 0) {
 		return;
 	}
@@ -296,9 +297,11 @@ void SeriesView::scroll_to(unsigned int pos) {
 	int diff = pos - m_offset;
 	m_offset = pos;
 
-	m_dispparam[m_selected_image]->selected = false;
-	m_selected_image += diff;
-	m_dispparam[m_selected_image]->selected = true;
+	if(select) {
+		m_dispparam[m_selected_image]->selected = false;
+		m_selected_image += diff;
+		m_dispparam[m_selected_image]->selected = true;
+	}
 
 	update();
 
@@ -400,7 +403,11 @@ const Glib::RefPtr<ImagePool::Series>& SeriesView::get_series() {
 Aeskulap::Display* SeriesView::scroll_to(const Glib::RefPtr<ImagePool::Instance>& instance) {
 	for(int i=0; i<m_instance.size(); i++) {
 		if(m_instance[i] == instance) {
-			scroll_to(i);
+			int old = m_offset;
+			scroll_to(i, false);
+			if(m_offset != old) {
+				schedule_repaint(1000);
+			}
 			return m_widgets[i - m_offset];
 		}
 	}

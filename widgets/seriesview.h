@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/28 20:32:03 $
+    Update Date:      $Date: 2005/09/29 13:42:48 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -76,6 +76,8 @@ public:
 
 	sigc::signal<void, GdkEventButton*, SeriesView*> signal_popup;
 
+	sigc::signal<void, GdkEventMotion*, Aeskulap::Display*> signal_motion;
+
 protected:
 
 	bool on_scroll_event(GdkEventScroll* event);
@@ -118,7 +120,7 @@ private:
 	
 	unsigned int get_max_scrollpos();
 
-	void scroll_to(unsigned int pos);
+	void scroll_to(unsigned int pos, bool select=true);
 	
 	unsigned int m_offset;
 

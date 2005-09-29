@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/25 19:38:28 $
+    Update Date:      $Date: 2005/09/29 13:42:48 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.15 $
+    CVS/RCS Revision: $Revision: 1.16 $
     Status:           $State: Exp $
 */
 
@@ -809,6 +809,10 @@ bool SimpleDisplay::on_next_frame() {
 
 bool SimpleDisplay::get_playing() {
 	return m_playing;
+}
+
+const Glib::RefPtr<ImagePool::Instance>& SimpleDisplay::get_image() {
+	return m_image;
 }
 
 } // namespace Aeskulap

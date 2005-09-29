@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/28 20:32:03 $
+    Update Date:      $Date: 2005/09/29 13:42:48 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -95,6 +95,8 @@ protected:
 	void on_toggle_refframe();
 
 	void on_instance_added(const Glib::RefPtr<ImagePool::Instance>& instance);
+
+	void on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, SeriesView* s);
 
 	void add_series(const Glib::RefPtr<ImagePool::Series>& series);
 

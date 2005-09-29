@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/12 18:00:50 $
+    Update Date:      $Date: 2005/09/29 13:42:48 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -46,7 +46,11 @@ public:
 
 	void set_selected(bool selected);
 
+	bool get_selected();
+
 	void draw_point(const ImagePool::Instance::Point& p);
+
+	void draw_cross(const ImagePool::Instance::Point& p);
 
 	void draw_line(const ImagePool::Instance::Point& p0, const ImagePool::Instance::Point& p1);
 
@@ -69,6 +73,8 @@ public:
 	sigc::signal<void, Display*, const Glib::RefPtr<Gdk::Window>&, const Glib::RefPtr<Gdk::GC>&> signal_draw;
 
 	sigc::signal<void, GdkEventButton*> signal_popup;
+
+	sigc::signal<void, GdkEventMotion*> signal_motion;
 
 protected:
 
