@@ -20,7 +20,7 @@ were these packages are available.
 
 Aeskulap version history:
 
-0.1.2 - unreleased
+0.2.0 - unreleased
 ------------------
 
 - fixed loading of local images
@@ -33,6 +33,7 @@ Aeskulap version history:
 - added DateFilter widgets
 - new query form (much simpler)
 - autolayout (currently based on number of series)
+- added 3D cursor (3D location and slice synchronzation tool)
 
 
 0.1.1 - 20050911
