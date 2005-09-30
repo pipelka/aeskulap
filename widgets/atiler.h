@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:03 $
+    Update Date:      $Date: 2005/09/30 16:57:53 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/atiler.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -49,6 +49,8 @@ public:
 protected:
 
 	TilerBase(int x, int y);
+
+	virtual ~TilerBase();
 
 	int m_tile_x;
 
