@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-29 10:52+0200\n"
-"PO-Revision-Date: 2005-09-22 17:23+0200\n"
+"POT-Creation-Date: 2005-09-30 14:24+0200\n"
+"PO-Revision-Date: 2005-09-30 14:25+0200\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
 "Language-Team:  <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -38,20 +38,20 @@ msgstr ""
 "Serie %i (%s)\n"
 "Keine Beschreibung"
 
-#: ../widgets/adisplay.cpp:150
+#: ../widgets/adisplay.cpp:151
 msgid "Acc:\n"
 msgstr "Aufn.:\n"
 
-#: ../widgets/adisplay.cpp:152
+#: ../widgets/adisplay.cpp:153
 msgid "Acq Tm: "
 msgstr "Aufn. Zeit:"
 
-#: ../widgets/adisplay.cpp:165
+#: ../widgets/adisplay.cpp:166
 #, c-format
 msgid "Image: %i / %i"
 msgstr "Bild: %i / %i"
 
-#: ../widgets/adisplay.cpp:452 ../widgets/adisplay.cpp:504
+#: ../widgets/adisplay.cpp:465 ../widgets/adisplay.cpp:517
 #, c-format
 msgid "%i mm"
 msgstr "%i mm"
@@ -84,6 +84,10 @@ msgstr "Layout der Serie ändern"
 msgid "Display references of the selected series"
 msgstr "Referenzbilder anzeigen"
 
+#: ../widgets/studyview.cpp:139
+msgid "Navigate through 3D views"
+msgstr "3D Ansicht navigieren"
+
 #: ../widgets/adatefilter.cpp:44 ../widgets/adatefilter.cpp:49
 #: ../widgets/adatefilter.cpp:91 ../widgets/adatefilter.cpp:97
 msgid "None"
@@ -113,61 +117,65 @@ msgstr "Datum auswählen"
 msgid "Select Enddate"
 msgstr "Enddatum auswählen"
 
-#: ../src/astockids.cpp:65
+#: ../src/astockids.cpp:67
 msgid "1 Image"
 msgstr "1 Bild"
 
-#: ../src/astockids.cpp:66
+#: ../src/astockids.cpp:68
 msgid "1x2 Images"
 msgstr "1x2 Bilder"
 
-#: ../src/astockids.cpp:67
+#: ../src/astockids.cpp:69
 msgid "2x1 Images"
 msgstr "2x1 Bilder"
 
-#: ../src/astockids.cpp:68
+#: ../src/astockids.cpp:70
 msgid "2x2 Images"
 msgstr "2x2 Bilder"
 
-#: ../src/astockids.cpp:69
+#: ../src/astockids.cpp:71
 msgid "4x4 Images"
 msgstr "4x4 Bilder"
 
-#: ../src/astockids.cpp:70
+#: ../src/astockids.cpp:72
 msgid "Single"
 msgstr "Einzeln"
 
-#: ../src/astockids.cpp:71
+#: ../src/astockids.cpp:73
 msgid "All"
 msgstr "Alle"
 
-#: ../src/astockids.cpp:72
+#: ../src/astockids.cpp:74
 msgid "1 Series"
 msgstr "1 Serie"
 
-#: ../src/astockids.cpp:73
+#: ../src/astockids.cpp:75
 msgid "2x1 Series"
 msgstr "2x1 Serien"
 
-#: ../src/astockids.cpp:74
+#: ../src/astockids.cpp:76
 msgid "2x2 Series"
 msgstr "2x2 Serien"
 
-#: ../src/astockids.cpp:75
+#: ../src/astockids.cpp:77
 msgid "3x2 Series"
 msgstr "3x2 Serien"
 
-#: ../src/astockids.cpp:76
+#: ../src/astockids.cpp:78
 msgid "3x3 Series"
 msgstr "3x3 Serien"
 
-#: ../src/astockids.cpp:77
+#: ../src/astockids.cpp:79
 msgid "Reference"
 msgstr "Referenz"
 
-#: ../src/astockids.cpp:78
+#: ../src/astockids.cpp:80
 msgid "Delete item"
 msgstr "Objekt löschen"
+
+#: ../src/astockids.cpp:81
+msgid "3D Cursor"
+msgstr "3D Zeiger"
 
 #: ../src/mainwindow.cpp:48
 msgid "Open DICOM Image files"
@@ -448,8 +456,3 @@ msgstr ""
 msgid "translator-credits"
 msgstr ""
 
-#~ msgid "Unable to create association"
-#~ msgstr "Verbindung konnte nicht hergestellt werden"
-
-#~ msgid "no response for echo request"
-#~ msgstr "Keine Antwort auf Anfrage"
