@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2005/09/30 10:32:54 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -51,6 +51,7 @@ IconFactory::IconFactory() {
 	add(Stock::SERIES_3X3, "series-3x3.png");
 	add(Stock::REFFRAME, "stock-layers-24.png");
 	add(Stock::DRAW_ERASER, "stock-tool-eraser-22.png");
+	add(Stock::THREEDEE_CURSOR, "cursor_pan.png");
 	
 	Stock::init_stock_items();
 
