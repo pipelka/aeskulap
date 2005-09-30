@@ -1,3 +1,9 @@
+aeskulap (0.2.0) unstable; urgency=low
+
+  * new version 0.2.0
+
+ -- Alexander Pipelka <pipelka@shuttle.pipelka.net>  Fri, 30 Sep 2005 18:44:54 +0200
+
 aeskulap (0.1.1-1) unstable; urgency=low
 
   * rebuild for new version
