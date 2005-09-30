@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/30 16:00:58 $
+    Update Date:      $Date: 2005/09/30 16:18:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -567,7 +567,7 @@ void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, Se
 	old_x = x;
 	old_y = y;
 
-	if(m_3dcursor_enabled && d->get_selected()) {
+	if(m_3dcursor_enabled && d != NULL & d->get_selected()) {
 		ImagePool::Instance::Point p;
 		if(!d->screen_to_point(x, y, p)) {
 			return;
@@ -583,11 +583,14 @@ void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, Se
 			SeriesView* s1 = m_widgets[i];
 	
 			if(!s1->get_selected()) {
-				Glib::RefPtr<ImagePool::Instance> instance = s1->get_series()->find_nearest_instance(m_3dcursor);
-				Aeskulap::Display* d = s1->scroll_to(instance);
-				s1->update(true, false, false);
-				s1->schedule_repaint(1000);
+				Glib::RefPtr<ImagePool::Series> series = s1->get_series();
+				if(series) {
+					Glib::RefPtr<ImagePool::Instance> instance = series->find_nearest_instance(m_3dcursor);
+					s1->scroll_to(instance);
+					s1->update(true, false, false);
+					s1->schedule_repaint(1000);
+				}
 			}
-		}		
+		}
 	}
 }
