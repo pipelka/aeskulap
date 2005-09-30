@@ -1,6 +1,6 @@
 AC_PREREQ(2.52)
 
-AC_INIT(aeskulap, 0.1.1, pipelka@teleweb.at, aeskulap)
+AC_INIT(aeskulap, 0.2.0, pipelka@teleweb.at, aeskulap)
 AM_INIT_AUTOMAKE([subdir-objects])
 dnl AM_MAINTAINER_MODE
 
@@ -15,7 +15,6 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_CXX
 AC_PROG_INSTALL
-dnl AC_PROG_RANLIB
 
 ALL_LINGUAS="en de"
 AM_GNU_GETTEXT
@@ -26,7 +25,6 @@ dnl
 dnl Required headers
 dnl
 AC_HEADER_STDC
-dnl AC_CHECK_HEADERS(fcntl.h paths.h sys/ioctl.h sys/time.h syslog.h unistd.h)
 
 dnl
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -44,10 +42,6 @@ AM_GNU_GETTEXT_VERSION(0.14.1)
 PKG_CHECK_MODULES(GTKMM, gtkmm-2.4)
 AC_SUBST(GTKMM_CFLAGS)
 AC_SUBST(GTKMM_LIBS)
-
-dnl PKG_CHECK_MODULES(GLADEMM, libglademm-2.4)
-dnl AC_SUBST(GLADEMM_CFLAGS)
-dnl AC_SUBST(GLADEMM_LIBS)
 
 PKG_CHECK_MODULES(GLADEMM, libglademm-2.4)
 AC_SUBST(GLADEMM_CFLAGS)
