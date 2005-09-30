@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/29 13:42:48 $
+    Update Date:      $Date: 2005/09/30 12:25:48 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -135,6 +135,10 @@ m_3dcursor_enabled(false) {
 	m_refframe->set_tooltip(m_tooltips, gettext("Display references of the selected series"));
 	m_toolbar->append(*m_refframe, sigc::mem_fun(*this, &StudyView::on_toggle_refframe));
 
+	m_btn_3dcursor = manage(new Gtk::ToggleToolButton(Aeskulap::Stock::THREEDEE_CURSOR));
+	m_btn_3dcursor->set_tooltip(m_tooltips, gettext("Navigate through 3D views"));
+	m_toolbar->append(*m_btn_3dcursor, sigc::mem_fun(*this, &StudyView::on_toggle_3dcursor));
+
 	hbox->pack_end(*m_table);
 	hbox->pack_end(*m_toolbar_measure, false, false);
 
@@ -211,6 +215,7 @@ void StudyView::on_instance_added(const Glib::RefPtr<ImagePool::Instance>& insta
 	if(!m_refframe->is_visible()) {
 		if(m_study->has_3d_information() > 1) {
 			m_refframe->show();
+			m_btn_3dcursor->show();
 		}
 	}
 }
@@ -541,6 +546,11 @@ bool StudyView::on_key_press_event(GdkEventKey* event) {
 
 void StudyView::on_toggle_refframe() {
 	m_draw_reference_frames = !m_draw_reference_frames;
+	queue_draw();
+}
+
+void StudyView::on_toggle_3dcursor() {
+	m_3dcursor_enabled = !m_3dcursor_enabled;
 	queue_draw();
 }
 

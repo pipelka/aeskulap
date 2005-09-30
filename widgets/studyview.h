@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/29 13:42:48 $
+    Update Date:      $Date: 2005/09/30 12:25:48 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -94,6 +94,8 @@ protected:
 
 	void on_toggle_refframe();
 
+	void on_toggle_3dcursor();
+
 	void on_instance_added(const Glib::RefPtr<ImagePool::Instance>& instance);
 
 	void on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, SeriesView* s);
@@ -125,6 +127,8 @@ private:
 	Aeskulap::SeriesMenu m_series_menu;
 
 	Gtk::ToggleToolButton* m_refframe;
+
+	Gtk::ToggleToolButton* m_btn_3dcursor;
 
 	bool m_single_series;
 
