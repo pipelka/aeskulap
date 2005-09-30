@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/09 16:12:33 $
+    Update Date:      $Date: 2005/09/30 16:57:53 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/aframectrl.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -39,6 +39,9 @@ class Display;
 
 class FrameCtrl {
 public:
+
+	virtual ~FrameCtrl() {
+	};
 
 	virtual void connect(Display* display) = 0;
 	

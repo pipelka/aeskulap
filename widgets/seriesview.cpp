@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/30 16:00:58 $
+    Update Date:      $Date: 2005/09/30 16:57:53 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -408,7 +408,7 @@ const Glib::RefPtr<ImagePool::Series>& SeriesView::get_series() {
 }
 
 Aeskulap::Display* SeriesView::scroll_to(const Glib::RefPtr<ImagePool::Instance>& instance) {
-	for(int i=0; i<m_instance.size(); i++) {
+	for(unsigned int i=0; i<m_instance.size(); i++) {
 		if(m_instance[i] == instance) {
 			scroll_to(i, false);
 			return m_widgets[i - m_offset];
