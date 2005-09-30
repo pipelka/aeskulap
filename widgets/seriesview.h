@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/29 13:42:48 $
+    Update Date:      $Date: 2005/09/30 16:00:58 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -59,6 +59,8 @@ public:
 	void on_instance_added(const Glib::RefPtr<ImagePool::Instance>& instance);
 
 	void select(bool s);
+
+	bool get_selected();
 
 	void scroll_up();
 	
@@ -105,6 +107,8 @@ protected:
 	void reorder_by_instancenumber();
 
 	void schedule_repaint(int timeout);
+
+	void refresh(bool smooth);
 
 protected:
 

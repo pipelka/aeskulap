@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/30 12:25:48 $
+    Update Date:      $Date: 2005/09/30 16:00:58 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -370,13 +370,8 @@ void StudyView::on_draw_instance(SeriesView* s, Aeskulap::Display* d, const Glib
 	
 	// draw 3d cursor
 	if(m_3dcursor_enabled) {
-		Glib::RefPtr<ImagePool::Instance> instance = s->get_series()->find_nearest_instance(m_3dcursor);
-		Aeskulap::Display* d = s->scroll_to(instance);
-		
-		if(d != NULL) {
-			gc->set_foreground(d->m_colorSelected);
-			d->draw_cross(m_3dcursor);
-		}
+		gc->set_foreground(d->m_colorSelected);
+		d->draw_cross(m_3dcursor);
 	}
 }
 
@@ -555,13 +550,22 @@ void StudyView::on_toggle_3dcursor() {
 }
 
 void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, SeriesView* s) {
-
+	static int old_x = 0;
+	static int old_y = 0;
+	
 	int x,y;
 	d->get_pointer(x, y);
+
+	if(x == old_x && y == old_y) {
+		return;
+	}
 
 	if(x < 0 || y < 0 || x > d->get_width() || y > d->get_height()) {
 		return;
 	}
+
+	old_x = x;
+	old_y = y;
 
 	if(m_3dcursor_enabled && d->get_selected()) {
 		ImagePool::Instance::Point p;
@@ -575,6 +579,15 @@ void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, Se
 		if(!i->transform_to_world(p, m_3dcursor)) {
 			return;
 		}
-		queue_draw();
+		for(unsigned int i=0; i< max_size(); i++) {
+			SeriesView* s1 = m_widgets[i];
+	
+			if(!s1->get_selected()) {
+				Glib::RefPtr<ImagePool::Instance> instance = s1->get_series()->find_nearest_instance(m_3dcursor);
+				Aeskulap::Display* d = s1->scroll_to(instance);
+				s1->update(true, false, false);
+				s1->schedule_repaint(1000);
+			}
+		}		
 	}
 }
