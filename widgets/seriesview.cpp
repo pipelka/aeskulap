@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/29 13:42:48 $
+    Update Date:      $Date: 2005/09/30 16:00:58 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -257,6 +257,12 @@ void SeriesView::on_image_selected(unsigned int index) {
 	signal_update(this);
 }
 
+void SeriesView::refresh(bool smooth) {
+	for(unsigned int i = 0; i < m_widgets.size(); i++) {
+		m_widgets[i]->refresh(false);
+	}
+}
+
 void SeriesView::on_image_changed(unsigned int index, bool smooth) {
 	if(!smooth) {
 		return;
@@ -268,10 +274,7 @@ void SeriesView::on_image_changed(unsigned int index, bool smooth) {
 		}
 	}
 
-	for(unsigned int i = 0; i < m_widgets.size(); i++) {
-		m_widgets[i]->refresh(false);
-	}
-	
+	refresh(false);
 	schedule_repaint(1000);
 }
 
@@ -387,6 +390,10 @@ void SeriesView::select(bool s) {
 	signal_selected(this, m_selected);
 }
 
+bool SeriesView::get_selected() {
+	return m_selected;
+}
+
 void SeriesView::schedule_repaint(int timeout) {
 	m_repaint_source.disconnect();
 	m_repaint_source = Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(*this, &SeriesView::on_timeout), 1), timeout);
@@ -403,11 +410,7 @@ const Glib::RefPtr<ImagePool::Series>& SeriesView::get_series() {
 Aeskulap::Display* SeriesView::scroll_to(const Glib::RefPtr<ImagePool::Instance>& instance) {
 	for(int i=0; i<m_instance.size(); i++) {
 		if(m_instance[i] == instance) {
-			int old = m_offset;
 			scroll_to(i, false);
-			if(m_offset != old) {
-				schedule_repaint(1000);
-			}
 			return m_widgets[i - m_offset];
 		}
 	}
