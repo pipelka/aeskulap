@@ -41,6 +41,7 @@ clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
+	rm -f aeskulap*.tar.gz
 
 	# Add here commands to clean up after the build process.
 	-$(MAKE) distclean
