@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/30 16:57:53 $
+    Update Date:      $Date: 2005/10/03 09:56:48 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -208,7 +208,7 @@ bool SeriesView::on_scroll_event(GdkEventScroll* event) {
 }
 
 bool SeriesView::on_change_value(Gtk::ScrollType type, double value) {
-	if((unsigned int)value == m_offset) {
+	if(value < 0 || (unsigned int)value == m_offset) {
 		return true;
 	}
 
@@ -301,9 +301,13 @@ void SeriesView::scroll_to(unsigned int pos, bool select) {
 	m_offset = pos;
 
 	if(select) {
-		m_dispparam[m_selected_image]->selected = false;
-		m_selected_image += diff;
-		m_dispparam[m_selected_image]->selected = true;
+		if(m_dispparam.size() > m_selected_image && m_dispparam[m_selected_image]) {
+			m_dispparam[m_selected_image]->selected = false;
+			m_selected_image += diff;
+			if(m_dispparam.size() > m_selected_image && m_dispparam[m_selected_image]) {
+				m_dispparam[m_selected_image]->selected = true;
+			}
+		}
 	}
 
 	update();
