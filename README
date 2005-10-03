@@ -20,8 +20,16 @@ were these packages are available.
 
 Aeskulap version history:
 
-0.2.0 - 20051002
+0.2.1 - unreleased
 ------------------
+
+- added AboutDialog
+- fixed crashes in SeriesView::scroll_to(pos)
+- fixed multiframe control bugs
+
+
+0.2.0 - 20051002
+----------------
 
 - fixed loading of local images
   now prescanning files. proper handling of progress
