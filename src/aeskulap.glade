@@ -120,10 +120,10 @@
 		<widget class="GtkMenu" id="menuitem_help_menu">
 
 		  <child>
-		    <widget class="GtkMenuItem" id="info1">
+		    <widget class="GtkImageMenuItem" id="aeskulap_info">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Info</property>
-		      <property name="use_underline">True</property>
+		      <property name="label">gtk-about</property>
+		      <property name="use_stock">True</property>
 		      <signal name="activate" handler="on_info1_activate" last_modification_time="Fri, 17 Jun 2005 19:24:14 GMT"/>
 		    </widget>
 		  </child>
@@ -1098,7 +1098,7 @@ LGPL
 
 DCMTK - OFFIS DICOM Toolkit:
 BSD/MIT</property>
-  <property name="website">http://savannah.nongnu.org/projects/aeskulap</property>
+  <property name="website">http://aeskulap.nongnu.org</property>
   <property name="authors">Alexander Pipelka &lt;pipelka@teleweb.at&gt;
 </property>
   <property name="translator_credits" translatable="yes" comments="TRANSLATORS: Replace this string with your names, one name per line.">translator-credits</property>

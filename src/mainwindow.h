@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 17:04:28 $
+    Update Date:      $Date: 2005/10/03 10:42:41 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.h,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -45,6 +45,7 @@ class StudyManager;
 class Settings;
 class StudyView;
 class PrescanDialog;
+class AboutDialog;
 
 class MainWindow : public Gtk::Window {
 public:
@@ -76,6 +77,8 @@ protected:
 	void on_study_added(const Glib::RefPtr<ImagePool::Study>& study);
 
 	void on_study_closed(StudyView* page);
+
+	void on_about();
 
 	void set_busy_cursor(bool busy = true);
 
@@ -110,6 +113,9 @@ private:
 	ImagePool::NetLoader m_netloader;
 
 	ImagePool::FileLoader m_fileloader;
+	
+	AboutDialog* m_about;
+
 };
 
 #endif // AESKULAP_MAINWINDOW_H_

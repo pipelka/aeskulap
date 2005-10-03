@@ -13,6 +13,8 @@ aeskulap_SOURCES = \
 	settings.h \
 	prescandialog.cpp \
 	prescandialog.h \
+	aboutdialog.h \
+	aboutdialog.cpp \
 	main.cpp
 
 aeskulap_LDADD = \

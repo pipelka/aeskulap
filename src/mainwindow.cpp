@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/29 08:51:44 $
+    Update Date:      $Date: 2005/10/03 10:42:41 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.19 $
+    CVS/RCS Revision: $Revision: 1.20 $
     Status:           $State: Exp $
 */
 
@@ -37,6 +37,7 @@
 #include "settings.h"
 #include "astudytab.h"
 #include "prescandialog.h"
+#include "aboutdialog.h"
 
 #include "assert.h"
 #include "gettext.h"
@@ -50,6 +51,9 @@ m_raise_opened(true)
 {
 	set_icon(Aeskulap::IconFactory::load_from_file("aeskulap.png"));
 
+	m_about = NULL;
+	m_refGlade->get_widget_derived("aboutdialog", m_about);
+	
 	m_prescandialog = NULL;
 	m_refGlade->get_widget_derived("prescandialog", m_prescandialog);
 
@@ -81,6 +85,12 @@ m_raise_opened(true)
 
 	m_refGlade->get_widget("edit_settings", item);
 	item->signal_activate().connect(sigc::mem_fun(*this, &MainWindow::on_edit_settings));
+
+	{
+		Gtk::ImageMenuItem* item = NULL;
+		m_refGlade->get_widget("aeskulap_info", item);
+		item->signal_activate().connect(sigc::mem_fun(*this, &MainWindow::on_about));
+	}
 
 	m_dialogFile.set_select_multiple();
 	
@@ -256,4 +266,10 @@ const std::string& MainWindow::find_pageuid(Gtk::Widget* page) {
 	}
 	
 	return empty;
+}
+
+void MainWindow::on_about() {
+	m_about->show();
+	m_about->run();
+	m_about->hide();
 }

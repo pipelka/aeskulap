@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-30 14:24+0200\n"
+"POT-Creation-Date: 2005-10-03 12:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,23 +172,23 @@ msgstr ""
 msgid "3D Cursor"
 msgstr ""
 
-#: ../src/mainwindow.cpp:48
+#: ../src/mainwindow.cpp:49
 msgid "Open DICOM Image files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:87
+#: ../src/mainwindow.cpp:97
 msgid "Bring opened files to front"
 msgstr ""
 
-#: ../src/mainwindow.cpp:96
+#: ../src/mainwindow.cpp:106
 msgid "DICOM files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:101
+#: ../src/mainwindow.cpp:111
 msgid "Any files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:182
+#: ../src/mainwindow.cpp:192
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
 "requested images</span>\n"
@@ -434,11 +434,7 @@ msgstr ""
 msgid "_Hilfe"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:58
-msgid "_Info"
-msgstr ""
-
 #. TRANSLATORS: Replace this string with your names, one name per line.
-#: ../src/aeskulap.glade.h:60
+#: ../src/aeskulap.glade.h:59
 msgid "translator-credits"
 msgstr ""
