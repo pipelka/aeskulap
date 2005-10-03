@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/03 09:56:48 $
+    Update Date:      $Date: 2005/10/03 10:05:30 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.15 $
+    CVS/RCS Revision: $Revision: 1.16 $
     Status:           $State: Exp $
 */
 
@@ -244,7 +244,7 @@ void SeriesView::on_image_selected(unsigned int index) {
 	
 	m_selected_image = index;
 
-	if(m_widgets[m_selected_image - m_offset]->get_framecount() > 1) {
+	if(m_widgets[m_selected_image - m_offset]->get_image() && m_widgets[m_selected_image - m_offset]->get_framecount() > 1) {
 		m_ctrl_frame->disconnect();
 		m_ctrl_frame->connect(m_widgets[m_selected_image - m_offset]);
 		m_ctrl_frame->show();
