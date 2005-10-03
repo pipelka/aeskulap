@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/09 16:12:33 $
+    Update Date:      $Date: 2005/10/03 10:05:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/amultiframectrl.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -55,6 +55,13 @@ MultiFrameCtrl::MultiFrameCtrl() {
 }
 
 void MultiFrameCtrl::connect(Display* display) {
+	if(display == NULL) {
+		return;
+	}
+
+	if(!display->get_image()) {
+		return;
+	}
 	m_conn_next_frame = display->signal_next_frame.connect(sigc::mem_fun(*this, &MultiFrameCtrl::on_next_frame));
 	m_conn_signal_stop = display->signal_stop.connect(sigc::mem_fun(*this, &MultiFrameCtrl::on_signal_stop));
 
