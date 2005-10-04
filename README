@@ -26,7 +26,8 @@ Aeskulap version history:
 - added AboutDialog
 - fixed crashes in SeriesView::scroll_to(pos)
 - fixed multiframe control bugs
-- specfific characterset support
+- specific characterset support
+- support lossy compression (low bandwith connections)
 
 
 0.2.0 - 20051002

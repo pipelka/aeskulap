@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/10/04 21:42:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netclient.h,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -45,26 +45,21 @@ public:
 	sigc::signal< void, DcmStack*, std::string > signal_server_result;
 
 	bool QueryServer(DcmDataset* query, const std::string& server, const char* syntax = NULL) {
-		Glib::RefPtr<ServerList> list = ServerList::get();
-		ServerList::iterator i = list->find(server);
+		ImagePool::Server* s = ServerList::find_server(server);
 
-		std::cout << "QueryServer(" << server << ")" << std::endl;
-
-		if(i == list->end()) {
+		if(s == NULL) {
 			return false;
 		}
-		
-		Server& s = i->second;
-		
+
 		T::Create(
-				s.m_aet.c_str(),
-				s.m_hostname.c_str(),
-				s.m_port,
+				s->m_aet.c_str(),
+				s->m_hostname.c_str(),
+				s->m_port,
 				get_ouraet().c_str(),
 				syntax
 				);
 
-		bool r = T::Connect(&net).good();
+		bool r = T::Connect(&net, s->m_lossy ? 12 : 0).good();
 
 		if(r == true) {
 			std::cout << "T::SendObject()" << std::endl;
@@ -97,40 +92,6 @@ public:
 		return rc;
 	}
 
-	/*bool QueryServers(DcmDataset* query, const char* syntax = NULL) {
-		Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
-	
-		Gnome::Conf::SListHandle_ValueString aet_list = client->get_string_list("/apps/aeskulap/preferences/server_aet");
-		Gnome::Conf::SListHandle_ValueInt port_list = client->get_int_list("/apps/aeskulap/preferences/server_port");
-		Gnome::Conf::SListHandle_ValueString hostname_list = client->get_string_list("/apps/aeskulap/preferences/server_hostname");
-	
-		Gnome::Conf::SListHandle_ValueString::iterator a = aet_list.begin();
-		Gnome::Conf::SListHandle_ValueInt::iterator p = port_list.begin();
-		Gnome::Conf::SListHandle_ValueString::iterator h = hostname_list.begin();
-	
-		bool rc = false;
-		for(; h != hostname_list.end() && a != aet_list.end() && p != port_list.end(); a++, p++, h++) {
-			T::Create(
-					(*a).c_str(),
-					(*h).c_str(),
-					(*p),
-					get_ouraet().c_str(),
-					syntax
-					);
-		
-			bool r = SUCCESS(T::Connect(&net));
-		
-			if(r == true) {
-				r = T::SendObject(query).good();
-			}
-	
-			rc |= r;
-	
-			T::Drop();	
-		}
-		
-		return rc;
-	}*/
 };
 	
 } // namespace ImagePool
