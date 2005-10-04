@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/10/04 21:42:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolservers.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -39,13 +39,15 @@ ServerList ServerList::m_serverlist;
 std::set< std::string > ServerList::m_servergroups;
 
 
-Server::Server() {
+Server::Server() :
+m_lossy(false) {
 }
 
-Server::Server(const std::string& hostname, const std::string& aet, int port) :
+Server::Server(const std::string& hostname, const std::string& aet, int port, bool lossy) :
 m_hostname(hostname),
 m_aet(aet),
-m_port(port) {
+m_port(port),
+m_lossy(lossy) {
 }
 
 bool Server::send_echo(std::string& status) {
@@ -110,12 +112,14 @@ void ServerList::update() {
 	Gnome::Conf::SListHandle_ValueString hostname_list = client->get_string_list("/apps/aeskulap/preferences/server_hostname");
 	Gnome::Conf::SListHandle_ValueString description_list = client->get_string_list("/apps/aeskulap/preferences/server_description");
 	Gnome::Conf::SListHandle_ValueString group_list = client->get_string_list("/apps/aeskulap/preferences/server_group");
+	Gnome::Conf::SListHandle_ValueBool lossy_list = client->get_bool_list("/apps/aeskulap/preferences/server_lossy");
 	
 	Gnome::Conf::SListHandle_ValueString::iterator a = aet_list.begin();
 	Gnome::Conf::SListHandle_ValueInt::iterator p = port_list.begin();
 	Gnome::Conf::SListHandle_ValueString::iterator h = hostname_list.begin();
 	Gnome::Conf::SListHandle_ValueString::iterator d = description_list.begin();
 	Gnome::Conf::SListHandle_ValueString::iterator g = group_list.begin();
+	Gnome::Conf::SListHandle_ValueBool::iterator l = lossy_list.begin();
 	
 	for(; h != hostname_list.end() && a != aet_list.end() && p != port_list.end(); a++, p++, h++) {
 
@@ -136,6 +140,11 @@ void ServerList::update() {
 		s.m_hostname = *h;
 		s.m_name = servername;
 		
+		if(l != lossy_list.end()) {
+			s.m_lossy = *l;
+			l++;
+		}
+
 		if(g != group_list.end()) {
 			s.m_group = *g;
 			g++;

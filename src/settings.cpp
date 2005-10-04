@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 18:37:43 $
+    Update Date:      $Date: 2005/10/04 21:42:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -81,6 +81,9 @@ m_refGlade(refGlade) {
 
 	m_refGlade->get_widget("server_detail_description", m_server_detail_description);
 	m_server_detail_description->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_server_apply));
+
+	m_refGlade->get_widget("server_detail_lossy", m_server_detail_lossy);
+	m_server_detail_lossy->signal_toggled().connect(sigc::mem_fun(*this, &Settings::on_server_apply));
 
 	m_refGlade->get_widget("server_detail_echo", m_server_detail_echo);
 	m_server_detail_echo->signal_clicked().connect(sigc::mem_fun(*this, &Settings::on_echotest));
@@ -171,6 +174,7 @@ void Settings::save_settings() {
 	std::vector< int > port_list;
 	std::vector< Glib::ustring > description_list;
 	std::vector< Glib::ustring > group_list;
+	std::vector< gboolean > lossy_list;
 
 	Gtk::TreeModel::Children::iterator i = m_refTreeModel->children().begin();
 	for(; i != m_refTreeModel->children().end(); i++) {
@@ -179,6 +183,7 @@ void Settings::save_settings() {
 		port_list.push_back((*i)[m_Columns.m_port]);
 		description_list.push_back((*i)[m_Columns.m_name]);
 		group_list.push_back((*i)[m_Columns.m_group]);
+		lossy_list.push_back((*i)[m_Columns.m_lossy]);
 	}
 
 	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_aet", aet_list);
@@ -186,6 +191,7 @@ void Settings::save_settings() {
 	m_conf_client->set_int_list("/apps/aeskulap/preferences/server_port", port_list);
 	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_description", description_list);
 	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_group", group_list);
+	m_conf_client->set_bool_list("/apps/aeskulap/preferences/server_lossy", lossy_list);
 }
 
 void Settings::restore_settings() {
@@ -228,6 +234,7 @@ void Settings::restore_settings() {
 		row[m_Columns.m_hostname] = i->second.m_hostname;
 		row[m_Columns.m_name] = i->second.m_name;
 		row[m_Columns.m_group] = i->second.m_group;
+		row[m_Columns.m_lossy] = i->second.m_lossy;
 	}
 }
 
@@ -262,6 +269,7 @@ void Settings::set_server_detail_sensitive(bool sensitive) {
 	m_server_detail_port->set_sensitive(sensitive);
 	m_server_detail_group->set_sensitive(sensitive);
 	m_server_detail_description->set_sensitive(sensitive);
+	m_server_detail_lossy->set_sensitive(sensitive);
 	m_server_detail_echo->set_sensitive(sensitive);
 
 	if(!sensitive) {
@@ -270,6 +278,7 @@ void Settings::set_server_detail_sensitive(bool sensitive) {
 		m_server_detail_port->set_text("");
 		m_server_detail_group->get_entry()->set_text("");
 		m_server_detail_description->set_text("");
+		m_server_detail_lossy->set_active(false);
 	}
 }
 
@@ -291,10 +300,9 @@ void Settings::on_server_activated() {
 	guint i = row[m_Columns.m_port];
 	sprintf(buffer, "%i", i);
 	m_server_detail_port->set_text(buffer);
-	
 	m_server_detail_group->get_entry()->set_text(row[m_Columns.m_group]);
-	
 	m_server_detail_description->set_text(row[m_Columns.m_name]);
+	m_server_detail_lossy->set_active(row[m_Columns.m_lossy]);
 
 	set_server_detail_sensitive(true);
 }
@@ -331,7 +339,10 @@ void Settings::on_server_apply() {
 			m_settings_ok->set_sensitive(true);
 		}
 	}
-	
+	if(m_server_detail_lossy->is_sensitive()) {
+		row[m_Columns.m_lossy] = m_server_detail_lossy->get_active();
+	}
+
 	// enable echo button
 	if(!m_server_detail_aet->get_text().empty() &&
 		!m_server_detail_server->get_text().empty() &&

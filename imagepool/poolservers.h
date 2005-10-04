@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/10/04 21:42:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolservers.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -44,7 +44,7 @@ public:
 
 	Server();
 
-	Server(const std::string& hostname, const std::string& aet, int port);
+	Server(const std::string& hostname, const std::string& aet, int port, bool lossy = false);
 
 	bool send_echo(std::string& status);
 	
@@ -55,6 +55,7 @@ public:
 	std::string m_aet;
 	guint m_port;
 	std::string m_group;
+	bool m_lossy;
 };
 
 class ServerList : public Glib::Object {
