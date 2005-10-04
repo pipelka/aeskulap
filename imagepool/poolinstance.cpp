@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2005/10/04 18:37:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -567,11 +567,11 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 }
 
 bool Instance::set_encoding(const std::string& single, const std::string& ideographic) {
-	m_encoding[0] = get_system_encoding(single);
+	m_encoding[0] = ImagePool::get_system_encoding(single);
 	
 	if(!ideographic.empty()) {
-		m_encoding[1] = get_system_encoding(ideographic);
-		m_encoding[2] = get_system_encoding(ideographic);
+		m_encoding[1] = ImagePool::get_system_encoding(ideographic);
+		m_encoding[2] = ImagePool::get_system_encoding(ideographic);
 	}
 	else {
 		m_encoding[1] = m_encoding[0];
@@ -582,50 +582,6 @@ bool Instance::set_encoding(const std::string& single, const std::string& ideogr
 	//std::cout << "ideographic: " << m_encoding[1] << std::endl;
 	
 	return true;
-}
-
-std::string Instance::get_system_encoding(const std::string& dicom_iso) {
-	if (dicom_iso == "")
-		return "UTF-8";
-	if (dicom_iso == "ISO_IR 6")
-		return "UTF-8";
-	else if (dicom_iso == "ISO_IR 100")
-		return "ISO-8859-1";
-	else if (dicom_iso == "ISO_IR 101")
-		return "ISO-8859-2";
-	else if (dicom_iso == "ISO_IR 109")
-		return "ISO-8859-3";
-	else if (dicom_iso == "ISO_IR 110")
-		return "ISO-8859-4";
-	else if (dicom_iso == "ISO_IR 144")
-		return "ISO-8859-5";
-	else if (dicom_iso == "ISO_IR 127")
-		return "ISO-8859-6";
-	else if (dicom_iso == "ISO_IR 126")
-		return "ISO-8859-7";
-	else if (dicom_iso == "ISO_IR 138")
-		return "ISO-8859-8";
-	else if (dicom_iso == "ISO_IR 148")
-		return "ISO-8859-9";
-	else if (dicom_iso == "ISO_IR 192")
-		return "UTF-8";
-	else if (dicom_iso == "GB18030")
-		return "GB18030";
-
-	std::cerr << "Unhandled encoding '" << dicom_iso << "'." << std::endl;
-	std::cerr << "falling back to 'ISO_IR 192'." << std::endl;
-	std::cerr << "Please post the unhandled ISO encoding to the Aeskulap mailing list!" << std::endl;
-	return "UTF-8";
-}
-
-std::string Instance::convert_single_string(const char* dicom_string, const std::string& system_encoding) {
-	try {
-		return Glib::convert(dicom_string, "UTF-8", system_encoding);
-	}
-	catch(...) {
-		std::cerr << "Unable to convert string from the '" << system_encoding << "' encoding." << std::endl;
-		return "";
-	}
 }
 
 std::string Instance::convert_string(const char* dicom_string) {
@@ -661,7 +617,7 @@ std::string Instance::convert_string(const char* dicom_string) {
 		if(i != 0) {
 			result += " / ";
 		}
-		result += convert_single_string(part[i], m_encoding[i]);
+		result += ImagePool::convert_string_from(part[i], m_encoding[i]);
 	}
 
 	return result;

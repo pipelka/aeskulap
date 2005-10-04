@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2005/10/04 18:37:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -140,6 +140,10 @@ void query_from_net(
 			const sigc::slot< void, const Glib::RefPtr< ImagePool::Study >& >& resultslot
 			)
 {
+	// get encodings
+	std::string dicom_enc = ImagePool::get_encoding();
+	std::string system_enc = ImagePool::get_system_encoding(dicom_enc);
+	
 	// create patientsname querystring
 	std::string patientsname;
 
@@ -147,12 +151,12 @@ void query_from_net(
 		patientsname = "*";
 	}
 	else {
-		patientsname = "*" + name + "*";
+		patientsname = "*" + convert_string_to(name.c_str(), system_enc) + "*";
 	}
 
 	std::string description;
 	if(!studydescription.empty()) {
-		description = "*" + studydescription + "*";
+		description = "*" + convert_string_to(studydescription.c_str(), system_enc) + "*";
 	}
 	
 	// create date querystring
@@ -176,7 +180,7 @@ void query_from_net(
 
 	std::string station;
 	if(!stationname.empty()) {
-		station = "*" + stationname + "*";
+		station = "*" + convert_string_to(stationname.c_str(), system_enc) + "*";
 	}
 
 	DcmDataset query;
@@ -187,6 +191,7 @@ void query_from_net(
 	query.insert(e);
 
 	e = newDicomElement(DCM_SpecificCharacterSet);
+	e->putString(dicom_enc.c_str());
 	query.insert(e);
 
 	e = newDicomElement(DCM_PatientsName);
@@ -194,7 +199,7 @@ void query_from_net(
 	query.insert(e);
 
 	e = newDicomElement(DCM_PatientID);
-	e->putString(patientid.c_str());
+	e->putString(convert_string_to(patientid.c_str(), system_enc).c_str());
 	query.insert(e);
 
 	e = newDicomElement(DCM_Modality);

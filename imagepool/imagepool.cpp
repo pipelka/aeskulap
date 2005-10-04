@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2005/10/04 18:37:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -162,4 +162,76 @@ const Glib::RefPtr<ImagePool::Study>& get_study(const std::string& studyinstance
 	return m_studypool[studyinstanceuid];
 }
 
+}
+std::string ImagePool::convert_string_from(const char* dicom_string, const std::string& system_encoding) {
+	try {
+		return Glib::convert(dicom_string, "UTF-8", system_encoding);
+	}
+	catch(...) {
+		std::cerr << "Unable to convert string from the '" << system_encoding << "' encoding." << std::endl;
+		return "";
+	}
+}
+
+std::string ImagePool::convert_string_to(const char* dicom_string, const std::string& system_encoding) {
+	try {
+		return Glib::convert(dicom_string, system_encoding, "UTF-8");
+	}
+	catch(...) {
+		std::cerr << "Unable to convert string to the '" << system_encoding << "' encoding." << std::endl;
+		return "";
+	}
+}
+
+void ImagePool::set_encoding(const std::string& dicom_encoding) {
+	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
+	client->set("/apps/aeskulap/preferences/characterset", dicom_encoding);
+}
+
+std::string ImagePool::get_encoding() {
+	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
+
+	std::string charset = client->get_string(
+		"/apps/aeskulap/preferences/characterset");
+
+	if(charset.empty()) {
+		charset = "ISO_IR 100";
+		client->set("/apps/aeskulap/preferences/characterset", charset);
+	}
+	
+	return charset;
+}
+
+std::string ImagePool::get_system_encoding(const std::string& dicom_iso) {
+	if (dicom_iso == "")
+		return "UTF-8";
+	if (dicom_iso == "ISO_IR 6")
+		return "UTF-8";
+	else if (dicom_iso == "ISO_IR 100")
+		return "ISO-8859-1";
+	else if (dicom_iso == "ISO_IR 101")
+		return "ISO-8859-2";
+	else if (dicom_iso == "ISO_IR 109")
+		return "ISO-8859-3";
+	else if (dicom_iso == "ISO_IR 110")
+		return "ISO-8859-4";
+	else if (dicom_iso == "ISO_IR 144")
+		return "ISO-8859-5";
+	else if (dicom_iso == "ISO_IR 127")
+		return "ISO-8859-6";
+	else if (dicom_iso == "ISO_IR 126")
+		return "ISO-8859-7";
+	else if (dicom_iso == "ISO_IR 138")
+		return "ISO-8859-8";
+	else if (dicom_iso == "ISO_IR 148")
+		return "ISO-8859-9";
+	else if (dicom_iso == "ISO_IR 192")
+		return "UTF-8";
+	else if (dicom_iso == "GB18030")
+		return "GB18030";
+
+	std::cerr << "Unhandled encoding '" << dicom_iso << "'." << std::endl;
+	std::cerr << "falling back to 'ISO_IR 192'." << std::endl;
+	std::cerr << "Please post the unhandled ISO encoding to the Aeskulap mailing list!" << std::endl;
+	return "UTF-8";
 }
