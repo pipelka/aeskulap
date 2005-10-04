@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-03 12:39+0200\n"
+"POT-Creation-Date: 2005-10-03 20:48+0200\n"
 "PO-Revision-Date: 2005-09-30 14:25+0200\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
 "Language-Team:  <en@li.org>\n"
@@ -16,7 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.10\n"
 
-#: ../imagepool/netquery.cpp:83 ../imagepool/netquery.cpp:102
+#: ../imagepool/netquery.cpp:100 ../imagepool/poolinstance.cpp:528
+#: ../imagepool/poolinstance.cpp:549
 msgid "no description"
 msgstr "Keine Beschreibung"
 

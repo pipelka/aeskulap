@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 10:36:55 $
+    Update Date:      $Date: 2005/10/04 06:45:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -65,6 +65,8 @@ bool NetLoader::load(const std::string& studyinstanceuid, const std::string& ser
 	m_studyinstanceuid = studyinstanceuid;
 	m_server = server;
 	start();
+	
+	return true;
 }
 
 bool NetLoader::run() {

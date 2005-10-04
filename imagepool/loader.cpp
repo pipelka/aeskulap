@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/29 08:51:44 $
+    Update Date:      $Date: 2005/10/04 06:45:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -110,11 +110,13 @@ void Loader::add_image_callback() {
 }
 
 void Loader::add_image(DcmDataset* dset) {
-	Glib::RefPtr<ImagePool::Instance> image = ImagePool::create_instance(dset);
+	Glib::RefPtr<ImagePool::Instance> image = ImagePool::Instance::create(dset);
 
 	if(!image) {
 		return;
 	}
+
+	register_instance(image);
 
 	std::string studyinstanceuid = image->studyinstanceuid();
 

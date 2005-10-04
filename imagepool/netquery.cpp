@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/10/04 06:45:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -70,19 +70,17 @@ static void fix_time(std::string& time) {
 Glib::RefPtr< ImagePool::Study > create_query_study(DcmDataset* dset, const std::string& server) {
 	Glib::RefPtr< ImagePool::Study > result = Glib::RefPtr< ImagePool::Study >(new Study);
 
+	Glib::RefPtr< ImagePool::Instance > item = Instance::create(dset);
+
 	result->m_server = server;
-	dset->findAndGetOFString(DCM_StudyInstanceUID, result->m_studyinstanceuid);
-	dset->findAndGetOFString(DCM_PatientsName, result->m_patientsname);
-	dset->findAndGetOFString(DCM_PatientsBirthDate, result->m_patientsbirthdate);
-	dset->findAndGetOFString(DCM_PatientsSex, result->m_patientssex);
-	dset->findAndGetOFString(DCM_StudyDescription, result->m_studydescription);
-	dset->findAndGetOFString(DCM_StudyDate, result->m_studydate);
-	dset->findAndGetOFString(DCM_StudyTime, result->m_studytime);
-
-	if(result->m_studydescription.empty()) {
-		result->m_studydescription = gettext("no description");
-	}
-
+	result->m_studyinstanceuid = item->studyinstanceuid();
+	result->m_patientsname = item->patientsname();
+	result->m_patientsbirthdate = item->patientsbirthdate();
+	result->m_patientssex = item->patientssex();
+	result->m_studydescription = item->studydescription();
+	result->m_studydate = item->studydate();
+	result->m_studytime = item->studytime();
+	
 	fix_date(result->m_patientsbirthdate);
 	fix_date(result->m_studydate);
 	fix_time(result->m_studytime);
@@ -188,6 +186,9 @@ void query_from_net(
 	e->putString("STUDY");
 	query.insert(e);
 
+	e = newDicomElement(DCM_SpecificCharacterSet);
+	query.insert(e);
+
 	e = newDicomElement(DCM_PatientsName);
 	e->putString(patientsname.c_str());
 	query.insert(e);
@@ -259,6 +260,9 @@ void query_series_from_net(const std::string& studyinstanceuid, const std::strin
 	
 	e = newDicomElement(DCM_QueryRetrieveLevel);
 	e->putString("SERIES");
+	query.insert(e);
+
+	e = newDicomElement(DCM_SpecificCharacterSet);
 	query.insert(e);
 
 	e = newDicomElement(DCM_StudyInstanceUID);

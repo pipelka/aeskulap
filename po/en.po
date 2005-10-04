@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-03 12:39+0200\n"
+"POT-Creation-Date: 2005-10-03 20:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,8 @@ msgstr ""
 "Content-Type: application/x-xml2pot; charset=UTF-8\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: ../imagepool/netquery.cpp:83 ../imagepool/netquery.cpp:102
+#: ../imagepool/netquery.cpp:100 ../imagepool/poolinstance.cpp:528
+#: ../imagepool/poolinstance.cpp:549
 msgid "no description"
 msgstr ""
 

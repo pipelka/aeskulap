@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/10/04 06:45:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolstudy.h,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -98,7 +98,7 @@ public:
 
 	int seriescount();
 
-	int set_seriescount(int series);
+	void set_seriescount(int series);
 
 	int has_3d_information();
 
@@ -117,7 +117,7 @@ private:
 	std::string m_studyinstanceuid;
 	
 	std::string m_patientsname;
-	
+
 	std::string m_patientsbirthdate;
 	
 	std::string m_studydescription;
@@ -130,7 +130,7 @@ private:
 
 	std::string m_server;
 	
-	friend Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset);
+	friend Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset);
 
 	friend Glib::RefPtr< ImagePool::Study > create_query_study(DcmDataset* dset, const std::string& server);
 

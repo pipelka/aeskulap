@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/10/04 06:45:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -46,7 +46,7 @@ namespace ImagePool {
 	
 	void close();
 
-	Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset);
+	bool register_instance(const Glib::RefPtr<ImagePool::Instance>& image);
 
 	void remove_instance(const std::string& sopinstanceuid);
 
