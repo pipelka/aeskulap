@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2005/10/04 18:37:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -175,11 +175,7 @@ public:
 
 protected:
 
-	std::string get_system_encoding(const std::string& dicom_iso);
-
 	bool set_encoding(const std::string& single, const std::string& ideographic="");
-
-	std::string convert_single_string(const char* dicom_string, const std::string& system_encoding);
 
 	std::string convert_string(const char* dicom_string);
 

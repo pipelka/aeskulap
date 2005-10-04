@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2005/10/04 18:37:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -60,6 +60,7 @@ m_refGlade(refGlade) {
 	m_characterset->append_text("ISO_IR 126");
 	m_characterset->append_text("ISO_IR 138");
 	m_characterset->append_text("ISO_IR 148");
+	m_characterset->append_text("ISO_IR 192");
 
 	m_characterset->show();
 	hbox_characterset->pack_start(*m_characterset);
@@ -163,8 +164,7 @@ void Settings::save_settings() {
 	value = m_local_port->get_text();
 	m_conf_client->set("/apps/aeskulap/preferences/local_port", atoi(value.c_str()));
 
-	value = m_characterset->get_active_text();
-	m_conf_client->set("/apps/aeskulap/preferences/characterset", value);
+	ImagePool::set_encoding(m_characterset->get_active_text().c_str());
 
 	std::vector< Glib::ustring > aet_list;
 	std::vector< Glib::ustring > hostname_list;
@@ -210,12 +210,7 @@ void Settings::restore_settings() {
 	sprintf(buffer, "%i", local_port_setting);
 	m_local_port->set_text(buffer);
 
-	Glib::ustring charset = m_conf_client->get_string(
-		"/apps/aeskulap/preferences/characterset");
-	if(charset.empty()) {
-		charset = "ISO_IR 100";
-		m_conf_client->set("/apps/aeskulap/preferences/characterset", charset);
-	}
+	Glib::ustring charset = ImagePool::get_encoding();
 	m_characterset->set_active_text(charset);
 
 
