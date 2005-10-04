@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/10/04 06:45:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -49,8 +49,6 @@ protected:
 
 	Instance(const std::string& sopinstanceuid);
 
-	friend Glib::RefPtr<ImagePool::Instance> create_instance(DcmDataset* dset);
-	
 	friend void ImagePool::remove_instance(const Glib::RefPtr<ImagePool::Instance>&);
 
 	friend class ImagePool::Loader;
@@ -100,9 +98,21 @@ public:
 	
 	const std::string& sopinstanceuid();
 	
+	const std::string& patientsname();
+
+	const std::string& patientsbirthdate();
+
+	const std::string& patientssex();
+
 	const std::string& seriesinstanceuid();
 	
 	const std::string& studyinstanceuid();
+
+	const std::string& studydescription();
+
+	const std::string& studydate();
+
+	const std::string& studytime();
 
 	double slope();
 
@@ -161,7 +171,21 @@ public:
 
 	bool has_3d_information();
 
+	static Glib::RefPtr<ImagePool::Instance> create(DcmDataset* dset);
+
+protected:
+
+	std::string get_system_encoding(const std::string& dicom_iso);
+
+	bool set_encoding(const std::string& single, const std::string& ideographic="");
+
+	std::string convert_single_string(const char* dicom_string, const std::string& system_encoding);
+
+	std::string convert_string(const char* dicom_string);
+
 private:
+
+	std::string m_encoding[3];
 
 	std::vector<void*> m_pixels;
 
@@ -204,6 +228,10 @@ private:
 	std::string m_patientssex;
 
 	std::string m_studydescription;
+
+	std::string m_studydate;
+
+	std::string m_studytime;
 
 	std::string m_institutionname;
 

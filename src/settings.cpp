@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/10/04 06:45:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -46,6 +46,24 @@ m_refGlade(refGlade) {
 	
 	m_refGlade->get_widget("local_port", m_local_port);
 
+	Gtk::HBox* hbox_characterset;
+	m_refGlade->get_widget("hbox_characterset",hbox_characterset);
+	
+	m_characterset = manage(new Gtk::ComboBoxText);
+	m_characterset->append_text("ISO_IR 6");
+	m_characterset->append_text("ISO_IR 100");
+	m_characterset->append_text("ISO_IR 101");
+	m_characterset->append_text("ISO_IR 109");
+	m_characterset->append_text("ISO_IR 110");
+	m_characterset->append_text("ISO_IR 144");
+	m_characterset->append_text("ISO_IR 127");
+	m_characterset->append_text("ISO_IR 126");
+	m_characterset->append_text("ISO_IR 138");
+	m_characterset->append_text("ISO_IR 148");
+
+	m_characterset->show();
+	hbox_characterset->pack_start(*m_characterset);
+	
 	// server details
 
 	m_refGlade->get_widget("server_detail_server", m_server_detail_server);
@@ -145,6 +163,9 @@ void Settings::save_settings() {
 	value = m_local_port->get_text();
 	m_conf_client->set("/apps/aeskulap/preferences/local_port", atoi(value.c_str()));
 
+	value = m_characterset->get_active_text();
+	m_conf_client->set("/apps/aeskulap/preferences/characterset", value);
+
 	std::vector< Glib::ustring > aet_list;
 	std::vector< Glib::ustring > hostname_list;
 	std::vector< int > port_list;
@@ -175,7 +196,6 @@ void Settings::restore_settings() {
 		local_aet_setting = "AESKULAP";
 		m_conf_client->set("/apps/aeskulap/preferences/local_aet", local_aet_setting);
 	}
-
 	m_local_aet->set_text(local_aet_setting);
 
 	gint local_port_setting = m_conf_client->get_int(
@@ -189,6 +209,15 @@ void Settings::restore_settings() {
 	char buffer[10];
 	sprintf(buffer, "%i", local_port_setting);
 	m_local_port->set_text(buffer);
+
+	Glib::ustring charset = m_conf_client->get_string(
+		"/apps/aeskulap/preferences/characterset");
+	if(charset.empty()) {
+		charset = "ISO_IR 100";
+		m_conf_client->set("/apps/aeskulap/preferences/characterset", charset);
+	}
+	m_characterset->set_active_text(charset);
+
 
 	Gtk::TreeModel::Children::iterator i = m_refTreeModel->children().begin();
 	for(; i != m_refTreeModel->children().end();) {

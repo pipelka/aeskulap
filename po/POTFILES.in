@@ -1,5 +1,6 @@
 # List of source files which contain translatable strings.
 imagepool/netquery.cpp
+imagepool/poolinstance.cpp
 widgets/imagelayouttoolbutton.cpp
 widgets/aseriesmenu.cpp
 widgets/seriesview.cpp

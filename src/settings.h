@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/19 17:04:28 $
+    Update Date:      $Date: 2005/10/04 06:45:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.h,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -110,6 +110,8 @@ private:
 	
 	Gtk::ComboBoxEntry* m_server_detail_group;
 	
+	Gtk::ComboBoxText* m_characterset;
+
 	Gtk::Entry* m_server_detail_description;
 
 	Gtk::Button* m_server_detail_echo;

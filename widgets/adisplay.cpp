@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/29 13:42:48 $
+    Update Date:      $Date: 2005/10/04 06:45:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -145,7 +145,7 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 	
 		m_GC->set_background(m_colorText);
 		m_fntdesc.set_size((get_width() * 12 * PANGO_SCALE) / 1280 + 2 * PANGO_SCALE);
-		std::string text = m_image->series()->institutionname() + "\n";
+		Glib::ustring text = m_image->series()->institutionname() + "\n";
 		text += m_image->study()->patientsname() + "\n";
 		text += m_image->study()->patientsbirthdate() + " " + m_image->study()->patientssex() + "\n";
 		text += gettext("Acc:\n");

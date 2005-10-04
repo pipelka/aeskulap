@@ -36,8 +36,7 @@ schema_DATA = \
 	aeskulap.schema
 
 install-data-hook:
-	GCONF_CONFIG_SOURCE="" gconftool-2 --makefile-install-rule $(srcdir)/$(schema_DATA) > /dev/null 2>&1 || true
-#	GCONF_CONFIG_SOURCE=$(INSTALL_GCONF_CONFIG_SOURCE) gconftool-2 --makefile-install-rule $(srcdir)/$(schema_DATA)
+	GCONF_CONFIG_SOURCE="" gconftool-2 --makefile-install-rule $(srcdir)/$(schema_DATA) || true
 
 INCLUDES = \
 	-DAESKULAP_GLADEDIR=\""$(gladedir)"\" \

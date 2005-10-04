@@ -84,7 +84,7 @@ void StudyTab::on_progress(double p) {
 		m_close->set_sensitive(true);
 		m_progress->hide();
 		m_close->show();
-		std::string labeltext = m_study->patientsname().substr(0,20) + "\n" + m_study->studydescription().substr(0,20);
+		Glib::ustring labeltext = m_study->patientsname().substr(0,20) + "\n" + m_study->studydescription().substr(0,20);
 		m_label->set_text(labeltext);
 	}
 }

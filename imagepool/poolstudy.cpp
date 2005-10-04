@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 19:09:29 $
+    Update Date:      $Date: 2005/10/04 06:45:52 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolstudy.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -106,7 +106,7 @@ int Study::seriescount() {
 	return m_max_series;
 }
 
-int Study::set_seriescount(int series) {
+void Study::set_seriescount(int series) {
 	m_max_series = series;
 }
 

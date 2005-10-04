@@ -25,6 +25,18 @@
    </schema>
 
    <schema>
+     <key>/schemas/apps/aeskulap/preferences/characterset</key>
+     <applyto>/apps/aeskulap/preferences/characterset</applyto>
+     <owner>aeskulap</owner>
+     <type>string</type>
+     <default>ISO_IR 100</default>
+     <locale name="C">
+	<short>Specific CharacterSet</short>
+	<long>Defines the DICOM character set to use</long>
+     </locale>
+   </schema>
+
+   <schema>
      <key>/schemas/apps/aeskulap/preferences/server_aet</key>
      <applyto>/apps/aeskulap/preferences/server_aet</applyto>
      <owner>aeskulap</owner>
