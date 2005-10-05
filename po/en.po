@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-03 20:48+0200\n"
+"POT-Creation-Date: 2005-10-05 13:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -221,12 +221,12 @@ msgstr ""
 msgid "Station"
 msgstr ""
 
-#: ../src/studymanager.cpp:104 ../src/aeskulap.glade.h:33
+#: ../src/studymanager.cpp:104 ../src/aeskulap.glade.h:34
 msgid "Server"
 msgstr ""
 
-#: ../src/studymanager.cpp:126 ../src/settings.cpp:101
-#: ../src/aeskulap.glade.h:24
+#: ../src/studymanager.cpp:126 ../src/settings.cpp:123
+#: ../src/aeskulap.glade.h:25
 msgid "Group"
 msgstr ""
 
@@ -249,29 +249,29 @@ msgstr ""
 msgid "Series %i"
 msgstr ""
 
-#: ../src/settings.cpp:97 ../src/aeskulap.glade.h:29
+#: ../src/settings.cpp:119 ../src/aeskulap.glade.h:30
 msgid "Name"
 msgstr ""
 
-#: ../src/settings.cpp:98 ../src/aeskulap.glade.h:15
+#: ../src/settings.cpp:120 ../src/aeskulap.glade.h:16
 msgid "AET"
 msgstr ""
 
-#: ../src/settings.cpp:99 ../src/aeskulap.glade.h:30
+#: ../src/settings.cpp:121 ../src/aeskulap.glade.h:31
 msgid "Port"
 msgstr ""
 
-#: ../src/settings.cpp:100
+#: ../src/settings.cpp:122
 msgid "Hostname"
 msgstr ""
 
-#: ../src/settings.cpp:340
+#: ../src/settings.cpp:377
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
 msgstr ""
 
-#: ../src/settings.cpp:354
+#: ../src/settings.cpp:391
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
 msgstr ""
 
@@ -284,118 +284,126 @@ msgid "<b>Accessionnumber:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:3
-msgid "<b>Date:</b>"
+msgid "<b>Character Set</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:4
-msgid "<b>Details</b>"
+msgid "<b>Date:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:5
-msgid "<b>Local DICOM Settings</b>"
+msgid "<b>Details</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:6
-msgid "<b>Modality:</b>"
+msgid "<b>Local DICOM Settings</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:7
-msgid "<b>Name:</b>"
+msgid "<b>Modality:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:8
-msgid "<b>Patient ID:</b>"
+msgid "<b>Name:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:9
-msgid "<b>Prescanning files ...</b>"
+msgid "<b>Patient ID:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:10
-msgid "<b>Servergroups</b>"
+msgid "<b>Prescanning files ...</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:11
-msgid "<b>Stationname:</b>"
+msgid "<b>Servergroups</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:12
-msgid "<b>Study Description:</b>"
+msgid "<b>Stationname:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:13
-msgid "<b>Study List</b>"
+msgid "<b>Study Description:</b>"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:14
+msgid "<b>Study List</b>"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:15
 msgid "<b>required</b>"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:16
+#: ../src/aeskulap.glade.h:17
 msgid "Advanced query options"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:17
+#: ../src/aeskulap.glade.h:18
 msgid "Aeskulap"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:18
+#: ../src/aeskulap.glade.h:19
 msgid "Aeskulap Viewer"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:19
+#: ../src/aeskulap.glade.h:20
 msgid "Clear"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:20
+#: ../src/aeskulap.glade.h:21
 msgid "Clear Filter"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:21
+#: ../src/aeskulap.glade.h:22
 msgid "DICOM Settings"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:22
+#: ../src/aeskulap.glade.h:23
 msgid "Echotest"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:23
+#: ../src/aeskulap.glade.h:24
 msgid "Fullscreen"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:25
+#: ../src/aeskulap.glade.h:26
 msgid "IP / Hostname"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:26
+#: ../src/aeskulap.glade.h:27
 msgid "Local AET"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:27
+#: ../src/aeskulap.glade.h:28
 msgid "Medical image viewer and DICOM network client\n"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:31
+#: ../src/aeskulap.glade.h:32
 msgid "Scanning files"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:32
+#: ../src/aeskulap.glade.h:33
 msgid "Search"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:34
+#: ../src/aeskulap.glade.h:35
 msgid "Servers"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:35
+#: ../src/aeskulap.glade.h:36
 msgid "Settings"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:36
+#: ../src/aeskulap.glade.h:37
+msgid "Specific Characterset"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:38
 msgid "Study Manager"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:37
+#: ../src/aeskulap.glade.h:39
 msgid ""
 "The Aeskulap source code is licensed under the following terms:\n"
 "\n"
@@ -409,7 +417,7 @@ msgid ""
 "BSD/MIT"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:47
+#: ../src/aeskulap.glade.h:49
 msgid ""
 "XA\n"
 "CT\n"
@@ -419,23 +427,27 @@ msgid ""
 "SC\n"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:54
+#: ../src/aeskulap.glade.h:56
 msgid "_Ansicht"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:55
+#: ../src/aeskulap.glade.h:57
 msgid "_Bearbeiten"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:56
+#: ../src/aeskulap.glade.h:58
 msgid "_Datei"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:57
+#: ../src/aeskulap.glade.h:59
 msgid "_Hilfe"
 msgstr ""
 
+#: ../src/aeskulap.glade.h:60
+msgid "prefer lossy JPEG compression"
+msgstr ""
+
 #. TRANSLATORS: Replace this string with your names, one name per line.
-#: ../src/aeskulap.glade.h:59
+#: ../src/aeskulap.glade.h:62
 msgid "translator-credits"
 msgstr ""

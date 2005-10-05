@@ -166,6 +166,8 @@ public:
 	
 	bool GetProposeCompression();
 
+	void SetAcceptLossyImages(bool lossy);
+	
 protected:
 
 	/**
@@ -183,6 +185,7 @@ protected:
 	const char* m_ourAET;
 	int m_calledPort;
 	int m_timeout;
+	bool m_accept_lossy;
 
 	T_ASC_Association* assoc;
 	T_ASC_PresentationContextID presId;
