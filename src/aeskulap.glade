@@ -17,7 +17,6 @@
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
-  <property name="urgency_hint">False</property>
 
   <child>
     <widget class="GtkVBox" id="vbox_main">
@@ -28,8 +27,6 @@
       <child>
 	<widget class="GtkMenuBar" id="menubar_main">
 	  <property name="visible">True</property>
-	  <property name="pack_direction">GTK_PACK_DIRECTION_LTR</property>
-	  <property name="child_pack_direction">GTK_PACK_DIRECTION_LTR</property>
 
 	  <child>
 	    <widget class="GtkMenuItem" id="menuitem_file">
@@ -1101,7 +1098,6 @@ LGPL
 
 DCMTK - OFFIS DICOM Toolkit:
 BSD/MIT</property>
-  <property name="wrap_license">False</property>
   <property name="website">http://aeskulap.nongnu.org</property>
   <property name="authors">Alexander Pipelka &lt;pipelka@teleweb.at&gt;
 </property>
@@ -1123,7 +1119,6 @@ BSD/MIT</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
-  <property name="urgency_hint">False</property>
 
   <child>
     <widget class="GtkVBox" id="vbox19">
@@ -1941,7 +1936,7 @@ BSD/MIT</property>
 				<widget class="GtkCheckButton" id="server_detail_lossy">
 				  <property name="visible">True</property>
 				  <property name="can_focus">True</property>
-				  <property name="label" translatable="yes">propose lossy JPEG compression</property>
+				  <property name="label" translatable="yes">prefer lossy JPEG compression</property>
 				  <property name="use_underline">True</property>
 				  <property name="relief">GTK_RELIEF_NORMAL</property>
 				  <property name="focus_on_click">True</property>
@@ -2237,7 +2232,6 @@ BSD/MIT</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_CENTER</property>
   <property name="focus_on_map">True</property>
-  <property name="urgency_hint">False</property>
 
   <child>
     <widget class="GtkVBox" id="vbox21">

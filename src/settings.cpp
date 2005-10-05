@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 21:42:29 $
+    Update Date:      $Date: 2005/10/05 11:58:32 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -192,6 +192,8 @@ void Settings::save_settings() {
 	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_description", description_list);
 	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_group", group_list);
 	m_conf_client->set_bool_list("/apps/aeskulap/preferences/server_lossy", lossy_list);
+
+	ImagePool::ServerList::update();
 }
 
 void Settings::restore_settings() {

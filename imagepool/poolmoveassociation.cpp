@@ -141,6 +141,10 @@ CONDITION MoveAssociation::acceptSubAssoc(T_ASC_Network *aNet, T_ASC_Association
 	const char* knownAbstractSyntaxes[] = { UID_VerificationSOPClass };
 	const char* transferSyntaxes[] = { UID_JPEGProcess14SV1TransferSyntax, NULL, NULL, UID_LittleEndianImplicitTransferSyntax };
 
+	if(m_accept_lossy) {
+		transferSyntaxes[0] = UID_JPEGProcess2_4TransferSyntax;
+	}
+
 	cond = ASC_receiveAssociation(aNet, assoc, m_maxReceivePDULength);
 	if (cond.bad()) {
 		printf("Unable to receive association!\n");

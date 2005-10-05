@@ -53,6 +53,7 @@
 Association::Association() :
 m_abstractSyntax(NULL),
 m_timeout(0),
+m_accept_lossy(false),
 assoc(NULL),
 presId(0),
 msgId(0),
@@ -398,4 +399,8 @@ void Association::SetProposeCompression(bool propose) {
 
 bool Association::GetProposeCompression() {
 	return m_ProposeCompression;
+}
+
+void Association::SetAcceptLossyImages(bool lossy) {
+	m_accept_lossy = lossy;
 }
