@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2005/10/06 21:19:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -380,10 +380,14 @@ void Display::set_window_palette(gdouble x, gdouble y) {
 	gdouble dy = y - m_drag_start_y;
 
 	int dist = m_image->max_value() - m_image->min_value();
-	//c = m_drag_window_center + (dx / get_width()) * (m_windowmap_size-1)/2;
-	//w = m_drag_window_width + (dy / get_height()) * (m_windowmap_size-1)/2;
-	c = m_drag_window_center + (dx / get_width()) * dist/2;
-	w = m_drag_window_width + (dy / get_height()) * dist/2;
+	if(dist > 5) {
+		c = m_drag_window_center + (dx / get_width()) * dist/2;
+		w = m_drag_window_width + (dy / get_height()) * dist/2;
+	}
+	else {
+		c = m_drag_window_center + (dx / get_width()) * (m_windowmap_size-1)/2;
+		w = m_drag_window_width + (dy / get_height()) * (m_windowmap_size-1)/2;
+	}
 
 	if(c < 1 && !m_image->is_signed()) {
 		c=1;
