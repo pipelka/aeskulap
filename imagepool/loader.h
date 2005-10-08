@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 10:36:55 $
+    Update Date:      $Date: 2005/10/08 10:32:58 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.h,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -80,21 +80,27 @@ protected:
 	
 	virtual void finished();
 
+	virtual bool on_timeout();
+
 	void add_image(DcmDataset* dset);
 
-	void add_image_callback();
+	void process_instance();
 	
 	Glib::Thread* m_loader;
 
-	Glib::Dispatcher m_add_image;
+	//Glib::Dispatcher m_add_image;
 
-	Glib::Dispatcher m_finished;
+	//Glib::Dispatcher m_finished;
 	
 	Glib::Mutex m_mutex;
 
 	bool m_busy;
 
 	std::map<std::string, CacheEntry> m_cache;
+
+	sigc::connection m_conn_timer;
+
+	bool m_finished;
 
 private:
 

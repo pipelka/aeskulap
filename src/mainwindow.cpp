@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/03 10:42:41 $
+    Update Date:      $Date: 2005/10/08 10:32:58 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.20 $
+    CVS/RCS Revision: $Revision: 1.21 $
     Status:           $State: Exp $
 */
 
@@ -236,6 +236,7 @@ void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	study->signal_series_added.connect(sigc::mem_fun(*frame, &StudyView::on_series_added));
 
 	set_busy_cursor(false);
+	while(Gtk::Main::events_pending()) Gtk::Main::iteration(false);
 }
 
 void MainWindow::on_study_closed(StudyView* page) {

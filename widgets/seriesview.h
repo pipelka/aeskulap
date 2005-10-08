@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/30 16:00:58 $
+    Update Date:      $Date: 2005/10/08 10:32:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -53,7 +53,9 @@ public:
 	SeriesView(const Glib::RefPtr<ImagePool::Series>& series = Glib::RefPtr<ImagePool::Series>());
 
 	~SeriesView();
-	
+
+	void enable_mouse_functions(bool enable);
+
 	void set_layout(int tilex, int tiley);
 
 	void on_instance_added(const Glib::RefPtr<ImagePool::Instance>& instance);
@@ -79,6 +81,8 @@ public:
 	sigc::signal<void, GdkEventButton*, SeriesView*> signal_popup;
 
 	sigc::signal<void, GdkEventMotion*, Aeskulap::Display*> signal_motion;
+
+	sigc::signal<void, GdkEventButton*, bool, Aeskulap::Display*> signal_button;
 
 protected:
 

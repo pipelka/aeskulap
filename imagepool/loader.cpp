@@ -20,24 +20,26 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2005/10/08 10:32:58 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
 #include "imagepool.h"
 #include "loader.h"
 #include "dcdatset.h"
+#include <gtkmm.h>
 
 namespace ImagePool {
 	
 Loader::Loader() :
 m_loader(NULL),
-m_busy(false)
+m_busy(false),
+m_finished(false)
 {
-	m_add_image.connect(sigc::mem_fun(*this, &Loader::add_image_callback));
-	m_finished.connect(sigc::mem_fun(*this, &Loader::finished));
+	//m_add_image.connect(sigc::mem_fun(*this, &Loader::add_image_callback));
+	//m_finished.connect(sigc::mem_fun(*this, &Loader::finished));
 }
 
 Loader::~Loader() {
@@ -47,7 +49,21 @@ bool Loader::start() {
 	if(m_busy) {
 		return false;
 	}
+
+	m_finished = false;
+	m_conn_timer = Glib::signal_timeout().connect(sigc::mem_fun(*this, &Loader::on_timeout), 500);
 	m_loader = Glib::Thread::create(sigc::mem_fun(*this, &Loader::thread), false);
+	
+	return true;
+}
+
+bool Loader::on_timeout() {
+	process_instance();
+	
+	if(m_finished) {
+		finished();
+		return false;
+	}
 	
 	return true;
 }
@@ -55,7 +71,7 @@ bool Loader::start() {
 void Loader::stop() {
 }
 
-void Loader::add_image_callback() {
+void Loader::process_instance() {
 	if(m_imagequeue.size() == 0) {
 		return;
 	}
@@ -105,11 +121,13 @@ void Loader::add_image_callback() {
 	new_study->emit_progress();
 
 	if(m_imagequeue.size() > 0) {
-		add_image_callback();
+		process_instance();
 	}
 }
 
 void Loader::add_image(DcmDataset* dset) {
+	//dset->print(COUT, DCMTypes::PF_shortenLongTagValues);
+
 	Glib::RefPtr<ImagePool::Instance> image = ImagePool::Instance::create(dset);
 
 	if(!image) {
@@ -131,7 +149,6 @@ void Loader::add_image(DcmDataset* dset) {
 	m_cache[studyinstanceuid].m_study = image->study();
 
 	m_imagequeue.push(image);
-	m_add_image();
 }
 
 bool Loader::run() {
@@ -139,6 +156,14 @@ bool Loader::run() {
 }
 
 void Loader::finished() {
+	std::cout << "wait for imagequeue ";
+	while(m_imagequeue.size() > 0) {
+		std::cout << ".";
+		process_instance();
+	}
+	std::cout << std::endl;
+
+
 	std::map<std::string, CacheEntry>::iterator i = m_cache.begin();
 	while(i != m_cache.end()) {
 		if(i->second.m_study) {
@@ -157,15 +182,8 @@ void Loader::thread() {
 
 	bool rc = run();
 
-	std::cout << "wait for imagequeue ";
-	while(m_imagequeue.size() > 0) {
-		std::cout << ".";
-		Glib::usleep(1000*100);
-	}
-	std::cout << std::endl;
-
 	std::cout << "finished" << std::endl;
-	m_finished();
+	m_finished = true;
 
 	// wait for finished() (clears m_cache)
 	std::cout << "wait for cache ";
@@ -176,6 +194,7 @@ void Loader::thread() {
 	std::cout << std::endl;
 
 	m_mutex.lock();
+	m_conn_timer.disconnect();
 	m_busy = false;
 	m_mutex.unlock();
 

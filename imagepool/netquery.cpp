@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 18:37:42 $
+    Update Date:      $Date: 2005/10/08 10:32:58 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -344,6 +344,7 @@ int query_study_instances(const std::string& studyinstanceuid, const std::string
 	query.print(COUT);
 
 	NetClient<FindAssociation> a;
+	a.SetMaxResults(5000);
 	a.QueryServer(&query, server, UID_FINDStudyRootQueryRetrieveInformationModel);
 	//a.QueryServers(&query, UID_FINDStudyRootQueryRetrieveInformationModel);
 

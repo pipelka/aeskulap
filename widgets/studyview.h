@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/30 12:25:48 $
+    Update Date:      $Date: 2005/10/08 10:32:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -63,7 +63,9 @@ public:
 	StudyView(const Glib::RefPtr<ImagePool::Study>& study);
 
 	~StudyView();
-	
+
+	void enable_mouse_functions(bool enable);
+
 	void accelerate(Gtk::Window& window);
 
 	void set_layout(int tilex, int tiley);
@@ -95,6 +97,8 @@ protected:
 	void on_toggle_refframe();
 
 	void on_toggle_3dcursor();
+
+	void on_toggle_measure();
 
 	void on_instance_added(const Glib::RefPtr<ImagePool::Instance>& instance);
 
@@ -130,6 +134,8 @@ private:
 
 	Gtk::ToggleToolButton* m_btn_3dcursor;
 
+	Gtk::ToggleToolButton* m_measure;
+
 	bool m_single_series;
 
 	unsigned int m_seriescount;
@@ -140,13 +146,16 @@ private:
 
 	SeriesView* m_selected;
 	
-	bool m_draw_reference_frames;
+	//bool m_draw_reference_frames;
 
 	bool m_draw_reference_frame_ends;
 
-	bool m_3dcursor_enabled;
+	//bool m_3dcursor_enabled;
 
 	ImagePool::Instance::Point m_3dcursor;	
+	
+	Gtk::SeparatorToolItem* m_seperator_reference;
+
 };
 
 #endif // STUDYVIEW_H

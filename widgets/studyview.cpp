@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/30 16:18:38 $
+    Update Date:      $Date: 2005/10/08 10:32:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -47,9 +47,7 @@ Aeskulap::Tiler<SeriesView>(2, 1),
 m_single_series(false),
 m_study(study),
 m_selected(NULL),
-m_draw_reference_frames(false),
-m_draw_reference_frame_ends(false),
-m_3dcursor_enabled(false) {
+m_draw_reference_frame_ends(false) {
 	m_seriescount = 0;
 
 	Gtk::HBox* hbox = manage(new Gtk::HBox);
@@ -74,6 +72,9 @@ m_3dcursor_enabled(false) {
 		}
 		else if(count <= 9) {
 			Aeskulap::Tiler<SeriesView>::set_layout(3, 3);
+		}
+		else {
+			Aeskulap::Tiler<SeriesView>::set_layout(4, 4);
 		}
 	}
 
@@ -127,9 +128,8 @@ m_3dcursor_enabled(false) {
 	m_image_layout->signal_change_layout.connect(sigc::mem_fun(*this, &StudyView::on_change_layout_series));
 	m_image_layout->show();
 
-	Gtk::SeparatorToolItem* seperator = manage(new Gtk::SeparatorToolItem);
-	m_toolbar->append(*seperator);
-	seperator->show();
+	m_seperator_reference = manage(new Gtk::SeparatorToolItem);
+	m_toolbar->append(*m_seperator_reference);
 	
 	m_refframe = manage(new Gtk::ToggleToolButton(Aeskulap::Stock::REFFRAME));
 	m_refframe->set_tooltip(m_tooltips, gettext("Display references of the selected series"));
@@ -138,6 +138,15 @@ m_3dcursor_enabled(false) {
 	m_btn_3dcursor = manage(new Gtk::ToggleToolButton(Aeskulap::Stock::THREEDEE_CURSOR));
 	m_btn_3dcursor->set_tooltip(m_tooltips, gettext("Navigate through 3D views"));
 	m_toolbar->append(*m_btn_3dcursor, sigc::mem_fun(*this, &StudyView::on_toggle_3dcursor));
+
+	Gtk::SeparatorToolItem* seperator = manage(new Gtk::SeparatorToolItem);
+	m_toolbar->append(*seperator);
+	seperator->show();
+
+	m_measure = manage(new Gtk::ToggleToolButton(Aeskulap::Stock::MEASURE));
+	m_measure->set_tooltip(m_tooltips, gettext("Measurement tools"));
+	m_toolbar->append(*m_measure, sigc::mem_fun(*this, &StudyView::on_toggle_measure));
+	m_measure->show();
 
 	hbox->pack_end(*m_table);
 	hbox->pack_end(*m_toolbar_measure, false, false);
@@ -173,6 +182,8 @@ SeriesView* StudyView::create_seriesview(const Glib::RefPtr<ImagePool::Series>& 
 }
 
 void StudyView::add_series(const Glib::RefPtr<ImagePool::Series>& series) {
+	std::cout << "new series " << series->seriesinstanceuid() << std::endl;
+
 	int x = 0;
 	int y = 0;
 
@@ -214,6 +225,7 @@ void StudyView::add_series(const Glib::RefPtr<ImagePool::Series>& series) {
 void StudyView::on_instance_added(const Glib::RefPtr<ImagePool::Instance>& instance) {
 	if(!m_refframe->is_visible()) {
 		if(m_study->has_3d_information() > 1) {
+			m_seperator_reference->show();
 			m_refframe->show();
 			m_btn_3dcursor->show();
 		}
@@ -280,7 +292,7 @@ void StudyView::set_layout(int tilex, int tiley) {
 }
 
 void StudyView::on_series_update(SeriesView* view) {
-	if(!m_draw_reference_frames) {
+	if(!m_refframe->get_active()) {
 		return;
 	}
 
@@ -351,7 +363,7 @@ void StudyView::on_draw_instance(SeriesView* s, Aeskulap::Display* d, const Glib
 	// draw reference frames
 	Glib::RefPtr<ImagePool::Instance> inst;
 	
-	if(m_draw_reference_frames) {
+	if(m_refframe->get_active()) {
 		if(m_draw_reference_frame_ends) {
 			gc->set_foreground(d->m_colorReference);
 			inst = m_selected->m_instance[0];
@@ -369,7 +381,7 @@ void StudyView::on_draw_instance(SeriesView* s, Aeskulap::Display* d, const Glib
 	}
 	
 	// draw 3d cursor
-	if(m_3dcursor_enabled) {
+	if(m_btn_3dcursor->get_active()) {
 		gc->set_foreground(d->m_colorSelected);
 		d->draw_cross(m_3dcursor);
 	}
@@ -540,13 +552,29 @@ bool StudyView::on_key_press_event(GdkEventKey* event) {
 }
 
 void StudyView::on_toggle_refframe() {
-	m_draw_reference_frames = !m_draw_reference_frames;
 	queue_draw();
 }
 
 void StudyView::on_toggle_3dcursor() {
-	m_3dcursor_enabled = !m_3dcursor_enabled;
 	queue_draw();
+}
+
+void StudyView::on_toggle_measure() {
+	if(m_measure->get_active()) {
+		m_refframe->set_active(false);
+		m_refframe->set_sensitive(false);
+		m_btn_3dcursor->set_active(false);
+		m_btn_3dcursor->set_sensitive(false);
+		m_toolbar_measure->show();
+		enable_mouse_functions(false);
+		queue_draw();
+	}
+	else {
+		m_refframe->set_sensitive(true);
+		m_btn_3dcursor->set_sensitive(true);
+		m_toolbar_measure->hide();
+		enable_mouse_functions(true);
+	}
 }
 
 void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, SeriesView* s) {
@@ -567,7 +595,9 @@ void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, Se
 	old_x = x;
 	old_y = y;
 
-	if(m_3dcursor_enabled && d != NULL & d->get_selected()) {
+	// handle 3D cursor
+
+	if(m_btn_3dcursor->get_active() && d != NULL & d->get_selected()) {
 		ImagePool::Instance::Point p;
 		if(!d->screen_to_point(x, y, p)) {
 			return;
@@ -579,9 +609,12 @@ void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, Se
 		if(!i->transform_to_world(p, m_3dcursor)) {
 			return;
 		}
-		for(unsigned int i=0; i< max_size(); i++) {
+		for(unsigned int i=0; i< m_widgets.size(); i++) {
 			SeriesView* s1 = m_widgets[i];
-	
+			if(s1 == NULL) {
+				continue;
+			}
+
 			if(!s1->get_selected()) {
 				Glib::RefPtr<ImagePool::Series> series = s1->get_series();
 				if(series) {
@@ -591,6 +624,15 @@ void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, Se
 					s1->schedule_repaint(1000);
 				}
 			}
+		}
+	}
+}
+
+void StudyView::enable_mouse_functions(bool enable) {
+	std::cout << "StudyView::enable_mouse_functions()" << std::endl;
+	for(unsigned int i = 0; i < m_widgets.size(); i++) {
+		if(m_widgets[i] != NULL) {
+			m_widgets[i]->enable_mouse_functions(enable);
 		}
 	}
 }

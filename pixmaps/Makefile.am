@@ -11,7 +11,9 @@ images_DATA = \
 	series-2x2.png \
 	series-3x2.png \
 	series-3x3.png \
+	series-4x4.png \
 	stock-layers-24.png \
+	stock-tool-measure-22.png \
 	stock-tool-scale-22.png \
 	stock-tool-eraser-22.png \
 	cursor_pan.png \

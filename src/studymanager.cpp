@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2005/10/08 10:32:58 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -234,13 +234,13 @@ void StudyManager::on_queryresult_series(const Glib::RefPtr< ImagePool::Series >
 	char buffer[50];
 
 	if(series->instancecount() == 1) {
-		sprintf(buffer, gettext("Series %i (1 Image)"), count);
+		sprintf(buffer, gettext("Series %02i (1 Image)"), count);
 	}
 	else if(series->instancecount() > 0) {
-		sprintf(buffer, gettext("Series %i (%i Images)"), count, series->instancecount());
+		sprintf(buffer, gettext("Series %02i (%i Images)"), count, series->instancecount());
 	}
 	else {
-		sprintf(buffer, gettext("Series %i"), count);
+		sprintf(buffer, gettext("Series %02i"), count);
 	}
 	
 	child[m_ColumnsStudy.m_icon] = Gtk::Stock::DND_MULTIPLE.id;
