@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/06 21:19:43 $
+    Update Date:      $Date: 2005/10/08 10:32:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -42,7 +42,8 @@ Display::Display() : SimpleDisplay(),
 m_drag_active(false),
 m_cursor_pan(NULL),
 m_cursor_windowlevel(NULL),
-m_cursor_zoom(NULL)
+m_cursor_zoom(NULL), 
+m_mouse_functions(true)
 {
 	set_events(Gdk::BUTTON_PRESS_MASK | Gdk::POINTER_MOTION_MASK);
 }
@@ -203,6 +204,11 @@ void Display::bitstretch(bool smooth) {
 }
 
 bool Display::on_button_press_event(GdkEventButton* button) {
+	if(!m_mouse_functions) {
+		signal_button(button, true);
+		return true;
+	}
+
 	if(m_drag_active) {
 		return false;
 	}
@@ -259,6 +265,11 @@ bool Display::on_button_release_event(GdkEventButton* button) {
 
 	Gtk::EventBox::on_button_release_event(button);
 
+	if(!m_mouse_functions) {
+		signal_button(button, false);
+		return true;
+	}
+
 	if(!m_disp_params) {
 		return false;
 	}
@@ -299,7 +310,7 @@ bool Display::on_motion_notify_event(GdkEventMotion* event) {
 		return false;
 	}
 
-	if(!m_drag_active && !block) {
+	if(!m_mouse_functions || (!m_drag_active && !block)) {
 		signal_motion(event);
 	}
 
@@ -604,6 +615,11 @@ void Display::draw_point(const ImagePool::Instance::Point& p) {
 	}
 	
 	m_window->draw_rectangle(m_GC, false, x-1, y-1, 2, 2);
+}
+
+void Display::enable_mouse_functions(bool enable) {
+	std::cout << "Display::enable_mouse_functions()" << std::endl;
+	m_mouse_functions = enable;
 }
 
 

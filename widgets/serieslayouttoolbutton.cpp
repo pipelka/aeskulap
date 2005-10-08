@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2005/10/08 10:32:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/serieslayouttoolbutton.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -53,6 +53,11 @@ SeriesLayoutToolButton::SeriesLayoutToolButton() {
 
 	menuitem = manage(new Gtk::ImageMenuItem(Aeskulap::Stock::SERIES_3X3));
 	menuitem->signal_activate().connect(sigc::bind(sigc::mem_fun(*this, &SeriesLayoutToolButton::on_change_layout), 3));
+	m_menu.add(*menuitem);
+	menuitem->show();
+
+	menuitem = manage(new Gtk::ImageMenuItem(Aeskulap::Stock::SERIES_4X4));
+	menuitem->signal_activate().connect(sigc::bind(sigc::mem_fun(*this, &SeriesLayoutToolButton::on_change_layout), 4));
 	m_menu.add(*menuitem);
 	menuitem->show();
 
@@ -85,6 +90,9 @@ void SeriesLayoutToolButton::on_change_layout(int index) {
 	else if(index == 3) {
 		set_layout(3, 3);
 	}
+	else if(index == 4) {
+		set_layout(4, 4);
+	}
 }
 
 void SeriesLayoutToolButton::set_layout(int x, int y) {
@@ -103,6 +111,10 @@ void SeriesLayoutToolButton::set_layout(int x, int y) {
 	else if(x == 3 && y == 3) {
 		m_index = 3;
 		set_stock_id(Aeskulap::Stock::SERIES_3X3);
+	}
+	else if(x == 4 && y == 4) {
+		m_index = 4;
+		set_stock_id(Aeskulap::Stock::SERIES_4X4);
 	}
 	signal_change_layout(x, y);
 }

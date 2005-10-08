@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/03 10:05:30 $
+    Update Date:      $Date: 2005/10/08 10:32:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -159,7 +159,8 @@ void SeriesView::set_layout(int tilex, int tiley) {
 			w->signal_draw.connect(sigc::mem_fun(*this, &SeriesView::on_draw_instance));
 			w->signal_popup.connect(sigc::bind(signal_popup, this));
 			w->signal_motion.connect(sigc::bind(signal_motion, w));
-	
+			w->signal_button.connect(sigc::bind(signal_button, w));
+
 			m_widgets.push_back(w);
 
 			m_table->attach(*w, x, x+1, y, y+1);
@@ -174,7 +175,8 @@ void SeriesView::set_layout(int tilex, int tiley) {
 		}
 	}
 	schedule_repaint(1000);
-}
+}	//Sstd::cout << "SeriesView::scroll_up()" << std::endl;
+
 
 void SeriesView::scroll_up() {
 	//Sstd::cout << "SeriesView::scroll_up()" << std::endl;
@@ -419,4 +421,13 @@ Aeskulap::Display* SeriesView::scroll_to(const Glib::RefPtr<ImagePool::Instance>
 		}
 	}
 	return NULL;
+}
+
+void SeriesView::enable_mouse_functions(bool enable) {
+	std::cout << "SeriesView::enable_mouse_functions()" << std::endl;
+	for(unsigned int i = 0; i < m_widgets.size(); i++) {
+		if(m_widgets[i] != NULL) {
+			m_widgets[i]->enable_mouse_functions(enable);
+		}
+	}
 }

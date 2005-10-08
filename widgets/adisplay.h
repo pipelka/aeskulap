@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/29 13:42:48 $
+    Update Date:      $Date: 2005/10/08 10:32:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -43,6 +43,8 @@ public:
 	Display(const Glib::RefPtr<DisplayParameters>& params);
 
 	~Display();
+
+	void enable_mouse_functions(bool enable);
 
 	void set_selected(bool selected);
 
@@ -75,6 +77,8 @@ public:
 	sigc::signal<void, GdkEventButton*> signal_popup;
 
 	sigc::signal<void, GdkEventMotion*> signal_motion;
+
+	sigc::signal<void, GdkEventButton*, bool> signal_button;
 
 protected:
 
@@ -120,6 +124,8 @@ protected:
 	Gdk::Cursor* m_cursor_windowlevel;
 
 	Gdk::Cursor* m_cursor_zoom;
+
+	bool m_mouse_functions;
 
 };
 
