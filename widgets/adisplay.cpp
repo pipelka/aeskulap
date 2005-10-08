@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 10:32:57 $
+    Update Date:      $Date: 2005/10/08 17:03:06 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -265,6 +265,13 @@ bool Display::on_button_release_event(GdkEventButton* button) {
 
 	Gtk::EventBox::on_button_release_event(button);
 
+	if(m_image && !m_disp_params->selected) {
+		if(button->button == 1) {
+			m_disp_params->selected = true;
+			signal_selected(get_id());
+		}
+	}
+
 	if(!m_mouse_functions) {
 		signal_button(button, false);
 		return true;
@@ -274,14 +281,6 @@ bool Display::on_button_release_event(GdkEventButton* button) {
 		return false;
 	}
 	
-	if(m_image && !m_disp_params->selected) {
-		if(button->button == 1) {
-			m_disp_params->selected = true;
-
-			signal_selected(get_id());
-		}
-	}
-
 	if(!m_drag_active) {
 		return false;
 	}
