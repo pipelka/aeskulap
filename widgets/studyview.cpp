@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 10:32:57 $
+    Update Date:      $Date: 2005/10/12 16:55:18 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.15 $
+    CVS/RCS Revision: $Revision: 1.16 $
     Status:           $State: Exp $
 */
 
@@ -219,6 +219,14 @@ void StudyView::add_series(const Glib::RefPtr<ImagePool::Series>& series) {
 
 	if(m_selected == NULL) {
 		w->select(true);
+	}
+	
+	if(!m_series_layout->is_visible() && m_series.size() > 1) {
+		m_toggle_full->show();
+		m_series_layout->show();
+		m_single_series = false;
+		set_layout(2, 1);
+		m_series_layout->set_layout(2, 1);
 	}
 }
 
@@ -432,8 +440,8 @@ void StudyView::view_single_series(SeriesView* view) {
 	}
 
 	m_table->resize(1, 1);
-	view->show();
 	m_table->attach(*view, 0, 1, 0, 1);
+	view->show();
 	view->select(true);
 	
 	m_single_series = true;
@@ -529,7 +537,12 @@ bool StudyView::on_key_press_event(GdkEventKey* event) {
 			if(index >= m_seriescount) {
 				index = 0;
 			}
-			m_widgets[index]->select(true);
+			if(m_single_series) {
+				view_single_series(m_widgets[index]);
+			}
+			else {
+				m_widgets[index]->select(true);
+			}
 		}
 	}
 	else if(event->keyval == GDK_Menu) {
