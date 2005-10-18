@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2005/10/18 18:46:41 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -77,13 +77,13 @@ bool NetLoader::run() {
 	NetClient<DicomMover> mover;
 
 	mover.signal_response_received.connect(sigc::mem_fun(*this, &NetLoader::add_image));
-	mover.SetMaxResults(1000);
+	mover.SetMaxResults(5000);
 
 	DcmDataset query;
 	DcmElement* e = NULL;
 	
 	e = newDicomElement(DCM_QueryRetrieveLevel);
-	e->putString("IMAGE");
+	e->putString("STUDY");
 	query.insert(e);
 
 	e = newDicomElement(DCM_SOPInstanceUID);
