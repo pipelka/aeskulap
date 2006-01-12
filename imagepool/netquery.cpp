@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/01/12 11:14:43 $
+    Update Date:      $Date: 2006/01/12 15:41:23 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -219,8 +219,8 @@ void query_from_net(
 	e = newDicomElement(DCM_StudyTime);
 	query.insert(e);
 
-	e = newDicomElement(DCM_AccessionNumber);
-	query.insert(e);
+	//e = newDicomElement(DCM_AccessionNumber);
+	//query.insert(e);
 
 	e = newDicomElement(DCM_StudyID);
 	query.insert(e);
