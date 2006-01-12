@@ -42,7 +42,7 @@ MoveAssociation::MoveAssociation() {
 MoveAssociation::~MoveAssociation() {
 }
 
-void MoveAssociation::Create(const char *title, const char *peer, int port, const char *ouraet, /*int ourPort,*/ const char *abstractSyntax/*, const char *abstractSyntaxMove*/) {
+void MoveAssociation::Create(const std::string& title, const std::string& peer, int port, const std::string& ouraet, /*int ourPort,*/ const char *abstractSyntax/*, const char *abstractSyntaxMove*/) {
 	Association::Create(title, peer, port, ouraet, abstractSyntax);
 }
 
@@ -87,7 +87,7 @@ CONDITION MoveAssociation::moveSCU(DcmDataset *pdset) {
 	strcpy(req.AffectedSOPClassUID, sopClass);
 	req.Priority = DIMSE_PRIORITY_HIGH;
 	req.DataSetType = DIMSE_DATASET_PRESENT;
-	strcpy(req.MoveDestination, m_ourAET);
+	strcpy(req.MoveDestination, m_ourAET.c_str());
 
 	cond = DIMSE_moveUser(
 						assoc,

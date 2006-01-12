@@ -246,7 +246,7 @@ CONDITION Association::SendObject(DcmFileFormat *dcmff)
 	return SendObject(dataset);
 }
 
-void Association::Create(const char *title, const char *peer, int port, const char *ouraet, const char *abstractSyntax)
+void Association::Create(const std::string& title, const std::string& peer, int port, const std::string& ouraet, const char *abstractSyntax)
 {
 	// no connected association till now
 	assoc = NULL;
@@ -318,9 +318,9 @@ bool Association::AddKey(DcmItem *query, const DcmTagKey& t, const char* value) 
 	return AddCustomKey/*< DcmItem >*/(query, t, value);
 }
 
-bool Association::AddQueryLevel(DcmDataset *query, const char *level)
+bool Association::AddQueryLevel(DcmDataset *query, const std::string& level)
 {
-	return AddKey(query, DCM_QueryRetrieveLevel, level);
+	return AddKey(query, DCM_QueryRetrieveLevel, level.c_str());
 }
 
 
@@ -340,29 +340,8 @@ CONDITION Association::Connect(Network *network, int lossy)
 	return network->ConnectAssociation(this, lossy);
 }
 
-const char* Association::GetOurAET() {
+const std::string& Association::GetOurAET() {
 	return m_ourAET;
-}
-
-void Association::SetPatientData(
-			DcmDataset* dset,
-			const char* PatientsName,
-			const char* PatientID,
-			const char* PatientsBirthDate,
-			const char* PatientsSex)
-{
-	// PatientsName
-	Association::AddKey(dset, DCM_PatientsName, PatientsName);
-
-	// PatientID
-	Association::AddKey(dset, DCM_PatientID, PatientID);
-
-	// PatientBirthDate
-	Association::AddKey(dset, DCM_PatientsBirthDate, PatientsBirthDate);
-
-	// PatientSex
-	Association::AddKey(dset, DCM_PatientsSex, PatientsSex);
-
 }
 
 const char* Association::GetKey(DcmDataset* query, const DcmTagKey& tag) {
@@ -371,10 +350,6 @@ const char* Association::GetKey(DcmDataset* query, const DcmTagKey& tag) {
 	query->findAndGetOFString(tag, val, 0, OFTrue);
 	strcpy(buffer, val.c_str());
 	return buffer;
-}
-
-void Association::SetSOPInstanceUID(DcmDataset* dset, const char* sop) {
-	AddKey(dset, DCM_SOPInstanceUID, sop);
 }
 
 void Association::SetTimeout(int t) {

@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/05 11:58:32 $
+    Update Date:      $Date: 2006/01/12 10:45:30 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netclient.h,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -54,10 +54,10 @@ public:
 		T::SetAcceptLossyImages(s->m_lossy);
 
 		T::Create(
-				s->m_aet.c_str(),
-				s->m_hostname.c_str(),
+				s->m_aet,
+				s->m_hostname,
 				s->m_port,
-				get_ouraet().c_str(),
+				get_ouraet(),
 				syntax
 				);
 

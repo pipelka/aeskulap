@@ -58,7 +58,7 @@ public:
 	/**
 	Send C-Echo request to dicom node
 	*/
-	bool SendEchoRequest(const char* title, const char* peer, int port, const char* ouraet);
+	bool SendEchoRequest(const std::string& title, const std::string& peer, int port, const std::string& ouraet);
 
 	/**
 	Get the pointer to the internal dcmtk network variable (sorry)
@@ -85,7 +85,7 @@ private:
 	/**
 	Connect to a host and try to establish an association
 	*/
-	CONDITION ASC_ConnectAssociation(Association* assoc, const char* peerTitle, const char* peer, int port, const char* ouraet, const char *abstractSyntax = NULL, int lossy = 0);
+	CONDITION ASC_ConnectAssociation(Association* assoc, const std::string& peerTitle, const std::string& peer, int port, const std::string& ouraet, const char *abstractSyntax = NULL, int lossy = 0);
 
 	/**
 	THE dicom network
