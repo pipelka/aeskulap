@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 21:42:29 $
+    Update Date:      $Date: 2006/01/12 10:45:30 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolservers.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -52,7 +52,7 @@ m_lossy(lossy) {
 
 bool Server::send_echo(std::string& status) {
 	Association a;
-	a.Create(m_aet.c_str(), m_hostname.c_str(), m_port, get_ouraet().c_str(), UID_VerificationSOPClass);
+	a.Create(m_aet, m_hostname, m_port, get_ouraet(), UID_VerificationSOPClass);
 	if(a.Connect(&net).bad()) {
 		status = gettext("Unable to create association");
 		return false;

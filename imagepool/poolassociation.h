@@ -51,7 +51,7 @@ public:
 	/**
 	Create the association object (connect through DicomNetwork::Connect(..) )
 	*/
-	void Create(const char *title, const char *peer, int port, const char* ouraet, const char *abstractSyntax = NULL);
+	void Create(const std::string& title, const std::string& peer, int port, const std::string& ouraet, const char *abstractSyntax = NULL);
 
 	/**
 	Connect the association to a dicom network
@@ -141,18 +141,9 @@ public:
 	/**
 	add a query level to a dataset
 	*/
-	static bool AddQueryLevel(DcmDataset* query, const char* level);
+	static bool AddQueryLevel(DcmDataset* query, const std::string& level);
 
-	static void SetPatientData(
-			DcmDataset* dset,
-			const char* PatientsName,
-			const char* PatientID,
-			const char* PatientsBirthDate,
-			const char* PatientsSex);
-
-	static void SetSOPInstanceUID(DcmDataset* dset, const char* sop);
-				
-	const char* GetOurAET();
+	const std::string& GetOurAET();
 
 	void SetTimeout(int t);
 
@@ -180,9 +171,10 @@ protected:
 	*/
 
 	char* m_abstractSyntax;
-	const char* m_calledAET;
-	const char* m_calledPeer;
-	const char* m_ourAET;
+	std::string m_calledAET;
+	std::string m_calledPeer;
+	std::string m_ourAET;
+
 	int m_calledPort;
 	int m_timeout;
 	bool m_accept_lossy;

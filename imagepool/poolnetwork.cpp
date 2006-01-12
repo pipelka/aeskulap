@@ -90,7 +90,7 @@ CONDITION Network::DropNetwork()
 	return cond;
 }
 
-CONDITION Network::ASC_ConnectAssociation(Association* assoc, const char* peerTitle, const char* peer, int port, const char* ouraet, const char *abstractSyntax, int lossy)
+CONDITION Network::ASC_ConnectAssociation(Association* assoc, const std::string& peerTitle, const std::string& peer, int port, const std::string& ouraet, const char *abstractSyntax, int lossy)
 {
     CONDITION cond;
     T_ASC_Parameters *params;
@@ -104,10 +104,10 @@ CONDITION Network::ASC_ConnectAssociation(Association* assoc, const char* peerTi
 	{
 		return cond;
     }
-    ASC_setAPTitles(params, ouraet, peerTitle, NULL);
+    ASC_setAPTitles(params, ouraet.c_str(), peerTitle.c_str(), NULL);
 
     gethostname(localHost, sizeof(localHost) - 1);
-    sprintf(peerHost, "%s:%d", peer, port);
+    sprintf(peerHost, "%s:%d", peer.c_str(), port);
     ASC_setPresentationAddresses(params, localHost, peerHost);
 
 	if(abstractSyntax == NULL)
@@ -235,7 +235,7 @@ CONDITION Network::addAllStoragePresentationContexts(T_ASC_Parameters *params, b
     return cond;
 }
 
-bool Network::SendEchoRequest(const char* title, const char* peer, int port, const char* ouraet)
+bool Network::SendEchoRequest(const std::string& title, const std::string& peer, int port, const std::string& ouraet)
 {
 	Association dcmEcho;
 	dcmEcho.Create(title, peer, port, ouraet, UID_VerificationSOPClass);

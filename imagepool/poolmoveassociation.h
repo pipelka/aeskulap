@@ -37,7 +37,7 @@ public:
 	MoveAssociation();
 	virtual ~MoveAssociation();
 
-	void Create(const char *title, const char *peer, int port, const char *ouraet, /*int ourPort,*/ const char *abstractSyntax = UID_MOVEPatientRootQueryRetrieveInformationModel/*, const char *abstractSyntaxMove = UID_MOVEPatientRootQueryRetrieveInformationModel*/);
+	void Create(const std::string& title, const std::string& peer, int port, const std::string& ouraet, /*int ourPort,*/ const char *abstractSyntax = UID_MOVEPatientRootQueryRetrieveInformationModel/*, const char *abstractSyntaxMove = UID_MOVEPatientRootQueryRetrieveInformationModel*/);
 
 	CONDITION SendObject(DcmDataset *dataset);
 
