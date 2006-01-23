@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/01/12 15:41:23 $
+    Update Date:      $Date: 2006/01/23 08:44:36 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.17 $
+    CVS/RCS Revision: $Revision: 1.18 $
     Status:           $State: Exp $
 */
 
@@ -151,12 +151,12 @@ void query_from_net(
 		patientsname = "*";
 	}
 	else {
-		patientsname = "*" + convert_string_to(name.c_str(), system_enc) + "*";
+		patientsname = convert_string_to(name.c_str(), system_enc);
 	}
 
 	std::string description;
 	if(!studydescription.empty()) {
-		description = "*" + convert_string_to(studydescription.c_str(), system_enc) + "*";
+		description = convert_string_to(studydescription.c_str(), system_enc);
 	}
 	
 	// create date querystring
