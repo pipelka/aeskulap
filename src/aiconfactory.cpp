@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 10:32:58 $
+    Update Date:      $Date: 2006/01/25 16:37:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -41,7 +41,7 @@ IconFactory::IconFactory() {
 	add(Stock::GRID_2X1, "grid-2v.png");
 	add(Stock::GRID_2X2, "grid-4.png");
 	add(Stock::GRID_4X4, "grid-16.png");
-	add(Stock::GRID_4X4, "grid-16.png");
+//	add(Stock::GRID_4X4, "grid-16.png");
 	add(Stock::SERIES_SINGLE, "stock-tool-scale-22.png");
 	add(Stock::SERIES_ALL, "stock-layers-24.png");
 	add(Stock::SERIES_1X1, "series-1x1.png");
@@ -83,17 +83,18 @@ void IconFactory::add(const Gtk::StockID& stock_id, const std::string& filename)
 Glib::RefPtr<Gdk::Pixbuf> IconFactory::load_from_file(const std::string& filename) {
 	Glib::RefPtr<Gdk::Pixbuf> pixbuf;
 	
-	try {
+/*	try {
 		pixbuf = Gdk::Pixbuf::create_from_file("../pixmaps/"+filename);
 	}
-	catch(...) {
+	catch(...) {*/
 		try {
+			std::cerr << "trying to load '" << AESKULAP_IMAGESDIR+std::string("/")+filename << "'" << std::endl;
 			pixbuf = Gdk::Pixbuf::create_from_file(AESKULAP_IMAGESDIR+std::string("/")+filename);
 		}
 		catch(...) {
 			return Glib::RefPtr<Gdk::Pixbuf>();
 		}
-	}
+//	}
 	
 	return pixbuf;
 }
