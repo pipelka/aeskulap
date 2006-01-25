@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/12 16:55:18 $
+    Update Date:      $Date: 2006/01/25 12:38:33 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.22 $
+    CVS/RCS Revision: $Revision: 1.23 $
     Status:           $State: Exp $
 */
 
@@ -49,7 +49,11 @@ m_refGlade(refGlade),
 m_dialogFile(gettext("Open DICOM Image files")),
 m_raise_opened(true)
 {
-	set_icon(Aeskulap::IconFactory::load_from_file("aeskulap.png"));
+	Glib::RefPtr<Gdk::Pixbuf> icon = Aeskulap::IconFactory::load_from_file("aeskulap.png");
+	
+	if(icon) {
+		set_icon(icon);
+	}
 
 	m_about = NULL;
 	m_refGlade->get_widget_derived("aboutdialog", m_about);
