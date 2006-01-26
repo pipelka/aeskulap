@@ -13,3 +13,4 @@ remove-potcdate.sin
 Rules-quot
 Makevars.template
 aeskulap.pot
+*.gmo

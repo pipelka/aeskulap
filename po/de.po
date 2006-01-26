@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-05 13:54+0200\n"
+"POT-Creation-Date: 2006-01-26 12:04+0100\n"
 "PO-Revision-Date: 2005-10-05 13:55+0200\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
 "Language-Team:  <en@li.org>\n"
@@ -39,45 +39,45 @@ msgstr ""
 "Serie %i (%s)\n"
 "Keine Beschreibung"
 
-#: ../widgets/adisplay.cpp:151
+#: ../widgets/adisplay.cpp:152
 msgid "Acc:\n"
 msgstr "Aufn.:\n"
 
-#: ../widgets/adisplay.cpp:153
+#: ../widgets/adisplay.cpp:154
 msgid "Acq Tm: "
 msgstr "Aufn. Zeit:"
 
-#: ../widgets/adisplay.cpp:166
+#: ../widgets/adisplay.cpp:167
 #, c-format
 msgid "Image: %i / %i"
 msgstr "Bild: %i / %i"
 
-#: ../widgets/adisplay.cpp:465 ../widgets/adisplay.cpp:517
+#: ../widgets/adisplay.cpp:479 ../widgets/adisplay.cpp:531
 #, c-format
 msgid "%i mm"
 msgstr "%i mm"
 
-#: ../widgets/studyview.cpp:106
+#: ../widgets/studyview.cpp:107
 msgid "Rearrange the series of the current study"
 msgstr "Serien der Studie umordnen"
 
-#: ../widgets/studyview.cpp:107
+#: ../widgets/studyview.cpp:108
 msgid "Display the series tiling menu"
 msgstr "Layout der Series ändern"
 
-#: ../widgets/studyview.cpp:116
+#: ../widgets/studyview.cpp:117
 msgid "Toggle single series mode"
 msgstr "Nur aktuelle Serie anzeigen"
 
-#: ../widgets/studyview.cpp:117
+#: ../widgets/studyview.cpp:118
 msgid "Display the series selection menu"
 msgstr "Zeigt das Auswahlmenü für Serien an"
 
-#: ../widgets/studyview.cpp:125
+#: ../widgets/studyview.cpp:126
 msgid "Rearrange the images of the selected series"
 msgstr "Bilder der Serie umordnen"
 
-#: ../widgets/studyview.cpp:126
+#: ../widgets/studyview.cpp:127
 msgid "Display the the image tiling menu"
 msgstr "Layout der Serie ändern"
 
@@ -88,6 +88,10 @@ msgstr "Referenzbilder anzeigen"
 #: ../widgets/studyview.cpp:139
 msgid "Navigate through 3D views"
 msgstr "3D Ansicht navigieren"
+
+#: ../widgets/studyview.cpp:147
+msgid "Measurement tools"
+msgstr ""
 
 #: ../widgets/adatefilter.cpp:44 ../widgets/adatefilter.cpp:49
 #: ../widgets/adatefilter.cpp:91 ../widgets/adatefilter.cpp:97
@@ -118,83 +122,92 @@ msgstr "Datum auswählen"
 msgid "Select Enddate"
 msgstr "Enddatum auswählen"
 
-#: ../src/astockids.cpp:67
+#: ../src/astockids.cpp:71
 msgid "1 Image"
 msgstr "1 Bild"
 
-#: ../src/astockids.cpp:68
+#: ../src/astockids.cpp:72
 msgid "1x2 Images"
 msgstr "1x2 Bilder"
 
-#: ../src/astockids.cpp:69
+#: ../src/astockids.cpp:73
 msgid "2x1 Images"
 msgstr "2x1 Bilder"
 
-#: ../src/astockids.cpp:70
+#: ../src/astockids.cpp:74
 msgid "2x2 Images"
 msgstr "2x2 Bilder"
 
-#: ../src/astockids.cpp:71
+#: ../src/astockids.cpp:75
 msgid "4x4 Images"
 msgstr "4x4 Bilder"
 
-#: ../src/astockids.cpp:72
+#: ../src/astockids.cpp:76
 msgid "Single"
 msgstr "Einzeln"
 
-#: ../src/astockids.cpp:73
+#: ../src/astockids.cpp:77
 msgid "All"
 msgstr "Alle"
 
-#: ../src/astockids.cpp:74
+#: ../src/astockids.cpp:78
 msgid "1 Series"
 msgstr "1 Serie"
 
-#: ../src/astockids.cpp:75
+#: ../src/astockids.cpp:79
 msgid "2x1 Series"
 msgstr "2x1 Serien"
 
-#: ../src/astockids.cpp:76
+#: ../src/astockids.cpp:80
 msgid "2x2 Series"
 msgstr "2x2 Serien"
 
-#: ../src/astockids.cpp:77
+#: ../src/astockids.cpp:81
 msgid "3x2 Series"
 msgstr "3x2 Serien"
 
-#: ../src/astockids.cpp:78
+#: ../src/astockids.cpp:82
 msgid "3x3 Series"
 msgstr "3x3 Serien"
 
-#: ../src/astockids.cpp:79
+#: ../src/astockids.cpp:83
+#, fuzzy
+msgid "4x4 Series"
+msgstr "2x1 Serien"
+
+#: ../src/astockids.cpp:84
 msgid "Reference"
 msgstr "Referenz"
 
-#: ../src/astockids.cpp:80
+#: ../src/astockids.cpp:85
 msgid "Delete item"
 msgstr "Objekt löschen"
 
-#: ../src/astockids.cpp:81
+#: ../src/astockids.cpp:86
 msgid "3D Cursor"
 msgstr "3D Zeiger"
+
+#: ../src/astockids.cpp:87
+msgid "Measure"
+msgstr ""
 
 #: ../src/mainwindow.cpp:49
 msgid "Open DICOM Image files"
 msgstr "DICOM Bilder öffnen"
 
-#: ../src/mainwindow.cpp:97
+#: ../src/mainwindow.cpp:101
 msgid "Bring opened files to front"
 msgstr "Geöffnete Dateien anzeigen"
 
-#: ../src/mainwindow.cpp:106
+#: ../src/mainwindow.cpp:110
 msgid "DICOM files"
 msgstr "DICOM Dateien"
 
-#: ../src/mainwindow.cpp:111
+#: ../src/mainwindow.cpp:115
 msgid "Any files"
 msgstr "Alle Dateien"
 
-#: ../src/mainwindow.cpp:192
+#: ../src/mainwindow.cpp:194
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
 "requested images</span>\n"
@@ -246,18 +259,18 @@ msgstr ""
 "span>"
 
 #: ../src/studymanager.cpp:237
-#, c-format
-msgid "Series %i (1 Image)"
+#, fuzzy, c-format
+msgid "Series %02i (1 Image)"
 msgstr "Serie %i (1 Bild)"
 
 #: ../src/studymanager.cpp:240
-#, c-format
-msgid "Series %i (%i Images)"
+#, fuzzy, c-format
+msgid "Series %02i (%i Images)"
 msgstr "Serie %i (%i Bilder)"
 
 #: ../src/studymanager.cpp:243
-#, c-format
-msgid "Series %i"
+#, fuzzy, c-format
+msgid "Series %02i"
 msgstr "Serie %i"
 
 #: ../src/settings.cpp:119 ../src/aeskulap.glade.h:30
@@ -464,4 +477,3 @@ msgstr "verlustbehaftete JPEG compression bevorzugen"
 #: ../src/aeskulap.glade.h:62
 msgid "translator-credits"
 msgstr ""
-
