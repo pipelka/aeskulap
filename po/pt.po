@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-26 12:04+0100\n"
+"POT-Creation-Date: 2006-01-26 18:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -440,19 +440,19 @@ msgid ""
 msgstr ""
 
 #: ../src/aeskulap.glade.h:56
-msgid "_Ansicht"
+msgid "_Edit"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:57
-msgid "_Bearbeiten"
+msgid "_File"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:58
-msgid "_Datei"
+msgid "_Help"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:59
-msgid "_Hilfe"
+msgid "_View"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:60

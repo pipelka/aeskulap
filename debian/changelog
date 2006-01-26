@@ -1,3 +1,9 @@
+aeskulap (0.2.1-1a3) unstable; urgency=low
+
+  * translation fixes
+
+ -- Alexander Pipelka <pipelka@bms-austria.com>  Thu, 26 Jan 2006 18:23:59 +0100
+
 aeskulap (0.2.1-1a2) unstable; urgency=low
 
   * path fix

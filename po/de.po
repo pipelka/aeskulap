@@ -1,20 +1,20 @@
 # translation of de.po to
-# Copyright (C) 2005 Free Software Foundation, Inc.
+# Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 # Alexander Pipelka <pipelka@pipelka.net>, 2005.
-# Alexander Pipelka <pipelka@teleweb.at>, 2005.
+# Alexander Pipelka <pipelka@teleweb.at>, 2005, 2006.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-26 12:04+0100\n"
-"PO-Revision-Date: 2005-10-05 13:55+0200\n"
+"POT-Creation-Date: 2006-01-26 18:21+0100\n"
+"PO-Revision-Date: 2006-01-26 18:22+0100\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
-"Language-Team:  <en@li.org>\n"
+"Language-Team:  <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: application/x-xml2pot; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.10\n"
+"X-Generator: KBabel 1.10.2\n"
 
 #: ../imagepool/netquery.cpp:100 ../imagepool/poolinstance.cpp:528
 #: ../imagepool/poolinstance.cpp:549
@@ -171,9 +171,8 @@ msgid "3x3 Series"
 msgstr "3x3 Serien"
 
 #: ../src/astockids.cpp:83
-#, fuzzy
 msgid "4x4 Series"
-msgstr "2x1 Serien"
+msgstr "4x4 Serien"
 
 #: ../src/astockids.cpp:84
 msgid "Reference"
@@ -259,19 +258,19 @@ msgstr ""
 "span>"
 
 #: ../src/studymanager.cpp:237
-#, fuzzy, c-format
+#, c-format
 msgid "Series %02i (1 Image)"
-msgstr "Serie %i (1 Bild)"
+msgstr "Serie %02i (1 Bild)"
 
 #: ../src/studymanager.cpp:240
-#, fuzzy, c-format
+#, c-format
 msgid "Series %02i (%i Images)"
-msgstr "Serie %i (%i Bilder)"
+msgstr "Serie %02i (%i Bilder)"
 
 #: ../src/studymanager.cpp:243
-#, fuzzy, c-format
+#, c-format
 msgid "Series %02i"
-msgstr "Serie %i"
+msgstr "Serie %02i"
 
 #: ../src/settings.cpp:119 ../src/aeskulap.glade.h:30
 msgid "Name"
@@ -454,20 +453,20 @@ msgid ""
 msgstr ""
 
 #: ../src/aeskulap.glade.h:56
-msgid "_Ansicht"
-msgstr ""
+msgid "_Edit"
+msgstr "_Bearbeiten"
 
 #: ../src/aeskulap.glade.h:57
-msgid "_Bearbeiten"
-msgstr ""
+msgid "_File"
+msgstr "_Datei"
 
 #: ../src/aeskulap.glade.h:58
-msgid "_Datei"
-msgstr ""
+msgid "_Help"
+msgstr "__Hilfe"
 
 #: ../src/aeskulap.glade.h:59
-msgid "_Hilfe"
-msgstr ""
+msgid "_View"
+msgstr "_Ansicht"
 
 #: ../src/aeskulap.glade.h:60
 msgid "prefer lossy JPEG compression"
