@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/01/25 16:37:38 $
+    Update Date:      $Date: 2006/01/26 12:30:50 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -82,20 +82,25 @@ void IconFactory::add(const Gtk::StockID& stock_id, const std::string& filename)
 	
 Glib::RefPtr<Gdk::Pixbuf> IconFactory::load_from_file(const std::string& filename) {
 	Glib::RefPtr<Gdk::Pixbuf> pixbuf;
+	std::string path;
 	
-/*	try {
-		pixbuf = Gdk::Pixbuf::create_from_file("../pixmaps/"+filename);
+	try {
+		path = AESKULAP_IMAGESDIR + std::string("/") + filename;
+		std::cerr << "trying to load '" << path << "'" << std::endl;
+		pixbuf = Gdk::Pixbuf::create_from_file(path);
 	}
-	catch(...) {*/
+	catch(Glib::FileError e) {
 		try {
-			std::cerr << "trying to load '" << AESKULAP_IMAGESDIR+std::string("/")+filename << "'" << std::endl;
-			pixbuf = Gdk::Pixbuf::create_from_file(AESKULAP_IMAGESDIR+std::string("/")+filename);
+			path = "../pixmaps/"+filename;
+			std::cerr << "trying to load '" << path << "'" << std::endl;
+			pixbuf = Gdk::Pixbuf::create_from_file(path);
 		}
-		catch(...) {
+		catch(Glib::FileError e) {
+			std::cerr << "failed!" << std::endl;
 			return Glib::RefPtr<Gdk::Pixbuf>();
 		}
-//	}
-	
+	}
+
 	return pixbuf;
 }
 
