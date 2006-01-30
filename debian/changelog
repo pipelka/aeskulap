@@ -1,3 +1,9 @@
+aeskulap (0.2.1-1a4) unstable; urgency=low
+
+  * autopackage support (untested)
+
+ -- Alexander Pipelka <pipelka@bms-austria.com>  Mon, 30 Jan 2006 10:07:53 +0100
+
 aeskulap (0.2.1-1a3) unstable; urgency=low
 
   * translation fixes

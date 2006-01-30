@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/13 18:27:17 $
+    Update Date:      $Date: 2006/01/30 09:09:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -32,6 +32,7 @@
 #include "mainwindow.h"
 
 #include "aiconfactory.h"
+#include "binreloc.h"
 
 #include <gtkmm.h>
 #include <libglademm/xml.h>
@@ -44,7 +45,15 @@ int main(int argc, char* argv[]) {
 
 	Gtk::Main kit(argc, argv);
 
-	bindtextdomain("aeskulap", LOCALEDIR);
+	br_init(NULL);
+
+	std::string datadir = br_find_data_dir(AESKULAP_DATADIR);
+	std::cout << "datadir: " << datadir << std::endl;
+
+	std::string localedir = datadir + "/locale";
+	std::string gladedir = datadir + "/aeskulap/glade";
+
+	bindtextdomain("aeskulap", localedir.c_str());
 	bind_textdomain_codeset("aeskulap", "UTF-8");
 	textdomain("aeskulap");
  
@@ -57,7 +66,7 @@ int main(int argc, char* argv[]) {
 	Glib::RefPtr<Gnome::Glade::Xml> refXml;
 
 	try  {
-		refXml = Gnome::Glade::Xml::create(AESKULAP_GLADEDIR"/aeskulap.glade");
+		refXml = Gnome::Glade::Xml::create(gladedir+"/aeskulap.glade");
 	}
 	catch(Gnome::Glade::XmlError) {	
 		refXml = Gnome::Glade::Xml::create("aeskulap.glade");

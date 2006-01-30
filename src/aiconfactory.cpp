@@ -22,20 +22,29 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/01/26 12:30:50 $
+    Update Date:      $Date: 2006/01/30 09:09:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
 #include "aiconfactory.h"
 #include "astockids.h"
+#include "binreloc.h"
 
 #include <iostream>
 
 namespace Aeskulap {
 
+std::string IconFactory::m_datadir;
+std::string IconFactory::m_imagesdir;
+
 IconFactory::IconFactory() {
+	if(m_datadir.empty()) {
+        	m_datadir = br_find_data_dir(AESKULAP_DATADIR);
+		m_imagesdir = m_datadir + "/aeskulap/images";
+	}
+
 	add(Stock::GRID_1X1, "grid-1.png");
 	add(Stock::GRID_1X2, "grid-2h.png");
 	add(Stock::GRID_2X1, "grid-2v.png");
@@ -85,7 +94,7 @@ Glib::RefPtr<Gdk::Pixbuf> IconFactory::load_from_file(const std::string& filenam
 	std::string path;
 	
 	try {
-		path = AESKULAP_IMAGESDIR + std::string("/") + filename;
+		path = m_imagesdir + std::string("/") + filename;
 		std::cerr << "trying to load '" << path << "'" << std::endl;
 		pixbuf = Gdk::Pixbuf::create_from_file(path);
 	}

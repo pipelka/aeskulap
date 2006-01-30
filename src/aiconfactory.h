@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/01 09:44:03 $
+    Update Date:      $Date: 2006/01/30 09:09:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -34,6 +34,7 @@
 #include <gtkmm.h>
 #include <gdkmm/pixbuf.h>
 #include <vector>
+#include <string>
 
 namespace Aeskulap {
 
@@ -53,6 +54,10 @@ protected:
 private:
 
 	std::vector<Gtk::IconSet*> m_iconset;
+	
+	static std::string m_datadir;
+	
+	static std::string m_imagesdir;
 };
 
 } // namespace Aeskulap
