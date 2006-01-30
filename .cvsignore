@@ -35,3 +35,5 @@ mkinstalldirs
 aeskulap-0.1.0
 *.tar.gz.sig
 log
+*.package
+uninstalldirs

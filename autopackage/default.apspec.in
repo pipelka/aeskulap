@@ -1,0 +1,73 @@
+# -*-shell-script-*-
+
+[Meta]
+RootName: @aeskulap.nongnu.org/aeskulap:$SOFTWAREVERSION
+DisplayName: Aeskulap DICOM Viewer
+ShortName: aeskulap
+Maintainer: Alexander Pipelka <pipelka@teleweb.at>
+Packager: Alexander Pipelka <pipelka@teleweb.at>
+Summary: Aeskulap is a medical image viewer and DICOM network client.
+URL: http://aeskulap.nongnu.org/
+License: GNU General Public License, Version 2
+SoftwareVersion: @VERSION@
+PackageVersion: 1
+AutopackageTarget: 1.0
+
+# Only uncomment InterfaceVersion if your package exposes interfaces to other software,
+# for instance if it includes DSOs or python/perl modules. See the developer guide for more info,
+# or ask on autopackage-dev if you don't understand interface versioning in autopackage.
+#
+InterfaceVersion: 0.0
+
+[Description]
+Aeskulap is a medical image viewer.
+It is able to load a series of special images stored 
+in the DICOM format for review. Additionally Aeskulap 
+is able to query and fetch DICOM images from archive 
+nodes (also called PACS) over the network.
+The goal of this project is to create a full open source 
+replacement for commercially available DICOM viewers.
+
+[BuildPrepare]
+if [ ! -x configure ] ; then
+	sh autogen.sh
+fi
+export APBUILD_STATIC="Xrender glademm-2.4 gconfmm-2.6 gtkmm-24 glibmm-2.4 pangomm-1.4"
+export CC="apgcc"
+export CXX="apg++"
+prepareBuild --enable-binreloc
+
+[BuildUnprepare]
+unprepareBuild
+
+[Imports]
+echo '*' | import
+
+[Prepare]
+# Dependency checking
+require @gnu.org/libstdc++ 3
+require @xmlsoft.org/libxml2 2.6
+require @rpm.org/popt 0.0
+require @libsigc.sourceforge.net/libsigc 3
+#require @gtkmm.org/gtkmm2 3
+require @libpng.org/libpng 3
+require @zlib.org/zlib 1
+
+[Install]
+# Put your installation script here
+installExe bin/*
+installLib lib/*.so.*
+installLib lib/aeskulap/*.so
+
+copyFiles --nobackup share/locale $PREFIX/share
+copyFiles share/aeskulap $PREFIX/share
+#copyFiles lib/aeskulap $PREFIX/lib
+#copyFiles lib $PREFIX
+
+installIcon share/aeskulap/images/aeskulap.png
+installDesktop "Graphics" share/applications/aeskulap.desktop
+installGConfSchema share/gconf/schemas/aeskulap.schema
+
+[Uninstall]
+# Usually just the following line is enough to uninstall everything
+uninstallFromLog

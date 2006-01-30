@@ -1,6 +1,7 @@
 bin_PROGRAMS = aeskulap
 
 aeskulap_SOURCES = \
+	binreloc.c \
 	astockids.cpp \
 	astockids.h \
 	aiconfactory.cpp \
@@ -39,6 +40,7 @@ install-data-hook:
 	GCONF_CONFIG_SOURCE="" gconftool-2 --makefile-install-rule $(srcdir)/$(schema_DATA) || true
 
 INCLUDES = \
+	-DAESKULAP_DATADIR=\""$(datadir)"\" \
 	-DAESKULAP_GLADEDIR=\""$(gladedir)"\" \
 	-DAESKULAP_IMAGESDIR=\""$(aeskulap_images_dir)"\" \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \
