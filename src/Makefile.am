@@ -18,14 +18,15 @@ aeskulap_SOURCES = \
 	aboutdialog.cpp \
 	main.cpp
 
+
 aeskulap_LDADD = \
 	$(GTKMM_LIBS) \
 	$(GLADEMM_LIBS) \
 	$(GTHREAD_LIBS) \
-	$(GCONFMM_LIBS) \
-	$(DCMTK_LIBS) \
 	../widgets/libgtkdicom.la \
-	../imagepool/libimagepool.la
+	../imagepool/libimagepool.la \
+	$(GCONFMM_LIBS) \
+	$(DCMTK_LIBS)
 
 aeskulap_LDFLAGS = \
 	-Wl,-rpath,${prefix}/lib/aeskulap
