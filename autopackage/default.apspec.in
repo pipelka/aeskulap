@@ -32,10 +32,19 @@ replacement for commercially available DICOM viewers.
 if [ ! -x configure ] ; then
 	sh autogen.sh
 fi
-export APBUILD_STATIC="Xrender glademm-2.4 gconfmm-2.6 gtkmm-24 glibmm-2.4 pangomm-1.4"
+
+export APBUILD_STATIC="popt gc gccpp glibmm-2.4=/usr/lib/libglibmm-2.4.a gtkmm-2.4 gdkmm-2.4 atkmm-1.6 pangomm-1.4 glademm-2.4 gconfmm-2.6 sigc-2.0 Xrender imagepool"
+#export APBUILD_DISABLE_BOGUS_DETECTOR=1
+#export APBUILD_BOGUS_DEPS="glibmm-2.4"
+#export APBUILD_STATIC_LIBGCC=1
 export CC="apgcc"
 export CXX="apg++"
-prepareBuild --enable-binreloc
+export APBUILD_CC=gcc
+export APBUILD_CXX1=g++
+export APBUILD_CXX2=
+export APBUILD_PROJECTNAME=aeskulap
+
+prepareBuild --prefix=/usr --sysconfdir=/etc --enable-binreloc --enable-static
 
 [BuildUnprepare]
 unprepareBuild
@@ -47,11 +56,14 @@ echo '*' | import
 # Dependency checking
 require @gnu.org/libstdc++ 3
 require @xmlsoft.org/libxml2 2.6
-require @rpm.org/popt 0.0
-require @libsigc.sourceforge.net/libsigc 3
-#require @gtkmm.org/gtkmm2 3
+require @gtk.org/gtk 2.6
+require @glade.gnome.org/libglade 2.4
+require @gnome.org/gconf2 2.10
 require @libpng.org/libpng 3
 require @zlib.org/zlib 1
+#require autopackage.tar.bz2
+#require autopackage-gtk-1.0.8.x86.package
+#require autopackage-qt-1.0.x86.package
 
 [Install]
 # Put your installation script here

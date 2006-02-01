@@ -95,6 +95,7 @@ AC_SUBST(aeskulap_images_dir)
 dnl AC_CONFIG_SUBDIRS(dcmtk)
 
 AC_OUTPUT([
+autopackage/default.apspec
 intl/Makefile
 po/Makefile.in
 Makefile
