@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/01/30 09:09:34 $
+    Update Date:      $Date: 2006/02/10 12:03:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -32,6 +32,8 @@
 #include "mainwindow.h"
 
 #include "aiconfactory.h"
+#include "abusycursor.h"
+
 #include "binreloc.h"
 
 #include <gtkmm.h>
@@ -80,6 +82,8 @@ int main(int argc, char* argv[]) {
 	if(mainWindow == NULL) {
 		exit(-1);
 	}
+
+	Aeskulap::set_mainwindow(mainWindow);
 
 	mainWindow->maximize();
 	mainWindow->show();

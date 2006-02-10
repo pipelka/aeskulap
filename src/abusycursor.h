@@ -23,47 +23,22 @@
 
     Last Update:      $Author: braindead $
     Update Date:      $Date: 2006/02/10 12:03:38 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/abusycursor.h,v $
+    CVS/RCS Revision: $Revision: 1.1 $
     Status:           $State: Exp $
 */
 
-#ifndef AESKULAP_ICONFACTORY_H
-#define AESKULAP_ICONFACTORY_H
+#ifndef AESKULAP_BUSYCURSOR_H
+#define AESKULAP_BUSYCURSOR_H
 
 #include <gtkmm.h>
-#include <gdkmm/pixbuf.h>
-#include <vector>
-#include <string>
 
 namespace Aeskulap {
 
-class IconFactory : public Gtk::IconFactory {
-public:
+	void set_busy_cursor(bool busy = true, Gtk::Window* w = NULL);
 
-	IconFactory();
-
-	~IconFactory();
-
-	static Glib::RefPtr<Gdk::Pixbuf> load_from_file(const std::string& filename);
-
-	static Gdk::Cursor& get_cursor_watch();
-
-protected:
-
-	void add(const Gtk::StockID& stock_id, const std::string& filename);
-
-private:
-
-	std::vector<Gtk::IconSet*> m_iconset;
+	void set_mainwindow(Gtk::Window* w);
 	
-	static std::string m_datadir;
-	
-	static std::string m_imagesdir;
-	
-	static Gdk::Cursor* m_cursor_watch;
-};
+}
 
-} // namespace Aeskulap
-
-#endif // AESKULAP_ICONFACTORY_H
+#endif // AESKULAP_BUSYCURSOR_H

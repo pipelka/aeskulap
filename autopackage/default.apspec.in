@@ -33,10 +33,10 @@ if [ ! -x configure ] ; then
 	sh autogen.sh
 fi
 
-export APBUILD_STATIC="popt gc gccpp glibmm-2.4=/usr/lib/libglibmm-2.4.a gtkmm-2.4 gdkmm-2.4 atkmm-1.6 pangomm-1.4 glademm-2.4 gconfmm-2.6 sigc-2.0 Xrender imagepool"
+export APBUILD_STATIC="popt gc gccpp glibmm-2.4 gtkmm-2.4 gdkmm-2.4 atkmm-1.6 pangomm-1.4 glademm-2.4 gconfmm-2.6 sigc-2.0 Xrender"
 #export APBUILD_DISABLE_BOGUS_DETECTOR=1
 #export APBUILD_BOGUS_DEPS="glibmm-2.4"
-#export APBUILD_STATIC_LIBGCC=1
+export APBUILD_STATIC_LIBGCC=1
 export CC="apgcc"
 export CXX="apg++"
 export APBUILD_CC=gcc

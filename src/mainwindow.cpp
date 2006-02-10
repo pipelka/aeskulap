@@ -22,20 +22,23 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/01/25 12:38:33 $
+    Update Date:      $Date: 2006/02/10 12:03:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.23 $
+    CVS/RCS Revision: $Revision: 1.24 $
     Status:           $State: Exp $
 */
 
-#include "imagepool.h"
 #include "mainwindow.h"
 #include "aiconfactory.h"
+#include "abusycursor.h"
+#include "astudytab.h"
+
 #include "poolstudy.h"
+
+#include "imagepool.h"
 #include "studyview.h"
 #include "studymanager.h"
 #include "settings.h"
-#include "astudytab.h"
 #include "prescandialog.h"
 #include "aboutdialog.h"
 
@@ -121,24 +124,21 @@ m_raise_opened(true)
 
 	m_fileloader.signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
 	m_fileloader.signal_prescan_progress.connect(sigc::mem_fun(*m_prescandialog, &PrescanDialog::set_progress));
-
-	m_cursor_watch = new Gdk::Cursor(Gdk::WATCH);
 }
 
 MainWindow::~MainWindow() {
 	delete m_settings;
-	delete m_cursor_watch;
 	delete m_prescandialog;
 }
 
-void MainWindow::set_busy_cursor(bool busy) {
+/*void MainWindow::set_busy_cursor(bool busy) {
 	if(busy) {
-		get_window()->set_cursor(*m_cursor_watch);
+		get_window()->set_cursor(Aeskulap::IconFactory::get_cursor_watch());
 	}
 	else {
 		get_window()->set_cursor();
 	}
-}
+}*/
 
 void MainWindow::on_file_open() {
 	bool bExit = false;
@@ -178,16 +178,16 @@ void MainWindow::load_files(std::list< Glib::ustring > list) {
 void MainWindow::on_net_open(const std::string& studyinstanceuid, const std::string& server) {
 	m_raise_opened = true;
 
-	set_busy_cursor();
+	Aeskulap::set_busy_cursor();
 
 	if(!m_netloader.load(studyinstanceuid, server)) {
-		set_busy_cursor(false);
+		Aeskulap::set_busy_cursor(false);
 	}
 }
 
 void MainWindow::on_network_error() {
 	std::cout << "MainWindow::on_network_error()" << std::endl;
-	set_busy_cursor(false);
+	Aeskulap::set_busy_cursor(false);
 
 	Gtk::MessageDialog error(
 				*this,
@@ -237,7 +237,7 @@ void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	}
 	study->signal_series_added.connect(sigc::mem_fun(*frame, &StudyView::on_series_added));
 
-	set_busy_cursor(false);
+	Aeskulap::set_busy_cursor(false);
 	while(Gtk::Main::events_pending()) Gtk::Main::iteration(false);
 }
 

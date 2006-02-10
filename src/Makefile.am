@@ -2,6 +2,8 @@ bin_PROGRAMS = aeskulap
 
 aeskulap_SOURCES = \
 	binreloc.c \
+	abusycursor.h \
+	abusycursor.cpp \
 	astockids.cpp \
 	astockids.h \
 	aiconfactory.cpp \
