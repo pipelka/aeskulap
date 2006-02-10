@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = libimagepool.la
+pkglib_LTLIBRARIES = libimagepool.la
 
 libimagepool_la_SOURCES = \
 	poolservers.h \
@@ -28,14 +28,18 @@ libimagepool_la_SOURCES = \
 	poolnetwork.cpp \
 	poolnetwork.h
 
-
 libimagepool_la_LIBADD = \
-	$(GTKMM_LIBS) \
-	$(GTHREAD_LIBS) \
-	$(GCONFMM_LIBS) \
 	$(DCMTK_LIBS) \
 	-lpng \
 	-ltiff
+
+#libimagepool_la_LIBADD = \
+#	$(GTKMM_LIBS) \
+#	$(GCONFMM_LIBS)
+#	$(GTHREAD_LIBS) \
+#	$(DCMTK_LIBS) \
+#	-lpng \
+#	-ltiff
 
 libimagepool_la_LDFLAGS = \
         -Wl,-rpath,${prefix}/lib/aeskulap

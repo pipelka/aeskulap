@@ -76,7 +76,13 @@ DCMJPEG_LIBS="-L../dcmtk/dcmjpeg/libijg8 -L../dcmtk/dcmjpeg/libijg12 -L../dcmtk/
 AC_SUBST(DCMJPEG_LIBS)
 
 DCMTK_CFLAGS="-DHAVE_CONFIG_H -I\$(top_srcdir)/dcmtk/config/include -I\$(top_srcdir)/dcmtk/ofstd/include -I\$(top_srcdir)/dcmtk/dcmdata/include -I\$(top_srcdir)/dcmtk/dcmnet/include -I\$(top_srcdir)/dcmtk/dcmimage/include -I\$(top_srcdir)/dcmtk/dcmimgle/include -I\$(top_srcdir)/dcmtk/dcmjpeg/include"
-DCMTK_LIBS="-L../dcmtk/ofstd/libsrc -L../dcmtk/dcmdata/libsrc -L../dcmtk/dcmnet/libsrc -L../dcmtk/dcmjpeg/libsrc -L../dcmtk/dcmimage/libsrc -L../dcmtk/dcmimgle/libsrc -ldcmjpeg \$(DCMJPEG_LIBS) -ldcmimage -ldcmimgle -ldcmnet -ldcmdata -lofstd -lrt -lpthread"
+DCMTK_LIBS="-L../dcmtk/ofstd/libsrc \
+-L../dcmtk/dcmdata/libsrc \
+-L../dcmtk/dcmnet/libsrc \
+-L../dcmtk/dcmjpeg/libsrc \
+-L../dcmtk/dcmimage/libsrc \
+-L../dcmtk/dcmimgle/libsrc \
+-ldcmjpeg \$(DCMJPEG_LIBS) -ldcmimage -ldcmimgle -ldcmnet -ldcmdata -lofstd -lrt -lpthread"
 
 AC_SUBST(DCMTK_CFLAGS)
 AC_SUBST(DCMTK_LIBS)

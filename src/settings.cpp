@@ -22,13 +22,14 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/05 11:58:32 $
+    Update Date:      $Date: 2006/02/10 12:03:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
 #include "settings.h"
+#include "abusycursor.h"
 #include "imagepool.h"
 #include "gettext.h"
 #include <vector>
@@ -357,6 +358,8 @@ void Settings::on_server_apply() {
 }
 
 void Settings::on_echotest() {
+	Aeskulap::set_busy_cursor(true, this);
+	
 	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection = m_list_servers->get_selection();
 	Gtk::TreeModel::iterator iter = refTreeSelection->get_selected();
 	Gtk::TreeModel::Row row = *iter;
@@ -381,6 +384,8 @@ void Settings::on_echotest() {
 					Gtk::BUTTONS_OK,
 					true);
 					
+		Aeskulap::set_busy_cursor(false, this);
+
 		error.show();
 		error.run();
 		error.hide();
@@ -394,6 +399,8 @@ void Settings::on_echotest() {
 					Gtk::BUTTONS_OK,
 					true);
 					
+		Aeskulap::set_busy_cursor(false, this);
+
 		msg.show();
 		msg.run();
 		msg.hide();

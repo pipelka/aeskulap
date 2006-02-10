@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/03 10:42:41 $
+    Update Date:      $Date: 2006/02/10 12:03:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.h,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -80,7 +80,7 @@ protected:
 
 	void on_about();
 
-	void set_busy_cursor(bool busy = true);
+	//void set_busy_cursor(bool busy = true);
 
 private:
 
@@ -103,8 +103,6 @@ private:
 	Settings* m_settings;
 
 	bool m_raise_opened;
-
-	Gdk::Cursor* m_cursor_watch;
 
 	std::map<std::string, StudyView*> m_studyview;
 

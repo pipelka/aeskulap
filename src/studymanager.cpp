@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 10:32:58 $
+    Update Date:      $Date: 2006/02/10 12:03:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -32,6 +32,7 @@
 #include "studymanager.h"
 #include "asimpledisplay.h"
 #include "adatefilter.h"
+#include "abusycursor.h"
 #include "gettext.h"
 
 #include <iostream>
@@ -142,6 +143,9 @@ StudyManager::~StudyManager() {
 void StudyManager::on_filter_search() {
 	std::cout << "StudyManager::on_filter_search()" << std::endl;
 	
+	Aeskulap::set_busy_cursor();
+	while(Gtk::Main::events_pending()) Gtk::Main::iteration(false);
+
 	update_selected_groups();
 
 	m_new_query = true;
@@ -159,6 +163,7 @@ void StudyManager::on_filter_search() {
 					);
 	
 	if(m_new_query) {
+		Aeskulap::set_busy_cursor(false);
 		std::cout << "no results !!!" << std::endl;
 		Gtk::MessageDialog error(
 					gettext("<span weight=\"bold\" size=\"larger\">No results for this query</span>"),
@@ -206,8 +211,10 @@ void StudyManager::on_queryresult_study(const Glib::RefPtr< ImagePool::Study >& 
 	row[m_ColumnsStudy.m_studyinstanceuid] = study->studyinstanceuid();
 	row[m_ColumnsStudy.m_server] = study->server();
 	
-	// add dummy child
+	// add child
 	Gtk::TreeModel::Row child = *(m_refTreeModelStudy->append(row.children()));	
+
+	Aeskulap::set_busy_cursor(false);
 }
 
 void StudyManager::on_study_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column) {
@@ -228,6 +235,9 @@ void StudyManager::on_study_activated(const Gtk::TreeModel::Path& path, Gtk::Tre
 
 void StudyManager::on_queryresult_series(const Glib::RefPtr< ImagePool::Series >& series, Gtk::TreeModel::Row& row) {
 	std::cout << "StudyManager::on_queryresult_series()" << std::endl;
+
+	Aeskulap::set_busy_cursor(false);
+
 	Gtk::TreeModel::Row child = *(m_refTreeModelStudy->append(row.children()));
 
 	int count = row.children().size();
@@ -254,6 +264,9 @@ void StudyManager::on_queryresult_series(const Glib::RefPtr< ImagePool::Series >
 
 bool StudyManager::on_test_study_expand(const Gtk::TreeModel::iterator& iter, const Gtk::TreeModel::Path& path) {
 	std::cout << "StudyManager::on_test_study_expand()" << std::endl;
+
+	Aeskulap::set_busy_cursor();
+	while(Gtk::Main::events_pending()) Gtk::Main::iteration(false);
 
 	Gtk::TreeModel::Row row = *iter;
 	std::string studyinstanceuid = row[m_ColumnsStudy.m_studyinstanceuid];
