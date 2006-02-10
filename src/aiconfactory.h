@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/10 12:03:38 $
+    Update Date:      $Date: 2006/02/10 12:26:15 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -62,6 +62,8 @@ private:
 	static std::string m_imagesdir;
 	
 	static Gdk::Cursor* m_cursor_watch;
+	
+	static std::map< std::string, Glib::RefPtr<Gdk::Pixbuf> > m_imagemap;
 };
 
 } // namespace Aeskulap
