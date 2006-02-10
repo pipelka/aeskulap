@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/10 12:03:38 $
+    Update Date:      $Date: 2006/02/10 12:26:15 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -39,6 +39,7 @@ namespace Aeskulap {
 Gdk::Cursor* IconFactory::m_cursor_watch = NULL;
 std::string IconFactory::m_datadir;
 std::string IconFactory::m_imagesdir;
+std::map< std::string, Glib::RefPtr<Gdk::Pixbuf> > IconFactory::m_imagemap;
 
 IconFactory::IconFactory() {
 	if(m_cursor_watch == NULL) {
@@ -99,6 +100,12 @@ Glib::RefPtr<Gdk::Pixbuf> IconFactory::load_from_file(const std::string& filenam
 	Glib::RefPtr<Gdk::Pixbuf> pixbuf;
 	std::string path;
 	
+	// search in cache first
+	if(m_imagemap[filename]) {
+		return m_imagemap[filename];
+	}
+	
+	// try to load file
 	try {
 		path = m_imagesdir + std::string("/") + filename;
 		std::cerr << "trying to load '" << path << "'" << std::endl;
@@ -116,6 +123,7 @@ Glib::RefPtr<Gdk::Pixbuf> IconFactory::load_from_file(const std::string& filenam
 		}
 	}
 
+	m_imagemap[filename] = pixbuf;
 	return pixbuf;
 }
 
