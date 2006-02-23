@@ -85,31 +85,31 @@ EOF
 for module in config $modules; do
 	cat >> $output <<EOF
 ${module}-all:
-	(cd $module; \$(MAKE) ARCH="\$(ARCH)" all)
+	(cd $module; \$(MAKE) ARCHCFLAGS="\$(ARCHCFLAGS)" all)
 
 ${module}-libsrc-all:
-	(cd $module; \$(MAKE) ARCH="\$(ARCH)" libsrc-all)
+	(cd $module; \$(MAKE) ARCHCFLAGS="\$(ARCHCFLAGS)" libsrc-all)
 
 ${module}-install:
-	(cd $module; \$(MAKE) ARCH="\$(ARCH)" install)
+	(cd $module; \$(MAKE) ARCHCFLAGS="\$(ARCHCFLAGS)" install)
 
 ${module}-install-bin:
-	(cd $module; \$(MAKE) ARCH="\$(ARCH)" install-bin)
+	(cd $module; \$(MAKE) ARCHCFLAGS="\$(ARCHCFLAGS)" install-bin)
 
 ${module}-install-doc:
-	(cd $module; \$(MAKE) ARCH="\$(ARCH)" install-doc)
+	(cd $module; \$(MAKE) ARCHCFLAGS="\$(ARCHCFLAGS)" install-doc)
 
 ${module}-install-etc:
-	(cd $module; \$(MAKE) ARCH="\$(ARCH)" install-etc)
+	(cd $module; \$(MAKE) ARCHCFLAGS="\$(ARCHCFLAGS)" install-etc)
 
 ${module}-install-lib:
-	(cd $module; \$(MAKE) ARCH="\$(ARCH)" install-lib)
+	(cd $module; \$(MAKE) ARCHCFALSG="\$(ARCHCFLAGS)" install-lib)
 
 ${module}-install-include:
-	(cd $module; \$(MAKE) ARCH="\$(ARCH)" install-include)
+	(cd $module; \$(MAKE) ARCHCFLAGS="\$(ARCHCFLAGS)" install-include)
 
 ${module}-install-support:
-	(cd $module; \$(MAKE) ARCH="\$(ARCH)" install-support)
+	(cd $module; \$(MAKE) ARCHCFLAGS="\$(ARCHCFLAGS)" install-support)
 
 EOF
 done
