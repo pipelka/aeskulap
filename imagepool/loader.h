@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 10:32:58 $
+    Update Date:      $Date: 2006/02/23 22:40:27 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.h,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -33,6 +33,8 @@
 #include <queue>
 #include <set>
 #include <map>
+
+#include "poolstudy.h"
 
 class DcmDataset;
 
