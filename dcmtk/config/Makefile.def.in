@@ -45,11 +45,11 @@ DEBUG = @DEBUG@
 GLOBALDEFS = @DEFS@
 
 #
-# ARCH defines special machine archtecture compiler settings
+# ARCHCFLAGS defines special machine archtecture compiler settings
 # (e.g. -arch i386 on NeXT)
 #
 
-# ARCH =
+# ARCHCFLAGS =
 
 CC = @CC@
 CFLAGS = @CFLAGS@ -fPIC
@@ -86,9 +86,9 @@ defines = $(GLOBALDEFS) $(LOCALDEFS) $(DEBUG) $(LOCALDEBUG)
 .SUFFIXES: .o .cc .c .h
 
 .cc.o:
-	$(CXX)	$(defines) -c $(includes) $(ARCH) \
+	$(CXX)	$(defines) -c $(includes) $(ARCHCFLAGS) \
 		$(CPPFLAGS) $(CXXFLAGS) $<
 
 .c.o:
-	$(CC)	$(defines) -c $(includes) $(ARCH) \
+	$(CC)	$(defines) -c $(includes) $(ARCHCFLAGS) \
 		$(CPPFLAGS) $(CFLAGS) $<
