@@ -1,3 +1,9 @@
+aeskulap (0.2.1-1a5) unstable; urgency=low
+
+  * rebuild to get in sync 
+
+ -- Alexander Pipelka <pipelka@localhost.localdomain>  Fri, 24 Feb 2006 11:30:20 +0100
+
 aeskulap (0.2.1-1a4) unstable; urgency=low
 
   * autopackage support (untested)
