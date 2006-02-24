@@ -1,7 +1,6 @@
 SUBDIRS = \
 	intl \
 	po \
-	debian \
 	dcmtk \
 	imagepool \
 	widgets \
