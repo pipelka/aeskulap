@@ -37,3 +37,4 @@ aeskulap-0.1.0
 log
 *.package
 uninstalldirs
+gconf

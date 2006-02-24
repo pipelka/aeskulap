@@ -28,7 +28,9 @@ Aeskulap version history:
 - fixed multiframe control bugs
 - specific characterset support
 - support lossy compression (low bandwith connections)
-
+- new "walk through" browsing for a series
+  press (and keep pressed) SHIFT + LEFT MOUSEBUTTON, move mouse up/down
+  
 
 0.2.0 - 20051002
 ----------------

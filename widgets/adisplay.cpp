@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 17:03:06 $
+    Update Date:      $Date: 2006/02/24 18:40:49 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.15 $
+    CVS/RCS Revision: $Revision: 1.16 $
     Status:           $State: Exp $
 */
 
@@ -91,6 +91,14 @@ void Display::on_realize() {
 						Gdk::Display::get_default(),
 						p,
 						11, 11);
+	}
+
+	p = Aeskulap::IconFactory::load_from_file("start-here.png");
+	if(p) {
+		m_cursor_locate = new Gdk::Cursor(
+						Gdk::Display::get_default(),
+						p,
+						8, 8);
 	}
 
 	m_changed = false;
@@ -217,7 +225,13 @@ bool Display::on_button_press_event(GdkEventButton* button) {
 		return false;
 	}
 	
-	if(button->button == 1) {
+	if(button->button == 1 && button->state & GDK_SHIFT_MASK) {
+		get_window()->set_cursor(*m_cursor_locate);
+		m_drag_start_y = button->y;
+		m_drag_button = 1;
+		add_modal_grab();
+	}
+	else if(button->button == 1) {
 		m_drag_active = true;
 		m_drag_button = 1;
 		m_drag_start_x = button->x;
@@ -281,15 +295,15 @@ bool Display::on_button_release_event(GdkEventButton* button) {
 		return false;
 	}
 	
+	get_window()->set_cursor();
+	remove_modal_grab();
+
 	if(!m_drag_active) {
 		return false;
 	}
 
-	get_window()->set_cursor();
-
 	m_drag_active = false;
 	m_drag_button = 0;
-	remove_modal_grab();
 	
 	if(m_changed && !m_playing) {
 		signal_changed(get_id(), true);
@@ -313,13 +327,20 @@ bool Display::on_motion_notify_event(GdkEventMotion* event) {
 		signal_motion(event);
 	}
 
+	int x,y;
+	get_pointer(x, y);
+	
+	if(m_drag_button == 1 && event->state & GDK_SHIFT_MASK) {
+		int diff = y - m_drag_start_y;
+		signal_locate(diff);
+		m_drag_start_y = y;
+		
+	}
+
 	if(!m_drag_active || block) {
 		return true;
 	}
 
-	int x,y;
-	get_pointer(x, y);
-	
 	if(m_drag_button == 1) {
 		set_window_palette(x, y);
 		update();
