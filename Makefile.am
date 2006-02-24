@@ -11,7 +11,6 @@ SUBDIRS = \
 DIST_SUBDIRS = \
 	intl \
 	po \
-	debian \
 	imagepool \
 	widgets \
 	src \

@@ -1,3 +1,9 @@
+aeskulap (0.2.1-1a6) unstable; urgency=low
+
+  * new "walk through" feature 
+
+ -- Alexander Pipelka <pipelka@localhost.localdomain>  Fri, 24 Feb 2006 20:52:27 +0100
+
 aeskulap (0.2.1-1a5) unstable; urgency=low
 
   * rebuild to get in sync 
