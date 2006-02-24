@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 10:32:57 $
+    Update Date:      $Date: 2006/02/24 18:40:49 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -128,6 +128,8 @@ private:
 	
 	unsigned int get_max_scrollpos();
 
+	void scroll_to_relative(int diff);
+	
 	void scroll_to(unsigned int pos, bool select=true);
 	
 	unsigned int m_offset;

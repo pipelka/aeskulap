@@ -20,7 +20,8 @@ images_DATA = \
 	cursor_windowlevel.png \
 	cursor_zoom.png \
 	filmholes-big-left.png \
-	filmholes-big-right.png
+	filmholes-big-right.png \
+	start-here.png
 
 EXTRA_DIST = \
 	README \

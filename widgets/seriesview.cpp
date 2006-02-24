@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 10:32:57 $
+    Update Date:      $Date: 2006/02/24 18:40:49 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.17 $
+    CVS/RCS Revision: $Revision: 1.18 $
     Status:           $State: Exp $
 */
 
@@ -160,7 +160,8 @@ void SeriesView::set_layout(int tilex, int tiley) {
 			w->signal_popup.connect(sigc::bind(signal_popup, this));
 			w->signal_motion.connect(sigc::bind(signal_motion, w));
 			w->signal_button.connect(sigc::bind(signal_button, w));
-
+			w->signal_locate.connect(sigc::mem_fun(*this, &SeriesView::scroll_to_relative));
+			
 			m_widgets.push_back(w);
 
 			m_table->attach(*w, x, x+1, y, y+1);
@@ -287,6 +288,10 @@ unsigned int SeriesView::get_max_scrollpos() {
 	}
 	
 	return (unsigned int)rc;
+}
+
+void SeriesView::scroll_to_relative(int diff) {
+	scroll_to(m_offset + diff);
 }
 
 void SeriesView::scroll_to(unsigned int pos, bool select) {
