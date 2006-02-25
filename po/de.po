@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-26 18:21+0100\n"
+"POT-Creation-Date: 2006-02-25 15:51+0100\n"
 "PO-Revision-Date: 2006-01-26 18:22+0100\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
 "Language-Team:  <de@li.org>\n"
@@ -39,20 +39,20 @@ msgstr ""
 "Serie %i (%s)\n"
 "Keine Beschreibung"
 
-#: ../widgets/adisplay.cpp:152
+#: ../widgets/adisplay.cpp:160
 msgid "Acc:\n"
 msgstr "Aufn.:\n"
 
-#: ../widgets/adisplay.cpp:154
+#: ../widgets/adisplay.cpp:162
 msgid "Acq Tm: "
 msgstr "Aufn. Zeit:"
 
-#: ../widgets/adisplay.cpp:167
+#: ../widgets/adisplay.cpp:175
 #, c-format
 msgid "Image: %i / %i"
 msgstr "Bild: %i / %i"
 
-#: ../widgets/adisplay.cpp:479 ../widgets/adisplay.cpp:531
+#: ../widgets/adisplay.cpp:500 ../widgets/adisplay.cpp:552
 #, c-format
 msgid "%i mm"
 msgstr "%i mm"
@@ -188,21 +188,21 @@ msgstr "3D Zeiger"
 
 #: ../src/astockids.cpp:87
 msgid "Measure"
-msgstr ""
+msgstr "Messen"
 
-#: ../src/mainwindow.cpp:49
+#: ../src/mainwindow.cpp:52
 msgid "Open DICOM Image files"
 msgstr "DICOM Bilder öffnen"
 
-#: ../src/mainwindow.cpp:101
+#: ../src/mainwindow.cpp:104
 msgid "Bring opened files to front"
 msgstr "Geöffnete Dateien anzeigen"
 
-#: ../src/mainwindow.cpp:110
+#: ../src/mainwindow.cpp:113
 msgid "DICOM files"
 msgstr "DICOM Dateien"
 
-#: ../src/mainwindow.cpp:115
+#: ../src/mainwindow.cpp:118
 msgid "Any files"
 msgstr "Alle Dateien"
 
@@ -218,77 +218,77 @@ msgstr ""
 "\n"
 "Die Anfrage wurde zum Server gesandt, es wurde aber keine Antwort empfangen."
 
-#: ../src/studymanager.cpp:98
+#: ../src/studymanager.cpp:99
 msgid "Patientsname"
 msgstr "Patientenname"
 
-#: ../src/studymanager.cpp:99
+#: ../src/studymanager.cpp:100
 msgid "Birthdate"
 msgstr "Geburtsdatum"
 
-#: ../src/studymanager.cpp:100
+#: ../src/studymanager.cpp:101
 msgid "Description"
 msgstr "Beschreibung"
 
-#: ../src/studymanager.cpp:101
+#: ../src/studymanager.cpp:102
 msgid "Modality"
 msgstr "Modalität"
 
-#: ../src/studymanager.cpp:102
+#: ../src/studymanager.cpp:103
 msgid "Date/Time"
 msgstr "Datum/Zeit"
 
-#: ../src/studymanager.cpp:103
+#: ../src/studymanager.cpp:104
 msgid "Station"
 msgstr "Station"
 
-#: ../src/studymanager.cpp:104 ../src/aeskulap.glade.h:34
+#: ../src/studymanager.cpp:105 ../src/aeskulap.glade.h:34
 msgid "Server"
 msgstr "Server"
 
-#: ../src/studymanager.cpp:126 ../src/settings.cpp:123
+#: ../src/studymanager.cpp:127 ../src/settings.cpp:124
 #: ../src/aeskulap.glade.h:25
 msgid "Group"
 msgstr "Gruppe"
 
-#: ../src/studymanager.cpp:164
+#: ../src/studymanager.cpp:169
 msgid "<span weight=\"bold\" size=\"larger\">No results for this query</span>"
 msgstr ""
 "<span weight=\"bold\" size=\"larger\">Die Abfrage lieferte kein Ergebnis</"
 "span>"
 
-#: ../src/studymanager.cpp:237
+#: ../src/studymanager.cpp:247
 #, c-format
 msgid "Series %02i (1 Image)"
 msgstr "Serie %02i (1 Bild)"
 
-#: ../src/studymanager.cpp:240
+#: ../src/studymanager.cpp:250
 #, c-format
 msgid "Series %02i (%i Images)"
 msgstr "Serie %02i (%i Bilder)"
 
-#: ../src/studymanager.cpp:243
+#: ../src/studymanager.cpp:253
 #, c-format
 msgid "Series %02i"
 msgstr "Serie %02i"
 
-#: ../src/settings.cpp:119 ../src/aeskulap.glade.h:30
+#: ../src/settings.cpp:120 ../src/aeskulap.glade.h:30
 msgid "Name"
 msgstr "Name"
 
-#: ../src/settings.cpp:120 ../src/aeskulap.glade.h:16
+#: ../src/settings.cpp:121 ../src/aeskulap.glade.h:16
 msgid "AET"
 msgstr "AET"
 
-#: ../src/settings.cpp:121 ../src/aeskulap.glade.h:31
+#: ../src/settings.cpp:122 ../src/aeskulap.glade.h:31
 msgid "Port"
 msgstr "Port"
 
-#: ../src/settings.cpp:122
+#: ../src/settings.cpp:123
 msgid "Hostname"
 msgstr "Hostname"
 
-#: ../src/settings.cpp:377
+#: ../src/settings.cpp:380
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
@@ -296,7 +296,7 @@ msgstr ""
 "<span weight=\"bold\" size=\"larger\">Echo test fehlgeschlagen!</span>\n"
 "\n"
 
-#: ../src/settings.cpp:391
+#: ../src/settings.cpp:396
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
 msgstr "<span weight=\"bold\" size=\"larger\">Echo erfolgreich</span>"
 
@@ -462,7 +462,7 @@ msgstr "_Datei"
 
 #: ../src/aeskulap.glade.h:58
 msgid "_Help"
-msgstr "__Hilfe"
+msgstr "_Hilfe"
 
 #: ../src/aeskulap.glade.h:59
 msgid "_View"
