@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-26 18:21+0100\n"
+"POT-Creation-Date: 2006-02-25 15:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,20 +34,20 @@ msgid ""
 "No description"
 msgstr ""
 
-#: ../widgets/adisplay.cpp:152
+#: ../widgets/adisplay.cpp:160
 msgid "Acc:\n"
 msgstr ""
 
-#: ../widgets/adisplay.cpp:154
+#: ../widgets/adisplay.cpp:162
 msgid "Acq Tm: "
 msgstr ""
 
-#: ../widgets/adisplay.cpp:167
+#: ../widgets/adisplay.cpp:175
 #, c-format
 msgid "Image: %i / %i"
 msgstr ""
 
-#: ../widgets/adisplay.cpp:479 ../widgets/adisplay.cpp:531
+#: ../widgets/adisplay.cpp:500 ../widgets/adisplay.cpp:552
 #, c-format
 msgid "%i mm"
 msgstr ""
@@ -185,19 +185,19 @@ msgstr ""
 msgid "Measure"
 msgstr ""
 
-#: ../src/mainwindow.cpp:49
+#: ../src/mainwindow.cpp:52
 msgid "Open DICOM Image files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:101
+#: ../src/mainwindow.cpp:104
 msgid "Bring opened files to front"
 msgstr ""
 
-#: ../src/mainwindow.cpp:110
+#: ../src/mainwindow.cpp:113
 msgid "DICOM files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:115
+#: ../src/mainwindow.cpp:118
 msgid "Any files"
 msgstr ""
 
@@ -209,81 +209,81 @@ msgid ""
 "The request was sent to the server but no response has been received."
 msgstr ""
 
-#: ../src/studymanager.cpp:98
+#: ../src/studymanager.cpp:99
 msgid "Patientsname"
 msgstr ""
 
-#: ../src/studymanager.cpp:99
+#: ../src/studymanager.cpp:100
 msgid "Birthdate"
 msgstr ""
 
-#: ../src/studymanager.cpp:100
+#: ../src/studymanager.cpp:101
 msgid "Description"
 msgstr ""
 
-#: ../src/studymanager.cpp:101
+#: ../src/studymanager.cpp:102
 msgid "Modality"
 msgstr ""
 
-#: ../src/studymanager.cpp:102
+#: ../src/studymanager.cpp:103
 msgid "Date/Time"
 msgstr ""
 
-#: ../src/studymanager.cpp:103
+#: ../src/studymanager.cpp:104
 msgid "Station"
 msgstr ""
 
-#: ../src/studymanager.cpp:104 ../src/aeskulap.glade.h:34
+#: ../src/studymanager.cpp:105 ../src/aeskulap.glade.h:34
 msgid "Server"
 msgstr ""
 
-#: ../src/studymanager.cpp:126 ../src/settings.cpp:123
+#: ../src/studymanager.cpp:127 ../src/settings.cpp:124
 #: ../src/aeskulap.glade.h:25
 msgid "Group"
 msgstr ""
 
-#: ../src/studymanager.cpp:164
+#: ../src/studymanager.cpp:169
 msgid "<span weight=\"bold\" size=\"larger\">No results for this query</span>"
 msgstr ""
 
-#: ../src/studymanager.cpp:237
+#: ../src/studymanager.cpp:247
 #, c-format
 msgid "Series %02i (1 Image)"
 msgstr ""
 
-#: ../src/studymanager.cpp:240
+#: ../src/studymanager.cpp:250
 #, c-format
 msgid "Series %02i (%i Images)"
 msgstr ""
 
-#: ../src/studymanager.cpp:243
+#: ../src/studymanager.cpp:253
 #, c-format
 msgid "Series %02i"
 msgstr ""
 
-#: ../src/settings.cpp:119 ../src/aeskulap.glade.h:30
+#: ../src/settings.cpp:120 ../src/aeskulap.glade.h:30
 msgid "Name"
 msgstr ""
 
-#: ../src/settings.cpp:120 ../src/aeskulap.glade.h:16
+#: ../src/settings.cpp:121 ../src/aeskulap.glade.h:16
 msgid "AET"
 msgstr ""
 
-#: ../src/settings.cpp:121 ../src/aeskulap.glade.h:31
+#: ../src/settings.cpp:122 ../src/aeskulap.glade.h:31
 msgid "Port"
 msgstr ""
 
-#: ../src/settings.cpp:122
+#: ../src/settings.cpp:123
 msgid "Hostname"
 msgstr ""
 
-#: ../src/settings.cpp:377
+#: ../src/settings.cpp:380
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
 msgstr ""
 
-#: ../src/settings.cpp:391
+#: ../src/settings.cpp:396
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
 msgstr ""
 
