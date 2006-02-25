@@ -666,7 +666,6 @@ SC
 
 			      <child>
 				<widget class="GtkLabel" id="label23">
-				  <property name="visible">True</property>
 				  <property name="label" translatable="yes">&lt;b&gt;Accessionnumber:&lt;/b&gt;</property>
 				  <property name="use_underline">False</property>
 				  <property name="use_markup">True</property>
@@ -694,7 +693,6 @@ SC
 
 			      <child>
 				<widget class="GtkEntry" id="entry_filter_accessionnumber">
-				  <property name="visible">True</property>
 				  <property name="can_focus">True</property>
 				  <property name="editable">True</property>
 				  <property name="visibility">True</property>

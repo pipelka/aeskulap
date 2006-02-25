@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/12 16:55:18 $
+    Update Date:      $Date: 2006/02/25 12:34:30 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -146,7 +146,7 @@ m_draw_reference_frame_ends(false) {
 	m_measure = manage(new Gtk::ToggleToolButton(Aeskulap::Stock::MEASURE));
 	m_measure->set_tooltip(m_tooltips, gettext("Measurement tools"));
 	m_toolbar->append(*m_measure, sigc::mem_fun(*this, &StudyView::on_toggle_measure));
-	m_measure->show();
+	//m_measure->show();
 
 	hbox->pack_end(*m_table);
 	hbox->pack_end(*m_toolbar_measure, false, false);
