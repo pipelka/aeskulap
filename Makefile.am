@@ -2,6 +2,7 @@ SUBDIRS = \
 	intl \
 	po \
 	dcmtk \
+	dcmjp2 \
 	imagepool \
 	widgets \
 	src \

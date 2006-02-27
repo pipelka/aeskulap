@@ -22,9 +22,9 @@
  *  Purpose: Abstract base class for IJG JPEG decoder
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:53 $
+ *  Update Date:      $Date: 2006/02/27 17:45:51 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmjpeg/libsrc/djcodecd.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -56,7 +56,6 @@ DJCodecDecoder::DJCodecDecoder()
 DJCodecDecoder::~DJCodecDecoder()
 {
 }
-
 
 OFBool DJCodecDecoder::canChangeCoding(
     const E_TransferSyntax oldRepType,
@@ -577,6 +576,9 @@ OFBool DJCodecDecoder::requiresPlanarConfiguration(
 /*
  * CVS/RCS Log
  * $Log: djcodecd.cc,v $
+ * Revision 1.2  2006/02/27 17:45:51  braindead
+ * *** empty log message ***
+ *
  * Revision 1.1  2005/08/23 19:31:53  braindead
  * - initial savannah import
  *
