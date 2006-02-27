@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/24 18:40:49 $
+    Update Date:      $Date: 2006/02/27 08:56:39 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.18 $
+    CVS/RCS Revision: $Revision: 1.19 $
     Status:           $State: Exp $
 */
 
@@ -291,7 +291,9 @@ unsigned int SeriesView::get_max_scrollpos() {
 }
 
 void SeriesView::scroll_to_relative(int diff) {
+	select(true);
 	scroll_to(m_offset + diff);
+	schedule_repaint(1000);
 }
 
 void SeriesView::scroll_to(unsigned int pos, bool select) {
