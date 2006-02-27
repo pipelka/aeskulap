@@ -91,7 +91,8 @@ autopackage/default.apspec
 intl/Makefile
 po/Makefile.in
 Makefile
-debian/Makefile
+dcmjp2/Makefile
+dcmjp2/libsrc/Makefile
 imagepool/Makefile
 src/Makefile
 widgets/Makefile
