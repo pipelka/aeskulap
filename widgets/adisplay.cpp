@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/24 18:40:49 $
+    Update Date:      $Date: 2006/02/27 08:56:39 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -230,6 +230,7 @@ bool Display::on_button_press_event(GdkEventButton* button) {
 		m_drag_start_y = button->y;
 		m_drag_button = 1;
 		add_modal_grab();
+		return true;
 	}
 	else if(button->button == 1) {
 		m_drag_active = true;
