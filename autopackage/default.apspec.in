@@ -43,7 +43,7 @@ export APBUILD_CC=gcc
 export APBUILD_CXX1=g++
 export APBUILD_CXX2=
 export APBUILD_PROJECTNAME=aeskulap
-
+export PKG_CONFIG_PATH=~/.local/lib/pkgconfig
 prepareBuild --prefix=/usr --sysconfdir=/etc --enable-binreloc --enable-static
 
 [BuildUnprepare]
@@ -61,19 +61,18 @@ require @glade.gnome.org/libglade 2.4
 require @gnome.org/gconf2 2.10
 require @libpng.org/libpng 3
 require @zlib.org/zlib 1
-#require autopackage.tar.bz2
-#require autopackage-gtk-1.0.8.x86.package
-#require autopackage-qt-1.0.x86.package
 
 [Install]
 # Put your installation script here
 installExe bin/*
-installLib lib/*.so.*
-installLib lib/aeskulap/*.so
+#installLib lib/*.so.*
+#installLib lib/aeskulap/*.so
 
-copyFiles --nobackup share/locale $PREFIX/share
+installLocale share/locale
+#copyFiles --nobackup share/locale $PREFIX/share
 copyFiles share/aeskulap $PREFIX/share
-#copyFiles lib/aeskulap $PREFIX/lib
+copyFiles share/gconf $PREFIX/share
+copyFiles lib/aeskulap $PREFIX/lib
 #copyFiles lib $PREFIX
 
 installIcon share/aeskulap/images/aeskulap.png

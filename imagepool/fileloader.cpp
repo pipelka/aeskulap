@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 10:36:55 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/fileloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.10.2.1 $
     Status:           $State: Exp $
 */
 
@@ -33,6 +33,7 @@
 
 #include "imagepool.h"
 #include "fileloader.h"
+#include "poolstudy.h"
 
 namespace ImagePool {
 

@@ -22,16 +22,18 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/27 08:56:39 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.19 $
+    CVS/RCS Revision: $Revision: 1.19.2.1 $
     Status:           $State: Exp $
 */
 
 #include "seriesview.h"
-#include "adisplay.h"
 #include "imagepool.h"
 #include "poolinstance.h"
+#include "poolseries.h"
+
+#include "adisplay.h"
 #include "amultiframectrl.h"
 
 #include <iostream>

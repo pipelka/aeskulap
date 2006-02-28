@@ -22,15 +22,16 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/10 12:03:38 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.12.2.1 $
     Status:           $State: Exp $
 */
 
 #include "settings.h"
 #include "abusycursor.h"
 #include "imagepool.h"
+#include "poolservers.h"
 #include "gettext.h"
 #include <vector>
 

@@ -20,28 +20,28 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 18:37:42 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.12.2.1 $
     Status:           $State: Exp $
 */
 
 #ifndef NAMESPACE_IMAGEPOOL_H
 #define NAMESPACE_IMAGEPOOL_H
 
-#include "poolinstance.h"
-#include "poolseries.h"
-#include "poolstudy.h"
-#include "poolservers.h"
-
 #include <glibmm/slisthandle.h>
 #include <string>
-
+#include <set>
+#include <sigc++/slot.h>
 
 class DcmDataset;
 
 namespace ImagePool {
-	
+
+	class Instance;
+	class Series;
+	class Study;
+
 	void init(bool connect = true);
 	
 	void close();

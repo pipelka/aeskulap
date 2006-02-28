@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 18:37:42 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.14.2.1 $
     Status:           $State: Exp $
 */
 
@@ -40,6 +40,10 @@
 #include "dcrleerg.h"
 
 #include "poolnetwork.h"
+#include "poolinstance.h"
+#include "poolseries.h"
+#include "poolstudy.h"
+#include "poolservers.h"
 
 #include <locale.h>
 #include <map>
@@ -93,7 +97,7 @@ void close() {
 }
 
 bool register_instance(const Glib::RefPtr<ImagePool::Instance>& image) {
-	std::string sop = image->sopinstanceuid();
+	std::string sop = image->tag("SOPInstanceUID");
 
 	if(sop.empty()) {
 		std::cout << "no SOPInstanceUID in instance !!!" << std::endl;
@@ -118,30 +122,32 @@ void remove_instance(const std::string& sopinstanceuid) {
 }
 
 void remove_instance(const Glib::RefPtr<ImagePool::Instance>& image) {
-	ImagePool::remove_instance(image->m_sopinstanceuid);
+	ImagePool::remove_instance(image->tag("SOPInstanceUID"));
 }
 
 void remove_series(const Glib::RefPtr<ImagePool::Series>& series) {
-	std::cout << "removing series " << series->seriesinstanceuid() << std::endl;
+	std::string uid = series->tag("SeriesInstanceUID");
+	std::cout << "removing series " << uid << std::endl;
 	ImagePool::Series::iterator i;
 	
 	for(i = series->begin(); i != series->end(); i++) {
 		remove_instance((*i).second);
 	}
 	
-	m_seriespool[series->seriesinstanceuid()].clear();
-	m_seriespool.erase(series->seriesinstanceuid());
+	m_seriespool[uid].clear();
+	m_seriespool.erase(uid);
 }
 
 void remove_study(const Glib::RefPtr<ImagePool::Study>& study) {
-	std::cout << "removing study " << study->studyinstanceuid() << std::endl;
+	std::string uid = study->tag("StudyInstanceUID");
+	std::cout << "removing study " << uid << std::endl;
 	ImagePool::Study::iterator i;
 	for(i = study->begin(); i != study->end(); i++) {
 		remove_series((*i).second);
 	}
 	
-	m_studypool[study->studyinstanceuid()].clear();
-	m_studypool.erase(study->studyinstanceuid());
+	m_studypool[uid].clear();
+	m_studypool.erase(uid);
 }
 
 const Glib::RefPtr<ImagePool::Instance>& get_instance(const std::string& sopinstanceuid) {
@@ -163,13 +169,29 @@ const Glib::RefPtr<ImagePool::Study>& get_study(const std::string& studyinstance
 }
 
 }
+
 std::string ImagePool::convert_string_from(const char* dicom_string, const std::string& system_encoding) {
 	try {
-		return Glib::convert(dicom_string, "UTF-8", system_encoding);
+		return Glib::convert_with_fallback(
+						dicom_string,
+						"UTF-8",
+						system_encoding,
+						"*"
+						);  	
 	}
-	catch(...) {
-		std::cerr << "Unable to convert string from the '" << system_encoding << "' encoding." << std::endl;
-		return "";
+	catch (Glib::ConvertError e) {
+		try {
+			return Glib::convert_with_fallback(
+							dicom_string,
+							"UTF-8",
+							"ISO-8859-1",
+							"*"
+							);  	
+		}
+		catch (Glib::ConvertError e) {
+			std::cerr << "Unable to convert string from the '" << system_encoding << "' encoding." << std::endl;
+			return "";
+		}
 	}
 }
 
@@ -177,7 +199,7 @@ std::string ImagePool::convert_string_to(const char* dicom_string, const std::st
 	try {
 		return Glib::convert(dicom_string, system_encoding, "UTF-8");
 	}
-	catch(...) {
+	catch (Glib::ConvertError e) {
 		std::cerr << "Unable to convert string to the '" << system_encoding << "' encoding." << std::endl;
 		return "";
 	}

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/27 08:56:39 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.17 $
+    CVS/RCS Revision: $Revision: 1.17.2.1 $
     Status:           $State: Exp $
 */
 
@@ -154,9 +154,9 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 	
 		m_GC->set_background(m_colorText);
 		m_fntdesc.set_size((get_width() * 12 * PANGO_SCALE) / 1280 + 2 * PANGO_SCALE);
-		Glib::ustring text = m_image->series()->institutionname() + "\n";
-		text += m_image->study()->patientsname() + "\n";
-		text += m_image->study()->patientsbirthdate() + " " + m_image->study()->patientssex() + "\n";
+		Glib::ustring text = m_image->series()->tag("InstitutionName") + "\n";
+		text += m_image->study()->tag("PatientsName") + "\n";
+		text += m_image->study()->tag("PatientsBirthDate") + " " + m_image->study()->tag("PatientsSex") + "\n";
 		text += gettext("Acc:\n");
 		text += m_image->date() + "\n";
 		text += gettext("Acq Tm: ") + m_image->time() + "\n";
@@ -562,31 +562,17 @@ void Display::draw_ruler_h() {
 
 }
 
-void Display::draw_line(const ImagePool::Instance::Point& p0, const ImagePool::Instance::Point& p1) {
-	if(!m_image) {
-		return;
-	}
-
+void Display::draw_line_2d(const ImagePool::Instance::Point& p0, const ImagePool::Instance::Point& p1) {
 	int x0;
 	int y0;
 	int x1;
 	int y1;
-	ImagePool::Instance::Point s0;
-	ImagePool::Instance::Point s1;
 
-	if(!m_image->transform_to_viewport(p0, s0)) {
+	if(!point_to_screen(p0, x0, y0)) {
 		return;
 	}
 
-	if(!point_to_screen(s0, x0, y0)) {
-		return;
-	}
-
-	if(!m_image->transform_to_viewport(p1, s1)) {
-		return;
-	}
-
-	if(!point_to_screen(s1, x1, y1)) {
+	if(!point_to_screen(p1, x1, y1)) {
 		return;
 	}
 
@@ -597,20 +583,30 @@ void Display::draw_line(const ImagePool::Instance::Point& p0, const ImagePool::I
 	m_window->draw_line(m_GC, x0, y0, x1, y1);
 }
 
-void Display::draw_cross(const ImagePool::Instance::Point& p) {
+void Display::draw_line_3d(const ImagePool::Instance::Point& p0, const ImagePool::Instance::Point& p1) {
 	if(!m_image) {
 		return;
 	}
 
-	int x;
-	int y;
-	ImagePool::Instance::Point p1;
-	
-	if(!m_image->transform_to_viewport(p, p1)) {
+	ImagePool::Instance::Point s0;
+	ImagePool::Instance::Point s1;
+
+	if(!m_image->transform_to_viewport(p0, s0)) {
 		return;
 	}
 
-	if(!point_to_screen(p1, x, y)) {
+	if(!m_image->transform_to_viewport(p1, s1)) {
+		return;
+	}
+
+	draw_line_2d(s0, s1);
+}
+
+void Display::draw_cross_2d(const ImagePool::Instance::Point& p) {
+	int x;
+	int y;
+
+	if(!point_to_screen(p, x, y)) {
 		return;
 	}
 	
@@ -618,24 +614,43 @@ void Display::draw_cross(const ImagePool::Instance::Point& p) {
 	m_window->draw_line(m_GC, x, y-5, x, y+5);
 }
 
-void Display::draw_point(const ImagePool::Instance::Point& p) {
+void Display::draw_cross_3d(const ImagePool::Instance::Point& p) {
 	if(!m_image) {
 		return;
 	}
 
-	int x;
-	int y;
 	ImagePool::Instance::Point p1;
 	
 	if(!m_image->transform_to_viewport(p, p1)) {
 		return;
 	}
 
-	if(!point_to_screen(p1, x, y)) {
+	draw_cross_2d(p1);
+}
+
+void Display::draw_point_2d(const ImagePool::Instance::Point& p) {
+	int xs;
+	int ys;
+
+	if(!point_to_screen(p, xs, ys)) {
 		return;
 	}
 	
-	m_window->draw_rectangle(m_GC, false, x-1, y-1, 2, 2);
+	m_window->draw_rectangle(m_GC, false, xs-1, ys-1, 2, 2);
+}
+
+void Display::draw_point_3d(const ImagePool::Instance::Point& p) {
+	if(!m_image) {
+		return;
+	}
+
+	ImagePool::Instance::Point p1;
+	
+	if(!m_image->transform_to_viewport(p, p1)) {
+		return;
+	}
+
+	draw_point_2d(p1);
 }
 
 void Display::enable_mouse_functions(bool enable) {

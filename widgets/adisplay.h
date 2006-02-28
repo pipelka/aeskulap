@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/24 18:40:49 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.6.2.1 $
     Status:           $State: Exp $
 */
 
@@ -50,11 +50,17 @@ public:
 
 	bool get_selected();
 
-	void draw_point(const ImagePool::Instance::Point& p);
+	void draw_point_2d(const ImagePool::Instance::Point& p);
 
-	void draw_cross(const ImagePool::Instance::Point& p);
+	void draw_point_3d(const ImagePool::Instance::Point& p);
 
-	void draw_line(const ImagePool::Instance::Point& p0, const ImagePool::Instance::Point& p1);
+	void draw_cross_2d(const ImagePool::Instance::Point& p);
+
+	void draw_cross_3d(const ImagePool::Instance::Point& p);
+
+	void draw_line_2d(const ImagePool::Instance::Point& p0, const ImagePool::Instance::Point& p1);
+
+	void draw_line_3d(const ImagePool::Instance::Point& p0, const ImagePool::Instance::Point& p1);
 
 	Gdk::Color m_colorSeriesSelected;
 

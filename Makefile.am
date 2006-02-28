@@ -2,6 +2,8 @@ SUBDIRS = \
 	intl \
 	po \
 	dcmtk \
+	$(DCMJP2DIR) \
+	displaylist \
 	imagepool \
 	widgets \
 	src \
@@ -10,6 +12,8 @@ SUBDIRS = \
 DIST_SUBDIRS = \
 	intl \
 	po \
+	dcmjp2 \
+	displaylist \
 	imagepool \
 	widgets \
 	src \

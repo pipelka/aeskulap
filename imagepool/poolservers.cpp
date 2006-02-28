@@ -20,15 +20,16 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/01/12 10:45:30 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolservers.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.4.2.1 $
     Status:           $State: Exp $
 */
 
 #include <gconfmm.h>
 
 #include "imagepool.h"
+#include "poolservers.h"
 #include "poolassociation.h"
 
 namespace ImagePool {

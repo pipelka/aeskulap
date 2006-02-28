@@ -56,6 +56,41 @@ PKG_CHECK_MODULES(GCONFMM, gconfmm-2.6 >= 2.10.0)
 AC_SUBST(GCONFMM_CFLAGS)
 AC_SUBST(GCFONMM_LIBS)
 
+AC_ARG_ENABLE(jpeg2000,
+  [  --enable-jpeg2000       enable jpeg2000 support],
+  [use_jpeg2000=$enableval], [use_jpeg2000=no])
+
+if test "x$use_jpeg2000" = "xyes"; then
+    have_jasper_lib=no
+    have_jasper_include=no
+
+    AC_CHECK_LIB(jasper, jas_init, have_jasper_lib=yes)
+    AC_CHECK_HEADER(jasper/jasper.h, [have_jasper_include=yes])
+    
+    if test "x$have_jasper_include" = "xno" ; then
+	AC_CHECK_HEADER(jasper.h, [have_jasper_include=yes])
+    fi
+
+    if test "x$have_jasper_lib" = "xno" ; then
+	use_jpeg2000=no;
+    fi
+
+    if test "x$have_jasper_include" = "xno" ; then
+	use_jpeg2000=no;
+    fi
+
+fi
+
+if test "x$use_jpeg2000" = "xyes"; then
+    AC_DEFINE([ENABLE_JPEG2000], , [Define to 1 if JPEG2000 support is enabled.])
+    DCMJP2DIR="dcmjp2"
+    DCMJP2_LIBS="../dcmjp2/libsrc/libdcmjp2.la -ljasper"
+fi
+
+AC_SUBST(DCMJP2DIR)
+AC_SUBST(DCMJP2_LIBS)
+
+
 dnl AC_CONFIG_SUBDIRS(dcmtk)
 
 DCMJPEG_LIBS="-L../dcmtk/dcmjpeg/libijg8 -L../dcmtk/dcmjpeg/libijg12 -L../dcmtk/dcmjpeg/libijg16 -lijg8 -lijg12 -lijg16"
@@ -90,7 +125,11 @@ AC_OUTPUT([
 autopackage/default.apspec
 intl/Makefile
 po/Makefile.in
+dcmjp2/Makefile
+dcmjp2/include/Makefile
+dcmjp2/libsrc/Makefile
 Makefile
+displaylist/Makefile
 imagepool/Makefile
 src/Makefile
 widgets/Makefile

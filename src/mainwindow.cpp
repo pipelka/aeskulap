@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/10 12:03:38 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.24 $
+    CVS/RCS Revision: $Revision: 1.24.2.1 $
     Status:           $State: Exp $
 */
 
@@ -218,12 +218,13 @@ void MainWindow::on_view_fullscreen() {
 }
 
 void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
-	std::cout << "new study " << study->studyinstanceuid() << std::endl;
+	std::string studyuid = study->tag("StudyInstanceUID");
+	std::cout << "new study " << studyuid << std::endl;
 
 	StudyView* frame = manage(new StudyView(study));
 	frame->accelerate(*this);
 
-	m_studyview[study->studyinstanceuid()] = frame;
+	m_studyview[studyuid] = frame;
 
 	Aeskulap::StudyTab* tab = manage(new Aeskulap::StudyTab(study, frame));
 	tab->signal_close.connect(sigc::mem_fun(*this, &MainWindow::on_study_closed));

@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/28 20:32:03 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolseries.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.3.2.1 $
     Status:           $State: Exp $
 */
 
@@ -44,7 +44,7 @@ Series::~Series() {
 	m_list.clear();
 }
 
-const std::string& Series::seriesinstanceuid() {
+/*const std::string& Series::seriesinstanceuid() {
 	return m_seriesinstanceuid;
 }
 
@@ -66,7 +66,7 @@ const std::string& Series::seriestime() {
 
 const std::string& Series::stationname() {
 	return m_stationname;
-}
+}*/
 
 int Series::instancecount() {
 	if(m_instancecount != -1) {

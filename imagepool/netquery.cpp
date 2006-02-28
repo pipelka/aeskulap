@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/01/23 08:44:36 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.18 $
+    CVS/RCS Revision: $Revision: 1.18.2.1 $
     Status:           $State: Exp $
 */
 
@@ -32,6 +32,9 @@
 #include "dcdatset.h"
 #include "dcdeftag.h"
 #include "poolfindassociation.h"
+#include "poolservers.h"
+#include "poolstudy.h"
+#include "poolseries.h"
 #include "netclient.h"
 #include "gettext.h"
 
@@ -39,75 +42,39 @@
 
 namespace ImagePool {
 	
-static void fix_date(std::string& date) {
-	if(date.size() != 8) {
-		return;
-	}
-	
-	std::string year = date.substr(0,4);
-	std::string month = date.substr(4, 2);
-	std::string day = date.substr(6, 2);
-	
-	date = day + "." + month + "." + year;
-}
-
-static void fix_time(std::string& time) {
-	unsigned int i = time.find(".");
-	if(i != std::string::npos) {
-		time = time.substr(0, i);
-	}
-	if(time.size() != 6) {
-		return;
-	}
-
-	std::string h = time.substr(0,2);
-	std::string m = time.substr(2, 2);
-	std::string s = time.substr(4, 2);
-	
-	time = h + ":" + m + ":" + s;
-}
-
 Glib::RefPtr< ImagePool::Study > create_query_study(DcmDataset* dset, const std::string& server) {
 	Glib::RefPtr< ImagePool::Study > result = Glib::RefPtr< ImagePool::Study >(new Study);
 
 	Glib::RefPtr< ImagePool::Instance > item = Instance::create(dset);
 
 	result->m_server = server;
-	result->m_studyinstanceuid = item->studyinstanceuid();
-	result->m_patientsname = item->patientsname();
-	result->m_patientsbirthdate = item->patientsbirthdate();
-	result->m_patientssex = item->patientssex();
-	result->m_studydescription = item->studydescription();
-	result->m_studydate = item->studydate();
-	result->m_studytime = item->studytime();
+	result->copy_tag(item, "StudyInstanceUID");
+	result->copy_tag(item, "PatientsName");
+	result->copy_tag(item, "PatientsBirthDate");
+	result->copy_tag(item, "PatientsSex");
+	result->copy_tag(item, "StudyDescription");
+	result->copy_tag(item, "StudyDate");
+	result->copy_tag(item, "StudyTime");
 	
-	fix_date(result->m_patientsbirthdate);
-	fix_date(result->m_studydate);
-	fix_time(result->m_studytime);
-
 	return result;
 }
 
 Glib::RefPtr< ImagePool::Series > create_query_series(DcmDataset* dset) {
 	Glib::RefPtr< ImagePool::Series > result = Glib::RefPtr< ImagePool::Series >(new Series);
 
-	dset->findAndGetOFString(DCM_SeriesInstanceUID, result->m_seriesinstanceuid);
-	dset->findAndGetOFString(DCM_SeriesDescription, result->m_description);
-	if(result->m_description.empty()) {
-		dset->findAndGetOFString(DCM_StudyDescription, result->m_description);
-	}
-	if(result->m_description.empty()) {
-		result->m_description = gettext("no description");
+	result->copy_tag(dset, DCM_SeriesInstanceUID, "SeriesInstanceUID");
+	if(!result->copy_tag(dset, DCM_SeriesDescription, "SeriesDescription")) {
+		if(!result->copy_tag(dset, DCM_StudyDescription, "SeriesDescription")) {
+			result->set_tag("SeriesDescription", gettext("no description"));
+		}
 	}
 
-	dset->findAndGetOFString(DCM_Modality, result->m_modality);
-
-	dset->findAndGetOFString(DCM_SeriesTime, result->m_seriestime);
-	if(result->m_seriestime.empty()) {
-		dset->findAndGetOFString(DCM_StudyTime, result->m_seriestime);
+	result->copy_tag(dset, DCM_Modality, "Modality");
+	if(!result->copy_tag(dset, DCM_SeriesTime, "SeriesTime")) {
+		result->copy_tag(dset, DCM_StudyTime, "SeriesTime");
 	}
 
-	dset->findAndGetOFString(DCM_StationName, result->m_stationname);
+	result->copy_tag(dset, DCM_StationName, "StationName");
 
 	std::string buffer;
 	dset->findAndGetOFString(DCM_NumberOfSeriesRelatedInstances, buffer);
@@ -115,8 +82,6 @@ Glib::RefPtr< ImagePool::Series > create_query_series(DcmDataset* dset) {
 	if(i != 0) {
 		result->m_instancecount = i;
 	}
-
-	fix_time(result->m_seriestime);
 
 	return result;
 }

@@ -20,17 +20,16 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 18:37:42 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.9.2.1 $
     Status:           $State: Exp $
 */
 
 #ifndef IMAGEPOOL_INSTANCE_H
 #define IMAGEPOOL_INSTANCE_H
 
-#include <glibmm/refptr.h>
-#include <glibmm/object.h>
+#include "dicombase.h"
 
 #include <string>
 #include <vector>
@@ -44,7 +43,7 @@ class Series;
 class Study;
 class Loader;
 
-class Instance : public Glib::Object {
+class Instance : public DicomBase {
 protected:
 
 	Instance(const std::string& sopinstanceuid);
@@ -89,31 +88,13 @@ public:
 	int bpp();
 
 	int highbit();
-	
+
 	int width();
 	
 	int height();
 	
 	bool iscolor();
 	
-	const std::string& sopinstanceuid();
-	
-	const std::string& patientsname();
-
-	const std::string& patientsbirthdate();
-
-	const std::string& patientssex();
-
-	const std::string& seriesinstanceuid();
-	
-	const std::string& studyinstanceuid();
-
-	const std::string& studydescription();
-
-	const std::string& studydate();
-
-	const std::string& studytime();
-
 	double slope();
 
 	int intercept();
@@ -175,13 +156,7 @@ public:
 
 protected:
 
-	bool set_encoding(const std::string& single, const std::string& ideographic="");
-
-	std::string convert_string(const char* dicom_string);
-
 private:
-
-	std::string m_encoding[3];
 
 	std::vector<void*> m_pixels;
 
@@ -211,30 +186,6 @@ private:
 
 	int m_instancenumber;
 
-	std::string m_sopinstanceuid;
-
-	std::string m_seriesinstanceuid;
-
-	std::string m_studyinstanceuid;
-
-	std::string m_patientsname;
-
-	std::string m_patientsbirthdate;
-
-	std::string m_patientssex;
-
-	std::string m_studydescription;
-
-	std::string m_studydate;
-
-	std::string m_studytime;
-
-	std::string m_institutionname;
-
-	std::string m_seriesdescription;
-
-	std::string m_modality;
-
 	Glib::RefPtr<ImagePool::Series> m_series;
 
 	Glib::RefPtr<ImagePool::Study> m_study;
@@ -257,7 +208,7 @@ private:
 
 	int m_min;
 	
-	int m_max;	
+	int m_max;
 };
 
 }

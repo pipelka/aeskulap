@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:03 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/aseriesmenu.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.1.2.1 $
     Status:           $State: Exp $
 */
 
@@ -40,26 +40,33 @@
 namespace Aeskulap {
 
 void SeriesMenu::add_series(const Glib::RefPtr<ImagePool::Series>& series, SeriesView* w) {
+	std::string uid = series->tag("SeriesInstanceUID");
+	std::string desc = series->tag("SeriesDescription");
+	std::string modality = series->tag("Modality");
 	char buffer[200];
-	if(!series->description().empty()) {
-		sprintf(buffer, gettext("Series %i (%s)\n%s"), m_menuitem.size()+1, series->modality().c_str(), series->description().c_str());
+	if(!desc.empty()) {
+		sprintf(buffer, gettext("Series %i (%s)\n%s"), m_menuitem.size()+1, modality.c_str(), desc.c_str());
 	}
 	else {
-		sprintf(buffer, gettext("Series %i (%s)\nNo description"), m_menuitem.size()+1, series->modality().c_str());
+		sprintf(buffer, gettext("Series %i (%s)\nNo description"), m_menuitem.size()+1, modality.c_str());
 		
 	}
+
+	std::cout << "SeriesItem: " << buffer << std::endl;
 
 	Gtk::ImageMenuItem* menuitem = manage(new Gtk::ImageMenuItem(buffer, true));
 	add(*menuitem);
 	menuitem->show();
-	int key = GDK_a + m_menuitem.size();
-	Gtk::AccelGroup::activate(*menuitem, key, Gdk::CONTROL_MASK);
-	m_menuitem[series->seriesinstanceuid()] = menuitem;
-	m_views[series->seriesinstanceuid()] = w;
+	//int key = GDK_a + m_menuitem.size();
+	//Gtk::AccelGroup::activate(*menuitem, key, Gdk::CONTROL_MASK);
+	m_menuitem[uid] = menuitem;
+	m_views[uid] = w;
 }
 
 void SeriesMenu::set_thumbnail(const Glib::RefPtr<ImagePool::Instance>& instance) {
-	Gtk::ImageMenuItem* menuitem = m_menuitem[instance->series()->seriesinstanceuid()];
+	std::string uid = instance->series()->tag("SeriesInstanceUID");
+
+	Gtk::ImageMenuItem* menuitem = m_menuitem[uid];
 	if(menuitem == NULL) {
 		return;
 	}
@@ -75,7 +82,7 @@ void SeriesMenu::set_thumbnail(const Glib::RefPtr<ImagePool::Instance>& instance
 }
 
 void SeriesMenu::set_connection(const Glib::RefPtr<ImagePool::Series>& series, const sigc::slot<void, SeriesView*>& slot) {
-	std::string uid = series->seriesinstanceuid();
+	std::string uid = series->tag("SeriesInstanceUID");
 	Gtk::ImageMenuItem* menuitem = m_menuitem[uid];
 	if(menuitem == NULL) {
 		return;
@@ -100,8 +107,8 @@ bool SeriesMenu::get_index(const Gtk::MenuItem& item, int& index) {
 }
 
 void SeriesMenu::swap_entries(const Glib::RefPtr<ImagePool::Series>& series1, const Glib::RefPtr<ImagePool::Series>& series2) {
-	Gtk::ImageMenuItem* menuitem1 = m_menuitem[series1->seriesinstanceuid()];
-	Gtk::ImageMenuItem* menuitem2 = m_menuitem[series2->seriesinstanceuid()];
+	Gtk::ImageMenuItem* menuitem1 = m_menuitem[series1->tag("SeriesInstanceUID")];
+	Gtk::ImageMenuItem* menuitem2 = m_menuitem[series2->tag("SeriesInstanceUID")];
 
 	int index1, index2;
 	if(!get_index(*menuitem1, index1)) {

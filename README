@@ -20,6 +20,13 @@ were these packages are available.
 
 Aeskulap version history:
 
+0.3.0 - development branch
+
+- new displaylist 2D/3D layer
+- JPEG2000 support
+- refactored internal API
+
+
 0.2.1 - unreleased
 ------------------
 

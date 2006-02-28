@@ -20,13 +20,16 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 18:37:42 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.8.2.1 $
     Status:           $State: Exp $
 */
 
 #include "poolinstance.h"
+#include "poolstudy.h"
+#include "poolseries.h"
+
 #include "imagepool.h"
 
 #include "dcdatset.h"
@@ -53,16 +56,22 @@ m_is_signed(false),
 m_default_windowcenter(0),
 m_default_windowwidth(0),
 m_instancenumber(0),
-m_sopinstanceuid(sopinstanceuid),
+//m_sopinstanceuid(sopinstanceuid),
 m_spacing_x(0),
 m_spacing_y(0),
 m_index(1),
 m_min(0),
 m_max(0)
 {
-	m_encoding[0] = "UTF-8";
-	m_encoding[1] = "UTF-8";
-	m_encoding[2] = "UTF-8";
+	set_tag("SOPInstanceUID", sopinstanceuid);
+
+	/*Glib::ustring prop = "test";
+	Glib::Value<std::string> value;
+	value.set("123");
+	set_tag_value(prop, value);
+	
+	Glib::Value<std::string> value1;
+	get_property_value(prop, value1);*/
 }
 	
 Instance::~Instance() {
@@ -101,31 +110,31 @@ bool Instance::iscolor() {
 	return m_iscolor;
 }
 
-const std::string& Instance::sopinstanceuid() {
+/*const std::string& Instance::sopinstanceuid() {
 	return m_sopinstanceuid;
-}
+}*/
 	
-const std::string& Instance::seriesinstanceuid() {
+/*const std::string& Instance::seriesinstanceuid() {
 	return m_seriesinstanceuid;
-}
+}*/
 
-const std::string& Instance::patientsname() {
+/*const std::string& Instance::patientsname() {
 	return m_patientsname;
-}
+}*/
 
-const std::string& Instance::patientsbirthdate() {
+/*const std::string& Instance::patientsbirthdate() {
 	return m_patientsbirthdate;
-}
+}*/
 
-const std::string& Instance::patientssex() {
+/*const std::string& Instance::patientssex() {
 	return m_patientssex;
-}
+}*/
 
-const std::string& Instance::studyinstanceuid() {
+/*const std::string& Instance::studyinstanceuid() {
 	return m_studyinstanceuid;
-}
+}*/
 
-const std::string& Instance::studydescription() {
+/*const std::string& Instance::studydescription() {
 	return m_studydescription;
 }
 
@@ -135,7 +144,7 @@ const std::string& Instance::studydate() {
 
 const std::string& Instance::studytime() {
 	return m_studytime;
-}
+}*/
 
 double Instance::slope() {
 	return m_slope;
@@ -280,7 +289,7 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 	// get SOPInstanceUID
 	
 	std::string sop;
-	dset->findAndGetOFString(DCM_SOPInstanceUID, sop).bad();
+	dset->findAndGetOFString(DCM_SOPInstanceUID, sop);
 	
 	// wrap in smartpointer
 	Glib::RefPtr<ImagePool::Instance> r = Glib::RefPtr<ImagePool::Instance>(new ImagePool::Instance(sop));
@@ -292,17 +301,8 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 	r->set_encoding(enc[0], enc[1]);
 
 	// set dicom uid's
-	r->m_sopinstanceuid = sop;
-
-	std::string seriesuid;
-	if(dset->findAndGetOFString(DCM_SeriesInstanceUID, seriesuid).good()) {
-		r->m_seriesinstanceuid = seriesuid;
-	}
-
-	std::string studyuid;
-	if(dset->findAndGetOFString(DCM_StudyInstanceUID, studyuid).good()) {
-		r->m_studyinstanceuid = studyuid;
-	}
+	r->copy_tag(dset, DCM_SeriesInstanceUID, "SeriesInstanceUID");
+	r->copy_tag(dset, DCM_StudyInstanceUID, "StudyInstanceUID");
 
 	r->m_default_windowcenter = 0;
 	r->m_default_windowwidth = 0;
@@ -509,118 +509,44 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 	//std::cout << "intercept: " << r->m_intercept << std::endl;
 
 	// study params
-	if(dset->findAndGetOFString(DCM_PatientsName, value).good()) {
-		r->m_patientsname = r->convert_string(value.c_str());
-	}
-	dset->findAndGetOFString(DCM_PatientsBirthDate, r->m_patientsbirthdate);
-	dset->findAndGetOFString(DCM_PatientsSex, r->m_patientssex);
-	if(dset->findAndGetOFString(DCM_StudyDescription, value).good()) {
-		r->m_studydescription = r->convert_string(value.c_str());
+	r->copy_tag(dset, DCM_PatientsName, "PatientsName", true);
+	r->copy_tag(dset, DCM_PatientsBirthDate, "PatientsBirthDate");
+	r->copy_tag(dset, DCM_PatientsSex, "PatientsSex");
+	if(!r->copy_tag(dset, DCM_StudyDescription, "StudyDescription", true)) {
+		r->set_tag("StudyDescription", gettext("no description"));
 	}
 
-	if(r->m_studydescription.empty()) {
-		if(dset->findAndGetOFString(DCM_SeriesDescription, value).good()) {
-			r->m_studydescription = r->convert_string(value.c_str());
-		}
-	}
-
-	if(r->m_studydescription.empty()) {
-		r->m_studydescription = gettext("no description");
-	}
-
-	dset->findAndGetOFString(DCM_StudyDate, r->m_studydate);
-	dset->findAndGetOFString(DCM_StudyTime, r->m_studytime);
-
+	r->copy_tag(dset, DCM_StudyDate, "StudyDate");
+	r->copy_tag(dset, DCM_StudyTime, "StudyTime");
+	
 	// series params
-	if(dset->findAndGetOFString(DCM_InstitutionName, value).good()) {
-		r->m_seriesdescription = r->convert_string(value.c_str());
-	}
-	if(dset->findAndGetOFString(DCM_SeriesDescription, value).good()) {
-		r->m_seriesdescription = r->convert_string(value.c_str());
-	}
-
-	if(r->m_seriesdescription.empty()) {
-		if(dset->findAndGetOFString(DCM_StudyDescription, value).good()) {
-			r->m_seriesdescription = r->convert_string(value.c_str());
+	r->copy_tag(dset, DCM_InstitutionName, "InstitutionName");
+	if(!r->copy_tag(dset, DCM_SeriesDescription, "SeriesDescription", true)) {
+		if(!r->copy_tag(dset, DCM_StudyDescription, "SeriesDescription", true)) {
+			r->set_tag("SeriesDescription", gettext("no description"));
 		}
 	}
 
-	if(r->m_seriesdescription.empty()) {
-		r->m_seriesdescription = gettext("no description");
-	}
+	r->copy_tag(dset, DCM_Modality, "Modality");
 
-	dset->findAndGetOFString(DCM_Modality, r->m_modality);
-
-	Glib::RefPtr<ImagePool::Study> new_study = get_study(r->m_studyinstanceuid);
+	Glib::RefPtr<ImagePool::Study> new_study = get_study(r->tag("StudyInstanceUID"));
 	if(new_study->size() == 0) {
-		new_study->m_studyinstanceuid = r->studyinstanceuid();
-		new_study->m_patientsname = r->m_patientsname;
-		new_study->m_patientsbirthdate = r->m_patientsbirthdate;
-		new_study->m_patientssex = r->m_patientssex;
-		new_study->m_studydescription = r->m_studydescription;
+		/*new_study->m_studyinstanceuid = r->tag("StudyInstanceUID");
+		new_study->m_patientsname = r->tag("PatientsName");
+		new_study->m_patientsbirthdate = r->tag("PatientsBirthDate");
+		new_study->m_patientssex = r->tag("PatientsSex");
+		new_study->m_studydescription = r->tag("StudyDescription");*/
+		new_study->copy_tag(r, "StudyInstanceUID");
+		new_study->copy_tag(r, "PatientsName");
+		new_study->copy_tag(r, "PatientsBirthDate");
+		new_study->copy_tag(r, "PatientsSex");
+		new_study->copy_tag(r, "StudyDescription");
 	}
 	r->m_study = new_study;
 
 	delete m_image;
 
 	return r;
-}
-
-bool Instance::set_encoding(const std::string& single, const std::string& ideographic) {
-	m_encoding[0] = ImagePool::get_system_encoding(single);
-	
-	if(!ideographic.empty()) {
-		m_encoding[1] = ImagePool::get_system_encoding(ideographic);
-		m_encoding[2] = ImagePool::get_system_encoding(ideographic);
-	}
-	else {
-		m_encoding[1] = m_encoding[0];
-		m_encoding[2] = m_encoding[0];
-	}
-	
-	//std::cout << "single char: " << m_encoding[0] << std::endl;
-	//std::cout << "ideographic: " << m_encoding[1] << std::endl;
-	
-	return true;
-}
-
-std::string Instance::convert_string(const char* dicom_string) {
-	std::string result = "";
-	char part[3][500];
-	part[0][0] = 0;
-	part[1][0] = 0;
-	part[2][0] = 0;
-	
-	const char* p = dicom_string;
-
-	// split string into 3 parts
-	int i = 0;
-	int c = 0;
-	while(*p != 0) {
-		if(*p == '=') {
-			part[i][c] = 0;
-			i++;
-			c = 0;
-		}
-		else {
-			part[i][c] = *p;
-			c++;
-		}
-		p++;
-	}
-	part[i][c] = 0;
-	
-	for(int i=0; i<3; i++) {
-		if(part[i][0] == 0) {
-			continue;
-		}
-		if(i != 0) {
-			result += " / ";
-		}
-		result += ImagePool::convert_string_from(part[i], m_encoding[i]);
-	}
-
-	return result;
 }
 
 }

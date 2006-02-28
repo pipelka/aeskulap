@@ -42,7 +42,7 @@ StudyTab::StudyTab(const Glib::RefPtr<ImagePool::Study>& study, StudyView* view)
 	m_study = study;
 	m_studyview = view;
 	
-	std::string labeltext = m_study->patientsname().substr(0,20);
+	std::string labeltext = m_study->tag("PatientsName").substr(0,20);
 
 	m_label = manage(new Gtk::Label(labeltext, Gtk::ALIGN_LEFT));
 	m_label->set_padding(2,0);
@@ -84,7 +84,7 @@ void StudyTab::on_progress(double p) {
 		m_close->set_sensitive(true);
 		m_progress->hide();
 		m_close->show();
-		Glib::ustring labeltext = m_study->patientsname().substr(0,20) + "\n" + m_study->studydescription().substr(0,20);
+		Glib::ustring labeltext = m_study->tag("PatientsName").substr(0,20) + "\n" + m_study->tag("StudyDescription").substr(0,20);
 		m_label->set_text(labeltext);
 	}
 }

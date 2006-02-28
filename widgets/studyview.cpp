@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/25 12:34:30 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.17 $
+    CVS/RCS Revision: $Revision: 1.17.2.1 $
     Status:           $State: Exp $
 */
 
@@ -182,7 +182,7 @@ SeriesView* StudyView::create_seriesview(const Glib::RefPtr<ImagePool::Series>& 
 }
 
 void StudyView::add_series(const Glib::RefPtr<ImagePool::Series>& series) {
-	std::cout << "new series " << series->seriesinstanceuid() << std::endl;
+	std::cout << "new series " << series->tag("SeriesInstanceUID") << std::endl;
 
 	int x = 0;
 	int y = 0;
@@ -349,15 +349,15 @@ void StudyView::draw_reference(Aeskulap::Display* display, const Glib::RefPtr<Im
 	p3.y = p0.y + o.y.y * sy + o.x.y * sx;
 	p3.z = p0.z + o.y.z * sy + o.x.z * sx;
 
-	display->draw_line(p0, p1);
-	display->draw_line(p0, p2);
-	display->draw_line(p1, p3);
-	display->draw_line(p2, p3);
+	display->draw_line_3d(p0, p1);
+	display->draw_line_3d(p0, p2);
+	display->draw_line_3d(p1, p3);
+	display->draw_line_3d(p2, p3);
 
-	display->draw_point(p0);
-	display->draw_point(p1);
-	display->draw_point(p2);
-	display->draw_point(p3);
+	display->draw_point_3d(p0);
+	display->draw_point_3d(p1);
+	display->draw_point_3d(p2);
+	display->draw_point_3d(p3);
 }
 
 void StudyView::on_draw_instance(SeriesView* s, Aeskulap::Display* d, const Glib::RefPtr<Gdk::Window>& w, const Glib::RefPtr<Gdk::GC>& gc) {
@@ -391,7 +391,7 @@ void StudyView::on_draw_instance(SeriesView* s, Aeskulap::Display* d, const Glib
 	// draw 3d cursor
 	if(m_btn_3dcursor->get_active()) {
 		gc->set_foreground(d->m_colorSelected);
-		d->draw_cross(m_3dcursor);
+		d->draw_cross_3d(m_3dcursor);
 	}
 }
 

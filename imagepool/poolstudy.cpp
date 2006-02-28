@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolstudy.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.6.2.1 $
     Status:           $State: Exp $
 */
 
@@ -45,7 +45,7 @@ Study::~Study() {
 	m_list.clear();
 }
 
-const std::string& Study::studyinstanceuid() {
+/*const std::string& Study::studyinstanceuid() {
 	return m_studyinstanceuid;
 }
 
@@ -71,7 +71,7 @@ const std::string& Study::studytime() {
 
 const std::string& Study::patientssex() {
 	return m_patientssex;
-}
+}*/
 
 void Study::set_instancecount(int cur, int max) {
 	if(max != -1) {

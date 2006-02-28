@@ -22,13 +22,18 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/10 12:03:38 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.14.2.1 $
     Status:           $State: Exp $
 */
 
 #include "imagepool.h"
+
+#include "poolstudy.h"
+#include "poolseries.h"
+#include "poolservers.h"
+
 #include "studymanager.h"
 #include "asimpledisplay.h"
 #include "adatefilter.h"
@@ -204,11 +209,11 @@ void StudyManager::on_queryresult_study(const Glib::RefPtr< ImagePool::Study >& 
 
 	row[m_ColumnsStudy.m_icon] = Gtk::Stock::OPEN.id;
 	row[m_ColumnsStudy.m_iconsize] = 22;
-	row[m_ColumnsStudy.m_patientsname] = study->patientsname();
-	row[m_ColumnsStudy.m_patientsbirthdate] = study->patientsbirthdate();
-	row[m_ColumnsStudy.m_studydescription] = study->studydescription();
-	row[m_ColumnsStudy.m_studydate] = study->studydate();
-	row[m_ColumnsStudy.m_studyinstanceuid] = study->studyinstanceuid();
+	row[m_ColumnsStudy.m_patientsname] = study->tag("PatientsName");
+	row[m_ColumnsStudy.m_patientsbirthdate] = study->tag("PatientsBirthDate");
+	row[m_ColumnsStudy.m_studydescription] = study->tag("StudyDescription");
+	row[m_ColumnsStudy.m_studydate] = study->tag("StudyDate");
+	row[m_ColumnsStudy.m_studyinstanceuid] = study->tag("StudyInstanceUID");
 	row[m_ColumnsStudy.m_server] = study->server();
 	
 	// add child
@@ -256,10 +261,10 @@ void StudyManager::on_queryresult_series(const Glib::RefPtr< ImagePool::Series >
 	child[m_ColumnsStudy.m_icon] = Gtk::Stock::DND_MULTIPLE.id;
 	child[m_ColumnsStudy.m_iconsize] = 16;
 	child[m_ColumnsStudy.m_patientsname] = buffer;
-	child[m_ColumnsStudy.m_studydescription] = series->description();
-	child[m_ColumnsStudy.m_modality] = series->modality();
-	child[m_ColumnsStudy.m_studydate] = series->seriestime();
-	child[m_ColumnsStudy.m_station] = series->stationname();
+	child[m_ColumnsStudy.m_studydescription] = series->tag("SeriesDescription");
+	child[m_ColumnsStudy.m_modality] = series->tag("Modality");
+	child[m_ColumnsStudy.m_studydate] = series->tag("SeriesTime");
+	child[m_ColumnsStudy.m_station] = series->tag("StationName");
 }
 
 bool StudyManager::on_test_study_expand(const Gtk::TreeModel::iterator& iter, const Gtk::TreeModel::Path& path) {

@@ -20,17 +20,16 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolstudy.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.7.2.1 $
     Status:           $State: Exp $
 */
 
 #ifndef IMAGEPOOL_STUDY_H
 #define IMAGEPOOL_STUDY_H
 
-#include <glibmm/refptr.h>
-#include <glibmm/object.h>
+#include "dicombase.h"
 #include "poolseries.h"
 
 #include <string>
@@ -39,7 +38,7 @@
 namespace ImagePool {
 
 	
-class Study : public Glib::Object {
+class Study : public DicomBase {
 public:
 
 	typedef std::map< std::string, Glib::RefPtr<ImagePool::Series> >::iterator iterator;
@@ -68,7 +67,7 @@ public:
 		return m_list.size();
 	}
 
-	const std::string& studyinstanceuid();
+	/*const std::string& studyinstanceuid();
 	
 	const std::string& patientsname();
 	
@@ -80,7 +79,7 @@ public:
 
 	const std::string& studytime();
 
-	const std::string& studydescription();
+	const std::string& studydescription();*/
 
 	const std::string& server();
 
@@ -114,7 +113,7 @@ private:
 	
 	int m_cur_instances;
 
-	std::string m_studyinstanceuid;
+	/*std::string m_studyinstanceuid;
 	
 	std::string m_patientsname;
 
@@ -126,7 +125,7 @@ private:
 
 	std::string m_studytime;
 
-	std::string m_patientssex;
+	std::string m_patientssex;*/
 
 	std::string m_server;
 	

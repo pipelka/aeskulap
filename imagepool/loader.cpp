@@ -20,13 +20,17 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 10:32:58 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/loader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.12.2.1 $
     Status:           $State: Exp $
 */
 
 #include "imagepool.h"
+#include "poolinstance.h"
+#include "poolseries.h"
+#include "poolstudy.h"
+
 #include "loader.h"
 #include "dcdatset.h"
 #include <gtkmm.h>
@@ -88,20 +92,20 @@ void Loader::process_instance() {
 	}
 
 	// register series
-	Glib::RefPtr<ImagePool::Series> new_series = get_series(r->m_seriesinstanceuid);
+	Glib::RefPtr<ImagePool::Series> new_series = get_series(r->tag("SeriesInstanceUID"));
 	bool bEmit = (new_series->size() == 0);
 	if(new_series->size() == 0) {
-		new_series->m_studyinstanceuid = r->m_studyinstanceuid;
-		new_series->m_institutionname = r->m_institutionname;
-		new_series->m_description = r->m_seriesdescription;
-		new_series->m_modality = r->m_modality;
-		if(new_series->m_seriestime.empty()) {
+		new_series->copy_tag(r, "StudyInstanceUID");
+		new_series->copy_tag(r, "InstitutionName");
+		new_series->copy_tag(r, "SeriesDescription");
+		new_series->copy_tag(r, "Modality");
+		/*if(new_series->m_seriestime.empty()) {
 			new_series->m_seriestime = r->m_time;
-		}
+		}*/
 	}
 
-	new_study->at(r->m_seriesinstanceuid) = new_series;
-	new_series->m_seriesinstanceuid = r->m_seriesinstanceuid;
+	new_study->at(r->tag("SeriesInstanceUID")) = new_series;
+	new_series->copy_tag(r, "SeriesInstanceUID");
 
 	if(bEmit) {
 		new_study->signal_series_added(new_series);
@@ -116,7 +120,7 @@ void Loader::process_instance() {
 	}
 
 	// register instance
-	new_series->at(r->m_sopinstanceuid) = r;
+	new_series->at(r->tag("SOPInstanceUID")) = r;
 	new_series->signal_instance_added(r);
 	new_study->emit_progress();
 
@@ -136,7 +140,7 @@ void Loader::add_image(DcmDataset* dset) {
 
 	register_instance(image);
 
-	std::string studyinstanceuid = image->studyinstanceuid();
+	std::string studyinstanceuid = image->tag("StudyInstanceUID");
 
 	int imagecount = m_cache[studyinstanceuid].m_instancecount;
 	int seriescount = m_cache[studyinstanceuid].m_seriescount;

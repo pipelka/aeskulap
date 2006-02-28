@@ -20,17 +20,15 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/28 20:32:03 $
+    Update Date:      $Date: 2006/02/28 22:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolseries.h,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.4.2.1 $
     Status:           $State: Exp $
 */
 
 #ifndef IMAGEPOOL_SERIES_H
 #define IMAGEPOOL_SERIES_H
 
-#include <glibmm/refptr.h>
-#include <glibmm/object.h>
 #include "poolinstance.h"
 
 #include <string>
@@ -38,7 +36,7 @@
 
 namespace ImagePool {
 
-class Series : public Glib::Object {
+class Series : public DicomBase {
 public:
 
 	Series();
@@ -67,7 +65,7 @@ public:
 		return m_list.size();
 	}
 
-	const std::string& studyinstanceuid();
+	/*const std::string& studyinstanceuid();
 
 	const std::string& seriesinstanceuid();
 
@@ -79,7 +77,7 @@ public:
 
 	const std::string& modality();
 
-	const std::string& stationname();
+	const std::string& stationname();*/
 
 	int instancecount();
 
@@ -97,7 +95,7 @@ protected:
 	
 private:
 
-	std::string m_studyinstanceuid;
+	/*std::string m_studyinstanceuid;
 
 	std::string m_seriesinstanceuid;
 
@@ -109,7 +107,7 @@ private:
 
 	std::string m_seriestime;
 
-	std::string m_stationname;
+	std::string m_stationname;*/
 
 	int m_instancecount;
 
