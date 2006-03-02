@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/10 12:03:38 $
+    Update Date:      $Date: 2006/03/02 16:45:09 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -32,7 +32,9 @@
 #include "abusycursor.h"
 #include "imagepool.h"
 #include "gettext.h"
+
 #include <vector>
+#include <iostream>
 
 Settings::Settings(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade) :
 Gtk::Window(cobject),
@@ -133,6 +135,16 @@ m_refGlade(refGlade) {
 
 	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection = m_list_servers->get_selection();
 	refTreeSelection->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_server_activated));
+
+	// presets
+	m_refGlade->get_widget("presets_windowlevels_modality", m_presets_windowlevels_modality);
+	m_presets_windowlevels_modality->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_windowlevels_modality_changed));
+
+	m_refGlade->get_widget("presets_windowlevels", m_presets_windowlevels);
+
+	if(m_presets_windowlevels_modality->get_active_row_number() == -1) {
+		m_presets_windowlevels_modality->set_active(0);
+	}
 
 	restore_settings();
 }
@@ -407,4 +419,9 @@ void Settings::on_echotest() {
 	}
 
 	m_server_detail_echo->set_sensitive(true);
+}
+
+void Settings::on_windowlevels_modality_changed() {
+	int index = m_presets_windowlevels_modality->get_active_row_number();
+	std::cout << "on_windowlevels_modality_changed() - index: " << index << std::endl;
 }

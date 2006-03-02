@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 21:42:29 $
+    Update Date:      $Date: 2006/03/02 16:45:09 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -61,6 +61,8 @@ protected:
 	void on_server_apply();
 
 	void on_echotest();
+
+	void on_windowlevels_modality_changed();
 
 	void save_settings();
 
@@ -121,6 +123,11 @@ private:
 	Gtk::CheckButton* m_server_detail_lossy;
 
 	Gtk::Label* m_server_detail_echostatus;
+
+	// presets
+	Gtk::ComboBox* m_presets_windowlevels_modality;
+
+	Gtk::TreeView* m_presets_windowlevels;
 
 	// main buttons
 	
