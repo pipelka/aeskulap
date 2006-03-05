@@ -2,6 +2,7 @@ SUBDIRS = \
 	intl \
 	po \
 	dcmtk \
+	configuration \
 	imagepool \
 	widgets \
 	src \
@@ -10,6 +11,7 @@ SUBDIRS = \
 DIST_SUBDIRS = \
 	intl \
 	po \
+	configuration \
 	imagepool \
 	widgets \
 	src \

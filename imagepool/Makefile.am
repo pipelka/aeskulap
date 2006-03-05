@@ -30,22 +30,14 @@ libimagepool_la_SOURCES = \
 
 libimagepool_la_LIBADD = \
 	$(DCMTK_LIBS) \
+	../configuration/libconfiguration.la
 	-lpng \
 	-ltiff
 
-#libimagepool_la_LIBADD = \
-#	$(GTKMM_LIBS) \
-#	$(GCONFMM_LIBS)
-#	$(GTHREAD_LIBS) \
-#	$(DCMTK_LIBS) \
-#	-lpng \
-#	-ltiff
-
 libimagepool_la_LDFLAGS = \
-        -Wl,-rpath,${prefix}/lib/aeskulap
+	-Wl,-rpath,${prefix}/lib/aeskulap -avoid-version
 
 INCLUDES = \
+	-I$(top_srcdir)/configuration \
 	$(DCMTK_CFLAGS) \
-	$(GTKMM_CFLAGS) \
-	$(GCONFMM_CFLAGS)
-
+	$(GTKMM_CFLAGS)

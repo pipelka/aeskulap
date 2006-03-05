@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/10 12:03:38 $
+    Update Date:      $Date: 2006/03/05 19:37:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -150,6 +150,8 @@ void StudyManager::on_filter_search() {
 
 	m_new_query = true;
 
+	std::string local_aet = m_configuration.get_local_aet();
+
 	ImagePool::query_from_net(
 					m_entry_filter_patientid->get_text(),
 					m_entry_filter_name->get_text(),
@@ -158,6 +160,7 @@ void StudyManager::on_filter_search() {
 					m_datefilter->get_enddate(),
 					m_entry_filter_studydescription->get_text(),
 					m_entry_filter_stationname->get_text(),
+					local_aet,
 					m_selected_groups,
 					sigc::mem_fun(*this, &StudyManager::on_queryresult_study)
 					);
@@ -277,6 +280,7 @@ bool StudyManager::on_test_study_expand(const Gtk::TreeModel::iterator& iter, co
 	query_series_from_net(
 				studyinstanceuid,
 				server,
+				m_configuration.get_local_aet(),
 				sigc::bind(sigc::mem_fun(*this, &StudyManager::on_queryresult_series), row)
 				);
 

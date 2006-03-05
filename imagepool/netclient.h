@@ -20,16 +20,15 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/01/12 10:45:30 $
+    Update Date:      $Date: 2006/03/05 19:37:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netclient.h,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
 #ifndef IMAGEPOOL_NETCLIENT_H
 #define IMAGEPOOL_NETCLIENT_H
 
-#include <gconfmm.h>
 #include "dcdatset.h"
 #include "poolnetwork.h"
 #include <iostream>
@@ -44,7 +43,7 @@ public:
 
 	sigc::signal< void, DcmStack*, std::string > signal_server_result;
 
-	bool QueryServer(DcmDataset* query, const std::string& server, const char* syntax = NULL) {
+	bool QueryServer(DcmDataset* query, const std::string& server, const std::string& local_aet, const char* syntax = NULL) {
 		ImagePool::Server* s = ServerList::find_server(server);
 
 		if(s == NULL) {
@@ -57,7 +56,7 @@ public:
 				s->m_aet,
 				s->m_hostname,
 				s->m_port,
-				get_ouraet(),
+				local_aet,
 				syntax
 				);
 
@@ -81,14 +80,14 @@ public:
 		return r;
 	}
 
-	bool QueryServerGroup(DcmDataset* query, const std::string& group, const char* syntax = NULL) {
+	bool QueryServerGroup(DcmDataset* query, const std::string& group, const std::string& local_aet, const char* syntax = NULL) {
 		Glib::RefPtr<ServerList> list = ServerList::get(group);
 		bool rc = false;
 		
 		std::cout << "QueryServerGroup(" << group << ")" << std::endl;
 
 		for(ServerList::iterator i = list->begin(); i != list->end(); i++) {
-			rc |= QueryServer(query, i->first, syntax);
+			rc |= QueryServer(query, i->first, local_aet, syntax);
 		}
 		
 		return rc;

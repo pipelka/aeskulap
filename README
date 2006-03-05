@@ -32,6 +32,8 @@ Aeskulap version history:
   press (and keep pressed) SHIFT + LEFT MOUSEBUTTON, move mouse up/down
 - autolayout on loading images from files
 - SCU conformance improvements
+- separated configuration backend
+- added windowlevel presets
 
 
 0.2.0 - 20051002

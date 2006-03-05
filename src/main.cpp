@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/10 12:03:38 $
+    Update Date:      $Date: 2006/03/05 19:37:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -33,17 +33,31 @@
 
 #include "aiconfactory.h"
 #include "abusycursor.h"
+#include "aconfiguration.h"
 
 #include "binreloc.h"
 
 #include <gtkmm.h>
 #include <libglademm/xml.h>
-#include <gconfmm.h>
 
 #include <iostream>
 
 int main(int argc, char* argv[]) {
+
+	// initialize glib threads
+	if(!Glib::thread_supported()) {
+		Glib::thread_init();
+	}
+	//Glib::thread_init();
+
+	// initialize DICOM interface
 	ImagePool::init();
+	
+	// get configuration values
+	Aeskulap::Configuration& config = Aeskulap::Configuration::get_instance();
+	
+	// set default DICOM encoding (characterset)
+	ImagePool::set_encoding(config.get_encoding());
 
 	Gtk::Main kit(argc, argv);
 

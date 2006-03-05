@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/02 16:45:09 $
+    Update Date:      $Date: 2006/03/05 19:37:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.h,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
@@ -33,9 +33,10 @@
 
 #include <gtkmm.h>
 #include <libglademm/xml.h>
-#include <gconfmm.h>
 
-class Settings : public Gtk::Window {
+#include "aconfigclient.h"
+
+class Settings : public Gtk::Window, public Aeskulap::ConfigClient {
 public:
 
 	Settings(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade);
@@ -64,11 +65,17 @@ protected:
 
 	void on_windowlevels_modality_changed();
 
+	void on_windowlevels_add();
+
+	void on_windowlevels_remove();
+
 	void save_settings();
 
 	void restore_settings();
 
 	void set_server_detail_sensitive(bool sensitive = true);
+
+	void reload_windowlevel_preset(const Glib::ustring& modality);
 
 	class ModelColumns : public Gtk::TreeModel::ColumnRecord {
 	public:
@@ -95,6 +102,24 @@ protected:
 	Glib::RefPtr< Gtk::ListStore > m_refTreeModel;
 
 	Gtk::TreeView* m_list_servers;
+
+	class WindowLevelColumns : public Gtk::TreeModel::ColumnRecord {
+	public:
+	
+		WindowLevelColumns() {
+			add(m_description);
+			add(m_center);
+			add(m_width);
+		}
+		
+		Gtk::TreeModelColumn<Glib::ustring> m_description;
+		Gtk::TreeModelColumn<gint> m_center;
+		Gtk::TreeModelColumn<gint> m_width;
+	};
+	
+	WindowLevelColumns m_WindowLevelColumns;
+
+	Glib::RefPtr< Gtk::ListStore > m_refWindowLevelModel;
 
 private:
 
@@ -125,9 +150,12 @@ private:
 	Gtk::Label* m_server_detail_echostatus;
 
 	// presets
+
 	Gtk::ComboBox* m_presets_windowlevels_modality;
 
 	Gtk::TreeView* m_presets_windowlevels;
+
+	Glib::ustring m_windowlevels_modality;
 
 	// main buttons
 	
@@ -136,7 +164,6 @@ private:
 
 	Glib::RefPtr<Gnome::Glade::Xml> m_refGlade;
 
-	Glib::RefPtr<Gnome::Conf::Client> m_conf_client;
 };
 
 #endif // AESKULAP_SETTINGS_H
