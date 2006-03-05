@@ -18,6 +18,8 @@ aeskulap_SOURCES = \
 	prescandialog.h \
 	aboutdialog.h \
 	aboutdialog.cpp \
+	windowleveldialog.h \
+	windowleveldialog.cpp \
 	main.cpp
 
 
@@ -27,6 +29,7 @@ aeskulap_LDADD = \
 	$(GTHREAD_LIBS) \
 	../widgets/libgtkdicom.la \
 	../imagepool/libimagepool.la \
+	../configuration/libconfiguration.la \
 	$(GCONFMM_LIBS) \
 	$(DCMTK_LIBS)
 
@@ -48,6 +51,7 @@ INCLUDES = \
 	$(GLADEMM_CFLAGS) \
 	$(GCONFMM_CFLAGS) \
 	$(DCMTK_CFLAGS) \
+	-I$(top_srcdir)/configuration \
 	-I$(top_srcdir)/widgets \
 	-I$(top_srcdir)/imagepool
 

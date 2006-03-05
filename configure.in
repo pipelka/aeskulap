@@ -91,6 +91,7 @@ autopackage/default.apspec
 intl/Makefile
 po/Makefile.in
 Makefile
+configuration/Makefile
 imagepool/Makefile
 src/Makefile
 widgets/Makefile

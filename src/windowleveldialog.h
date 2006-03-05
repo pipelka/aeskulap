@@ -23,35 +23,44 @@
 
     Last Update:      $Author: braindead $
     Update Date:      $Date: 2006/03/05 19:37:28 $
-    Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/displayparameters.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/windowleveldialog.h,v $
+    CVS/RCS Revision: $Revision: 1.1 $
     Status:           $State: Exp $
 */
 
-#include "displayparameters.h"
+#ifndef AESKULAP_WINDOWLEVELDIALOG_H
+#define AESKULAP_WINDOWLEVELDIALOG_H
 
-DisplayParameters::DisplayParameters() :
-zoom_factor(100.0),
-move_x(0),
-move_y(0),
-selected(false),
-series_selected(false) {
-}
+#include <gtkmm.h>
+#include <libglademm/xml.h>
 
-Glib::RefPtr<DisplayParameters> DisplayParameters::create() {
-	return Glib::RefPtr<DisplayParameters>(new DisplayParameters);
-}
+#include "awindowlevel.h"
 
-Glib::RefPtr<DisplayParameters> DisplayParameters::create(const Glib::RefPtr<ImagePool::Instance>& image) {
-	Glib::RefPtr<DisplayParameters> d = create();
-	d->window.center = image->default_windowcenter();
-	d->window.width = image->default_windowwidth();
-	return d;
-}
+class WindowLevelDialog : public Gtk::Dialog {
+public:
 
-void DisplayParameters::copy(const Glib::RefPtr<DisplayParameters>& a) {
-	zoom_factor = a->zoom_factor;
-	move_x = a->move_x;
-	move_y = a->move_y;
-	window = a->window;
-}
+	WindowLevelDialog(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade);
+	
+	~WindowLevelDialog();
+
+	void set(const Aeskulap::WindowLevel& level);
+
+	Aeskulap::WindowLevel get();
+	
+protected:
+
+	Gtk::Entry* m_description;
+
+	Gtk::Entry* m_modality;
+
+	Gtk::SpinButton* m_center;
+
+	Gtk::SpinButton* m_width;
+
+private:
+
+	Glib::RefPtr<Gnome::Glade::Xml> m_refGlade;
+
+};
+
+#endif // AESKULAP_WINDOWLEVELDIALOG_H

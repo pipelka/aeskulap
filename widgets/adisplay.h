@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/24 18:40:49 $
+    Update Date:      $Date: 2006/03/05 19:37:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -108,8 +108,7 @@ protected:
 	guint m_drag_button;
 	gdouble m_drag_start_x;
 	gdouble m_drag_start_y;
-	int m_drag_window_center;
-	int m_drag_window_width;
+	WindowLevel m_drag_window;
 
 	Glib::RefPtr<Pango::Layout> m_layoutR;
 

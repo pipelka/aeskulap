@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-25 15:51+0100\n"
+"POT-Creation-Date: 2006-03-05 09:54+0100\n"
 "PO-Revision-Date: 2006-01-26 18:22+0100\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
 "Language-Team:  <de@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.10.2\n"
 
-#: ../imagepool/netquery.cpp:100 ../imagepool/poolinstance.cpp:528
+#: ../imagepool/netquery.cpp:98 ../imagepool/poolinstance.cpp:528
 #: ../imagepool/poolinstance.cpp:549
 msgid "no description"
 msgstr "Keine Beschreibung"
@@ -57,39 +57,39 @@ msgstr "Bild: %i / %i"
 msgid "%i mm"
 msgstr "%i mm"
 
-#: ../widgets/studyview.cpp:107
+#: ../widgets/studyview.cpp:108
 msgid "Rearrange the series of the current study"
 msgstr "Serien der Studie umordnen"
 
-#: ../widgets/studyview.cpp:108
+#: ../widgets/studyview.cpp:109
 msgid "Display the series tiling menu"
 msgstr "Layout der Series ändern"
 
-#: ../widgets/studyview.cpp:117
+#: ../widgets/studyview.cpp:118
 msgid "Toggle single series mode"
 msgstr "Nur aktuelle Serie anzeigen"
 
-#: ../widgets/studyview.cpp:118
+#: ../widgets/studyview.cpp:119
 msgid "Display the series selection menu"
 msgstr "Zeigt das Auswahlmenü für Serien an"
 
-#: ../widgets/studyview.cpp:126
+#: ../widgets/studyview.cpp:127
 msgid "Rearrange the images of the selected series"
 msgstr "Bilder der Serie umordnen"
 
-#: ../widgets/studyview.cpp:127
+#: ../widgets/studyview.cpp:128
 msgid "Display the the image tiling menu"
 msgstr "Layout der Serie ändern"
 
-#: ../widgets/studyview.cpp:135
+#: ../widgets/studyview.cpp:136
 msgid "Display references of the selected series"
 msgstr "Referenzbilder anzeigen"
 
-#: ../widgets/studyview.cpp:139
+#: ../widgets/studyview.cpp:140
 msgid "Navigate through 3D views"
 msgstr "3D Ansicht navigieren"
 
-#: ../widgets/studyview.cpp:147
+#: ../widgets/studyview.cpp:148
 msgid "Measurement tools"
 msgstr ""
 
@@ -121,6 +121,16 @@ msgstr "Datum auswählen"
 #: ../widgets/adatefilter.cpp:183
 msgid "Select Enddate"
 msgstr "Enddatum auswählen"
+
+#: ../widgets/awindowleveltoolbutton.cpp:39
+msgid "Add new windowlevel preset"
+msgstr ""
+
+#: ../widgets/awindowleveltoolbutton.cpp:78
+#: ../widgets/awindowleveltoolbutton.cpp:81
+#: ../widgets/awindowleveltoolbutton.cpp:115
+msgid "Custom"
+msgstr ""
 
 #: ../src/astockids.cpp:71
 msgid "1 Image"
@@ -190,23 +200,23 @@ msgstr "3D Zeiger"
 msgid "Measure"
 msgstr "Messen"
 
-#: ../src/mainwindow.cpp:52
+#: ../src/mainwindow.cpp:53
 msgid "Open DICOM Image files"
 msgstr "DICOM Bilder öffnen"
 
-#: ../src/mainwindow.cpp:104
+#: ../src/mainwindow.cpp:106
 msgid "Bring opened files to front"
 msgstr "Geöffnete Dateien anzeigen"
 
-#: ../src/mainwindow.cpp:113
+#: ../src/mainwindow.cpp:115
 msgid "DICOM files"
 msgstr "DICOM Dateien"
 
-#: ../src/mainwindow.cpp:118
+#: ../src/mainwindow.cpp:120
 msgid "Any files"
 msgstr "Alle Dateien"
 
-#: ../src/mainwindow.cpp:194
+#: ../src/mainwindow.cpp:196
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
 "requested images</span>\n"
@@ -226,11 +236,11 @@ msgstr "Patientenname"
 msgid "Birthdate"
 msgstr "Geburtsdatum"
 
-#: ../src/studymanager.cpp:101
+#: ../src/studymanager.cpp:101 ../src/settings.cpp:148 ../src/settings.cpp:449
 msgid "Description"
 msgstr "Beschreibung"
 
-#: ../src/studymanager.cpp:102
+#: ../src/studymanager.cpp:102 ../src/aeskulap.glade.h:35
 msgid "Modality"
 msgstr "Modalität"
 
@@ -242,53 +252,61 @@ msgstr "Datum/Zeit"
 msgid "Station"
 msgstr "Station"
 
-#: ../src/studymanager.cpp:105 ../src/aeskulap.glade.h:34
+#: ../src/studymanager.cpp:105 ../src/aeskulap.glade.h:42
 msgid "Server"
 msgstr "Server"
 
-#: ../src/studymanager.cpp:127 ../src/settings.cpp:124
-#: ../src/aeskulap.glade.h:25
+#: ../src/studymanager.cpp:127 ../src/settings.cpp:123
+#: ../src/aeskulap.glade.h:30
 msgid "Group"
 msgstr "Gruppe"
 
-#: ../src/studymanager.cpp:169
+#: ../src/studymanager.cpp:172
 msgid "<span weight=\"bold\" size=\"larger\">No results for this query</span>"
 msgstr ""
 "<span weight=\"bold\" size=\"larger\">Die Abfrage lieferte kein Ergebnis</"
 "span>"
 
-#: ../src/studymanager.cpp:247
+#: ../src/studymanager.cpp:250
 #, c-format
 msgid "Series %02i (1 Image)"
 msgstr "Serie %02i (1 Bild)"
 
-#: ../src/studymanager.cpp:250
+#: ../src/studymanager.cpp:253
 #, c-format
 msgid "Series %02i (%i Images)"
 msgstr "Serie %02i (%i Bilder)"
 
-#: ../src/studymanager.cpp:253
+#: ../src/studymanager.cpp:256
 #, c-format
 msgid "Series %02i"
 msgstr "Serie %02i"
 
-#: ../src/settings.cpp:120 ../src/aeskulap.glade.h:30
+#: ../src/settings.cpp:119 ../src/aeskulap.glade.h:37
 msgid "Name"
 msgstr "Name"
 
-#: ../src/settings.cpp:121 ../src/aeskulap.glade.h:16
+#: ../src/settings.cpp:120 ../src/aeskulap.glade.h:16
 msgid "AET"
 msgstr "AET"
 
-#: ../src/settings.cpp:122 ../src/aeskulap.glade.h:31
+#: ../src/settings.cpp:121 ../src/aeskulap.glade.h:38
 msgid "Port"
 msgstr "Port"
 
-#: ../src/settings.cpp:123
+#: ../src/settings.cpp:122
 msgid "Hostname"
 msgstr "Hostname"
 
-#: ../src/settings.cpp:380
+#: ../src/settings.cpp:149
+msgid "Center"
+msgstr ""
+
+#: ../src/settings.cpp:150
+msgid "Width"
+msgstr ""
+
+#: ../src/settings.cpp:386
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
@@ -296,7 +314,7 @@ msgstr ""
 "<span weight=\"bold\" size=\"larger\">Echo test fehlgeschlagen!</span>\n"
 "\n"
 
-#: ../src/settings.cpp:396
+#: ../src/settings.cpp:402
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
 msgstr "<span weight=\"bold\" size=\"larger\">Echo erfolgreich</span>"
 
@@ -361,74 +379,102 @@ msgid "<b>required</b>"
 msgstr "<b>erforderlich</b>"
 
 #: ../src/aeskulap.glade.h:17
+msgid "Add windowlevel"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:18
 msgid "Advanced query options"
 msgstr "Erweiterte Abfrageoptionen"
 
-#: ../src/aeskulap.glade.h:18
+#: ../src/aeskulap.glade.h:19
 msgid "Aeskulap"
 msgstr "Aeskulap"
 
-#: ../src/aeskulap.glade.h:19
+#: ../src/aeskulap.glade.h:20
 msgid "Aeskulap Viewer"
 msgstr "Aeskulap Betrachter"
 
-#: ../src/aeskulap.glade.h:20
+#: ../src/aeskulap.glade.h:21
+msgid ""
+"CT\n"
+"CR"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:23
+msgid "Center:"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:24
 msgid "Clear"
 msgstr "Löschen"
 
-#: ../src/aeskulap.glade.h:21
+#: ../src/aeskulap.glade.h:25
 msgid "Clear Filter"
 msgstr "Filter löschen"
 
-#: ../src/aeskulap.glade.h:22
+#: ../src/aeskulap.glade.h:26
 msgid "DICOM Settings"
 msgstr "DICOM Einstellungen"
 
-#: ../src/aeskulap.glade.h:23
+#: ../src/aeskulap.glade.h:27
+#, fuzzy
+msgid "Description:"
+msgstr "Beschreibung"
+
+#: ../src/aeskulap.glade.h:28
 msgid "Echotest"
 msgstr "Echotest"
 
-#: ../src/aeskulap.glade.h:24
+#: ../src/aeskulap.glade.h:29
 msgid "Fullscreen"
 msgstr "Vollbild"
 
-#: ../src/aeskulap.glade.h:26
+#: ../src/aeskulap.glade.h:31
 msgid "IP / Hostname"
 msgstr "IP / Hostname"
 
-#: ../src/aeskulap.glade.h:27
+#: ../src/aeskulap.glade.h:32
 msgid "Local AET"
 msgstr "Lokaler AET"
 
-#: ../src/aeskulap.glade.h:28
+#: ../src/aeskulap.glade.h:33
 msgid "Medical image viewer and DICOM network client\n"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:32
+#: ../src/aeskulap.glade.h:36
+#, fuzzy
+msgid "Modality:"
+msgstr "Modalität"
+
+#: ../src/aeskulap.glade.h:39
+msgid "Presets"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:40
 msgid "Scanning files"
 msgstr "Untersuche Dateien"
 
-#: ../src/aeskulap.glade.h:33
+#: ../src/aeskulap.glade.h:41
 msgid "Search"
 msgstr "Suchen"
 
-#: ../src/aeskulap.glade.h:35
+#: ../src/aeskulap.glade.h:43
 msgid "Servers"
 msgstr "Server"
 
-#: ../src/aeskulap.glade.h:36
+#: ../src/aeskulap.glade.h:44
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: ../src/aeskulap.glade.h:37
+#: ../src/aeskulap.glade.h:45
 msgid "Specific Characterset"
 msgstr "Specific Characterset"
 
-#: ../src/aeskulap.glade.h:38
+#: ../src/aeskulap.glade.h:46
 msgid "Study Manager"
 msgstr "Studienverwaltung"
 
-#: ../src/aeskulap.glade.h:39
+#: ../src/aeskulap.glade.h:47
 msgid ""
 "The Aeskulap source code is licensed under the following terms:\n"
 "\n"
@@ -442,7 +488,15 @@ msgid ""
 "BSD/MIT"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:49
+#: ../src/aeskulap.glade.h:57
+msgid "Width:"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:58
+msgid "Windowlevels"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:59
 msgid ""
 "XA\n"
 "CT\n"
@@ -452,27 +506,27 @@ msgid ""
 "SC\n"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:56
+#: ../src/aeskulap.glade.h:66
 msgid "_Edit"
 msgstr "_Bearbeiten"
 
-#: ../src/aeskulap.glade.h:57
+#: ../src/aeskulap.glade.h:67
 msgid "_File"
 msgstr "_Datei"
 
-#: ../src/aeskulap.glade.h:58
+#: ../src/aeskulap.glade.h:68
 msgid "_Help"
 msgstr "_Hilfe"
 
-#: ../src/aeskulap.glade.h:59
+#: ../src/aeskulap.glade.h:69
 msgid "_View"
 msgstr "_Ansicht"
 
-#: ../src/aeskulap.glade.h:60
+#: ../src/aeskulap.glade.h:70
 msgid "prefer lossy JPEG compression"
 msgstr "verlustbehaftete JPEG compression bevorzugen"
 
 #. TRANSLATORS: Replace this string with your names, one name per line.
-#: ../src/aeskulap.glade.h:62
+#: ../src/aeskulap.glade.h:72
 msgid "translator-credits"
 msgstr ""

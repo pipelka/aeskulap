@@ -9,6 +9,8 @@ libgtkdicom_la_SOURCES = \
 	aseriesmenu.cpp \
 	astudytab.h \
 	astudytab.cpp \
+	awindowleveltoolbutton.h \
+	awindowleveltoolbutton.cpp \
 	imagelayouttoolbutton.h \
 	imagelayouttoolbutton.cpp \
 	serieslayouttoolbutton.h \
@@ -31,6 +33,7 @@ libgtkdicom_la_SOURCES = \
 #	$(GTKMM_LIBS)
 
 INCLUDES = \
+	-I$(top_srcdir)/configuration \
 	-I$(top_srcdir)/imagepool \
 	-I$(top_srcdir)/src \
 	$(GTKMM_CFLAGS)

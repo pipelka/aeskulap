@@ -11,6 +11,7 @@ widgets/serieslayouttoolbutton.cpp
 widgets/adisplay.cpp
 widgets/studyview.cpp
 widgets/adatefilter.cpp
+widgets/awindowleveltoolbutton.cpp
 src/main.cpp
 src/astockids.cpp
 src/mainwindow.cpp

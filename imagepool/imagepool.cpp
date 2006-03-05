@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 18:37:42 $
+    Update Date:      $Date: 2006/03/05 19:37:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -40,13 +40,13 @@
 #include "dcrleerg.h"
 
 #include "poolnetwork.h"
+#include "aconfiguration.h"
 
 #include <locale.h>
 #include <map>
 #include <stdlib.h>
 #include <stdio.h>
 #include <glibmm.h> 
-#include <gconfmm.h>
 
 #include <queue>
 
@@ -60,25 +60,20 @@ static std::map< std::string, Glib::RefPtr<ImagePool::Series> > m_seriespool;
 
 static std::map< std::string, Glib::RefPtr<ImagePool::Study> > m_studypool;
 
+static std::string m_encoding;
 
-void init(bool connect) {
+Aeskulap::Configuration& m_configuration = Aeskulap::Configuration::get_instance();
 
+void init() {
 	DJEncoderRegistration::registerCodecs();
 	DJDecoderRegistration::registerCodecs();
 
 	DcmRLEEncoderRegistration::registerCodecs();
 	DcmRLEDecoderRegistration::registerCodecs();
 	
-	if(connect) {
-		Gnome::Conf::init();
-		Glib::thread_init();
-	}
-
-	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
-
 	net.InitializeNetwork(
-			0,
-			client->get_int("/apps/aeskulap/preferences/local_port")
+			10,
+			m_configuration.get_local_port()
 			);
 }
 	
@@ -184,22 +179,11 @@ std::string ImagePool::convert_string_to(const char* dicom_string, const std::st
 }
 
 void ImagePool::set_encoding(const std::string& dicom_encoding) {
-	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
-	client->set("/apps/aeskulap/preferences/characterset", dicom_encoding);
+	m_encoding = dicom_encoding;
 }
 
 std::string ImagePool::get_encoding() {
-	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
-
-	std::string charset = client->get_string(
-		"/apps/aeskulap/preferences/characterset");
-
-	if(charset.empty()) {
-		charset = "ISO_IR 100";
-		client->set("/apps/aeskulap/preferences/characterset", charset);
-	}
-	
-	return charset;
+	return m_encoding;
 }
 
 std::string ImagePool::get_system_encoding(const std::string& dicom_iso) {

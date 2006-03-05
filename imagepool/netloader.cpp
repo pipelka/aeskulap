@@ -20,14 +20,13 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/18 18:46:41 $
+    Update Date:      $Date: 2006/03/05 19:37:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
 #include <gtkmm.h>
-#include <gconfmm.h>
 
 #include "imagepool.h"
 #include "poolmoveassociation.h"
@@ -35,6 +34,7 @@
 #include "dcdeftag.h"
 #include "netclient.h"
 #include "netloader.h"
+#include "aconfiguration.h"
 
 namespace ImagePool {
 
@@ -57,6 +57,10 @@ protected:
 	};
 };
 
+NetLoader::NetLoader(const std::string& local_aet) :
+m_local_aet(local_aet) {
+}
+
 bool NetLoader::load(const std::string& studyinstanceuid, const std::string& server) {
 	if(busy()) {
 		return false;
@@ -71,8 +75,10 @@ bool NetLoader::load(const std::string& studyinstanceuid, const std::string& ser
 
 bool NetLoader::run() {
 
-	m_cache[m_studyinstanceuid].m_instancecount = query_study_instances(m_studyinstanceuid, m_server);
-	m_cache[m_studyinstanceuid].m_seriescount = query_study_series(m_studyinstanceuid, m_server);
+	Aeskulap::Configuration& conf = Aeskulap::Configuration::get_instance();
+
+	m_cache[m_studyinstanceuid].m_instancecount = query_study_instances(m_studyinstanceuid, m_server, conf.get_local_aet());
+	m_cache[m_studyinstanceuid].m_seriescount = query_study_series(m_studyinstanceuid, m_server, conf.get_local_aet());
 
 	NetClient<DicomMover> mover;
 
@@ -99,7 +105,7 @@ bool NetLoader::run() {
 	e = newDicomElement(DCM_SeriesInstanceUID);
 	query.insert(e);
 
-	if(!mover.QueryServer(&query, m_server)) {
+	if(!mover.QueryServer(&query, m_server, conf.get_local_aet())) {
 		std::cerr << "C-MOVE failed !" << std::endl;
 		return false;
 	}

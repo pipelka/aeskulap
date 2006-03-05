@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 18:37:42 $
+    Update Date:      $Date: 2006/03/05 19:37:28 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -42,7 +42,7 @@ class DcmDataset;
 
 namespace ImagePool {
 	
-	void init(bool connect = true);
+	void init();
 	
 	void close();
 
@@ -70,6 +70,7 @@ namespace ImagePool {
 				const std::string& date_to,
 				const std::string& studydescription,
 				const std::string& stationname,
+				const std::string& local_aet,
 				const std::set<std::string>& groups,
 				const sigc::slot< void, const Glib::RefPtr< ImagePool::Study >& >& resultslot
 				);
@@ -77,14 +78,21 @@ namespace ImagePool {
 	void query_series_from_net(
 				const std::string& studyinstanceuid,
 				const std::string& server,
+				const std::string& local_aet,
 				const sigc::slot< void, const Glib::RefPtr< ImagePool::Series >& >& resultslot
 				);
 
-	int query_study_instances(const std::string& studyinstanceuid, const std::string& server);
+	int query_study_instances(
+				const std::string& studyinstanceuid,
+				const std::string& server,
+				const std::string& local_aet
+				);
 
-	int query_study_series(const std::string& studyinstanceuid, const std::string& server);
-
-	std::string get_ouraet();
+	int query_study_series(
+				const std::string& studyinstanceuid,
+				const std::string& server,
+				const std::string& local_aet
+				);
 
 	std::string convert_string_from(const char* dicom_string, const std::string& system_encoding);
 
