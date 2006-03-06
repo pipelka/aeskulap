@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 09:58:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/aconfiguration.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -33,6 +33,28 @@ namespace Aeskulap {
 Configuration& Configuration::get_instance() {
 	static Configuration c;
 	return c;
+}
+
+void Configuration::add_default_presets_ct() {
+
+	/* DEFAULT CT WINDOWLEVELS
+	 * 
+	 * (Thanks Dr. Grover Ronald Pardo Holzwarth)
+	 * 
+	 * Abdomen     W:  250  C:  50
+	 * Head        W:  150  C:  50
+	 * Lung        W:  2000 C: -550
+	 * Mediastinum W:  450  C:  50
+	 * Spine       W:  300  C:  40
+	 * Vertebrae   W:  2300 C:  530
+	 */
+
+	set_windowlevel(WindowLevel("Abdomen", "CT", 50, 250));
+	set_windowlevel(WindowLevel("Head", "CT", 50, 150));
+	set_windowlevel(WindowLevel("Lung", "CT", -550, 2000));
+	set_windowlevel(WindowLevel("Mediastinum", "CT", 50, 450));
+	set_windowlevel(WindowLevel("Spine", "CT", 40, 300));
+	set_windowlevel(WindowLevel("Vertebrae", "CT", 530, 2300));
 }
 
 } // namespace Aeskulap

@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 09:58:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/awindowlevel.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -39,7 +39,13 @@ public:
 
 	WindowLevel() : center(0), width(0) {};
 
-	bool operator ==(const WindowLevel& l) {
+	WindowLevel(const Glib::ustring& desc, const Glib::ustring& mod, gint c, gint w) :
+	description(desc),
+	modality(mod),
+	center(c),
+	width(w) {};
+
+	bool operator ==(const WindowLevel& l) const {
 		return (center == l.center) && (width == l.width);
 	}
 

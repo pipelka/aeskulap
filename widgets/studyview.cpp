@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 09:58:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.18 $
+    CVS/RCS Revision: $Revision: 1.19 $
     Status:           $State: Exp $
 */
 
@@ -151,6 +151,7 @@ m_draw_reference_frame_ends(false) {
 
 	m_windowlevel = manage(new Aeskulap::WindowLevelToolButton);
 	m_windowlevel->signal_windowlevel_changed.connect(sigc::mem_fun(*this, &StudyView::on_windowlevel_changed));
+	m_windowlevel->signal_windowlevel_default.connect(sigc::mem_fun(*this, &StudyView::on_windowlevel_default));
 	m_windowlevel->signal_windowlevel_add.connect(sigc::mem_fun(*this, &StudyView::on_windowlevel_add));
 	m_windowlevel->show();
 	m_toolbar->append(*m_windowlevel);
@@ -663,10 +664,16 @@ void StudyView::enable_mouse_functions(bool enable) {
 }
 
 void StudyView::on_image_selected(SeriesView* s, Aeskulap::Display* d) {
+	if(d->get_windowlevel() == d->get_default_windowlevel()) {
+		return;
+	}
 	m_windowlevel->set_windowlevel(d->get_windowlevel());
 }
 
 void StudyView::on_image_changed(SeriesView* s, Aeskulap::Display* d) {
+	if(d->get_windowlevel() == d->get_default_windowlevel()) {
+		return;
+	}
 	m_windowlevel->set_windowlevel(d->get_windowlevel());
 }
 
@@ -675,6 +682,13 @@ void StudyView::on_windowlevel_changed(const Aeskulap::WindowLevel& l) {
 		return;
 	}
 	m_selected->apply_changes(l);
+}
+
+void StudyView::on_windowlevel_default() {
+	if(m_selected == NULL) {
+		return;
+	}
+	m_selected->apply_default_windowlevel();
 }
 
 void StudyView::on_windowlevel_add(Aeskulap::WindowLevelToolButton* btn) {
