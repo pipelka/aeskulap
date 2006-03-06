@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2006/03/06 16:01:23 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adatefilter.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -163,7 +163,7 @@ bool DateFilter::select_date(const Glib::ustring& title, std::string& isodate) {
 		guint month;
 		guint day;
 		cal.get_date(year, month, day);
-		sprintf(date, "%04i%02i%02i", year, month+1, day);
+		g_snprintf(date, sizeof(date), "%04i%02i%02i", year, month+1, day);
 		isodate = date;
 
 		return true;
@@ -225,7 +225,7 @@ void DateFilter::set_today() {
 	l_time = localtime(&now);
 
 	char date[10];
-	sprintf(date, "%04i%02i%02i", l_time->tm_year+1900, l_time->tm_mon+1, l_time->tm_mday);
+	g_snprintf(date, sizeof(date), "%04i%02i%02i", l_time->tm_year+1900, l_time->tm_mon+1, l_time->tm_mday);
 	
 	m_startdate = date;
 	m_enddate = date;
@@ -240,7 +240,7 @@ void DateFilter::set_yesterday() {
 	l_time = localtime(&now);
 
 	char date[10];
-	sprintf(date, "%04i%02i%02i", l_time->tm_year+1900, l_time->tm_mon+1, l_time->tm_mday);
+	g_snprintf(date, sizeof(date), "%04i%02i%02i", l_time->tm_year+1900, l_time->tm_mon+1, l_time->tm_mday);
 	
 	m_startdate = date;
 	m_enddate = date;

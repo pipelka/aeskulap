@@ -59,8 +59,8 @@ presId(0),
 msgId(0),
 dcmNet(NULL)
 {
-	strcpy(sopClass, "");
-	strcpy(sopInstance, "");
+	sopClass[0] = 0;
+	sopInstance[0] = 0;
 	m_CompressionQuality = 70;
 	m_ProposeCompression = true;
 }
@@ -105,8 +105,8 @@ void Association::Destroy() {
 	assoc = NULL;
 	msgId = 0;
 	presId = 0;
-	strcpy(sopClass, "");
-	strcpy(sopInstance, "");
+	sopClass[0] = 0;
+	sopInstance[0] = 0;
 
 }
 
@@ -137,8 +137,8 @@ CONDITION Association::SendObject(DcmDataset *dataset) {
 
 	bzero((char*)&req, sizeof(req));
 	req.MessageID = msgId;
-	strcpy(req.AffectedSOPClassUID, sopClass);
-	strcpy(req.AffectedSOPInstanceUID, sopInstance);
+	strncpy(req.AffectedSOPClassUID, sopClass, sizeof(req.AffectedSOPClassUID));
+	strncpy(req.AffectedSOPInstanceUID, sopInstance, sizeof(req.AffectedSOPInstanceUID));
 	req.DataSetType = DIMSE_DATASET_PRESENT;
 	req.Priority = DIMSE_PRIORITY_LOW;
 
@@ -294,19 +294,19 @@ bool Association::AddKey(DcmDataset *query, const DcmTagKey& tag, int value) {
 
 bool Association::AddKey(DcmDataset *query, const DcmTagKey& tag, double value, const char* format) {
 	static char temp[16];
-	sprintf(temp, format, value);
+	snprintf(temp, sizeof(temp), format, value);
 	return AddKey(query, tag, temp);
 }
 
 bool Association::AddKey(DcmItem *query, const DcmTagKey& tag, int value) {
 	static char temp[16];
-	sprintf(temp, "%i", value);
+	snprintf(temp, sizeof(temp), "%i", value);
 	return AddKey(query, tag, temp);
 }
 
 bool Association::AddKey(DcmItem *query, const DcmTagKey& tag, double value, const char* format) {
 	static char temp[16];
-	sprintf(temp, format, value);
+	snprintf(temp, sizeof(temp), format, value);
 	return AddKey(query, tag, temp);
 }
 
@@ -348,7 +348,7 @@ const char* Association::GetKey(DcmDataset* query, const DcmTagKey& tag) {
 	OFString val;
 	static char buffer[129];
 	query->findAndGetOFString(tag, val, 0, OFTrue);
-	strcpy(buffer, val.c_str());
+	strncpy(buffer, val.c_str(), sizeof(buffer));
 	return buffer;
 }
 
