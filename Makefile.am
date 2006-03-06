@@ -1,5 +1,4 @@
 SUBDIRS = \
-	intl \
 	po \
 	dcmtk \
 	configuration \
@@ -9,7 +8,6 @@ SUBDIRS = \
 	pixmaps
 
 DIST_SUBDIRS = \
-	intl \
 	po \
 	configuration \
 	imagepool \
@@ -18,19 +16,22 @@ DIST_SUBDIRS = \
 	pixmaps
 
 EXTRA_DIST = \
-	config.rpath \
-	mkinstalldirs  \
-	README \
 	COPYING \
 	COPYING.LIB \
 	COPYING.DCMTK \
+	INSTALL \
+	README \
 	gettext.h \
-	autogen.sh \
 	intltool-extract.in \
 	intltool-merge.in \
 	intltool-update.in
 
-ACLOCAL_AMFLAGS = -I m4
+DISTCLEANFILES = \
+	intltool-extract \
+	intltool-merge \
+	intltoo-update
+
+@INTLTOOL_DESKTOP_RULE@
 
 dist-hook:
 	mkdir -p $(distdir)/dcmtk

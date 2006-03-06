@@ -14,25 +14,10 @@ cd $TOPDIR
 echo "Generating build information ..."
 aclocalinclude="$ACLOCAL_FLAGS"
 
-echo "Running autopoint ..."
-autopoint -f || ( echo "***ERROR*** autopoint failed." ; exit 1 )
-
-echo "Running intltoolize ..."
-intltoolize -c -f --automake || {
-    echo
-    echo "**Error**: intltoolize failed. This may mean that you have not"
-    echo "installed all of the packages you need. Please install the"
-    echo "'intltool' package."
-    exit 1
-}
-
-echo "Running libtoolize ..."
-libtoolize -f -c
-
 echo "Running aclocal $aclocalinclude ..."
-aclocal -I m4 $aclocalinclude || {
+aclocal $aclocalinclude || {
     echo
-    echo "**Error**: aclocal failed. This may mean that you have not"
+    echo "**ERROR**: aclocal failed. This may mean that you have not"
     echo "installed all of the packages you need, or you may need to"
     echo "set ACLOCAL_FLAGS to include \"-I \$prefix/share/aclocal\""
     echo "for the prefix where you installed the packages whose"
@@ -41,13 +26,49 @@ aclocal -I m4 $aclocalinclude || {
 }
 
 echo "Running autoheader ..."
-autoheader || ( echo "***ERROR*** autoheader failed." ; exit 1 )
+autoheader || {
+    echo "***ERROR*** autoheader failed."
+    exit 1
+}
+
+#echo "Running autopoint ..."
+#autopoint -f || ( echo "***ERROR*** autopoint failed." ; exit 1 )
+
+
+echo "Running libtoolize ..."
+libtoolize -f -c || {
+    echo
+    echo "**ERROR**: intltoolize failed. This may mean that you have not"
+    echo "installed all of the packages you need. Please install the"
+    echo "'libtool' package."
+    exit 1
+}
 
 echo "Running automake ..."
-automake -c -a --foreign || ( echo "***ERROR*** automake failed." ; exit 1 )
+automake -c --foreign --add-missing || {
+    echo "***ERROR*** automake failed."
+    exit 1
+}
 
 echo "Running autoconf ..."
-autoconf || ( echo "***ERROR*** autoconf failed." ; exit 1 )
+autoconf || {
+    echo "***ERROR*** autoconf failed."
+    exit 1
+}
+
+echo "Running glib-gettextize ..."
+glib-gettextize --copy --force || {
+    echo
+    echo "***ERROR*** glib-gettextize failed."
+    exit 1
+}
+
+echo "Running intltoolize ..."
+intltoolize -c -f --automake || {
+    echo
+    echo "***ERROR* intltoolize failed."
+    exit 1
+}
 
 chmod +x `find . -name configure`
 chmod +x `find . -name mkinstalldirs`

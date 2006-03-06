@@ -22,12 +22,13 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 15:05:01 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.8 $
+    CVS/RCS Revision: $Revision: 1.9 $
     Status:           $State: Exp $
 */
 
+#include "config.h"
 #include "imagepool.h"
 #include "mainwindow.h"
 
@@ -44,11 +45,23 @@
 
 int main(int argc, char* argv[]) {
 
+	br_init(NULL);
+
+	std::string datadir = br_find_data_dir(AESKULAP_DATADIR);
+	std::cout << "datadir: " << datadir << std::endl;
+
+	std::string localedir = datadir + "/locale";
+	std::string gladedir = datadir + "/aeskulap/glade";
+
+	bindtextdomain(GETTEXT_PACKAGE, localedir.c_str());
+	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+	textdomain(GETTEXT_PACKAGE);
+ 
+
 	// initialize glib threads
 	if(!Glib::thread_supported()) {
 		Glib::thread_init();
 	}
-	//Glib::thread_init();
 
 	// initialize DICOM interface
 	ImagePool::init();
@@ -61,18 +74,6 @@ int main(int argc, char* argv[]) {
 
 	Gtk::Main kit(argc, argv);
 
-	br_init(NULL);
-
-	std::string datadir = br_find_data_dir(AESKULAP_DATADIR);
-	std::cout << "datadir: " << datadir << std::endl;
-
-	std::string localedir = datadir + "/locale";
-	std::string gladedir = datadir + "/aeskulap/glade";
-
-	bindtextdomain("aeskulap", localedir.c_str());
-	bind_textdomain_codeset("aeskulap", "UTF-8");
-	textdomain("aeskulap");
- 
  	// set locale "C" for numeric conversion (strtod)
  
  	if(setlocale(LC_NUMERIC, "C") == NULL) {

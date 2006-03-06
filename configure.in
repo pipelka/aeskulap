@@ -1,26 +1,35 @@
 AC_PREREQ(2.52)
 
 AC_INIT(aeskulap, 0.2.1, pipelka@teleweb.at, aeskulap)
-AM_INIT_AUTOMAKE([subdir-objects])
-dnl AM_MAINTAINER_MODE
 
 AM_CONFIG_HEADER(config.h)
+
+AM_INIT_AUTOMAKE(aeskulap, 0.2.1)
+
+AC_SUBST(ACLOCAL_AMFLAGS, "$ACLOCAL_FLAGS")
+AM_MAINTAINER_MODE
+
 
 dnl
 dnl Require programs
 dnl
-AC_PROG_INTLTOOL(0.33)
-AC_PROG_LIBTOOL
+AC_PROG_INTLTOOL
+AM_PROG_LIBTOOL
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_CXX
 AC_PROG_INSTALL
 AM_BINRELOC
 
-ALL_LINGUAS="en de es hu pt"
-AM_GNU_GETTEXT
-GETTEXT_PACKAGE="aeskulap"
+dnl
+dnl gettext package
+dnl
+GETTEXT_PACKAGE=aeskulap
 AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[Translation domain used])
+
+ALL_LINGUAS="en de es hu pt"
+AM_GLIB_GNU_GETTEXT
 
 dnl
 dnl Required headers
@@ -38,8 +47,6 @@ AC_CHECK_LIB(jpeg,jpeg_read_header)
 AC_CHECK_LIB(tiff,TIFFClose)
 AC_CHECK_LIB(png,png_create_read_struct)
 
-AM_GNU_GETTEXT_VERSION(0.14.1)
-
 PKG_CHECK_MODULES(GTKMM, gtkmm-2.4 >= 2.6.0)
 AC_SUBST(GTKMM_CFLAGS)
 AC_SUBST(GTKMM_LIBS)
@@ -55,6 +62,18 @@ AC_SUBST(GTHREAD_LIBS)
 PKG_CHECK_MODULES(GCONFMM, gconfmm-2.6 >= 2.10.0)
 AC_SUBST(GCONFMM_CFLAGS)
 AC_SUBST(GCFONMM_LIBS)
+
+
+AC_ARG_ENABLE(schemas-install,AC_HELP_STRING([--disable-schemas-install],
+					     [Disable installation of the gconf schemas]))
+
+AC_PATH_PROG(GCONFTOOL, gconftool-2, no)
+if test x"$GCONFTOOL" = xno ; then
+	AC_MSG_ERROR([gconftool2 executable not found in your path - should be 
+installed with GConf])
+fi
+AM_GCONF_SOURCE_2
+
 
 dnl AC_CONFIG_SUBDIRS(dcmtk)
 
@@ -80,15 +99,10 @@ else
     packageprefix=${prefix}
 fi
 
-dnl images directory
-aeskulap_images_dir="${packageprefix}/share/aeskulap/images"
-AC_SUBST(aeskulap_images_dir)
-
 dnl AC_CONFIG_SUBDIRS(dcmtk)
 
 AC_OUTPUT([
 autopackage/default.apspec
-intl/Makefile
 po/Makefile.in
 Makefile
 configuration/Makefile
@@ -98,7 +112,7 @@ widgets/Makefile
 pixmaps/Makefile
 ])
 
-cd dcmtk
+cd $srcdir/dcmtk
 export CFLAGS="$CFLAGS"
 export CXXFLAGS="$CXXFLAGS"
 sh ./configure --without-openssl --without-zlib --without-libwrap --prefix=${prefix} --libdir=${prefix}/lib/aeskulap

@@ -25,7 +25,7 @@ set -e
 case "$1" in
     configure)
 	# create log dir
-	gconftool-2 --install-schema-file=/usr/share/gconf/schemas/aeskulap.schema
+	gconftool-2 --install-schema-file=/etc/gconf/schemas/aeskulap.schema
 	;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

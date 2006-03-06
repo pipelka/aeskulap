@@ -51,7 +51,7 @@ Aeskulap version history:
 - autolayout (currently based on number of series)
 - added 3D cursor (3D location and slice synchronzation tool)
 - an uncountable number of smaller fixes :)
-
+- autoconf / automake / gettext framework cleanup
 
 0.1.1 - 20050911
 ----------------
