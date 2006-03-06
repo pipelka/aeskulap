@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 18:12:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.25 $
+    CVS/RCS Revision: $Revision: 1.26 $
     Status:           $State: Exp $
 */
 
@@ -33,6 +33,7 @@
 #include "abusycursor.h"
 #include "astudytab.h"
 #include "aconfiguration.h"
+#include "awindowleveltoolbutton.h"
 
 #include "poolstudy.h"
 
@@ -260,6 +261,7 @@ void MainWindow::on_edit_settings() {
 
 void MainWindow::on_edit_settings_apply() {
 	m_studymanager->update_grouplist();
+	Aeskulap::WindowLevelToolButton::update_all();
 }
 
 const std::string& MainWindow::find_pageuid(Gtk::Widget* page) {
