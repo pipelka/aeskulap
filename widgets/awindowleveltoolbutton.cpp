@@ -89,7 +89,12 @@ void WindowLevelToolButton::update() {
 		m_combo->set_active_text(gettext("Default"));
 	}
 	else {
-		m_combo->set_active_text(a);
+		if(find_windowlevel(a) == m_list.end()) {
+			m_combo->set_active_text(gettext("Custom"));
+		}
+		else {
+			m_combo->set_active_text(a);
+		}
 	}
 }
 

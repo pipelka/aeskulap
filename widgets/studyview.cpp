@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 09:58:02 $
+    Update Date:      $Date: 2006/03/06 18:12:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.19 $
+    CVS/RCS Revision: $Revision: 1.20 $
     Status:           $State: Exp $
 */
 
@@ -700,6 +700,7 @@ void StudyView::on_windowlevel_add(Aeskulap::WindowLevelToolButton* btn) {
 	Aeskulap::Display* d = m_selected->get_selected_display();
 	Aeskulap::WindowLevel w = d->get_windowlevel();
 	w.modality = modality;
+	w.description = gettext("new windowlevel");
 
 	std::cout << "signal_windowlevel_add('" << modality << "', " << w.center << "/" << w.width << ")" << std::endl;
 
@@ -708,4 +709,5 @@ void StudyView::on_windowlevel_add(Aeskulap::WindowLevelToolButton* btn) {
 	}
 	
 	Aeskulap::WindowLevelToolButton::update_all();
+	m_windowlevel->set_windowlevel(w);
 }
