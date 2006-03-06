@@ -7,14 +7,49 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-05 09:54+0100\n"
-"PO-Revision-Date: 2006-01-26 18:22+0100\n"
+"POT-Creation-Date: 2006-03-06 11:10+0100\n"
+"PO-Revision-Date: 2006-03-06 11:11+0100\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
 "Language-Team:  <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: application/x-xml2pot; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.10.2\n"
+
+#. DEFAULT CT WINDOWLEVELS
+#. *
+#. * (Thanks Dr. Grover Ronald Pardo Holzwarth)
+#. *
+#. * Abdomen     W:  250  C:  50
+#. * Head        W:  150  C:  50
+#. * Lung        W:  2000 C: -550
+#. * Mediastinum W:  450  C:  50
+#. * Spine       W:  300  C:  40
+#. * Vertebrae   W:  2300 C:  530
+#.
+#: ../configuration/aconfiguration.cpp:52
+msgid "Abdomen"
+msgstr ""
+
+#: ../configuration/aconfiguration.cpp:53
+msgid "Head"
+msgstr "Kopf"
+
+#: ../configuration/aconfiguration.cpp:54
+msgid "Lung"
+msgstr "Lunge"
+
+#: ../configuration/aconfiguration.cpp:55
+msgid "Mediastinum"
+msgstr ""
+
+#: ../configuration/aconfiguration.cpp:56
+msgid "Spine"
+msgstr "Wirbelsäule"
+
+#: ../configuration/aconfiguration.cpp:57
+msgid "Vertebrae"
+msgstr ""
 
 #: ../imagepool/netquery.cpp:98 ../imagepool/poolinstance.cpp:528
 #: ../imagepool/poolinstance.cpp:549
@@ -39,6 +74,11 @@ msgstr ""
 "Serie %i (%s)\n"
 "Keine Beschreibung"
 
+#: ../widgets/seriesview.cpp:303 ../widgets/awindowleveltoolbutton.cpp:86
+#: ../widgets/awindowleveltoolbutton.cpp:123
+msgid "Custom"
+msgstr "Benutzerdef."
+
 #: ../widgets/adisplay.cpp:160
 msgid "Acc:\n"
 msgstr "Aufn.:\n"
@@ -52,7 +92,7 @@ msgstr "Aufn. Zeit:"
 msgid "Image: %i / %i"
 msgstr "Bild: %i / %i"
 
-#: ../widgets/adisplay.cpp:500 ../widgets/adisplay.cpp:552
+#: ../widgets/adisplay.cpp:498 ../widgets/adisplay.cpp:550
 #, c-format
 msgid "%i mm"
 msgstr "%i mm"
@@ -91,7 +131,7 @@ msgstr "3D Ansicht navigieren"
 
 #: ../widgets/studyview.cpp:148
 msgid "Measurement tools"
-msgstr ""
+msgstr "Messwerkzeuge"
 
 #: ../widgets/adatefilter.cpp:44 ../widgets/adatefilter.cpp:49
 #: ../widgets/adatefilter.cpp:91 ../widgets/adatefilter.cpp:97
@@ -122,15 +162,15 @@ msgstr "Datum auswählen"
 msgid "Select Enddate"
 msgstr "Enddatum auswählen"
 
-#: ../widgets/awindowleveltoolbutton.cpp:39
+#: ../widgets/awindowleveltoolbutton.cpp:41
 msgid "Add new windowlevel preset"
-msgstr ""
+msgstr "Neuen Fensterwert hinzufügen"
 
-#: ../widgets/awindowleveltoolbutton.cpp:78
-#: ../widgets/awindowleveltoolbutton.cpp:81
-#: ../widgets/awindowleveltoolbutton.cpp:115
-msgid "Custom"
-msgstr ""
+#: ../widgets/awindowleveltoolbutton.cpp:85
+#: ../widgets/awindowleveltoolbutton.cpp:89
+#: ../widgets/awindowleveltoolbutton.cpp:130
+msgid "Default"
+msgstr "Voreinstellung"
 
 #: ../src/astockids.cpp:71
 msgid "1 Image"
@@ -200,23 +240,23 @@ msgstr "3D Zeiger"
 msgid "Measure"
 msgstr "Messen"
 
-#: ../src/mainwindow.cpp:53
+#: ../src/mainwindow.cpp:54
 msgid "Open DICOM Image files"
 msgstr "DICOM Bilder öffnen"
 
-#: ../src/mainwindow.cpp:106
+#: ../src/mainwindow.cpp:110
 msgid "Bring opened files to front"
 msgstr "Geöffnete Dateien anzeigen"
 
-#: ../src/mainwindow.cpp:115
+#: ../src/mainwindow.cpp:119
 msgid "DICOM files"
 msgstr "DICOM Dateien"
 
-#: ../src/mainwindow.cpp:120
+#: ../src/mainwindow.cpp:124
 msgid "Any files"
 msgstr "Alle Dateien"
 
-#: ../src/mainwindow.cpp:196
+#: ../src/mainwindow.cpp:200
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
 "requested images</span>\n"
@@ -236,7 +276,7 @@ msgstr "Patientenname"
 msgid "Birthdate"
 msgstr "Geburtsdatum"
 
-#: ../src/studymanager.cpp:101 ../src/settings.cpp:148 ../src/settings.cpp:449
+#: ../src/studymanager.cpp:101 ../src/settings.cpp:148 ../src/settings.cpp:455
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -306,7 +346,7 @@ msgstr ""
 msgid "Width"
 msgstr ""
 
-#: ../src/settings.cpp:386
+#: ../src/settings.cpp:388
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
@@ -314,7 +354,7 @@ msgstr ""
 "<span weight=\"bold\" size=\"larger\">Echo test fehlgeschlagen!</span>\n"
 "\n"
 
-#: ../src/settings.cpp:402
+#: ../src/settings.cpp:404
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
 msgstr "<span weight=\"bold\" size=\"larger\">Echo erfolgreich</span>"
 
@@ -380,7 +420,7 @@ msgstr "<b>erforderlich</b>"
 
 #: ../src/aeskulap.glade.h:17
 msgid "Add windowlevel"
-msgstr ""
+msgstr "Fensterwert hinzufügen"
 
 #: ../src/aeskulap.glade.h:18
 msgid "Advanced query options"
@@ -417,9 +457,8 @@ msgid "DICOM Settings"
 msgstr "DICOM Einstellungen"
 
 #: ../src/aeskulap.glade.h:27
-#, fuzzy
 msgid "Description:"
-msgstr "Beschreibung"
+msgstr "Beschreibung:"
 
 #: ../src/aeskulap.glade.h:28
 msgid "Echotest"
@@ -442,13 +481,12 @@ msgid "Medical image viewer and DICOM network client\n"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:36
-#, fuzzy
 msgid "Modality:"
-msgstr "Modalität"
+msgstr "Modalität:"
 
 #: ../src/aeskulap.glade.h:39
 msgid "Presets"
-msgstr ""
+msgstr "Voreinstellungen"
 
 #: ../src/aeskulap.glade.h:40
 msgid "Scanning files"
@@ -494,7 +532,7 @@ msgstr ""
 
 #: ../src/aeskulap.glade.h:58
 msgid "Windowlevels"
-msgstr ""
+msgstr "Fensterwerte"
 
 #: ../src/aeskulap.glade.h:59
 msgid ""

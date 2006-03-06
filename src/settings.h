@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 11:07:25 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.h,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -76,6 +76,8 @@ protected:
 	void set_server_detail_sensitive(bool sensitive = true);
 
 	void reload_windowlevel_preset(const Glib::ustring& modality);
+
+	void store_windowlevel_preset();
 
 	class ModelColumns : public Gtk::TreeModel::ColumnRecord {
 	public:

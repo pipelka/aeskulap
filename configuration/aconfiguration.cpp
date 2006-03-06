@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 09:58:02 $
+    Update Date:      $Date: 2006/03/06 11:07:25 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/aconfiguration.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -49,12 +49,26 @@ void Configuration::add_default_presets_ct() {
 	 * Vertebrae   W:  2300 C:  530
 	 */
 
-	set_windowlevel(WindowLevel("Abdomen", "CT", 50, 250));
-	set_windowlevel(WindowLevel("Head", "CT", 50, 150));
-	set_windowlevel(WindowLevel("Lung", "CT", -550, 2000));
-	set_windowlevel(WindowLevel("Mediastinum", "CT", 50, 450));
-	set_windowlevel(WindowLevel("Spine", "CT", 40, 300));
-	set_windowlevel(WindowLevel("Vertebrae", "CT", 530, 2300));
+	set_windowlevel(WindowLevel(gettext("Abdomen"), "CT", 50, 250));
+	set_windowlevel(WindowLevel(gettext("Head"), "CT", 50, 150));
+	set_windowlevel(WindowLevel(gettext("Lung"), "CT", -550, 2000));
+	set_windowlevel(WindowLevel(gettext("Mediastinum"), "CT", 50, 450));
+	set_windowlevel(WindowLevel(gettext("Spine"), "CT", 40, 300));
+	set_windowlevel(WindowLevel(gettext("Vertebrae"), "CT", 530, 2300));
+}
+
+Glib::ustring Configuration::get_name_from_path(const Glib::ustring& path) {
+	Glib::ustring name;
+
+	int p = path.rfind("/");
+	if(p == Glib::ustring::npos) {
+		name = path;
+	}
+	else {
+		name = path.substr(p+1);
+	}
+	
+	return name;
 }
 
 } // namespace Aeskulap
