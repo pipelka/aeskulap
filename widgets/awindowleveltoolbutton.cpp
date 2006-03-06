@@ -82,10 +82,11 @@ void WindowLevelToolButton::update() {
 		m_combo->append_text(i->first);
 	}
 
+	m_combo->append_text(gettext("Default"));
 	m_combo->append_text(gettext("Custom"));
 
 	if(a.empty()) {
-		m_combo->set_active_text(gettext("Custom"));
+		m_combo->set_active_text(gettext("Default"));
 	}
 	else {
 		m_combo->set_active_text(a);
@@ -126,6 +127,11 @@ void WindowLevelToolButton::set_windowlevel(const Aeskulap::WindowLevel& level) 
 }
 
 void WindowLevelToolButton::on_changed() {
+	if(m_combo->get_active_text() == Glib::ustring(gettext("Default"))) {
+		signal_windowlevel_default();
+		return;
+	}
+
 	Aeskulap::WindowLevelList::iterator i = find_windowlevel(m_combo->get_active_text());
 	if(i == m_list.end()) {
 		return;

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 09:58:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -113,6 +113,8 @@ protected:
 	void on_image_changed(SeriesView* s, Aeskulap::Display* d);
 
 	void on_windowlevel_changed(const Aeskulap::WindowLevel& l);
+
+	void on_windowlevel_default();
 
 	void on_windowlevel_add(Aeskulap::WindowLevelToolButton* btn);
 

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 09:58:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/displayparameters.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -44,8 +44,12 @@ Glib::RefPtr<DisplayParameters> DisplayParameters::create() {
 
 Glib::RefPtr<DisplayParameters> DisplayParameters::create(const Glib::RefPtr<ImagePool::Instance>& image) {
 	Glib::RefPtr<DisplayParameters> d = create();
+	
 	d->window.center = image->default_windowcenter();
 	d->window.width = image->default_windowwidth();
+	d->window.modality = image->modality();
+
+	d->default_window = d->window;
 	return d;
 }
 

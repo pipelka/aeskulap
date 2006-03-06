@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 09:58:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.20 $
+    CVS/RCS Revision: $Revision: 1.21 $
     Status:           $State: Exp $
 */
 
@@ -258,6 +258,7 @@ void SeriesView::on_image_selected(unsigned int index) {
 	
 	select(true);
 	signal_update(this);
+	
 	signal_image_selected(this, m_widgets[m_selected_image - m_offset]);
 }
 
@@ -265,6 +266,15 @@ void SeriesView::refresh(bool smooth) {
 	for(unsigned int i = 0; i < m_widgets.size(); i++) {
 		m_widgets[i]->refresh(false);
 	}
+}
+
+void SeriesView::apply_default_windowlevel() {
+	for(unsigned int i = 0; i < m_dispparam.size(); i++) {
+		m_dispparam[i]->window = m_dispparam[i]->default_window;
+	}
+
+	refresh(false);
+	schedule_repaint(1000);
 }
 
 void SeriesView::apply_changes(Glib::RefPtr<DisplayParameters> param) {

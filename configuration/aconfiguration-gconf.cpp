@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 09:58:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/aconfiguration-gconf.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.2 $
     Status:           $State: Exp $
 */
 
@@ -42,6 +42,10 @@ Configuration::Configuration() {
 	m_conf_client->add_dir("/apps/aeskulap/preferences");
 	m_conf_client->add_dir("/apps/aeskulap/presets");
 	m_conf_client->add_dir("/apps/aeskulap/presets/windowlevel");
+
+	if(!m_conf_client->dir_exists("/apps/aeskulap/presets/windowlevel/CT")) {
+		add_default_presets_ct();
+	}
 }
 
 std::string Configuration::get_local_aet() {
