@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 11:07:25 $
+    Update Date:      $Date: 2006/03/06 16:01:23 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.15 $
+    CVS/RCS Revision: $Revision: 1.16 $
     Status:           $State: Exp $
 */
 
@@ -233,7 +233,7 @@ void Settings::restore_settings() {
 	char buffer[10];
 
 	m_local_aet->set_text(m_configuration.get_local_aet());
-	sprintf(buffer, "%i", m_configuration.get_local_port());
+	g_snprintf(buffer, sizeof(buffer), "%i", m_configuration.get_local_port());
 	m_local_port->set_text(buffer);
 
 	Glib::ustring charset = ImagePool::get_encoding();
@@ -268,7 +268,7 @@ void Settings::on_server_add() {
 	Glib::RefPtr<Gtk::TreeSelection> selection = m_list_servers->get_selection();
 
 	char servername[50];
-	sprintf(servername, "Server%i", ++count);
+	g_snprintf(servername, sizeof(servername), "Server%i", ++count);
 
 	row[m_Columns.m_name] = servername;
 	row[m_Columns.m_aet] = "AET";
@@ -320,7 +320,7 @@ void Settings::on_server_activated() {
 	
 	char buffer[10];
 	guint i = row[m_Columns.m_port];
-	sprintf(buffer, "%i", i);
+	g_snprintf(buffer, sizeof(buffer), "%i", i);
 	m_server_detail_port->set_text(buffer);
 	m_server_detail_group->get_entry()->set_text(row[m_Columns.m_group]);
 	m_server_detail_description->set_text(row[m_Columns.m_name]);
