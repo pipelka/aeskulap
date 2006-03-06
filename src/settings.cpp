@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/06 11:07:25 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -200,6 +200,11 @@ void Settings::save_settings() {
 	ImagePool::set_encoding(encoding);
 	m_configuration.set_encoding(encoding);
 
+	// store serverlist
+	// ----------------
+	
+	// create list from treeview
+
 	std::vector<Aeskulap::Configuration::ServerData> list;
 	Gtk::TreeModel::Children::iterator i = m_refTreeModel->children().begin();
 	for(; i != m_refTreeModel->children().end(); i++) {
@@ -214,8 +219,14 @@ void Settings::save_settings() {
 		list.push_back(s);
 	}
 
+	// write list to configuration
 	m_configuration.set_serverlist(list);
 	ImagePool::ServerList::update();
+
+	// store windowlevelpresets
+	// ------------------------
+	
+	store_windowlevel_preset();
 }
 
 void Settings::restore_settings() {
@@ -417,6 +428,29 @@ void Settings::on_echotest() {
 	m_server_detail_echo->set_sensitive(true);
 }
 
+void Settings::store_windowlevel_preset() {
+	if(m_windowlevels_modality.empty()) {
+		return;
+	}
+
+	// create list from treeview
+	Aeskulap::WindowLevelList list;
+	Gtk::TreeModel::Children::iterator i = m_refWindowLevelModel->children().begin();
+	for(; i != m_refWindowLevelModel->children().end(); i++) {
+		Aeskulap::WindowLevel l(
+					(*i)[m_WindowLevelColumns.m_description],
+					m_windowlevels_modality,
+					(*i)[m_WindowLevelColumns.m_center],
+					(*i)[m_WindowLevelColumns.m_width]);
+
+		list[l.description] = l;
+	}
+
+	// write list to configuration
+	m_configuration.unset_windowlevels(m_windowlevels_modality);
+	m_configuration.set_windowlevel_list(m_windowlevels_modality, list);
+}
+
 void Settings::reload_windowlevel_preset(const Glib::ustring& modality) {
 	Aeskulap::WindowLevelList list;
 
@@ -438,6 +472,8 @@ void Settings::on_windowlevels_modality_changed() {
 	int index = m_presets_windowlevels_modality->get_active_row_number();
 	std::cout << "on_windowlevels_modality_changed() - indexint: " << index << std::endl;
 	
+	store_windowlevel_preset();
+
 	if(index == 0) {
 		m_windowlevels_modality = "CT";
 	}

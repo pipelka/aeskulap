@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 09:58:02 $
+    Update Date:      $Date: 2006/03/06 11:07:25 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/aconfiguration-gconf.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -179,6 +179,10 @@ bool Configuration::get_windowlevel(const Glib::ustring& modality, const Glib::u
 		return false;
 	}
 
+	if(m_conf_client->get_without_default(base+"/center").get_type() == Gnome::Conf::VALUE_INVALID) {
+		return false;
+	}
+
 	w.modality = modality;
 	w.description = desc;
 	w.center = m_conf_client->get_int(base+"/center");
@@ -203,18 +207,7 @@ bool Configuration::get_windowlevel_list(const Glib::ustring& modality, WindowLe
 	
 	for(int i=0; i<dirs.size(); i++) {
 		WindowLevel w;
-		Glib::ustring dir;
-
-		int p = dirs[i].rfind("/");
-		if(p == Glib::ustring::npos) {
-			dir = dirs[i];
-		}
-		else {
-			dir = dirs[i].substr(p+1);
-		}
-		std::cout << dir << std::endl;
-	
-		if(get_windowlevel(modality, dir, w)) {
+		if(get_windowlevel(modality, get_name_from_path(dirs[i]), w)) {
 			list[w.description] = w;
 		}
 	}
@@ -242,6 +235,23 @@ bool Configuration::set_windowlevel_list(const Glib::ustring& modality, WindowLe
 	for(i = list.begin(); i != list.end(); i++) {
 		i->second.modality = modality;
 		set_windowlevel(i->second);
+	}
+	
+	return true;
+}
+
+bool Configuration::unset_windowlevels(const Glib::ustring& modality) {
+	Glib::ustring base = "/apps/aeskulap/presets/windowlevel/"+modality;
+
+	std::vector< Glib::ustring > dirs = m_conf_client->all_dirs(base);
+	if(dirs.size() == 0) {
+		return false;
+	}
+
+	for(int i=0; i<dirs.size(); i++) {
+		Glib::ustring keybase = base+"/"+get_name_from_path(dirs[i]);
+		m_conf_client->unset(keybase+"/center");
+		m_conf_client->unset(keybase+"/width");
 	}
 	
 	return true;
