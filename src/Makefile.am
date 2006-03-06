@@ -1,6 +1,7 @@
 bin_PROGRAMS = aeskulap
 
 aeskulap_SOURCES = \
+	binreloc.h \
 	binreloc.c \
 	abusycursor.h \
 	abusycursor.cpp \
@@ -36,11 +37,15 @@ aeskulap_LDADD = \
 aeskulap_LDFLAGS = \
 	-Wl,-rpath,${prefix}/lib/aeskulap
 
-schemadir = \
-	$(datadir)/gconf/schemas
+schemadir = @GCONF_SCHEMA_FILE_DIR@
+schema_DATA = aeskulap.schemas
 
-schema_DATA = \
-	aeskulap.schema
+@INTLTOOL_SCHEMAS_RULE@
+
+if GCONF_SCHEMAS_INSTALL
+install-data-local:
+	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(srcdir)/$(schema_DATA)
+endif
 
 INCLUDES = \
 	-DAESKULAP_DATADIR=\""$(datadir)"\" \

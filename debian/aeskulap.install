@@ -1,8 +1,4 @@
+etc/
 usr/bin/aeskulap
-usr/share/aeskulap/glade/aeskulap.glade
-usr/share/aeskulap/images
-usr/share/applications/aeskulap.desktop
-usr/share/gconf/schemas/aeskulap.schema
-usr/share/locale/
-usr/lib/aeskulap/lib*.so
-usr/lib/libimagepool.so.*
+usr/lib/aeskulap/
+usr/share/
