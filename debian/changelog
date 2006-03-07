@@ -1,3 +1,9 @@
+aeskulap (0.2.1-1b2) unstable; urgency=low
+
+  * fixed schemas installation
+
+ -- Alexander Pipelka <pipelka@bms-austria.com>  Tue,  7 Mar 2006 15:20:09 +0100
+
 aeskulap (0.2.1-1b1) unstable; urgency=low
 
   * preparing for relase build
