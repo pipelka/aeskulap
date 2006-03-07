@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 11:07:25 $
+    Update Date:      $Date: 2006/03/07 07:11:40 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/aconfiguration-gconf.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -122,7 +122,7 @@ Configuration::ServerList* Configuration::get_serverlist() {
 		}
 		else {
 			char buffer[50];
-			sprintf(buffer, "Server%i", list->size()+1);
+			snprintf(buffer, sizeof(buffer), "Server%i", list->size()+1);
 			servername = buffer;
 		}
 

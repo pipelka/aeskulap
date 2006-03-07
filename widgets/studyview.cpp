@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 18:12:44 $
+    Update Date:      $Date: 2006/03/07 07:11:40 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.20 $
+    CVS/RCS Revision: $Revision: 1.21 $
     Status:           $State: Exp $
 */
 
@@ -664,16 +664,16 @@ void StudyView::enable_mouse_functions(bool enable) {
 }
 
 void StudyView::on_image_selected(SeriesView* s, Aeskulap::Display* d) {
-	if(d->get_windowlevel() == d->get_default_windowlevel()) {
+	/*if(d->get_windowlevel() == d->get_default_windowlevel()) {
 		return;
-	}
+	}*/
 	m_windowlevel->set_windowlevel(d->get_windowlevel());
 }
 
 void StudyView::on_image_changed(SeriesView* s, Aeskulap::Display* d) {
-	if(d->get_windowlevel() == d->get_default_windowlevel()) {
+	/*if(d->get_windowlevel() == d->get_default_windowlevel()) {
 		return;
-	}
+	}*/
 	m_windowlevel->set_windowlevel(d->get_windowlevel());
 }
 
