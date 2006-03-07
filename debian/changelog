@@ -1,3 +1,9 @@
+aeskulap (0.2.1-1b1) unstable; urgency=low
+
+  * preparing for relase build
+
+ -- Alexander Pipelka <pipelka@bms-austria.com>  Tue,  7 Mar 2006 10:51:53 +0100
+
 aeskulap (0.2.1-1a7) unstable; urgency=low
 
   * added windowlevel presets
