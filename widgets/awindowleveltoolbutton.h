@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 09:58:02 $
+    Update Date:      $Date: 2006/03/07 08:57:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/awindowleveltoolbutton.h,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -48,7 +48,9 @@ public:
 
 	const Glib::ustring& get_modality();
 	
-	void set_windowlevel(const Aeskulap::WindowLevel& level);
+	void set_windowlevel(const Aeskulap::WindowLevel& level, bool force = false);
+
+	void set_windowlevel_default();
 
 	void update();
 

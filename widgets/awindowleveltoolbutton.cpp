@@ -1,5 +1,6 @@
 #include "awindowleveltoolbutton.h"
 #include "aiconfactory.h"
+#include <iostream>
 
 namespace Aeskulap {
 
@@ -109,8 +110,8 @@ Aeskulap::WindowLevelList::iterator WindowLevelToolButton::find_windowlevel(cons
 	return i;
 }
 
-void WindowLevelToolButton::set_windowlevel(const Aeskulap::WindowLevel& level) {
-	if(m_last_level == level) {
+void WindowLevelToolButton::set_windowlevel(const Aeskulap::WindowLevel& level, bool force) {
+	if(m_last_level == level && !force) {
 		return;
 	}
 
@@ -123,12 +124,20 @@ void WindowLevelToolButton::set_windowlevel(const Aeskulap::WindowLevel& level) 
 
 	if(i != m_list.end()) {
 		m_combo->set_active_text(i->first);
+		std::cout << "set_active_text('" << i->first << "')" << std::endl;
 	}
 	else {
 		m_combo->set_active_text(gettext("Custom"));
+		std::cout << "set_active_text('" << gettext("Custom") << "')" << std::endl;
 	}
 
 	m_last_level = level;
+}
+
+void WindowLevelToolButton::set_windowlevel_default() {
+	m_combo->set_active_text(gettext("Default"));
+	m_last_level.center = 0;
+	m_last_level.width = 0;
 }
 
 void WindowLevelToolButton::on_changed() {

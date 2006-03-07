@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 09:58:02 $
+    Update Date:      $Date: 2006/03/07 08:57:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.21 $
+    CVS/RCS Revision: $Revision: 1.22 $
     Status:           $State: Exp $
 */
 
@@ -269,6 +269,11 @@ void SeriesView::refresh(bool smooth) {
 }
 
 void SeriesView::apply_default_windowlevel() {
+	Aeskulap::Display* d = get_selected_display();
+	if(d != NULL && d->get_windowlevel() == d->get_default_windowlevel()) {
+		return;
+	}
+
 	for(unsigned int i = 0; i < m_dispparam.size(); i++) {
 		m_dispparam[i]->window = m_dispparam[i]->default_window;
 	}
@@ -287,6 +292,11 @@ void SeriesView::apply_changes(Glib::RefPtr<DisplayParameters> param) {
 }
 
 void SeriesView::apply_changes(const Aeskulap::WindowLevel& level) {
+	Aeskulap::Display* d = get_selected_display();
+	if(d != NULL && d->get_windowlevel() == level) {
+		return;
+	}
+
 	for(unsigned int i = 0; i < m_dispparam.size(); i++) {
 		m_dispparam[i]->window = level;
 	}
