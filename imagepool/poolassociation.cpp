@@ -288,7 +288,7 @@ bool Association::SendEchoRequest()
 
 bool Association::AddKey(DcmDataset *query, const DcmTagKey& tag, int value) {
 	static char temp[16];
-	sprintf(temp, "%i", value);
+	snprintf(temp, sizeof(temp), "%i", value);
 	return AddKey(query, tag, temp);
 }
 
