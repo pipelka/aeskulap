@@ -49,8 +49,6 @@ endif
 
 INCLUDES = \
 	-DAESKULAP_DATADIR=\""$(datadir)"\" \
-	-DAESKULAP_GLADEDIR=\""$(gladedir)"\" \
-	-DAESKULAP_IMAGESDIR=\""$(aeskulap_images_dir)"\" \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \
 	$(GTKMM_CFLAGS) \
 	$(GLADEMM_CFLAGS) \
