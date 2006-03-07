@@ -1,4 +1,4 @@
 etc/
 usr/bin/aeskulap
-usr/lib/aeskulap/
+usr/lib/aeskulap/*.so
 usr/share/
