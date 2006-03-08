@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-06 11:10+0100\n"
+"POT-Creation-Date: 2006-03-08 07:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,8 +69,10 @@ msgid ""
 "No description"
 msgstr ""
 
-#: ../widgets/seriesview.cpp:303 ../widgets/awindowleveltoolbutton.cpp:86
-#: ../widgets/awindowleveltoolbutton.cpp:123
+#: ../widgets/seriesview.cpp:313 ../widgets/awindowleveltoolbutton.cpp:87
+#: ../widgets/awindowleveltoolbutton.cpp:94
+#: ../widgets/awindowleveltoolbutton.cpp:130
+#: ../widgets/awindowleveltoolbutton.cpp:131
 msgid "Custom"
 msgstr ""
 
@@ -128,6 +130,10 @@ msgstr ""
 msgid "Measurement tools"
 msgstr ""
 
+#: ../widgets/studyview.cpp:711
+msgid "new windowlevel"
+msgstr ""
+
 #: ../widgets/adatefilter.cpp:44 ../widgets/adatefilter.cpp:49
 #: ../widgets/adatefilter.cpp:91 ../widgets/adatefilter.cpp:97
 msgid "None"
@@ -157,13 +163,14 @@ msgstr ""
 msgid "Select Enddate"
 msgstr ""
 
-#: ../widgets/awindowleveltoolbutton.cpp:41
+#: ../widgets/awindowleveltoolbutton.cpp:42
 msgid "Add new windowlevel preset"
 msgstr ""
 
-#: ../widgets/awindowleveltoolbutton.cpp:85
-#: ../widgets/awindowleveltoolbutton.cpp:89
-#: ../widgets/awindowleveltoolbutton.cpp:130
+#: ../widgets/awindowleveltoolbutton.cpp:86
+#: ../widgets/awindowleveltoolbutton.cpp:90
+#: ../widgets/awindowleveltoolbutton.cpp:138
+#: ../widgets/awindowleveltoolbutton.cpp:144
 msgid "Default"
 msgstr ""
 
@@ -235,23 +242,23 @@ msgstr ""
 msgid "Measure"
 msgstr ""
 
-#: ../src/mainwindow.cpp:54
+#: ../src/mainwindow.cpp:55
 msgid "Open DICOM Image files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:110
+#: ../src/mainwindow.cpp:111
 msgid "Bring opened files to front"
 msgstr ""
 
-#: ../src/mainwindow.cpp:119
+#: ../src/mainwindow.cpp:120
 msgid "DICOM files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:124
+#: ../src/mainwindow.cpp:125
 msgid "Any files"
 msgstr ""
 
-#: ../src/mainwindow.cpp:200
+#: ../src/mainwindow.cpp:201
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
 "requested images</span>\n"
@@ -267,7 +274,7 @@ msgstr ""
 msgid "Birthdate"
 msgstr ""
 
-#: ../src/studymanager.cpp:101 ../src/settings.cpp:148 ../src/settings.cpp:455
+#: ../src/studymanager.cpp:101 ../src/settings.cpp:148 ../src/settings.cpp:491
 msgid "Description"
 msgstr ""
 
@@ -335,13 +342,13 @@ msgstr ""
 msgid "Width"
 msgstr ""
 
-#: ../src/settings.cpp:388
+#: ../src/settings.cpp:399
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
 msgstr ""
 
-#: ../src/settings.cpp:404
+#: ../src/settings.cpp:415
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
 msgstr ""
 
