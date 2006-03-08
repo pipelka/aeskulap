@@ -1,3 +1,9 @@
+aeskulap (0.2.1-2) unstable; urgency=low
+
+  * release build
+
+ -- Alexander Pipelka <pipelka@bms-austria.com>  Wed,  8 Mar 2006 10:24:00 +0100
+
 aeskulap (0.2.1-1b2) unstable; urgency=low
 
   * fixed schemas installation
