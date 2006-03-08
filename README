@@ -20,8 +20,8 @@ were these packages are available.
 
 Aeskulap version history:
 
-0.2.1 - unreleased
-------------------
+0.2.1 - 20060308
+----------------
 
 - added AboutDialog
 - fixed crashes in SeriesView::scroll_to(pos)
