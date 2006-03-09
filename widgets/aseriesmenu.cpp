@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/28 22:39:34 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/aseriesmenu.cpp,v $
-    CVS/RCS Revision: $Revision: 1.1.2.1 $
+    CVS/RCS Revision: $Revision: 1.1.2.2 $
     Status:           $State: Exp $
 */
 
@@ -45,11 +45,10 @@ void SeriesMenu::add_series(const Glib::RefPtr<ImagePool::Series>& series, Serie
 	std::string modality = series->tag("Modality");
 	char buffer[200];
 	if(!desc.empty()) {
-		sprintf(buffer, gettext("Series %i (%s)\n%s"), m_menuitem.size()+1, modality.c_str(), desc.c_str());
+		g_snprintf(buffer, sizeof(buffer), gettext("Series %i (%s)\n%s"), m_menuitem.size()+1, modality.c_str(), desc.c_str());
 	}
 	else {
-		sprintf(buffer, gettext("Series %i (%s)\nNo description"), m_menuitem.size()+1, modality.c_str());
-		
+		g_snprintf(buffer, sizeof(buffer), gettext("Series %i (%s)\nNo description"), m_menuitem.size()+1, modality.c_str());
 	}
 
 	std::cout << "SeriesItem: " << buffer << std::endl;

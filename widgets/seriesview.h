@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/24 18:40:49 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.11.2.1 $
     Status:           $State: Exp $
 */
 
@@ -34,6 +34,7 @@
 #include <gtkmm.h>
 #include <vector>
 #include "atiler.h"
+#include "awindowlevel.h"
 
 namespace Aeskulap {
 	class Display;
@@ -64,6 +65,8 @@ public:
 
 	bool get_selected();
 
+	Aeskulap::Display* get_selected_display();
+
 	void scroll_up();
 	
 	void scroll_down();
@@ -71,6 +74,12 @@ public:
 	const Glib::RefPtr<ImagePool::Series>& get_series();
 
 	Aeskulap::Display* scroll_to(const Glib::RefPtr<ImagePool::Instance>& instance);
+
+	void apply_changes(const Aeskulap::WindowLevel& level);
+
+	void apply_changes(Glib::RefPtr<DisplayParameters> param);
+
+	void apply_default_windowlevel();
 
 	sigc::signal< void, SeriesView*, bool > signal_selected;
 
@@ -83,6 +92,10 @@ public:
 	sigc::signal<void, GdkEventMotion*, Aeskulap::Display*> signal_motion;
 
 	sigc::signal<void, GdkEventButton*, bool, Aeskulap::Display*> signal_button;
+
+	sigc::signal< void, SeriesView*, Aeskulap::Display* > signal_image_selected;
+
+	sigc::signal< void, SeriesView*, Aeskulap::Display* > signal_image_changed;
 
 protected:
 

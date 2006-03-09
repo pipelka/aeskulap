@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/28 22:39:34 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.17.2.1 $
+    CVS/RCS Revision: $Revision: 1.17.2.2 $
     Status:           $State: Exp $
 */
 
@@ -33,6 +33,7 @@
 #include "imagepool.h"
 #include "astockids.h"
 #include "adisplay.h"
+#include "awindowleveltoolbutton.h"
 #include "serieslayouttoolbutton.h"
 #include "imagelayouttoolbutton.h"
 #include "poolinstance.h"
@@ -148,6 +149,13 @@ m_draw_reference_frame_ends(false) {
 	m_toolbar->append(*m_measure, sigc::mem_fun(*this, &StudyView::on_toggle_measure));
 	//m_measure->show();
 
+	m_windowlevel = manage(new Aeskulap::WindowLevelToolButton);
+	m_windowlevel->signal_windowlevel_changed.connect(sigc::mem_fun(*this, &StudyView::on_windowlevel_changed));
+	m_windowlevel->signal_windowlevel_default.connect(sigc::mem_fun(*this, &StudyView::on_windowlevel_default));
+	m_windowlevel->signal_windowlevel_add.connect(sigc::mem_fun(*this, &StudyView::on_windowlevel_add));
+	m_windowlevel->show();
+	m_toolbar->append(*m_windowlevel);
+
 	hbox->pack_end(*m_table);
 	hbox->pack_end(*m_toolbar_measure, false, false);
 
@@ -177,6 +185,8 @@ SeriesView* StudyView::create_seriesview(const Glib::RefPtr<ImagePool::Series>& 
 	r->signal_update.connect(sigc::mem_fun(*this, &StudyView::on_series_update));
 	r->signal_popup.connect(sigc::mem_fun(*this, &StudyView::on_popup_series));
 	r->signal_motion.connect(sigc::bind(sigc::mem_fun(*this, &StudyView::on_signal_motion), r));
+	r->signal_image_changed.connect(sigc::mem_fun(*this, &StudyView::on_image_changed));
+	r->signal_image_selected.connect(sigc::mem_fun(*this, &StudyView::on_image_selected));
 
 	return r;
 }
@@ -325,6 +335,9 @@ void StudyView::on_series_selected(SeriesView* view, bool s) {
 	int x,y;
 	m_selected->get_layout(x, y);
 	m_image_layout->set_layout(x, y);
+	
+	Glib::RefPtr<ImagePool::Series> series = m_selected->get_series();
+	m_windowlevel->set_modality(series->tag("Modality"));
 }
 
 void StudyView::draw_reference(Aeskulap::Display* display, const Glib::RefPtr<ImagePool::Instance>& instance) {
@@ -648,4 +661,61 @@ void StudyView::enable_mouse_functions(bool enable) {
 			m_widgets[i]->enable_mouse_functions(enable);
 		}
 	}
+}
+
+void StudyView::on_image_selected(SeriesView* s, Aeskulap::Display* d) {
+	std::cout << "StudyView::on_image_selected()" << std::endl;
+	if(d->get_windowlevel() == d->get_default_windowlevel()) {
+		std::cout << "default windowlevel" << std::endl;
+		m_windowlevel->set_windowlevel_default();
+		return;
+	}
+	std::cout << "custom windowlevel" << std::endl;
+	m_windowlevel->set_windowlevel(d->get_windowlevel());
+}
+
+void StudyView::on_image_changed(SeriesView* s, Aeskulap::Display* d) {
+	std::cout << "StudyView::on_image_changed()" << std::endl;
+	if(d->get_windowlevel() == d->get_default_windowlevel()) {
+		std::cout << "default windowlevel" << std::endl;
+		m_windowlevel->set_windowlevel_default();
+		return;
+	}
+	std::cout << "custom windowlevel" << std::endl;
+	m_windowlevel->set_windowlevel(d->get_windowlevel());
+}
+
+void StudyView::on_windowlevel_changed(const Aeskulap::WindowLevel& l) {
+	if(m_selected == NULL) {
+		return;
+	}
+	m_selected->apply_changes(l);
+}
+
+void StudyView::on_windowlevel_default() {
+	if(m_selected == NULL) {
+		return;
+	}
+	m_selected->apply_default_windowlevel();
+}
+
+void StudyView::on_windowlevel_add(Aeskulap::WindowLevelToolButton* btn) {
+	if(m_selected == NULL) {
+		return;
+	}
+
+	Glib::ustring modality = btn->get_modality();
+	Aeskulap::Display* d = m_selected->get_selected_display();
+	Aeskulap::WindowLevel w = d->get_windowlevel();
+	w.modality = modality;
+	w.description = gettext("new windowlevel");
+
+	std::cout << "signal_windowlevel_add('" << modality << "', " << w.center << "/" << w.width << ")" << std::endl;
+
+	if(!signal_windowlevel_add(w)) {
+		return;
+	}
+	
+	Aeskulap::WindowLevelToolButton::update_all();
+	m_windowlevel->set_windowlevel(w, true);
 }

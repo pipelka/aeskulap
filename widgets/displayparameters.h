@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/08/23 19:32:03 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/displayparameters.h,v $
-    CVS/RCS Revision: $Revision: 1.1 $
+    CVS/RCS Revision: $Revision: 1.1.2.1 $
     Status:           $State: Exp $
 */
 
@@ -33,7 +33,9 @@
 
 #include <glibmm/refptr.h>
 #include <glibmm/object.h>
+
 #include "poolinstance.h"
+#include "awindowlevel.h"
 
 // display parameters
 
@@ -51,9 +53,9 @@ public:
 	int move_x;
 	int move_y;
 
-	int window_center;
-	int window_width;
-	
+	Aeskulap::WindowLevel window;
+	Aeskulap::WindowLevel default_window;
+
 	bool selected;
 
 	bool series_selected;

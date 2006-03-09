@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/22 15:40:46 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.10.2.1 $
     Status:           $State: Exp $
 */
 
@@ -34,14 +34,14 @@
 #include <gtkmm.h>
 #include <libglademm/xml.h>
 
+#include "aconfigclient.h"
+
 namespace Aeskulap {
 	class SimpleDisplay;
 	class DateFilter;
 }
 
-//#include "asimpledisplay.h"
-
-class StudyManager : public Gtk::VBox {
+class StudyManager : public Gtk::VBox, public Aeskulap::ConfigClient {
 public:
 
 	StudyManager(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade);

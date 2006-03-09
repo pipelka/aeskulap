@@ -1,4 +1,4 @@
-imagesdir = $(aeskulap_images_dir)
+imagesdir = $(datadir)/aeskulap/images
 images_DATA = \
 	aeskulap.png \
 	grid-16.png \

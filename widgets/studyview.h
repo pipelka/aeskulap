@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 10:32:57 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.11.2.1 $
     Status:           $State: Exp $
 */
 
@@ -37,12 +37,14 @@
 #include <vector>
 #include <map>
 
+#include "awindowlevel.h"
 #include "poolinstance.h"
 
 // forward declarations
 
 namespace Aeskulap {
 	class Display;
+	class WindowLevelToolButton;
 }
 
 namespace ImagePool {
@@ -72,9 +74,11 @@ public:
 
 	void on_series_added(const Glib::RefPtr<ImagePool::Series>& series);
 
+	sigc::signal< bool, Aeskulap::WindowLevel > signal_windowlevel_add;
+
 protected:
 
-	bool on_key_press_event(	GdkEventKey* event);
+	bool on_key_press_event(GdkEventKey* event);
 
 	void on_series_selected(SeriesView* view, bool s);
 
@@ -103,6 +107,16 @@ protected:
 	void on_instance_added(const Glib::RefPtr<ImagePool::Instance>& instance);
 
 	void on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, SeriesView* s);
+
+	void on_image_selected(SeriesView* s, Aeskulap::Display* d);
+
+	void on_image_changed(SeriesView* s, Aeskulap::Display* d);
+
+	void on_windowlevel_changed(const Aeskulap::WindowLevel& l);
+
+	void on_windowlevel_default();
+
+	void on_windowlevel_add(Aeskulap::WindowLevelToolButton* btn);
 
 	void add_series(const Glib::RefPtr<ImagePool::Series>& series);
 
@@ -135,6 +149,8 @@ private:
 	Gtk::ToggleToolButton* m_btn_3dcursor;
 
 	Gtk::ToggleToolButton* m_measure;
+
+	Aeskulap::WindowLevelToolButton* m_windowlevel;
 
 	bool m_single_series;
 

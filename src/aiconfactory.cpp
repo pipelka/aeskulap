@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/10 12:26:15 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aiconfactory.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.11.2.1 $
     Status:           $State: Exp $
 */
 
@@ -56,7 +56,6 @@ IconFactory::IconFactory() {
 	add(Stock::GRID_2X1, "grid-2v.png");
 	add(Stock::GRID_2X2, "grid-4.png");
 	add(Stock::GRID_4X4, "grid-16.png");
-//	add(Stock::GRID_4X4, "grid-16.png");
 	add(Stock::SERIES_SINGLE, "stock-tool-scale-22.png");
 	add(Stock::SERIES_ALL, "stock-layers-24.png");
 	add(Stock::SERIES_1X1, "series-1x1.png");

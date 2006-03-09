@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 21:42:29 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolservers.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.3.2.1 $
     Status:           $State: Exp $
 */
 
@@ -34,12 +34,11 @@
 #include <map>
 #include <set>
 
-
-class DcmDataset;
+#include "aconfiguration.h"
 
 namespace ImagePool {
 	
-class Server {
+class Server : public Aeskulap::Configuration::ServerData {
 public:
 
 	Server();
@@ -49,13 +48,6 @@ public:
 	bool send_echo(std::string& status);
 	
 	bool send_echo();
-
-	std::string m_name;
-	std::string m_hostname;
-	std::string m_aet;
-	guint m_port;
-	std::string m_group;
-	bool m_lossy;
 };
 
 class ServerList : public Glib::Object {

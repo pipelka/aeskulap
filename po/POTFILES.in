@@ -1,4 +1,5 @@
 # List of source files which contain translatable strings.
+configuration/aconfiguration.cpp
 imagepool/netquery.cpp
 imagepool/poolinstance.cpp
 widgets/imagelayouttoolbutton.cpp
@@ -11,6 +12,7 @@ widgets/serieslayouttoolbutton.cpp
 widgets/adisplay.cpp
 widgets/studyview.cpp
 widgets/adatefilter.cpp
+widgets/awindowleveltoolbutton.cpp
 src/main.cpp
 src/astockids.cpp
 src/mainwindow.cpp

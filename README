@@ -21,14 +21,15 @@ were these packages are available.
 Aeskulap version history:
 
 0.3.0 - development branch
+--------------------------
 
 - new displaylist 2D/3D layer
 - JPEG2000 support
 - refactored internal API
 
 
-0.2.1 - unreleased
-------------------
+0.2.1 - 20060308
+----------------
 
 - added AboutDialog
 - fixed crashes in SeriesView::scroll_to(pos)
@@ -39,6 +40,8 @@ Aeskulap version history:
   press (and keep pressed) SHIFT + LEFT MOUSEBUTTON, move mouse up/down
 - autolayout on loading images from files
 - SCU conformance improvements
+- separated configuration backend
+- added windowlevel presets
 
 
 0.2.0 - 20051002
@@ -56,7 +59,7 @@ Aeskulap version history:
 - autolayout (currently based on number of series)
 - added 3D cursor (3D location and slice synchronzation tool)
 - an uncountable number of smaller fixes :)
-
+- autoconf / automake / gettext framework cleanup
 
 0.1.1 - 20050911
 ----------------

@@ -20,13 +20,11 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/28 22:39:34 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.18.2.1 $
+    CVS/RCS Revision: $Revision: 1.18.2.2 $
     Status:           $State: Exp $
 */
-
-#include <gconfmm.h>
 
 #include "imagepool.h"
 #include "dcdatset.h"
@@ -101,6 +99,7 @@ void query_from_net(
 			const std::string& date_to,
 			const std::string& studydescription,
 			const std::string& stationname,
+			const std::string& local_aet,
 			const std::set<std::string>& groups,
 			const sigc::slot< void, const Glib::RefPtr< ImagePool::Study >& >& resultslot
 			)
@@ -213,18 +212,18 @@ void query_from_net(
 	// do we have groups defined ?
 	if(groups.size() > 0) {
 		while(i != groups.end()) {
-			a.QueryServerGroup(&query, *i);
+			a.QueryServerGroup(&query, *i, local_aet);
 			i++;
 		}
 	}
 	
 	// no query all servers
 	else {
-		a.QueryServerGroup(&query, "");
+		a.QueryServerGroup(&query, "", local_aet);
 	}
 }
 
-void query_series_from_net(const std::string& studyinstanceuid, const std::string& server, const sigc::slot< void, const Glib::RefPtr< ImagePool::Series >& >& resultslot) {
+void query_series_from_net(const std::string& studyinstanceuid, const std::string& server, const std::string& local_aet, const sigc::slot< void, const Glib::RefPtr< ImagePool::Series >& >& resultslot) {
 	DcmDataset query;
 	DcmElement* e = NULL;
 	
@@ -270,10 +269,8 @@ void query_series_from_net(const std::string& studyinstanceuid, const std::strin
 	std::cout << "NEW QUERY:" << std::endl;
 	query.print(COUT);
 
-	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
-
 	NetClient<FindAssociation> a;
-	a.QueryServer(&query, server, UID_FINDStudyRootQueryRetrieveInformationModel);
+	a.QueryServer(&query, server, local_aet, UID_FINDStudyRootQueryRetrieveInformationModel);
 	//a.QueryServers(&query, UID_FINDStudyRootQueryRetrieveInformationModel);
 
 	DcmStack* result = a.GetResultStack();
@@ -284,7 +281,7 @@ void query_series_from_net(const std::string& studyinstanceuid, const std::strin
 	}
 }
 
-int query_study_instances(const std::string& studyinstanceuid, const std::string& server) {
+int query_study_instances(const std::string& studyinstanceuid, const std::string& server, const std::string& local_aet) {
 	DcmDataset query;
 	DcmElement* e = NULL;
 	
@@ -310,7 +307,7 @@ int query_study_instances(const std::string& studyinstanceuid, const std::string
 
 	NetClient<FindAssociation> a;
 	a.SetMaxResults(5000);
-	a.QueryServer(&query, server, UID_FINDStudyRootQueryRetrieveInformationModel);
+	a.QueryServer(&query, server, local_aet, UID_FINDStudyRootQueryRetrieveInformationModel);
 	//a.QueryServers(&query, UID_FINDStudyRootQueryRetrieveInformationModel);
 
 	DcmStack* result = a.GetResultStack();
@@ -320,7 +317,7 @@ int query_study_instances(const std::string& studyinstanceuid, const std::string
 	return result->card();
 }
 
-int query_study_series(const std::string& studyinstanceuid, const std::string& server) {
+int query_study_series(const std::string& studyinstanceuid, const std::string& server, const std::string& local_aet) {
 	DcmDataset query;
 	DcmElement* e = NULL;
 	
@@ -342,18 +339,13 @@ int query_study_series(const std::string& studyinstanceuid, const std::string& s
 	query.print(COUT);
 
 	NetClient<FindAssociation> a;
-	a.QueryServer(&query, server, UID_FINDStudyRootQueryRetrieveInformationModel);
+	a.QueryServer(&query, server, local_aet, UID_FINDStudyRootQueryRetrieveInformationModel);
 
 	DcmStack* result = a.GetResultStack();
 
 	std::cout << result->card() << " Responses" << std::endl;
 	
 	return result->card();
-}
-
-std::string get_ouraet() {
-	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
-	return client->get_string("/apps/aeskulap/preferences/local_aet");
 }
 
 } // namespace ImagePool

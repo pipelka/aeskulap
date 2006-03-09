@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/10 12:03:38 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.h,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.14.2.1 $
     Status:           $State: Exp $
 */
 
@@ -36,6 +36,8 @@
 
 #include "fileloader.h"
 #include "netloader.h"
+#include "awindowlevel.h"
+#include "aconfigclient.h"
 
 namespace ImagePool {
 	class Study;
@@ -46,8 +48,9 @@ class Settings;
 class StudyView;
 class PrescanDialog;
 class AboutDialog;
+class WindowLevelDialog;
 
-class MainWindow : public Gtk::Window {
+class MainWindow : public Gtk::Window, public Aeskulap::ConfigClient {
 public:
 
 	MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade);
@@ -80,7 +83,7 @@ protected:
 
 	void on_about();
 
-	//void set_busy_cursor(bool busy = true);
+	bool on_windowlevel_add(const Aeskulap::WindowLevel& level);
 
 private:
 
@@ -113,6 +116,8 @@ private:
 	ImagePool::FileLoader m_fileloader;
 	
 	AboutDialog* m_about;
+
+	WindowLevelDialog* m_windowlevel;
 
 };
 

@@ -1,38 +1,41 @@
 SUBDIRS = \
-	intl \
 	po \
 	dcmtk \
 	$(DCMJP2DIR) \
 	displaylist \
+	configuration \
 	imagepool \
 	widgets \
 	src \
 	pixmaps
 
 DIST_SUBDIRS = \
-	intl \
 	po \
 	dcmjp2 \
 	displaylist \
+	configuration \
 	imagepool \
 	widgets \
 	src \
 	pixmaps
 
 EXTRA_DIST = \
-	config.rpath \
-	mkinstalldirs  \
-	README \
 	COPYING \
 	COPYING.LIB \
 	COPYING.DCMTK \
+	INSTALL \
+	README \
 	gettext.h \
-	autogen.sh \
 	intltool-extract.in \
 	intltool-merge.in \
 	intltool-update.in
 
-ACLOCAL_AMFLAGS = -I m4
+DISTCLEANFILES = \
+	intltool-extract \
+	intltool-merge \
+	intltoo-update
+
+@INTLTOOL_DESKTOP_RULE@
 
 dist-hook:
 	mkdir -p $(distdir)/dcmtk

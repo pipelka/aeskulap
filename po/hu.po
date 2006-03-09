@@ -1,21 +1,57 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# translation of hu.po to
+# Copyright (C) 2006 Free Software Foundation, Inc.
+# nfb <nfbayer@bms-austria.com>, 2006.
+# Alexander Pipelka <pipelka@teleweb.at>, 2006.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: hu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-25 15:51+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2006-03-08 09:22+0100\n"
+"PO-Revision-Date: 2006-03-08 09:41+0100\n"
+"Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
+"Language-Team:  <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: application/x-xml2pot; charset=UTF-8\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.10.2\n"
 
-#: ../imagepool/netquery.cpp:100 ../imagepool/poolinstance.cpp:528
+#. DEFAULT CT WINDOWLEVELS
+#. *
+#. * (Thanks Dr. Grover Ronald Pardo Holzwarth)
+#. *
+#. * Abdomen     W:  250  C:  50
+#. * Head        W:  150  C:  50
+#. * Lung        W:  2000 C: -550
+#. * Mediastinum W:  450  C:  50
+#. * Spine       W:  300  C:  40
+#. * Vertebrae   W:  2300 C:  530
+#.
+#: ../configuration/aconfiguration.cpp:52
+msgid "Abdomen"
+msgstr ""
+
+#: ../configuration/aconfiguration.cpp:53
+msgid "Head"
+msgstr ""
+
+#: ../configuration/aconfiguration.cpp:54
+msgid "Lung"
+msgstr ""
+
+#: ../configuration/aconfiguration.cpp:55
+msgid "Mediastinum"
+msgstr ""
+
+#: ../configuration/aconfiguration.cpp:56
+msgid "Spine"
+msgstr ""
+
+#: ../configuration/aconfiguration.cpp:57
+msgid "Vertebrae"
+msgstr ""
+
+#: ../imagepool/netquery.cpp:98 ../imagepool/poolinstance.cpp:528
 #: ../imagepool/poolinstance.cpp:549
 msgid "no description"
 msgstr ""
@@ -34,6 +70,13 @@ msgid ""
 "No description"
 msgstr ""
 
+#: ../widgets/seriesview.cpp:313 ../widgets/awindowleveltoolbutton.cpp:87
+#: ../widgets/awindowleveltoolbutton.cpp:94
+#: ../widgets/awindowleveltoolbutton.cpp:130
+#: ../widgets/awindowleveltoolbutton.cpp:131
+msgid "Custom"
+msgstr ""
+
 #: ../widgets/adisplay.cpp:160
 msgid "Acc:\n"
 msgstr ""
@@ -47,67 +90,71 @@ msgstr ""
 msgid "Image: %i / %i"
 msgstr ""
 
-#: ../widgets/adisplay.cpp:500 ../widgets/adisplay.cpp:552
+#: ../widgets/adisplay.cpp:498 ../widgets/adisplay.cpp:550
 #, c-format
 msgid "%i mm"
 msgstr ""
 
-#: ../widgets/studyview.cpp:107
+#: ../widgets/studyview.cpp:108
 msgid "Rearrange the series of the current study"
 msgstr ""
 
-#: ../widgets/studyview.cpp:108
+#: ../widgets/studyview.cpp:109
 msgid "Display the series tiling menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:117
+#: ../widgets/studyview.cpp:118
 msgid "Toggle single series mode"
 msgstr ""
 
-#: ../widgets/studyview.cpp:118
+#: ../widgets/studyview.cpp:119
 msgid "Display the series selection menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:126
+#: ../widgets/studyview.cpp:127
 msgid "Rearrange the images of the selected series"
 msgstr ""
 
-#: ../widgets/studyview.cpp:127
+#: ../widgets/studyview.cpp:128
 msgid "Display the the image tiling menu"
 msgstr ""
 
-#: ../widgets/studyview.cpp:135
+#: ../widgets/studyview.cpp:136
 msgid "Display references of the selected series"
 msgstr ""
 
-#: ../widgets/studyview.cpp:139
+#: ../widgets/studyview.cpp:140
 msgid "Navigate through 3D views"
 msgstr ""
 
-#: ../widgets/studyview.cpp:147
+#: ../widgets/studyview.cpp:148
 msgid "Measurement tools"
+msgstr "Szerszámok"
+
+#: ../widgets/studyview.cpp:711
+msgid "new windowlevel"
 msgstr ""
 
 #: ../widgets/adatefilter.cpp:44 ../widgets/adatefilter.cpp:49
 #: ../widgets/adatefilter.cpp:91 ../widgets/adatefilter.cpp:97
 msgid "None"
-msgstr ""
+msgstr "Semmi"
 
 #: ../widgets/adatefilter.cpp:45 ../widgets/adatefilter.cpp:104
 msgid "Today"
-msgstr ""
+msgstr "Ma"
 
 #: ../widgets/adatefilter.cpp:46 ../widgets/adatefilter.cpp:110
 msgid "Yesterday"
-msgstr ""
+msgstr "Tegnap"
 
 #: ../widgets/adatefilter.cpp:47 ../widgets/adatefilter.cpp:116
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: ../widgets/adatefilter.cpp:48 ../widgets/adatefilter.cpp:125
 msgid "Range"
-msgstr ""
+msgstr "Hatáskör"
 
 #: ../widgets/adatefilter.cpp:177
 msgid "Select date"
@@ -117,33 +164,44 @@ msgstr ""
 msgid "Select Enddate"
 msgstr ""
 
+#: ../widgets/awindowleveltoolbutton.cpp:42
+msgid "Add new windowlevel preset"
+msgstr ""
+
+#: ../widgets/awindowleveltoolbutton.cpp:86
+#: ../widgets/awindowleveltoolbutton.cpp:90
+#: ../widgets/awindowleveltoolbutton.cpp:138
+#: ../widgets/awindowleveltoolbutton.cpp:144
+msgid "Default"
+msgstr ""
+
 #: ../src/astockids.cpp:71
 msgid "1 Image"
-msgstr ""
+msgstr "1 kép"
 
 #: ../src/astockids.cpp:72
 msgid "1x2 Images"
-msgstr ""
+msgstr "1x3 képek"
 
 #: ../src/astockids.cpp:73
 msgid "2x1 Images"
-msgstr ""
+msgstr "2x1 képek"
 
 #: ../src/astockids.cpp:74
 msgid "2x2 Images"
-msgstr ""
+msgstr "2x2 képek"
 
 #: ../src/astockids.cpp:75
 msgid "4x4 Images"
-msgstr ""
+msgstr "2x2 képek"
 
 #: ../src/astockids.cpp:76
 msgid "Single"
-msgstr ""
+msgstr "szimpla"
 
 #: ../src/astockids.cpp:77
 msgid "All"
-msgstr ""
+msgstr "összes"
 
 #: ../src/astockids.cpp:78
 msgid "1 Series"
@@ -171,37 +229,37 @@ msgstr ""
 
 #: ../src/astockids.cpp:84
 msgid "Reference"
-msgstr ""
+msgstr "referencia"
 
 #: ../src/astockids.cpp:85
 msgid "Delete item"
-msgstr ""
+msgstr "töröl adat"
 
 #: ../src/astockids.cpp:86
 msgid "3D Cursor"
-msgstr ""
+msgstr "3D kurzor"
 
 #: ../src/astockids.cpp:87
 msgid "Measure"
-msgstr ""
+msgstr "méret"
 
-#: ../src/mainwindow.cpp:52
+#: ../src/mainwindow.cpp:55
 msgid "Open DICOM Image files"
-msgstr ""
+msgstr "DICOM filok nyitása"
 
-#: ../src/mainwindow.cpp:104
+#: ../src/mainwindow.cpp:111
 msgid "Bring opened files to front"
 msgstr ""
 
-#: ../src/mainwindow.cpp:113
+#: ../src/mainwindow.cpp:120
 msgid "DICOM files"
-msgstr ""
+msgstr "DICOM filok"
 
-#: ../src/mainwindow.cpp:118
+#: ../src/mainwindow.cpp:125
 msgid "Any files"
-msgstr ""
+msgstr "bármelyik filok"
 
-#: ../src/mainwindow.cpp:194
+#: ../src/mainwindow.cpp:201
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
 "requested images</span>\n"
@@ -211,81 +269,91 @@ msgstr ""
 
 #: ../src/studymanager.cpp:99
 msgid "Patientsname"
-msgstr ""
+msgstr "Név"
 
 #: ../src/studymanager.cpp:100
 msgid "Birthdate"
-msgstr ""
+msgstr "születési idö"
 
-#: ../src/studymanager.cpp:101
+#: ../src/studymanager.cpp:101 ../src/settings.cpp:148 ../src/settings.cpp:491
 msgid "Description"
-msgstr ""
+msgstr "fajta"
 
-#: ../src/studymanager.cpp:102
+#: ../src/studymanager.cpp:102 ../src/aeskulap.glade.h:35
 msgid "Modality"
-msgstr ""
+msgstr "módbeliség"
 
 #: ../src/studymanager.cpp:103
 msgid "Date/Time"
-msgstr ""
+msgstr "datum/idöpont"
 
 #: ../src/studymanager.cpp:104
 msgid "Station"
-msgstr ""
+msgstr "osztály"
 
-#: ../src/studymanager.cpp:105 ../src/aeskulap.glade.h:34
+#: ../src/studymanager.cpp:105 ../src/aeskulap.glade.h:42
 msgid "Server"
-msgstr ""
+msgstr "szerver"
 
-#: ../src/studymanager.cpp:127 ../src/settings.cpp:124
-#: ../src/aeskulap.glade.h:25
+#: ../src/studymanager.cpp:127 ../src/settings.cpp:123
+#: ../src/aeskulap.glade.h:30
 msgid "Group"
-msgstr ""
+msgstr "csoport"
 
-#: ../src/studymanager.cpp:169
+#: ../src/studymanager.cpp:172
 msgid "<span weight=\"bold\" size=\"larger\">No results for this query</span>"
-msgstr ""
-
-#: ../src/studymanager.cpp:247
-#, c-format
-msgid "Series %02i (1 Image)"
 msgstr ""
 
 #: ../src/studymanager.cpp:250
 #, c-format
-msgid "Series %02i (%i Images)"
+msgid "Series %02i (1 Image)"
 msgstr ""
 
 #: ../src/studymanager.cpp:253
 #, c-format
+msgid "Series %02i (%i Images)"
+msgstr ""
+
+#: ../src/studymanager.cpp:256
+#, c-format
 msgid "Series %02i"
 msgstr ""
 
-#: ../src/settings.cpp:120 ../src/aeskulap.glade.h:30
+#: ../src/settings.cpp:119 ../src/aeskulap.glade.h:37
 msgid "Name"
 msgstr ""
 
-#: ../src/settings.cpp:121 ../src/aeskulap.glade.h:16
+#: ../src/settings.cpp:120 ../src/aeskulap.glade.h:16
 msgid "AET"
 msgstr ""
 
-#: ../src/settings.cpp:122 ../src/aeskulap.glade.h:31
+#: ../src/settings.cpp:121 ../src/aeskulap.glade.h:38
 msgid "Port"
 msgstr ""
 
-#: ../src/settings.cpp:123
+#: ../src/settings.cpp:122
 msgid "Hostname"
 msgstr ""
 
-#: ../src/settings.cpp:380
+#: ../src/settings.cpp:149
+msgid "Center"
+msgstr ""
+
+#: ../src/settings.cpp:150
+msgid "Width"
+msgstr ""
+
+#: ../src/settings.cpp:399
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
 msgstr ""
+"<span weight=\"bold\" size=\"larger\">Echo test nem sikkerült!</span>\n"
+"\n"
 
-#: ../src/settings.cpp:396
+#: ../src/settings.cpp:415
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
-msgstr ""
+msgstr "<span weight=\"bold\" size=\"larger\">Echo sikkerült</span>"
 
 #: ../src/aeskulap.glade.h:1
 msgid "(C) 2005 Alexander Pipelka"
@@ -301,7 +369,7 @@ msgstr ""
 
 #: ../src/aeskulap.glade.h:4
 msgid "<b>Date:</b>"
-msgstr ""
+msgstr "<b>Datum:</b>"
 
 #: ../src/aeskulap.glade.h:5
 msgid "<b>Details</b>"
@@ -317,11 +385,11 @@ msgstr ""
 
 #: ../src/aeskulap.glade.h:8
 msgid "<b>Name:</b>"
-msgstr ""
+msgstr "<b>Név:</b>"
 
 #: ../src/aeskulap.glade.h:9
 msgid "<b>Patient ID:</b>"
-msgstr ""
+msgstr "<b>Beteg ID:</b>"
 
 #: ../src/aeskulap.glade.h:10
 msgid "<b>Prescanning files ...</b>"
@@ -329,7 +397,7 @@ msgstr ""
 
 #: ../src/aeskulap.glade.h:11
 msgid "<b>Servergroups</b>"
-msgstr ""
+msgstr "<b>Szervercsoport</b>"
 
 #: ../src/aeskulap.glade.h:12
 msgid "<b>Stationname:</b>"
@@ -337,85 +405,111 @@ msgstr ""
 
 #: ../src/aeskulap.glade.h:13
 msgid "<b>Study Description:</b>"
-msgstr ""
+msgstr "<b>Vizsgálat fajta:</b>"
 
 #: ../src/aeskulap.glade.h:14
 msgid "<b>Study List</b>"
-msgstr ""
+msgstr "<b>Vizsgálat lista</b>"
 
 #: ../src/aeskulap.glade.h:15
 msgid "<b>required</b>"
-msgstr ""
+msgstr "<b>Szükséges</b>"
 
 #: ../src/aeskulap.glade.h:17
-msgid "Advanced query options"
+msgid "Add windowlevel"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:18
-msgid "Aeskulap"
+msgid "Advanced query options"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:19
-msgid "Aeskulap Viewer"
+msgid "Aeskulap"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:20
-msgid "Clear"
+msgid "Aeskulap Viewer"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:21
-msgid "Clear Filter"
-msgstr ""
-
-#: ../src/aeskulap.glade.h:22
-msgid "DICOM Settings"
+msgid ""
+"CT\n"
+"CR"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:23
-msgid "Echotest"
+msgid "Center:"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:24
-msgid "Fullscreen"
-msgstr ""
+msgid "Clear"
+msgstr "Törlés"
+
+#: ../src/aeskulap.glade.h:25
+msgid "Clear Filter"
+msgstr "Filter törlés"
 
 #: ../src/aeskulap.glade.h:26
+msgid "DICOM Settings"
+msgstr "DICOM beállítások"
+
+#: ../src/aeskulap.glade.h:27
+msgid "Description:"
+msgstr "Fajta:"
+
+#: ../src/aeskulap.glade.h:28
+msgid "Echotest"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:29
+msgid "Fullscreen"
+msgstr "teljes képernyös megjelenítés"
+
+#: ../src/aeskulap.glade.h:31
 msgid "IP / Hostname"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:27
+#: ../src/aeskulap.glade.h:32
 msgid "Local AET"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:28
+#: ../src/aeskulap.glade.h:33
 msgid "Medical image viewer and DICOM network client\n"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:32
+#: ../src/aeskulap.glade.h:36
+msgid "Modality:"
+msgstr "Módbeliség:"
+
+#: ../src/aeskulap.glade.h:39
+msgid "Presets"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:40
 msgid "Scanning files"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:33
+#: ../src/aeskulap.glade.h:41
 msgid "Search"
-msgstr ""
+msgstr "keresés"
 
-#: ../src/aeskulap.glade.h:35
+#: ../src/aeskulap.glade.h:43
 msgid "Servers"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:36
+#: ../src/aeskulap.glade.h:44
 msgid "Settings"
-msgstr ""
+msgstr "beállítások"
 
-#: ../src/aeskulap.glade.h:37
+#: ../src/aeskulap.glade.h:45
 msgid "Specific Characterset"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:38
+#: ../src/aeskulap.glade.h:46
 msgid "Study Manager"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:39
+#: ../src/aeskulap.glade.h:47
 msgid ""
 "The Aeskulap source code is licensed under the following terms:\n"
 "\n"
@@ -429,7 +523,15 @@ msgid ""
 "BSD/MIT"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:49
+#: ../src/aeskulap.glade.h:57
+msgid "Width:"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:58
+msgid "Windowlevels"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:59
 msgid ""
 "XA\n"
 "CT\n"
@@ -439,27 +541,27 @@ msgid ""
 "SC\n"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:56
+#: ../src/aeskulap.glade.h:66
 msgid "_Edit"
-msgstr ""
+msgstr "S_zerkesztés"
 
-#: ../src/aeskulap.glade.h:57
+#: ../src/aeskulap.glade.h:67
 msgid "_File"
-msgstr ""
+msgstr "_Fájl"
 
-#: ../src/aeskulap.glade.h:58
+#: ../src/aeskulap.glade.h:68
 msgid "_Help"
-msgstr ""
+msgstr "_Súgó"
 
-#: ../src/aeskulap.glade.h:59
+#: ../src/aeskulap.glade.h:69
 msgid "_View"
-msgstr ""
+msgstr "_Nézet"
 
-#: ../src/aeskulap.glade.h:60
+#: ../src/aeskulap.glade.h:70
 msgid "prefer lossy JPEG compression"
 msgstr ""
 
 #. TRANSLATORS: Replace this string with your names, one name per line.
-#: ../src/aeskulap.glade.h:62
+#: ../src/aeskulap.glade.h:72
 msgid "translator-credits"
 msgstr ""

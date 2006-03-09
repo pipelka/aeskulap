@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/29 13:42:48 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.16.2.1 $
     Status:           $State: Exp $
 */
 
@@ -44,8 +44,8 @@ SimpleDisplay::SimpleDisplay() {
 
 	// set default display parameters
 
-	m_disp_params->window_center = 0;
-	m_disp_params->window_width = 0;
+	m_disp_params->window.center = 0;
+	m_disp_params->window.width = 0;
 
 	m_disp_params->zoom_factor = 100.0;
 
@@ -225,24 +225,24 @@ bool SimpleDisplay::set_image(const Glib::RefPtr<ImagePool::Instance>& image, bo
 		m_windowmap_depth = m_image->depth();
 	}
 
-	if(m_disp_params->window_center == 0) {
-		m_disp_params->window_center = m_image->default_windowcenter();
+	if(m_disp_params->window.center == 0) {
+		m_disp_params->window.center = m_image->default_windowcenter();
 	}
 	
-	if(m_disp_params->window_center == 0) {
-		m_disp_params->window_center = (1 << m_image->depth()) / 2;
+	if(m_disp_params->window.center == 0) {
+		m_disp_params->window.center = (1 << m_image->depth()) / 2;
 	}
 
-	if(m_disp_params->window_width == 0) {
-		m_disp_params->window_width = m_image->default_windowwidth();
+	if(m_disp_params->window.width == 0) {
+		m_disp_params->window.width = m_image->default_windowwidth();
 	}
 	
-	if(m_disp_params->window_width == 0) {
-		m_disp_params->window_width = 1 << m_image->depth();
+	if(m_disp_params->window.width == 0) {
+		m_disp_params->window.width = 1 << m_image->depth();
 	}
 
 	create_windowmap();
-	set_windowlevels(m_disp_params->window_center, m_disp_params->window_width);
+	set_windowlevels(m_disp_params->window.center, m_disp_params->window.width);
 	bitstretch(smooth);
 
 	//queue_draw();
@@ -271,7 +271,7 @@ bool SimpleDisplay::set_image(const Glib::RefPtr<ImagePool::Instance>& image, co
 	}
 	
 	m_disp_params = params;
-	set_windowlevels(m_disp_params->window_center, m_disp_params->window_width);
+	set_windowlevels(m_disp_params->window.center, m_disp_params->window.width);
 
 	bitstretch(smooth);
 
@@ -293,8 +293,8 @@ void SimpleDisplay::set_windowlevels(int c, int w) {
 		return;
 	}
 
-	m_disp_params->window_center = c;
-	m_disp_params->window_width = w;
+	m_disp_params->window.center = c;
+	m_disp_params->window.width = w;
 
 	double intercept = m_image->intercept();
 	double slope = m_image->slope();
@@ -669,7 +669,7 @@ void SimpleDisplay::update() {
 }
 
 void SimpleDisplay::refresh(bool smooth) {
-	set_windowlevels(m_disp_params->window_center, m_disp_params->window_width);
+	set_windowlevels(m_disp_params->window.center, m_disp_params->window.width);
 	bitstretch(smooth);
 	update();
 }
@@ -813,6 +813,14 @@ bool SimpleDisplay::get_playing() {
 
 const Glib::RefPtr<ImagePool::Instance>& SimpleDisplay::get_image() {
 	return m_image;
+}
+
+const Aeskulap::WindowLevel& SimpleDisplay::get_windowlevel() {
+	return m_disp_params->window;
+}
+
+const Aeskulap::WindowLevel& SimpleDisplay::get_default_windowlevel() {
+	return m_disp_params->default_window;
 }
 
 } // namespace Aeskulap

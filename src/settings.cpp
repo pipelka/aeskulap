@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/28 22:39:34 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.12.2.1 $
+    CVS/RCS Revision: $Revision: 1.12.2.2 $
     Status:           $State: Exp $
 */
 
@@ -33,15 +33,14 @@
 #include "imagepool.h"
 #include "poolservers.h"
 #include "gettext.h"
+
 #include <vector>
+#include <iostream>
 
 Settings::Settings(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade) :
 Gtk::Window(cobject),
 m_refGlade(refGlade) {
-	// Get the client and tell it we want to monitor /apps/aeskulap/preferences
-	m_conf_client = Gnome::Conf::Client::get_default_client();
-	m_conf_client->add_dir("/apps/aeskulap/preferences");
-	
+
 	// dicom settings
 
 	m_refGlade->get_widget("local_aet", m_local_aet);
@@ -135,6 +134,38 @@ m_refGlade(refGlade) {
 	Glib::RefPtr<Gtk::TreeSelection> refTreeSelection = m_list_servers->get_selection();
 	refTreeSelection->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_server_activated));
 
+	// presets - windowlevel
+	
+	m_refGlade->get_widget("presets_windowlevels_modality", m_presets_windowlevels_modality);
+	m_presets_windowlevels_modality->signal_changed().connect(sigc::mem_fun(*this, &Settings::on_windowlevels_modality_changed));
+
+	m_refGlade->get_widget("presets_windowlevels", m_presets_windowlevels);
+
+	m_refWindowLevelModel = Gtk::ListStore::create(m_WindowLevelColumns);
+	m_refTreeModel->set_sort_column(m_WindowLevelColumns.m_description, Gtk::SORT_ASCENDING);
+
+	m_presets_windowlevels->set_model(m_refWindowLevelModel);
+
+	m_presets_windowlevels->append_column_editable(gettext("Description"), m_WindowLevelColumns.m_description);
+	m_presets_windowlevels->append_column_numeric_editable(gettext("Center"), m_WindowLevelColumns.m_center, "%i");
+	m_presets_windowlevels->append_column_numeric_editable(gettext("Width"), m_WindowLevelColumns.m_width, "%i");
+
+	m_presets_windowlevels->get_column(0)->set_sort_column(m_WindowLevelColumns.m_description);
+	m_presets_windowlevels->get_column(0)->property_sort_indicator().set_value(true);
+	m_presets_windowlevels->get_column(0)->set_sort_order(Gtk::SORT_ASCENDING);
+	m_presets_windowlevels->get_column(1)->set_sort_column(m_WindowLevelColumns.m_center);
+	m_presets_windowlevels->get_column(2)->set_sort_column(m_WindowLevelColumns.m_width);
+
+	m_refGlade->get_widget("presets_windowlevels_add", button);
+	button->signal_clicked().connect(sigc::mem_fun(*this, &Settings::on_windowlevels_add));
+
+	m_refGlade->get_widget("presets_windowlevels_remove", button);
+	button->signal_clicked().connect(sigc::mem_fun(*this, &Settings::on_windowlevels_remove));
+
+	if(m_presets_windowlevels_modality->get_active_row_number() == -1) {
+		m_presets_windowlevels_modality->set_active(0);
+	}
+
 	restore_settings();
 }
 
@@ -150,7 +181,7 @@ void Settings::on_show() {
 void Settings::on_settings_save() {
 	save_settings();
 	ImagePool::close();
-	ImagePool::init(false);
+	ImagePool::init();
 	hide();
 	signal_apply();
 }
@@ -163,61 +194,47 @@ void Settings::on_settings_cancel() {
 void Settings::save_settings() {
 	Glib::ustring value;
 
-	value = m_local_aet->get_text();
-	m_conf_client->set("/apps/aeskulap/preferences/local_aet", value);
+	m_configuration.set_local_aet(m_local_aet->get_text());
+	m_configuration.set_local_port(atoi(m_local_port->get_text().c_str()));
 
-	value = m_local_port->get_text();
-	m_conf_client->set("/apps/aeskulap/preferences/local_port", atoi(value.c_str()));
+	std::string encoding = m_characterset->get_active_text().c_str();
+	ImagePool::set_encoding(encoding);
+	m_configuration.set_encoding(encoding);
 
-	ImagePool::set_encoding(m_characterset->get_active_text().c_str());
+	// store serverlist
+	// ----------------
+	
+	// create list from treeview
 
-	std::vector< Glib::ustring > aet_list;
-	std::vector< Glib::ustring > hostname_list;
-	std::vector< int > port_list;
-	std::vector< Glib::ustring > description_list;
-	std::vector< Glib::ustring > group_list;
-	std::vector< gboolean > lossy_list;
-
+	std::vector<Aeskulap::Configuration::ServerData> list;
 	Gtk::TreeModel::Children::iterator i = m_refTreeModel->children().begin();
 	for(; i != m_refTreeModel->children().end(); i++) {
-		aet_list.push_back((*i)[m_Columns.m_aet]);
-		hostname_list.push_back((*i)[m_Columns.m_hostname]);
-		port_list.push_back((*i)[m_Columns.m_port]);
-		description_list.push_back((*i)[m_Columns.m_name]);
-		group_list.push_back((*i)[m_Columns.m_group]);
-		lossy_list.push_back((*i)[m_Columns.m_lossy]);
+		Aeskulap::Configuration::ServerData s;
+		s.m_aet = (*i)[m_Columns.m_aet];
+		s.m_hostname = (*i)[m_Columns.m_hostname];
+		s.m_port = (*i)[m_Columns.m_port];
+		s.m_name = (*i)[m_Columns.m_name];
+		s.m_group = (*i)[m_Columns.m_group];
+		s.m_lossy = (*i)[m_Columns.m_lossy];
+		
+		list.push_back(s);
 	}
 
-	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_aet", aet_list);
-	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_hostname", hostname_list);
-	m_conf_client->set_int_list("/apps/aeskulap/preferences/server_port", port_list);
-	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_description", description_list);
-	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_group", group_list);
-	m_conf_client->set_bool_list("/apps/aeskulap/preferences/server_lossy", lossy_list);
-
+	// write list to configuration
+	m_configuration.set_serverlist(list);
 	ImagePool::ServerList::update();
+
+	// store windowlevelpresets
+	// ------------------------
+	
+	store_windowlevel_preset();
 }
 
 void Settings::restore_settings() {
-	Glib::ustring local_aet_setting = m_conf_client->get_string(
-		"/apps/aeskulap/preferences/local_aet");
-
-	if(local_aet_setting.empty()) {
-		local_aet_setting = "AESKULAP";
-		m_conf_client->set("/apps/aeskulap/preferences/local_aet", local_aet_setting);
-	}
-	m_local_aet->set_text(local_aet_setting);
-
-	gint local_port_setting = m_conf_client->get_int(
-		"/apps/aeskulap/preferences/local_port");
-
-	if(local_port_setting == 0) {
-		local_port_setting = 6000;
-		m_conf_client->set("/apps/aeskulap/preferences/local_port", local_port_setting);
-	}
-
 	char buffer[10];
-	sprintf(buffer, "%i", local_port_setting);
+
+	m_local_aet->set_text(m_configuration.get_local_aet());
+	g_snprintf(buffer, sizeof(buffer), "%i", m_configuration.get_local_port());
 	m_local_port->set_text(buffer);
 
 	Glib::ustring charset = ImagePool::get_encoding();
@@ -240,6 +257,8 @@ void Settings::restore_settings() {
 		row[m_Columns.m_group] = i->second.m_group;
 		row[m_Columns.m_lossy] = i->second.m_lossy;
 	}
+
+	reload_windowlevel_preset(m_windowlevels_modality);
 }
 
 void Settings::on_server_add() {
@@ -250,7 +269,7 @@ void Settings::on_server_add() {
 	Glib::RefPtr<Gtk::TreeSelection> selection = m_list_servers->get_selection();
 
 	char servername[50];
-	sprintf(servername, "Server%i", ++count);
+	g_snprintf(servername, sizeof(servername), "Server%i", ++count);
 
 	row[m_Columns.m_name] = servername;
 	row[m_Columns.m_aet] = "AET";
@@ -302,7 +321,7 @@ void Settings::on_server_activated() {
 	
 	char buffer[10];
 	guint i = row[m_Columns.m_port];
-	sprintf(buffer, "%i", i);
+	g_snprintf(buffer, sizeof(buffer), "%i", i);
 	m_server_detail_port->set_text(buffer);
 	m_server_detail_group->get_entry()->set_text(row[m_Columns.m_group]);
 	m_server_detail_description->set_text(row[m_Columns.m_name]);
@@ -408,4 +427,77 @@ void Settings::on_echotest() {
 	}
 
 	m_server_detail_echo->set_sensitive(true);
+}
+
+void Settings::store_windowlevel_preset() {
+	if(m_windowlevels_modality.empty()) {
+		return;
+	}
+
+	// create list from treeview
+	Aeskulap::WindowLevelList list;
+	Gtk::TreeModel::Children::iterator i = m_refWindowLevelModel->children().begin();
+	for(; i != m_refWindowLevelModel->children().end(); i++) {
+		Aeskulap::WindowLevel l(
+					(*i)[m_WindowLevelColumns.m_description],
+					m_windowlevels_modality,
+					(*i)[m_WindowLevelColumns.m_center],
+					(*i)[m_WindowLevelColumns.m_width]);
+
+		list[l.description] = l;
+	}
+
+	// write list to configuration
+	m_configuration.unset_windowlevels(m_windowlevels_modality);
+	m_configuration.set_windowlevel_list(m_windowlevels_modality, list);
+}
+
+void Settings::reload_windowlevel_preset(const Glib::ustring& modality) {
+	Aeskulap::WindowLevelList list;
+
+	m_configuration.get_windowlevel_list(m_windowlevels_modality, list);
+	Aeskulap::WindowLevelList::iterator i;
+	
+	m_refWindowLevelModel->clear();
+
+	for(i = list.begin(); i != list.end(); i++) {
+		Gtk::TreeModel::Row row = *(m_refWindowLevelModel->append());
+
+		row[m_WindowLevelColumns.m_description] = i->second.description;
+		row[m_WindowLevelColumns.m_center] = i->second.center;
+		row[m_WindowLevelColumns.m_width] = i->second.width;
+	}
+}
+
+void Settings::on_windowlevels_modality_changed() {
+	int index = m_presets_windowlevels_modality->get_active_row_number();
+	std::cout << "on_windowlevels_modality_changed() - indexint: " << index << std::endl;
+	
+	store_windowlevel_preset();
+
+	if(index == 0) {
+		m_windowlevels_modality = "CT";
+	}
+	if(index == 1) {
+		m_windowlevels_modality = "CR";
+	}
+
+	reload_windowlevel_preset(m_windowlevels_modality);
+}
+
+void Settings::on_windowlevels_add() {
+	Gtk::TreeModel::Row row = *(m_refWindowLevelModel->append());
+	Glib::RefPtr<Gtk::TreeSelection> selection = m_presets_windowlevels->get_selection();
+
+	row[m_WindowLevelColumns.m_description] = gettext("Description");
+
+	Gtk::TreePath path(row);
+	m_presets_windowlevels->row_activated(path, *(m_presets_windowlevels->get_column(0)));
+	selection->select(row);
+}
+
+void Settings::on_windowlevels_remove() {
+	Glib::RefPtr<Gtk::TreeSelection> selection = m_presets_windowlevels->get_selection();
+	Gtk::TreeModel::Row row = *(selection->get_selected());
+	m_refWindowLevelModel->erase(row);
 }

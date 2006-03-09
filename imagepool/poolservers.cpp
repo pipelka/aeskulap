@@ -20,13 +20,12 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/28 22:39:34 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolservers.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4.2.1 $
+    CVS/RCS Revision: $Revision: 1.4.2.2 $
     Status:           $State: Exp $
 */
-
-#include <gconfmm.h>
 
 #include "imagepool.h"
 #include "poolservers.h"
@@ -40,20 +39,22 @@ ServerList ServerList::m_serverlist;
 std::set< std::string > ServerList::m_servergroups;
 
 
-Server::Server() :
-m_lossy(false) {
+Server::Server() {
+	m_lossy = false;
 }
 
-Server::Server(const std::string& hostname, const std::string& aet, int port, bool lossy) :
-m_hostname(hostname),
-m_aet(aet),
-m_port(port),
-m_lossy(lossy) {
+Server::Server(const std::string& hostname, const std::string& aet, int port, bool lossy) {
+	m_hostname = hostname;
+	m_aet = aet;
+	m_port = port;
+	m_lossy = lossy;
 }
 
 bool Server::send_echo(std::string& status) {
 	Association a;
-	a.Create(m_aet, m_hostname, m_port, get_ouraet(), UID_VerificationSOPClass);
+	Aeskulap::Configuration& conf = Aeskulap::Configuration::get_instance();
+	
+	a.Create(m_aet, m_hostname, m_port, conf.get_local_aet(), UID_VerificationSOPClass);
 	if(a.Connect(&net).bad()) {
 		status = gettext("Unable to create association");
 		return false;
@@ -106,51 +107,22 @@ ImagePool::Server* ServerList::find_server(const std::string& name) {
 void ServerList::update() {
 	m_serverlist.clear();
 
-	Glib::RefPtr<Gnome::Conf::Client> client = Gnome::Conf::Client::get_default_client();
+	Aeskulap::Configuration& conf = Aeskulap::Configuration::get_instance();
+	Aeskulap::Configuration::ServerList::iterator i;
+	Aeskulap::Configuration::ServerList* list = conf.get_serverlist();
 
-	Gnome::Conf::SListHandle_ValueString aet_list = client->get_string_list("/apps/aeskulap/preferences/server_aet");
-	Gnome::Conf::SListHandle_ValueInt port_list = client->get_int_list("/apps/aeskulap/preferences/server_port");
-	Gnome::Conf::SListHandle_ValueString hostname_list = client->get_string_list("/apps/aeskulap/preferences/server_hostname");
-	Gnome::Conf::SListHandle_ValueString description_list = client->get_string_list("/apps/aeskulap/preferences/server_description");
-	Gnome::Conf::SListHandle_ValueString group_list = client->get_string_list("/apps/aeskulap/preferences/server_group");
-	Gnome::Conf::SListHandle_ValueBool lossy_list = client->get_bool_list("/apps/aeskulap/preferences/server_lossy");
-	
-	Gnome::Conf::SListHandle_ValueString::iterator a = aet_list.begin();
-	Gnome::Conf::SListHandle_ValueInt::iterator p = port_list.begin();
-	Gnome::Conf::SListHandle_ValueString::iterator h = hostname_list.begin();
-	Gnome::Conf::SListHandle_ValueString::iterator d = description_list.begin();
-	Gnome::Conf::SListHandle_ValueString::iterator g = group_list.begin();
-	Gnome::Conf::SListHandle_ValueBool::iterator l = lossy_list.begin();
-	
-	for(; h != hostname_list.end() && a != aet_list.end() && p != port_list.end(); a++, p++, h++) {
+	for(i = list->begin(); i != list->end(); i++) {
 
-		std::string servername;
-		if(d != description_list.end()) {
-			servername = *d;
-			d++;
-		}
-		else {
-			char buffer[50];
-			sprintf(buffer, "Server%i", m_serverlist.size()+1);
-			servername = buffer;
-		}
-
-		Server& s = m_serverlist[servername];
-		s.m_aet = *a;
-		s.m_port = *p;
-		s.m_hostname = *h;
-		s.m_name = servername;
-		
-		if(l != lossy_list.end()) {
-			s.m_lossy = *l;
-			l++;
-		}
-
-		if(g != group_list.end()) {
-			s.m_group = *g;
-			g++;
-		}
+		Server& s = m_serverlist[i->second.m_name];
+		s.m_aet = i->second.m_aet;
+		s.m_port = i->second.m_port;
+		s.m_hostname = i->second.m_hostname;
+		s.m_name = i->second.m_name;
+		s.m_group = i->second.m_group;
+		s.m_lossy = i->second.m_lossy;
 	}
+	
+	delete list;
 }
 
 const std::set<std::string>& ServerList::get_groups() {

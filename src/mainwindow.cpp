@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/28 22:39:34 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.24.2.1 $
+    CVS/RCS Revision: $Revision: 1.24.2.2 $
     Status:           $State: Exp $
 */
 
@@ -32,6 +32,8 @@
 #include "aiconfactory.h"
 #include "abusycursor.h"
 #include "astudytab.h"
+#include "aconfiguration.h"
+#include "awindowleveltoolbutton.h"
 
 #include "poolstudy.h"
 
@@ -41,6 +43,7 @@
 #include "settings.h"
 #include "prescandialog.h"
 #include "aboutdialog.h"
+#include "windowleveldialog.h"
 
 #include "assert.h"
 #include "gettext.h"
@@ -50,13 +53,17 @@ MainWindow::MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade:
 Gtk::Window(cobject), 
 m_refGlade(refGlade), 
 m_dialogFile(gettext("Open DICOM Image files")),
-m_raise_opened(true)
+m_raise_opened(true),
+m_netloader(Aeskulap::Configuration::get_instance().get_local_aet())
 {
 	Glib::RefPtr<Gdk::Pixbuf> icon = Aeskulap::IconFactory::load_from_file("aeskulap.png");
 	
 	if(icon) {
 		set_icon(icon);
 	}
+
+	m_windowlevel = NULL;
+	m_refGlade->get_widget_derived("windowlevel_add", m_windowlevel);
 
 	m_about = NULL;
 	m_refGlade->get_widget_derived("aboutdialog", m_about);
@@ -222,6 +229,7 @@ void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	std::cout << "new study " << studyuid << std::endl;
 
 	StudyView* frame = manage(new StudyView(study));
+	frame->signal_windowlevel_add.connect(sigc::mem_fun(*this, &MainWindow::on_windowlevel_add));
 	frame->accelerate(*this);
 
 	m_studyview[studyuid] = frame;
@@ -229,7 +237,6 @@ void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 	Aeskulap::StudyTab* tab = manage(new Aeskulap::StudyTab(study, frame));
 	tab->signal_close.connect(sigc::mem_fun(*this, &MainWindow::on_study_closed));
 	study->signal_progress.connect(sigc::mem_fun(*tab, &Aeskulap::StudyTab::on_progress));
-
 	m_mainNotebook->append_page(*frame, *tab);
 	frame->show();
 	if(m_raise_opened) {
@@ -255,6 +262,7 @@ void MainWindow::on_edit_settings() {
 
 void MainWindow::on_edit_settings_apply() {
 	m_studymanager->update_grouplist();
+	Aeskulap::WindowLevelToolButton::update_all();
 }
 
 const std::string& MainWindow::find_pageuid(Gtk::Widget* page) {
@@ -276,4 +284,18 @@ void MainWindow::on_about() {
 	m_about->show();
 	m_about->run();
 	m_about->hide();
+}
+
+bool MainWindow::on_windowlevel_add(const Aeskulap::WindowLevel& level) {
+	m_windowlevel->set(level);
+	m_windowlevel->show();
+	int result = m_windowlevel->run();
+	m_windowlevel->hide();
+	
+	if(result != Gtk::RESPONSE_OK) {
+		return false;
+	}
+	
+	m_configuration.set_windowlevel(m_windowlevel->get());
+	return true;
 }

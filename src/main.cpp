@@ -22,32 +22,29 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/28 22:39:34 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.7.2.1 $
+    CVS/RCS Revision: $Revision: 1.7.2.2 $
     Status:           $State: Exp $
 */
 
+#include "config.h"
 #include "mainwindow.h"
-
 #include "imagepool.h"
 #include "poolstudy.h"
 
 #include "aiconfactory.h"
 #include "abusycursor.h"
+#include "aconfiguration.h"
 
 #include "binreloc.h"
 
 #include <gtkmm.h>
 #include <libglademm/xml.h>
-#include <gconfmm.h>
 
 #include <iostream>
 
 int main(int argc, char* argv[]) {
-	ImagePool::init();
-
-	Gtk::Main kit(argc, argv);
 
 	br_init(NULL);
 
@@ -57,10 +54,27 @@ int main(int argc, char* argv[]) {
 	std::string localedir = datadir + "/locale";
 	std::string gladedir = datadir + "/aeskulap/glade";
 
-	bindtextdomain("aeskulap", localedir.c_str());
-	bind_textdomain_codeset("aeskulap", "UTF-8");
-	textdomain("aeskulap");
+	bindtextdomain(GETTEXT_PACKAGE, localedir.c_str());
+	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+	textdomain(GETTEXT_PACKAGE);
  
+
+	// initialize glib threads
+	if(!Glib::thread_supported()) {
+		Glib::thread_init();
+	}
+
+	// initialize DICOM interface
+	ImagePool::init();
+	
+	// get configuration values
+	Aeskulap::Configuration& config = Aeskulap::Configuration::get_instance();
+	
+	// set default DICOM encoding (characterset)
+	ImagePool::set_encoding(config.get_encoding());
+
+	Gtk::Main kit(argc, argv);
+
  	// set locale "C" for numeric conversion (strtod)
  
  	if(setlocale(LC_NUMERIC, "C") == NULL) {

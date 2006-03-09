@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/02/28 22:39:34 $
+    Update Date:      $Date: 2006/03/09 15:35:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.17.2.1 $
+    CVS/RCS Revision: $Revision: 1.17.2.2 $
     Status:           $State: Exp $
 */
 
@@ -163,7 +163,7 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 		text += "\n";
 		
 		char buffer[50];
-		sprintf(buffer, "%i x %i", m_image->width(), m_image->height());
+		g_snprintf(buffer, sizeof(buffer), "%i x %i", m_image->width(), m_image->height());
 
 		text += buffer;
 		
@@ -172,14 +172,14 @@ bool Display::on_expose_event(GdkEventExpose* event) {
 		m_layoutR->set_width((get_width()/2 - m_offset_right) * PANGO_SCALE);
 		
 		text = m_image->model() + "\n";
-		sprintf(buffer, gettext("Image: %i / %i"), m_image->get_index(), m_image->series()->size());
+		g_snprintf(buffer, sizeof(buffer), gettext("Image: %i / %i"), m_image->get_index(), m_image->series()->size());
 		text += buffer;
 	
 		m_layoutL->set_font_description(m_fntdesc);
 		m_layoutL->set_text(text);
 		m_layoutL->set_width((get_width()/2 - m_offset_left) * PANGO_SCALE);
 
-		sprintf(buffer, "C: %i\nW: %i", m_disp_params->window_center, m_disp_params->window_width);
+		g_snprintf(buffer, sizeof(buffer), "C: %i\nW: %i", m_disp_params->window.center, m_disp_params->window.width);
 
 		text = buffer;
 
@@ -237,8 +237,7 @@ bool Display::on_button_press_event(GdkEventButton* button) {
 		m_drag_button = 1;
 		m_drag_start_x = button->x;
 		m_drag_start_y = button->y;
-		m_drag_window_center = m_disp_params->window_center;
-		m_drag_window_width = m_disp_params->window_width;
+		m_drag_window = m_disp_params->window;
 
 		get_window()->set_cursor(*m_cursor_windowlevel);
 		add_modal_grab();
@@ -281,10 +280,8 @@ bool Display::on_button_release_event(GdkEventButton* button) {
 	Gtk::EventBox::on_button_release_event(button);
 
 	if(m_image && !m_disp_params->selected) {
-		if(button->button == 1) {
-			m_disp_params->selected = true;
-			signal_selected(get_id());
-		}
+		m_disp_params->selected = true;
+		signal_selected(get_id());
 	}
 
 	if(!m_mouse_functions) {
@@ -332,7 +329,7 @@ bool Display::on_motion_notify_event(GdkEventMotion* event) {
 	get_pointer(x, y);
 	
 	if(m_drag_button == 1 && event->state & GDK_SHIFT_MASK) {
-		int diff = y - m_drag_start_y;
+		int diff = (int)(y - m_drag_start_y);
 		signal_locate(diff);
 		m_drag_start_y = y;
 		
@@ -413,12 +410,12 @@ void Display::set_window_palette(gdouble x, gdouble y) {
 
 	int dist = m_image->max_value() - m_image->min_value();
 	if(dist > 5) {
-		c = m_drag_window_center + (dx / get_width()) * dist/2;
-		w = m_drag_window_width + (dy / get_height()) * dist/2;
+		c = m_drag_window.center + (dx / get_width()) * dist/2;
+		w = m_drag_window.width + (dy / get_height()) * dist/2;
 	}
 	else {
-		c = m_drag_window_center + (dx / get_width()) * (m_windowmap_size-1)/2;
-		w = m_drag_window_width + (dy / get_height()) * (m_windowmap_size-1)/2;
+		c = m_drag_window.center + (dx / get_width()) * (m_windowmap_size-1)/2;
+		w = m_drag_window.width + (dy / get_height()) * (m_windowmap_size-1)/2;
 	}
 
 	if(c < 1 && !m_image->is_signed()) {
@@ -498,7 +495,7 @@ void Display::draw_ruler_v() {
 	}
 
 	char buffer[10];
-	sprintf(buffer, gettext("%i mm"), mm);
+	g_snprintf(buffer, sizeof(buffer), gettext("%i mm"), mm);
 	m_layoutR->set_text(buffer);
 	m_layoutR->set_width(100 * PANGO_SCALE);
 
@@ -550,7 +547,7 @@ void Display::draw_ruler_h() {
 	}
 
 	char buffer[10];
-	sprintf(buffer, gettext("%i mm"), mm);
+	g_snprintf(buffer, sizeof(buffer), gettext("%i mm"), mm);
 	m_layoutL->set_text(buffer);
 	m_layoutL->set_width(100 * PANGO_SCALE);
 

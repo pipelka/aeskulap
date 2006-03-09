@@ -107,7 +107,7 @@ CONDITION Network::ASC_ConnectAssociation(Association* assoc, const std::string&
     ASC_setAPTitles(params, ouraet.c_str(), peerTitle.c_str(), NULL);
 
     gethostname(localHost, sizeof(localHost) - 1);
-    sprintf(peerHost, "%s:%d", peer.c_str(), port);
+    snprintf(peerHost, sizeof(peerHost), "%s:%d", peer.c_str(), port);
     ASC_setPresentationAddresses(params, localHost, peerHost);
 
 	if(abstractSyntax == NULL)
