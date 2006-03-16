@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/16 13:50:53 $
+    Update Date:      $Date: 2006/03/16 16:05:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.19 $
+    CVS/RCS Revision: $Revision: 1.20 $
     Status:           $State: Exp $
 */
 
@@ -88,6 +88,8 @@ void SimpleDisplay::init_display() {
 	
 	m_filmholes_left = Aeskulap::IconFactory::load_from_file("filmholes-big-left.png");
 	m_filmholes_right = Aeskulap::IconFactory::load_from_file("filmholes-big-right.png");
+	
+	//set_double_buffered(false);
 }
 
 void SimpleDisplay::on_realize() {

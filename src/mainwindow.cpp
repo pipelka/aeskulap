@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 18:12:44 $
+    Update Date:      $Date: 2006/03/16 16:05:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.26 $
+    CVS/RCS Revision: $Revision: 1.27 $
     Status:           $State: Exp $
 */
 
@@ -84,7 +84,8 @@ m_netloader(Aeskulap::Configuration::get_instance().get_local_aet())
 	m_mainNotebook = NULL;
 	m_refGlade->get_widget("notebook_main", m_mainNotebook);
 	m_mainNotebook->popup_enable();
-
+	m_mainNotebook->signal_switch_page().connect(sigc::mem_fun(*this, &MainWindow::on_switch_page));
+	
 	Gtk::ImageMenuItem* item = NULL;
 
 	m_refGlade->get_widget("file_open", item);
@@ -229,18 +230,20 @@ void MainWindow::on_study_added(const Glib::RefPtr<ImagePool::Study>& study) {
 
 	StudyView* frame = manage(new StudyView(study));
 	frame->signal_windowlevel_add.connect(sigc::mem_fun(*this, &MainWindow::on_windowlevel_add));
-	frame->accelerate(*this);
 
 	m_studyview[study->studyinstanceuid()] = frame;
 
 	Aeskulap::StudyTab* tab = manage(new Aeskulap::StudyTab(study, frame));
 	tab->signal_close.connect(sigc::mem_fun(*this, &MainWindow::on_study_closed));
 	study->signal_progress.connect(sigc::mem_fun(*tab, &Aeskulap::StudyTab::on_progress));
+	
 	m_mainNotebook->append_page(*frame, *tab);
 	frame->show();
+
 	if(m_raise_opened) {
 		m_raise_opened = false;
 		m_mainNotebook->set_current_page(-1);
+		frame->accelerate(*this);
 	}
 	study->signal_series_added.connect(sigc::mem_fun(*frame, &StudyView::on_series_added));
 
@@ -297,4 +300,14 @@ bool MainWindow::on_windowlevel_add(const Aeskulap::WindowLevel& level) {
 	
 	m_configuration.set_windowlevel(m_windowlevel->get());
 	return true;
+}
+
+void MainWindow::on_switch_page(GtkNotebookPage* page, guint index) {
+	std::cerr << "page: " << index << std::endl;
+	if(index == 0) {
+		return;
+	}
+
+	StudyView* study = static_cast<StudyView*>(m_mainNotebook->get_nth_page(index));
+	study->accelerate(*this);
 }
