@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/16 15:11:19 $
+    Update Date:      $Date: 2006/03/16 16:05:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.24 $
+    CVS/RCS Revision: $Revision: 1.25 $
     Status:           $State: Exp $
 */
 
@@ -167,6 +167,7 @@ m_draw_reference_frame_ends(false) {
 	m_toolbar->show();
 	
 	set_layout(m_tile_x, m_tile_y);
+	set_redraw_on_allocate(false);
 }
 
 StudyView::~StudyView() {
@@ -446,7 +447,8 @@ void StudyView::view_single_series(SeriesView* view) {
 	m_series_layout->set_sensitive(false);
 
 	m_table->hide();
-
+	view->set_redraw_on_allocate(false);
+	
 	// remove widgets (series)
 	for(unsigned int i = 0; i < m_widgets.size(); i++) {
 		SeriesView* v = m_widgets[i];
@@ -459,6 +461,7 @@ void StudyView::view_single_series(SeriesView* view) {
 	m_table->resize(1, 1);
 	m_table->attach(*view, 0, 1, 0, 1);
 	view->show();
+	view->set_redraw_on_allocate(true);
 
 	m_table->show();
 

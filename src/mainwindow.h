@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/16 16:05:42 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.h,v $
-    CVS/RCS Revision: $Revision: 1.15 $
+    CVS/RCS Revision: $Revision: 1.16 $
     Status:           $State: Exp $
 */
 
@@ -84,6 +84,8 @@ protected:
 	void on_about();
 
 	bool on_windowlevel_add(const Aeskulap::WindowLevel& level);
+
+	void on_switch_page(GtkNotebookPage* page, guint index);
 
 private:
 
