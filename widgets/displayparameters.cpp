@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 09:58:02 $
+    Update Date:      $Date: 2006/03/16 13:50:53 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/displayparameters.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -35,7 +35,8 @@ zoom_factor(100.0),
 move_x(0),
 move_y(0),
 selected(false),
-series_selected(false) {
+series_selected(false),
+inverted(false) {
 }
 
 Glib::RefPtr<DisplayParameters> DisplayParameters::create() {
@@ -48,6 +49,7 @@ Glib::RefPtr<DisplayParameters> DisplayParameters::create(const Glib::RefPtr<Ima
 	d->window.center = image->default_windowcenter();
 	d->window.width = image->default_windowwidth();
 	d->window.modality = image->modality();
+	d->inverted = false;
 
 	d->default_window = d->window;
 	return d;
