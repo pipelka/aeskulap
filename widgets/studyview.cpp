@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/07 08:57:44 $
+    Update Date:      $Date: 2006/03/16 13:50:53 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.22 $
+    CVS/RCS Revision: $Revision: 1.23 $
     Status:           $State: Exp $
 */
 
@@ -153,6 +153,7 @@ m_draw_reference_frame_ends(false) {
 	m_windowlevel->signal_windowlevel_changed.connect(sigc::mem_fun(*this, &StudyView::on_windowlevel_changed));
 	m_windowlevel->signal_windowlevel_default.connect(sigc::mem_fun(*this, &StudyView::on_windowlevel_default));
 	m_windowlevel->signal_windowlevel_add.connect(sigc::mem_fun(*this, &StudyView::on_windowlevel_add));
+	m_windowlevel->signal_windowlevel_invert.connect(sigc::mem_fun(*this, &StudyView::on_windowlevel_invert));
 	m_windowlevel->show();
 	m_toolbar->append(*m_windowlevel);
 
@@ -665,6 +666,9 @@ void StudyView::enable_mouse_functions(bool enable) {
 
 void StudyView::on_image_selected(SeriesView* s, Aeskulap::Display* d) {
 	std::cout << "StudyView::on_image_selected()" << std::endl;
+
+	m_windowlevel->set_windowlevel_invert(d->get_inverted());
+
 	if(d->get_windowlevel() == d->get_default_windowlevel()) {
 		std::cout << "default windowlevel" << std::endl;
 		m_windowlevel->set_windowlevel_default();
@@ -718,4 +722,12 @@ void StudyView::on_windowlevel_add(Aeskulap::WindowLevelToolButton* btn) {
 	
 	Aeskulap::WindowLevelToolButton::update_all();
 	m_windowlevel->set_windowlevel(w, true);
+}
+
+void StudyView::on_windowlevel_invert(bool invert) {
+	if(m_selected == NULL) {
+		return;
+	}
+
+	m_selected->set_inverted(invert);
 }

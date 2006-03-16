@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 09:58:02 $
+    Update Date:      $Date: 2006/03/16 13:50:53 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -59,6 +59,8 @@ public:
 
 	void set_layout(int tilex, int tiley);
 
+	void set_inverted(bool inverted);
+
 	void on_instance_added(const Glib::RefPtr<ImagePool::Instance>& instance);
 
 	void select(bool s);
@@ -77,7 +79,7 @@ public:
 
 	void apply_changes(const Aeskulap::WindowLevel& level);
 
-	void apply_changes(Glib::RefPtr<DisplayParameters> param);
+	void apply_changes(const Glib::RefPtr<DisplayParameters>& param);
 
 	void apply_default_windowlevel();
 

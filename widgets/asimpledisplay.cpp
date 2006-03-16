@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 09:58:02 $
+    Update Date:      $Date: 2006/03/16 13:50:53 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.18 $
+    CVS/RCS Revision: $Revision: 1.19 $
     Status:           $State: Exp $
 */
 
@@ -295,6 +295,7 @@ void SimpleDisplay::set_windowlevels(int c, int w) {
 
 	m_disp_params->window.center = c;
 	m_disp_params->window.width = w;
+	bool invert = m_disp_params->inverted;
 
 	double intercept = m_image->intercept();
 	double slope = m_image->slope();
@@ -323,7 +324,12 @@ void SimpleDisplay::set_windowlevels(int c, int w) {
 			g = 0;
 		}
 
-		m_windowmap[i] = (guint8)g;
+		if(invert) {
+			m_windowmap[i] = 255 - (guint8)g;
+		}
+		else {
+			m_windowmap[i] = (guint8)g;
+		}
 	}
 }
 
@@ -821,6 +827,14 @@ const Aeskulap::WindowLevel& SimpleDisplay::get_windowlevel() {
 
 const Aeskulap::WindowLevel& SimpleDisplay::get_default_windowlevel() {
 	return m_disp_params->default_window;
+}
+
+bool SimpleDisplay::set_inverted(bool inverted) {
+	m_disp_params->inverted = inverted;
+}
+
+bool SimpleDisplay::get_inverted() {
+	return m_disp_params->inverted;
 }
 
 } // namespace Aeskulap

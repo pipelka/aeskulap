@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/07 08:57:44 $
+    Update Date:      $Date: 2006/03/16 13:50:53 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/awindowleveltoolbutton.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -52,6 +52,8 @@ public:
 
 	void set_windowlevel_default();
 
+	void set_windowlevel_invert(bool invert = true);
+
 	void update();
 
 	sigc::signal< void > signal_windowlevel_default;
@@ -60,6 +62,8 @@ public:
 
 	sigc::signal< void, WindowLevelToolButton* > signal_windowlevel_add;
 
+	sigc::signal< void, bool > signal_windowlevel_invert;
+	
 	static void update_all();
 	
 protected:
@@ -70,6 +74,8 @@ protected:
 
 	virtual void on_add();
 
+	virtual void on_invert();
+
 	Aeskulap::WindowLevel m_last_level;
 
 	Aeskulap::WindowLevelList m_list;
@@ -79,6 +85,8 @@ protected:
 	Glib::ustring m_modality;
 
 	Gtk::Tooltips m_tooltips;
+
+	Gtk::ToggleToolButton* m_invert;
 
 private:
 

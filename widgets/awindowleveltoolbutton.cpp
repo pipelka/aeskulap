@@ -15,11 +15,22 @@ WindowLevelToolButton::WindowLevelToolButton() {
 		image->set(p);
 	}
 	image->show();
-	image->set_padding(6, 0);
+	//image->set_padding(6, 0);
 
-	hbox->pack_start(*image, Gtk::PACK_SHRINK);
+	m_invert = manage(new Gtk::ToggleToolButton(*image));
+	m_invert->set_size_request(32, 32);
+	m_invert->set_tooltip(m_tooltips, gettext("Invert windowlevel"));
+	m_invert->show();
+	m_invert->signal_toggled().connect(sigc::mem_fun(*this, &WindowLevelToolButton::on_invert));
 
 	Gtk::VBox* vbox = manage(new Gtk::VBox);
+
+	vbox->pack_start(*m_invert, true, false);
+	vbox->show();
+
+	hbox->pack_start(*vbox, Gtk::PACK_SHRINK);
+
+	vbox = manage(new Gtk::VBox);
 	vbox->show();
 
 	m_combo = manage(new Gtk::ComboBoxText);
@@ -157,6 +168,15 @@ void WindowLevelToolButton::on_changed() {
 
 void WindowLevelToolButton::on_add() {
 	signal_windowlevel_add(this);
+}
+
+void WindowLevelToolButton::on_invert() {
+	bool i = m_invert->get_active();
+	signal_windowlevel_invert(i);
+}
+
+void WindowLevelToolButton::set_windowlevel_invert(bool invert) {
+	m_invert->set_active(invert);
 }
 
 void WindowLevelToolButton::update_all() {

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/07 08:57:44 $
+    Update Date:      $Date: 2006/03/16 13:50:53 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.22 $
+    CVS/RCS Revision: $Revision: 1.23 $
     Status:           $State: Exp $
 */
 
@@ -282,7 +282,7 @@ void SeriesView::apply_default_windowlevel() {
 	schedule_repaint(1000);
 }
 
-void SeriesView::apply_changes(Glib::RefPtr<DisplayParameters> param) {
+void SeriesView::apply_changes(const Glib::RefPtr<DisplayParameters>& param) {
 	for(unsigned int i = 0; i < m_dispparam.size(); i++) {
 		m_dispparam[i]->copy(param);
 	}
@@ -478,4 +478,13 @@ void SeriesView::enable_mouse_functions(bool enable) {
 			m_widgets[i]->enable_mouse_functions(enable);
 		}
 	}
+}
+
+void SeriesView::set_inverted(bool inverted) {
+	for(unsigned int i = 0; i < m_dispparam.size(); i++) {
+		m_dispparam[i]->inverted = inverted;
+	}
+
+	refresh(false);
+	schedule_repaint(1000);
 }
