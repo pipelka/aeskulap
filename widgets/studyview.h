@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/16 13:50:53 $
+    Update Date:      $Date: 2006/03/16 15:11:19 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -119,6 +119,8 @@ protected:
 	void on_windowlevel_add(Aeskulap::WindowLevelToolButton* btn);
 
 	void on_windowlevel_invert(bool invert);
+
+	void on_doubleclick(SeriesView* s, Aeskulap::Display* d);
 
 	void add_series(const Glib::RefPtr<ImagePool::Series>& series);
 

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/16 15:11:19 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -81,6 +81,8 @@ public:
 	sigc::signal<void, GdkEventButton*, bool> signal_button;
 
 	sigc::signal<void, int> signal_locate;
+
+	sigc::signal<void, Display*> signal_doubleclick;
 
 protected:
 

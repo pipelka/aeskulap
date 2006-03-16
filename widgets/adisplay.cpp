@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 16:01:23 $
+    Update Date:      $Date: 2006/03/16 15:11:19 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.19 $
+    CVS/RCS Revision: $Revision: 1.20 $
     Status:           $State: Exp $
 */
 
@@ -225,6 +225,12 @@ bool Display::on_button_press_event(GdkEventButton* button) {
 		return false;
 	}
 	
+	if(button->type == GDK_2BUTTON_PRESS) {
+		while(Gtk::Main::events_pending()) Gtk::Main::iteration(false);
+		signal_doubleclick(this);
+		return true;
+	}
+
 	if(button->button == 1 && button->state & GDK_SHIFT_MASK) {
 		get_window()->set_cursor(*m_cursor_locate);
 		m_drag_start_y = button->y;
@@ -233,13 +239,13 @@ bool Display::on_button_press_event(GdkEventButton* button) {
 		return true;
 	}
 	else if(button->button == 1) {
-		m_drag_active = true;
+		//m_drag_active = true;
 		m_drag_button = 1;
 		m_drag_start_x = button->x;
 		m_drag_start_y = button->y;
 		m_drag_window = m_disp_params->window;
 
-		get_window()->set_cursor(*m_cursor_windowlevel);
+		//get_window()->set_cursor(*m_cursor_windowlevel);
 		add_modal_grab();
 		return true;
 	}
@@ -296,9 +302,9 @@ bool Display::on_button_release_event(GdkEventButton* button) {
 	get_window()->set_cursor();
 	remove_modal_grab();
 
-	if(!m_drag_active) {
+	/*if(!m_drag_active) {
 		return false;
-	}
+	}*/
 
 	m_drag_active = false;
 	m_drag_button = 0;
@@ -332,9 +338,18 @@ bool Display::on_motion_notify_event(GdkEventMotion* event) {
 		int diff = (int)(y - m_drag_start_y);
 		signal_locate(diff);
 		m_drag_start_y = y;
+		return true;
 		
 	}
 
+	if(m_drag_button == 1 && !m_drag_active) {
+		double d = sqrt(pow(x - m_drag_start_x, 2) + pow(y - m_drag_start_y, 2));
+		if(d > 4) {
+			m_drag_active = true;
+			get_window()->set_cursor(*m_cursor_windowlevel);
+		}
+	}
+	
 	if(!m_drag_active || block) {
 		return true;
 	}

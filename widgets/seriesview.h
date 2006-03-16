@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/16 13:50:53 $
+    Update Date:      $Date: 2006/03/16 15:11:19 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.h,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -83,7 +83,7 @@ public:
 
 	void apply_default_windowlevel();
 
-	sigc::signal< void, SeriesView*, bool > signal_selected;
+	sigc::signal<void, SeriesView*, bool> signal_selected;
 
 	sigc::signal<void, SeriesView*, Aeskulap::Display*, const Glib::RefPtr<Gdk::Window>&, const Glib::RefPtr<Gdk::GC>&> signal_draw;
 
@@ -95,9 +95,11 @@ public:
 
 	sigc::signal<void, GdkEventButton*, bool, Aeskulap::Display*> signal_button;
 
-	sigc::signal< void, SeriesView*, Aeskulap::Display* > signal_image_selected;
+	sigc::signal<void, SeriesView*, Aeskulap::Display*> signal_image_selected;
 
-	sigc::signal< void, SeriesView*, Aeskulap::Display* > signal_image_changed;
+	sigc::signal<void, SeriesView*, Aeskulap::Display*> signal_image_changed;
+
+	sigc::signal<void, SeriesView*, Aeskulap::Display*> signal_doubleclick;
 
 protected:
 
@@ -120,6 +122,8 @@ protected:
 	bool on_timeout(int timer);
 
 	void on_draw_instance(Aeskulap::Display* d, const Glib::RefPtr<Gdk::Window>& w, const Glib::RefPtr<Gdk::GC>& gc);
+
+	void on_doubleclick(Aeskulap::Display* d);
 
 	void add_instance(const Glib::RefPtr<ImagePool::Instance>& instance);
 

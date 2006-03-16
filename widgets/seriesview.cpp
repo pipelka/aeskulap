@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/16 13:50:53 $
+    Update Date:      $Date: 2006/03/16 15:11:19 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.23 $
+    CVS/RCS Revision: $Revision: 1.24 $
     Status:           $State: Exp $
 */
 
@@ -161,6 +161,7 @@ void SeriesView::set_layout(int tilex, int tiley) {
 			w->signal_motion.connect(sigc::bind(signal_motion, w));
 			w->signal_button.connect(sigc::bind(signal_button, w));
 			w->signal_locate.connect(sigc::mem_fun(*this, &SeriesView::scroll_to_relative));
+			w->signal_doubleclick.connect(sigc::mem_fun(*this, &SeriesView::on_doubleclick));
 			
 			m_widgets.push_back(w);
 
@@ -487,4 +488,8 @@ void SeriesView::set_inverted(bool inverted) {
 
 	refresh(false);
 	schedule_repaint(1000);
+}
+
+void SeriesView::on_doubleclick(Aeskulap::Display* d) {
+	signal_doubleclick(this, d);
 }
