@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/16 16:05:42 $
+    Update Date:      $Date: 2006/03/17 12:24:41 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.20 $
+    CVS/RCS Revision: $Revision: 1.21 $
     Status:           $State: Exp $
 */
 
@@ -738,6 +738,24 @@ bool SimpleDisplay::screen_to_point(int x, int y, ImagePool::Instance::Point& p,
 	p.y = my - (image->spacing_y() * (dy0-y)) / m_magnifier;
 	p.z = 0;
 	
+	return true;
+}
+
+bool SimpleDisplay::screen_to_image(int x, int y, ImagePool::Instance::Point& p) {
+	int sx0,sy0,sx1,sy1;
+	int dx0,dy0,dx1,dy1;
+
+	if(!get_blit_rectangles(m_pixbuf, sx0, sy0, sx1, sy1, dx0, dy0, dx1, dy1)) {
+		return false;
+	}
+
+	double mx = (double)m_disp_params->move_x;
+	double my = (double)m_disp_params->move_y;
+
+	p.x = mx - (dx0-x) / m_magnifier;
+	p.y = my - (dy0-y) / m_magnifier;
+	p.z = 0;
+
 	return true;
 }
 

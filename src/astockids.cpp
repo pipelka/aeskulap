@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/08 10:32:58 $
+    Update Date:      $Date: 2006/03/17 12:24:41 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/astockids.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -65,6 +65,8 @@ Gtk::StockID Stock::DRAW_ERASER("aeskulap-draw-eraser");
 
 Gtk::StockID Stock::THREEDEE_CURSOR("aeskulap-3d-cursor");
 
+Gtk::StockID Stock::VALUE_CURSOR("aeskulap-value-cursor");
+
 Gtk::StockID Stock::MEASURE("aeskulap-measure");
 
 Gtk::StockItem Stock::StockItems[] = {
@@ -84,6 +86,7 @@ Gtk::StockItem Stock::StockItems[] = {
 	Gtk::StockItem(Stock::REFFRAME, gettext("Reference")),
 	Gtk::StockItem(Stock::DRAW_ERASER, gettext("Delete item")),
 	Gtk::StockItem(Stock::THREEDEE_CURSOR, gettext("3D Cursor")),
+	Gtk::StockItem(Stock::VALUE_CURSOR, gettext("Value Picker")),
 	Gtk::StockItem(Stock::MEASURE, gettext("Measure"))
 };
 

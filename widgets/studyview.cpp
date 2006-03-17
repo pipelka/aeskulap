@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/16 16:05:42 $
+    Update Date:      $Date: 2006/03/17 12:24:41 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.25 $
+    CVS/RCS Revision: $Revision: 1.26 $
     Status:           $State: Exp $
 */
 
@@ -130,6 +130,7 @@ m_draw_reference_frame_ends(false) {
 	m_image_layout->show();
 
 	m_seperator_reference = manage(new Gtk::SeparatorToolItem);
+	m_seperator_reference->show();
 	m_toolbar->append(*m_seperator_reference);
 	
 	m_refframe = manage(new Gtk::ToggleToolButton(Aeskulap::Stock::REFFRAME));
@@ -139,6 +140,11 @@ m_draw_reference_frame_ends(false) {
 	m_btn_3dcursor = manage(new Gtk::ToggleToolButton(Aeskulap::Stock::THREEDEE_CURSOR));
 	m_btn_3dcursor->set_tooltip(m_tooltips, gettext("Navigate through 3D views"));
 	m_toolbar->append(*m_btn_3dcursor, sigc::mem_fun(*this, &StudyView::on_toggle_3dcursor));
+
+	m_btn_valuecursor = manage(new Gtk::ToggleToolButton(Aeskulap::Stock::VALUE_CURSOR));
+	m_btn_valuecursor->set_tooltip(m_tooltips, gettext("Display image values under the cursor"));
+	m_btn_valuecursor->show();
+	m_toolbar->append(*m_btn_valuecursor, sigc::mem_fun(*this, &StudyView::on_toggle_valuecursor));
 
 	Gtk::SeparatorToolItem* seperator = manage(new Gtk::SeparatorToolItem);
 	m_toolbar->append(*seperator);
@@ -587,10 +593,37 @@ bool StudyView::on_key_press_event(GdkEventKey* event) {
 }
 
 void StudyView::on_toggle_refframe() {
+	if(m_refframe->get_active()) {
+		m_btn_valuecursor->set_active(false);
+		m_btn_valuecursor->set_sensitive(false);
+	}
+	else {
+		m_btn_valuecursor->set_sensitive(true);
+	}
 	queue_draw();
 }
 
+void StudyView::on_toggle_valuecursor() {
+	if(m_btn_valuecursor->get_active()) {
+		m_refframe->set_active(false);
+		m_refframe->set_sensitive(false);
+		m_btn_3dcursor->set_active(false);
+		m_btn_3dcursor->set_sensitive(false);
+	}
+	else {
+		m_refframe->set_sensitive(true);
+		m_btn_3dcursor->set_sensitive(true);
+	}
+}
+
 void StudyView::on_toggle_3dcursor() {
+	if(m_btn_3dcursor->get_active()) {
+		m_btn_valuecursor->set_active(false);
+		m_btn_valuecursor->set_sensitive(false);
+	}
+	else {
+		m_btn_valuecursor->set_sensitive(true);
+	}
 	queue_draw();
 }
 
@@ -629,6 +662,17 @@ void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, Se
 
 	old_x = x;
 	old_y = y;
+
+	// handle value cursor
+	
+	if(m_btn_valuecursor->get_active()) {
+		ImagePool::Instance::Point p;
+		if(!d->screen_to_image(x, y, p)) {
+			return;
+		}
+		const Glib::RefPtr<ImagePool::Instance>& i = d->get_image();
+		std::cerr << "Value(" << p.x << "," << p.y << "): " << i->pixel_value((int)p.x, (int)p.y) << std::endl;
+	}
 
 	// handle 3D cursor
 

@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 09:58:02 $
+    Update Date:      $Date: 2006/03/17 12:24:41 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -76,7 +76,45 @@ Instance::~Instance() {
 void* Instance::pixels(int frame) {
 	return m_pixels[frame];
 }
+
+double Instance::pixel_value(int x, int y, int frame) {
+	if(x < 0 || y < 0) {
+		return 0;
+	}
 	
+	if(x >= width() || y >= height()) {
+		return 0;
+	}
+
+	double result = 0;
+	int samplesize = (bpp()/8) * (iscolor() ? 3 : 1);
+	int pitch = width() * samplesize;
+	
+	guint8* p = static_cast<guint8*>(pixels(frame)) + pitch*y + samplesize * x;
+	guint16* p16 = 0;
+
+	switch(samplesize) {
+		case 1:
+			result = (double)(*p);
+			break;
+		case 2:
+			p16 = (guint16*)p;
+			result = (double)(*p16);
+			break;
+		case 3:
+			result = (double)(*p + (*++p) << 8 + (*++p) << 16);
+			break;
+	}
+	
+	if(slope() != 0) {
+		result *= slope();
+	}
+	
+	result += intercept();
+
+	return result;
+}
+
 int Instance::depth() {
 	return m_depth;
 }
