@@ -21,7 +21,8 @@ images_DATA = \
 	cursor_zoom.png \
 	filmholes-big-left.png \
 	filmholes-big-right.png \
-	start-here.png
+	start-here.png \
+	stock-tool-color-picker-22.png
 
 EXTRA_DIST = \
 	README \
