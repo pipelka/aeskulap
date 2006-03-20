@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/16 16:05:42 $
+    Update Date:      $Date: 2006/03/20 07:14:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.27 $
+    CVS/RCS Revision: $Revision: 1.28 $
     Status:           $State: Exp $
 */
 
@@ -44,6 +44,8 @@
 #include "prescandialog.h"
 #include "aboutdialog.h"
 #include "windowleveldialog.h"
+
+#include "afloatwidget.h"
 
 #include "assert.h"
 #include "gettext.h"
@@ -120,6 +122,7 @@ m_netloader(Aeskulap::Configuration::get_instance().get_local_aet())
 	Gtk::FileFilter filter_dicom;
 	filter_dicom.set_name(gettext("DICOM files"));
 	filter_dicom.add_pattern("*.dcm");
+
 	m_dialogFile.add_filter(filter_dicom);
 
 	Gtk::FileFilter filter_any;
@@ -132,6 +135,9 @@ m_netloader(Aeskulap::Configuration::get_instance().get_local_aet())
 
 	m_fileloader.signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
 	m_fileloader.signal_prescan_progress.connect(sigc::mem_fun(*m_prescandialog, &PrescanDialog::set_progress));
+	
+	//Aeskulap::FloatWidget* f = new Aeskulap::FloatWidget(*this, 100,100);
+	//f->show();
 }
 
 MainWindow::~MainWindow() {

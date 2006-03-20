@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2006/03/20 07:14:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.15 $
+    CVS/RCS Revision: $Revision: 1.16 $
     Status:           $State: Exp $
 */
 
@@ -213,6 +213,10 @@ std::string ImagePool::get_system_encoding(const std::string& dicom_iso) {
 		return "UTF-8";
 	else if (dicom_iso == "GB18030")
 		return "GB18030";
+	else if (dicom_iso == "ISO 2022 IR 87")
+		return "ISO-2022-JP";
+	else if (dicom_iso == "ISO 2022 IR 149")
+		return "EUC-KR";
 
 	std::cerr << "Unhandled encoding '" << dicom_iso << "'." << std::endl;
 	std::cerr << "falling back to 'ISO_IR 192'." << std::endl;

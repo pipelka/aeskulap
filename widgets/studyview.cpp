@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/17 12:24:41 $
+    Update Date:      $Date: 2006/03/20 07:14:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.26 $
+    CVS/RCS Revision: $Revision: 1.27 $
     Status:           $State: Exp $
 */
 
@@ -179,6 +179,11 @@ m_draw_reference_frame_ends(false) {
 StudyView::~StudyView() {
 	ImagePool::remove_study(m_study);
 	m_study.clear();
+}
+
+void StudyView::on_realize() {
+	Gtk::VBox::on_realize();
+	get_window()->set_back_pixmap(Glib::RefPtr<Gdk::Pixmap>(0), false);
 }
 
 void StudyView::accelerate(Gtk::Window& window) {
