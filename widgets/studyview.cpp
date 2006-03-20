@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/20 18:19:15 $
+    Update Date:      $Date: 2006/03/20 20:39:37 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.28 $
+    CVS/RCS Revision: $Revision: 1.29 $
     Status:           $State: Exp $
 */
 
@@ -327,7 +327,8 @@ void StudyView::set_layout(int tilex, int tiley) {
 		m_table->attach(*w, x-1, x, y-1, y);
 		w->show();
 	}
-	
+
+	Aeskulap::FloatWidget::raise_global();
 }
 
 void StudyView::on_series_update(SeriesView* view) {
@@ -459,6 +460,8 @@ void StudyView::on_toggle_full() {
 	}
 
 	view_single_series(m_selected);
+	
+	Aeskulap::FloatWidget::raise_global();
 }
 
 void StudyView::view_single_series(SeriesView* view) {

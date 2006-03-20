@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/20 07:14:57 $
+    Update Date:      $Date: 2006/03/20 20:39:37 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.26 $
+    CVS/RCS Revision: $Revision: 1.27 $
     Status:           $State: Exp $
 */
 
@@ -33,6 +33,7 @@
 #include "imagepool.h"
 #include "poolinstance.h"
 #include "amultiframectrl.h"
+#include "afloatwidget.h"
 
 #include <iostream>
 
@@ -182,18 +183,18 @@ void SeriesView::set_layout(int tilex, int tiley) {
 			i++;
 		}
 	}
-	schedule_repaint(1000);
-}	//Sstd::cout << "SeriesView::scroll_up()" << std::endl;
+	
+	Aeskulap::FloatWidget::raise_global();
 
+	schedule_repaint(1000);
+}
 
 void SeriesView::scroll_up() {
-	//Sstd::cout << "SeriesView::scroll_up()" << std::endl;
 	scroll_to(m_offset - 1);
 	schedule_repaint(1000);
 }
 	
 void SeriesView::scroll_down() {
-	//std::cout << "SeriesView::scroll_down()" << std::endl;
 	scroll_to(m_offset + 1);
 	schedule_repaint(1000);
 }
