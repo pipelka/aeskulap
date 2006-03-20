@@ -34,32 +34,23 @@ bool FloatWidget::on_timeout(int timer) {
 	
 	m_parent->get_pointer(x, y);
 	if(x < 0 || y < 0) {
-		hide();
 		return true;
 	}
 
 	if(x >= m_parent->get_width() || y >= m_parent->get_height()) {
-		hide();
-		return true;
-	}
-
-	show();
-	
-	if(!is_realized()) {
-		realize();
 		return true;
 	}
 
 	if(!m_parent->is_visible() || !m_parent->is_realized()) {
-		hide();
 		return true;
 	}
 		
-	get_position(x, y);
-	get_pointer(x1, y1);
+	m_parent->get_pointer(x, y);
+	//get_position(x, y);
+	/*get_pointer(x1, y1);
 
 	x += x1;
-	y += y1;
+	y += y1;*/
 
 	x += 16;
 	y += 16;

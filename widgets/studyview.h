@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/20 07:14:57 $
+    Update Date:      $Date: 2006/03/20 18:19:15 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.17 $
+    CVS/RCS Revision: $Revision: 1.18 $
     Status:           $State: Exp $
 */
 
@@ -45,6 +45,7 @@
 namespace Aeskulap {
 	class Display;
 	class WindowLevelToolButton;
+	class ValueTool;
 }
 
 namespace ImagePool {
@@ -182,6 +183,7 @@ private:
 	
 	Gtk::SeparatorToolItem* m_seperator_reference;
 
+	Aeskulap::ValueTool* m_valuetool;
 };
 
 #endif // STUDYVIEW_H

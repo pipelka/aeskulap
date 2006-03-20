@@ -1,6 +1,8 @@
 noinst_LTLIBRARIES = libgtkdicom.la
 
 libgtkdicom_la_SOURCES = \
+	avaluetool.h \
+	avaluetool.cpp \
 	afloatwidget.h \
 	afloatwidget.cpp \
 	adatefilter.h \

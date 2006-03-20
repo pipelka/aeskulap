@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/20 07:14:57 $
+    Update Date:      $Date: 2006/03/20 18:19:15 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.27 $
+    CVS/RCS Revision: $Revision: 1.28 $
     Status:           $State: Exp $
 */
 
@@ -34,6 +34,8 @@
 #include "astockids.h"
 #include "adisplay.h"
 #include "awindowleveltoolbutton.h"
+#include "avaluetool.h"
+
 #include "serieslayouttoolbutton.h"
 #include "imagelayouttoolbutton.h"
 #include "poolinstance.h"
@@ -173,6 +175,11 @@ m_draw_reference_frame_ends(false) {
 	m_toolbar->show();
 	
 	set_layout(m_tile_x, m_tile_y);
+	
+	// VALUE TOOL
+
+	m_valuetool = manage(new Aeskulap::ValueTool(*this));
+
 	set_redraw_on_allocate(false);
 }
 
@@ -614,10 +621,12 @@ void StudyView::on_toggle_valuecursor() {
 		m_refframe->set_sensitive(false);
 		m_btn_3dcursor->set_active(false);
 		m_btn_3dcursor->set_sensitive(false);
+		m_valuetool->show();
 	}
 	else {
 		m_refframe->set_sensitive(true);
 		m_btn_3dcursor->set_sensitive(true);
+		m_valuetool->hide();
 	}
 }
 
@@ -676,7 +685,7 @@ void StudyView::on_signal_motion(GdkEventMotion* event, Aeskulap::Display* d, Se
 			return;
 		}
 		const Glib::RefPtr<ImagePool::Instance>& i = d->get_image();
-		std::cerr << "Value(" << p.x << "," << p.y << "): " << i->pixel_value((int)p.x, (int)p.y) << std::endl;
+		m_valuetool->set_value(i->pixel_value((int)p.x, (int)p.y));
 	}
 
 	// handle 3D cursor
