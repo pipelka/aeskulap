@@ -2,6 +2,7 @@
 #define AESKULAP_FLOATWIDGET_H
 
 #include <gtkmm.h>
+#include <set>
 
 namespace Aeskulap {
 
@@ -12,10 +13,16 @@ public:
 	
 	virtual ~FloatWidget();
 
+	static void raise_global();
+
 protected:
 
 	void on_realize();
 
+	void on_show();
+
+	void on_hide();
+	
 	bool on_timeout(int timer);
 
 	sigc::connection m_motion_connection;
@@ -31,6 +38,11 @@ protected:
 	Gtk::Widget* m_parent;
 	
 	Glib::RefPtr<Gdk::Window> m_win;
+
+private:
+
+	static std::set<FloatWidget*> m_widgetlist;
+
 };
 
 } // namespace Aeskulap
