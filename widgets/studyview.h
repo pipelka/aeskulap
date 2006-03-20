@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/17 12:24:41 $
+    Update Date:      $Date: 2006/03/20 07:14:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/studyview.h,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -77,6 +77,8 @@ public:
 	sigc::signal< bool, Aeskulap::WindowLevel > signal_windowlevel_add;
 
 protected:
+
+	void on_realize();
 
 	bool on_key_press_event(GdkEventKey* event);
 

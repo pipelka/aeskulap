@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/17 12:24:41 $
+    Update Date:      $Date: 2006/03/20 07:14:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.21 $
+    CVS/RCS Revision: $Revision: 1.22 $
     Status:           $State: Exp $
 */
 
@@ -88,7 +88,7 @@ void SimpleDisplay::init_display() {
 	
 	m_filmholes_left = Aeskulap::IconFactory::load_from_file("filmholes-big-left.png");
 	m_filmholes_right = Aeskulap::IconFactory::load_from_file("filmholes-big-right.png");
-	
+
 	//set_double_buffered(false);
 }
 
@@ -96,13 +96,12 @@ void SimpleDisplay::on_realize() {
 	Gtk::EventBox::on_realize();
 
 	m_window = get_window();
+	m_window->set_back_pixmap(Glib::RefPtr<Gdk::Pixmap>(0), false);
 
 	m_colormap = get_default_colormap();
 
 	m_colorBackground = Gdk::Color("black");
 	m_colormap->alloc_color(m_colorBackground);
-
-	modify_bg(Gtk::STATE_NORMAL, Gdk::Color("black"));
 
 	m_GC = Gdk::GC::create(m_window);
 

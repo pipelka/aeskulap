@@ -26,6 +26,8 @@ Aeskulap version history:
 - added windowlevel "invert" function
 - added "doubleclick" handling. activates "single series" mode
 - speedup queries if server supports "NumberOfStudyRelatedInstances"
+- rendering performance improvements
+- support for more international charsets
 
 
 0.2.1 - 20060308
