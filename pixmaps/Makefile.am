@@ -1,6 +1,21 @@
+icondir = $(datadir)/icons/hicolor/48x48/apps
+icon_DATA = aeskulap.png
+svgicondir = $(datadir)/icons/hicolor/scalable/apps
+svgicon_DATA = aeskulap.svg
+
+gtk_update_icon_cache = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor
+
+install-data-hook:
+	@-if test -z "$(DESTDIR)"; then \
+		echo "Updating Gtk icon cache."; \
+		$(gtk_update_icon_cache); \
+	else \
+	        echo "*** Icon cache not updated.  After install, run this:"; \
+	        echo "***   $(gtk_update_icon_cache)"; \
+	fi
+
 imagesdir = $(datadir)/aeskulap/images
 images_DATA = \
-	aeskulap.png \
 	grid-16.png \
 	grid-1.png \
 	grid-2h.png \
@@ -26,5 +41,6 @@ images_DATA = \
 
 EXTRA_DIST = \
 	README \
-	aeskulap.svg \
+	$(icon_DATA) \
+	$(svgicon_DATA) \
 	$(images_DATA)

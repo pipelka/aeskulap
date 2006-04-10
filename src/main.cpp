@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 15:05:01 $
+    Update Date:      $Date: 2006/04/10 12:57:58 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.9 $
+    CVS/RCS Revision: $Revision: 1.10 $
     Status:           $State: Exp $
 */
 
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
 
 	// initialize DICOM interface
 	ImagePool::init();
-	
+
 	// get configuration values
 	Aeskulap::Configuration& config = Aeskulap::Configuration::get_instance();
 	

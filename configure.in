@@ -16,10 +16,10 @@ dnl
 AC_PROG_INTLTOOL
 AM_PROG_LIBTOOL
 AC_PROG_CC
-AM_PROG_CC_C_O
 AC_PROG_CXX
 AC_PROG_INSTALL
 AM_BINRELOC
+AM_GCONF_SOURCE_2
 
 dnl
 dnl gettext package
@@ -28,7 +28,9 @@ GETTEXT_PACKAGE=aeskulap
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[Translation domain used])
 
-ALL_LINGUAS="en de es hu pt"
+ALL_LINGUAS="`cat "$srcdir/po/LINGUAS" | grep -v '^#'`"
+AC_SUBST([CONFIG_STATUS_DEPENDENCIES],['$(top_srcdir)/po/LINGUAS'])
+
 AM_GLIB_GNU_GETTEXT
 
 dnl
@@ -61,18 +63,16 @@ AC_SUBST(GTHREAD_LIBS)
 
 PKG_CHECK_MODULES(GCONFMM, gconfmm-2.6 >= 2.10.0)
 AC_SUBST(GCONFMM_CFLAGS)
-AC_SUBST(GCFONMM_LIBS)
+AC_SUBST(GCONFMM_LIBS)
 
-
-AC_ARG_ENABLE(schemas-install,AC_HELP_STRING([--disable-schemas-install],
-					     [Disable installation of the gconf schemas]))
+dnl AC_ARG_ENABLE(schemas-install,AC_HELP_STRING([--disable-schemas-install],
+dnl 					     [Disable installation of the gconf schemas]))
 
 AC_PATH_PROG(GCONFTOOL, gconftool-2, no)
 if test x"$GCONFTOOL" = xno ; then
 	AC_MSG_ERROR([gconftool2 executable not found in your path - should be 
 installed with GConf])
 fi
-AM_GCONF_SOURCE_2
 
 
 dnl AC_CONFIG_SUBDIRS(dcmtk)
@@ -110,6 +110,7 @@ imagepool/Makefile
 src/Makefile
 widgets/Makefile
 pixmaps/Makefile
+aeskulap.spec
 ])
 
 cd $srcdir/dcmtk
