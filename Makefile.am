@@ -47,3 +47,8 @@ distclean: distclean-recursive
 	cd $(top_builddir)/dcmtk && make distclean
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
+
+rpm: dist
+	mkdir -p rpmbuild
+	cp $(PACKAGE)-$(VERSION).tar.gz rpmbuild
+	rpmbuild --buildroot rpmbuild -ba $(PACKAGE).spec

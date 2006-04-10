@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/20 07:14:57 $
+    Update Date:      $Date: 2006/04/10 12:57:58 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.28 $
+    CVS/RCS Revision: $Revision: 1.29 $
     Status:           $State: Exp $
 */
 
@@ -58,11 +58,11 @@ m_dialogFile(gettext("Open DICOM Image files")),
 m_raise_opened(true),
 m_netloader(Aeskulap::Configuration::get_instance().get_local_aet())
 {
-	Glib::RefPtr<Gdk::Pixbuf> icon = Aeskulap::IconFactory::load_from_file("aeskulap.png");
+	/*Glib::RefPtr<Gdk::Pixbuf> icon = Aeskulap::IconFactory::load_from_file("aeskulap.png");
 	
 	if(icon) {
 		set_icon(icon);
-	}
+	}*/
 
 	m_windowlevel = NULL;
 	m_refGlade->get_widget_derived("windowlevel_add", m_windowlevel);
