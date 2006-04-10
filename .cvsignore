@@ -38,3 +38,5 @@ log
 *.package
 uninstalldirs
 gconf
+stamp-h*
+aeskulap.spec
