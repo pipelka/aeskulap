@@ -1,0 +1,54 @@
+%define name @PACKAGE@
+%define version @VERSION@
+%define release 3
+
+Summary: Aeskulap - A medical image viewer and DICOM network client
+Name: %{name}
+Version: %{version}
+Release: %{release}
+Source0: %{name}-%{version}.tar.gz
+URL: http://aeskulap.nongnu.org
+License: GPL
+Group: Graphics
+BuildRoot: /var/tmp/%{name}-buildroot
+Prefix: %{_prefix}
+Packager: Alexander Pipelka <pipelkateleweb.at>
+
+%description
+Aeskulap is able to load a series of special images stored in the
+DICOM format for review. Additionally Aeskulap is able to query
+and fetch DICOM images from archive nodes (also called PACS) over
+the network.
+The goal of this project is to create a full open source replacement
+for commercially available DICOM viewers.
+Aeskulap is based on gtkmm, glademm and gconfmm and designed to run
+under Linux. Ports of these packages are available for different
+platforms. It should be quite easy to port Aeskulap to any platform
+were these packages are available.
+
+%prep
+rm -rf ${RPM_BUILD_ROOT}
+
+%setup
+
+%build
+CFLAGS="-O3 -march=i686 -mmmx -msse -mfpmath=sse" CXXFLAGS="$CFLAGS" ./configure --prefix=%{prefix} --disable-schemas-install
+make
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make DESTDIR=$RPM_BUILD_ROOT install-strip
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+%{prefix}/bin
+%{prefix}/etc
+%{prefix}/lib/aeskulap/*.so
+%{prefix}/share/applications
+%{prefix}/share/aeskulap
+%{prefix}/share/locale
+
+%changelog
