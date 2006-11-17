@@ -1,4 +1,3 @@
-
 dnl 
 dnl Filename: aclocal.m4
 dnl
@@ -7,136 +6,10 @@ dnl
 dnl Authors: Andreas Barth, Marco Eichelberg
 dnl
 dnl Last Update:  $Author: braindead $
-dnl Revision:     $Revision: 1.1 $
+dnl Revision:     $Revision: 1.2 $
 dnl Status:       $State: Exp $
 dnl
-dnl $Id: aclocal.m4,v 1.1 2005/08/23 19:32:00 braindead Exp $
-dnl
-dnl $Log: aclocal.m4,v $
-dnl Revision 1.1  2005/08/23 19:32:00  braindead
-dnl - initial savannah import
-dnl
-dnl Revision 1.31  2004/01/21 11:57:56  meichel
-dnl Fixed AC_CHECK_PROTOTYPE autoconf macro to support names containing
-dnl   space or colon characters.
-dnl
-dnl Revision 1.30  2003/12/17 17:36:18  meichel
-dnl Added configure test that checks if libtiff supports LZW compression
-dnl
-dnl Revision 1.29  2003/12/11 13:38:57  meichel
-dnl Added configure tests for <new.h> and std::nothrow
-dnl
-dnl Revision 1.28  2003/12/10 13:29:54  meichel
-dnl Re-worked configure scripts for Autoconf 2.5x
-dnl   Presence of external library is now checked automatically.
-dnl
-dnl Revision 1.27  2003/07/09 12:22:46  meichel
-dnl Added configure test for new-style cast operators such as
-dnl   static_cast<> and const_cast<>.
-dnl
-dnl Revision 1.26  2003/07/03 15:00:55  meichel
-dnl Added configure test for "typename" C++ keyword
-dnl
-dnl Revision 1.25  2003/07/03 14:49:05  meichel
-dnl Fixed AC_CHECK_DECLARATION macro
-dnl
-dnl Revision 1.24  2003/06/06 10:23:41  meichel
-dnl Added configure tests for bool and volatile keywords
-dnl
-dnl Revision 1.23  2003/05/13 09:55:30  meichel
-dnl Fixed minor issue in AC_CHECK_INTP_SELECT configure macro
-dnl
-dnl Revision 1.22  2002/12/16 16:19:25  meichel
-dnl Added configure test that checks if extern "C" inclusion
-dnl   of <math.h> fails, e.g. on HP/UX 10 and WIN32
-dnl
-dnl Revision 1.21  2002/12/16 11:00:57  meichel
-dnl Added configure test that checks if signal handler functions
-dnl   require ellipse (...) parameters, for example on Irix5.
-dnl
-dnl Revision 1.20  2002/12/11 13:08:28  meichel
-dnl Added configure test for type of 5th parameter of getsockopt()
-dnl
-dnl Revision 1.19  2002/05/15 14:13:11  meichel
-dnl Added configure test for readdir_r conforming to Posix 1.c draft 6
-dnl
-dnl Revision 1.18  2002/04/16 14:06:18  joergr
-dnl Added configurable support for C++ ANSI standard includes (e.g. streams).
-dnl Thanks to Andreas Barth <Andreas.Barth@bruker-biospin.de> for his
-dnl contribution.
-dnl
-dnl Revision 1.17  2001/12/18 09:51:57  meichel
-dnl Modified configure test for "const" support of the C compiler
-dnl   in order to avoid a macro recursion error on Sun CC 2.0.1
-dnl
-dnl Revision 1.16  2001/11/02 12:03:42  meichel
-dnl Added new configure tests for std::_Ios_Openmode and ios::nocreate,
-dnl   required for gcc 3.0.x.
-dnl
-dnl Revision 1.15  2001/08/23 16:29:11  meichel
-dnl Added configure tests required by dcmjpeg module
-dnl
-dnl Revision 1.14  2000/12/20 09:54:29  meichel
-dnl Fixed remaining problems with configure on FreeBSD.
-dnl
-dnl Revision 1.13  2000/12/19 12:15:45  meichel
-dnl Updated configure for the FreeBSD Posix implementation which requires
-dnl   a special gcc option -pthread to cause linking with libc_r instead of libc.
-dnl
-dnl Revision 1.12  2000/09/08 14:20:11  meichel
-dnl Added new options to configure
-dnl
-dnl Revision 1.11  2000/09/05 12:19:32  joergr
-dnl Added new test checking for the presence of type ssize_t.
-dnl
-dnl Revision 1.10  2000/03/10 11:55:43  meichel
-dnl Added special configure test for <netinet/in.h> and <netinet/tcp.h>,
-dnl   needed for IRIX 6.
-dnl
-dnl Revision 1.9  2000/02/24 13:51:52  meichel
-dnl Added new check that distinguishes NeXT's libtool from GNU libtool (which
-dnl   has a totally different purpose). Required because the old configure scheme
-dnl   failed if GNU libtool was found in the search path.
-dnl
-dnl Revision 1.8  1999/04/28 16:49:47  meichel
-dnl Added test whether the compiler supports the new explicit template
-dnl   specialization syntax, e.g. template<> int a_class<int>::a_method()
-dnl
-dnl Revision 1.7  1997/09/11 15:53:17  hewett
-dnl Enhanced the configure macro AC_CHECK_PROTOTYPE to check the
-dnl include files passed as aruments before searching for a
-dnl prototype.  This makes the configure.in file considerably
-dnl simpler.  The include files passed as aruments to the
-dnl AC_CHECL_PROTOTYPE macro must have already been tested for
-dnl using the AC_CHECK_HEADERS macro.  If not, the include files
-dnl are assumed not to exist.
-dnl
-dnl Revision 1.6  1997/07/03 09:38:17  meichel
-dnl Corrected bug in configure module - all tests trying to link or run
-dnl   a test program could fail (and, therefore, report an incorrect result)
-dnl   if libg++.a was not found in the default link path.
-dnl
-dnl Revision 1.5  1997/07/02 11:53:02  andreas
-dnl - Preliminary release of the OFFIS Standard Library.
-dnl   In the future this library shall contain a subset of the
-dnl   ANSI C++ Library (Version 3) that works on a lot of different
-dnl   compilers. Additionally this library shall include classes and
-dnl   functions that are often used. All classes and functions begin
-dnl   with OF... This library is independent of the DICOM development and
-dnl   shall contain no DICOM specific stuff.
-dnl
-dnl Revision 1.4  1996/12/03 15:28:19  meichel
-dnl Added support for HP-UX 9.05 systems using GCC 2.7.2.1
-dnl
-dnl Revision 1.3  1996/03/28 11:05:22  meichel
-dnl Added macro AC_CHECK_DECLARATION which checks if a type declaration exists
-dnl in certain header files (e.g. for struct sembuf)
-dnl
-dnl Revision 1.2  1995/11/28 15:59:46  meichel
-dnl Added macro AC_CHECK_PROTOTYPE which allows to check for
-dnl the existance of prototype declarations. Added CVS log.
-dnl
-dnl
+
 
 dnl AC_CHECK_GXXLIB works like AC_CHECK_LIB, but for libg++.
 dnl   This additional macro is necessary because the /bin/sh will
@@ -314,8 +187,11 @@ ifelse([$1], , [ac_includes=""
 [ac_includes=""
 for ac_header in $1
 do
-  ac_includes="$ac_includes
+  ac_safe=`echo "$ac_header" | sed 'y%./+-%__p_%'`
+  if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'}'`\" = yes"; then
+    ac_includes="$ac_includes 
 #include<$ac_header>"
+  fi
 done])
 AC_CACHE_VAL(ac_cv_prototype_intp_select,
 [AC_TRY_COMPILE(
@@ -695,12 +571,6 @@ else
   fi
 fi
 ])
-
-dnl AC_TYPE_SSIZE_T
-dnl checks for the presence of type ssize_t
-AC_DEFUN(AC_TYPE_SSIZE_T,
-[AC_CHECK_TYPE(ssize_t, long)])
-
 
 dnl AC_CHECK_INTP_ACCEPT checks if the prototype for accept()
 dnl   specifies arguments 2-4 to be int* instead of size_t *.
@@ -1481,3 +1351,283 @@ if test "$ac_cv_libtiff_lzw_compression" = yes; then
   AC_DEFINE(HAVE_LIBTIFF_LZW_COMPRESSION,, [Define if libtiff supports LZW compression])
 fi
 ])
+
+
+dnl AC_CXX_LIBC_H_EXTERN_C checks if <libc.h> and <math.h> cause a problem if
+dnl   libc.h is included extern "C" and math.h is not. This is the case on QNX 6.2.x
+
+AC_DEFUN([AC_CXX_LIBC_H_EXTERN_C],
+[AH_TEMPLATE([INCLUDE_LIBC_H_AS_CXX], [Define if libc.h should be treated as a C++ header])
+AC_CACHE_CHECK(whether libc.h should be treated as a C++ header,
+ac_cv_cxx_libc_h_is_cxx,
+[AC_LANG_SAVE
+ AC_LANG_CPLUSPLUS
+ AC_TRY_COMPILE([#include <math.h>
+extern "C" {
+#include <libc.h>
+}],[int i = 0],
+ ac_cv_cxx_libc_h_is_cxx=no, ac_cv_cxx_libc_h_is_cxx=yes)
+ AC_LANG_RESTORE
+])
+if test "$ac_cv_cxx_libc_h_is_cxx" = yes; then
+  AC_DEFINE(INCLUDE_LIBC_H_AS_CXX,, [Define if libc.h should be treated as a C++ header])
+fi
+])
+
+
+dnl AC_CHECK_POINTER_TYPE checks if a given type is a pointer type.
+dnl   If header file(s) are given as argument 2, they
+dnl   are #included in the search. The header files are only included in the search if they
+dnl   have already been found using the AC_CHECK_HEADERS(header) macro.  
+dnl Examples:
+dnl     AC_CHECK_POINTER_TYPE(pthread_d, pthread.h)
+dnl     AC_CHECK_POINTER_TYPE(void *)
+
+dnl AC_CHECK_POINTER_TYPE(FUNCTION, HEADER-FILE...)
+AC_DEFUN(AC_CHECK_POINTER_TYPE,
+[AC_MSG_CHECKING([ifelse([$2], , [if $1 is a pointer type], [if $1 is a pointer type (in $2)])])
+AH_TEMPLATE(AS_TR_CPP(HAVE_POINTER_TYPE_$1), [Define if $1 is a pointer type on your system])
+ifelse([$2], , [ac_includes=""
+],
+[ac_includes=""
+for ac_header in $2
+do
+  ac_safe=`echo "$ac_header" | sed 'y%./+-%__p_%'`
+  if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'}'`\" = yes"; then
+    ac_includes="$ac_includes 
+#include<$ac_header>"
+  fi
+done])
+tmp_save_1=`echo $1 | tr ' :' '__'`
+AC_CACHE_VAL(ac_cv_pointer_type_$tmp_save_1,
+[AC_TRY_COMPILE(
+[#ifdef __cplusplus
+extern "C" {
+#endif
+$ac_includes
+#ifdef __cplusplus
+}
+#endif
+],[$1 p; unsigned long l = p],
+eval "ac_cv_pointer_type_$tmp_save_1=no", eval "ac_cv_pointer_type_$tmp_save_1=yes")])dnl
+if eval "test \"`echo '$''{'ac_cv_pointer_type_$tmp_save_1'}'`\" = yes"; then
+  AC_MSG_RESULT(yes)
+changequote(, )dnl
+  ac_tr_prototype=HAVE_POINTER_TYPE_`echo $tmp_save_1 | tr '[a-z]' '[A-Z]'`
+changequote([, ])dnl
+  AC_DEFINE_UNQUOTED([$ac_tr_prototype])
+  ifelse([$3], , :, [$3])
+else
+  AC_MSG_RESULT(no)
+fi
+])
+
+
+dnl
+dnl CHECK_VLA checks if the C Compiler supports variable-length arrays
+dnl
+AC_DEFUN(CHECK_VLA,
+[AC_MSG_CHECKING([whether variable-length arrays are supported])
+AH_TEMPLATE([HAVE_VLA], [Define if variable-length arrays are supported in C])
+AC_LANG_SAVE
+AC_LANG_C
+AC_TRY_COMPILE([], [
+ int n; int foo[n];
+],
+[AC_MSG_RESULT(yes); AC_DEFINE(HAVE_VLA)],
+AC_MSG_RESULT(no))
+AC_LANG_RESTORE
+])
+
+
+#    AC_TYPEDEF_HELPER(TYPE,
+#                  [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND],
+#                  [INCLUDES])
+
+m4_define([AC_TYPEDEF_HELPER],
+[AS_VAR_PUSHDEF([ac_Type], [ac_cv_type_$1])dnl
+AC_CACHE_CHECK([for $1], ac_Type,
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT([$4])],
+[if (($1 *) 0)
+  return 0;
+if (sizeof ($1))
+  return 0;])],
+                   [AS_VAR_SET(ac_Type, yes)],
+                   [AS_VAR_SET(ac_Type, no)])])
+AS_IF([test AS_VAR_GET(ac_Type) = yes], [$2], [$3])[]dnl
+AS_VAR_POPDEF([ac_Type])dnl
+])# AC_TYPEDEF_HELPER
+
+AC_DEFUN(AC_TYPEDEF_HELPER2,[
+AH_VERBATIM([$3], [/* Define `$1' to `$2' if <sys/types.h> does not define. */
+#undef $3
+#ifdef $3
+typedef $2 $1;
+#endif])])# AC_TYPEDEF_HELPER2
+
+#
+#  AC_TYPEDEF(type, default)
+#
+#  This macro works similar to the old (deprecated, pre-2.13) AC_CHECK_TYPE
+#  macro, but instead of creating a #define for the type if absent, it
+#  creates a clean typedef.
+#
+AC_DEFUN(AC_TYPEDEF,[
+m4_define(AC_TYPEDEF_TEMP,[AS_TR_CPP(HAVE_NO_TYPEDEF_$1)])
+AC_TYPEDEF_HELPER2([$1],[$2],AC_TYPEDEF_TEMP)
+AC_TYPEDEF_HELPER([$1],[],[AC_DEFINE_UNQUOTED(AC_TYPEDEF_TEMP)])
+])# AC_TYPEDEF
+
+dnl
+dnl $Log: aclocal.m4,v $
+dnl Revision 1.2  2006/11/17 16:54:49  braindead
+dnl - updated dcmtk autoconf stuff to work with newer versions
+dnl
+dnl Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
+dnl - imported dcmtk354 sources
+dnl
+dnl
+dnl Revision 1.37  2005/11/15 16:05:51  meichel
+dnl Configure test AC_CHECK_INTP_SELECT now only includes header files
+dnl   that have been successfully tested for presence before.
+dnl
+dnl Revision 1.36  2005/11/07 11:23:34  meichel
+dnl Replaced old AC_CHECK_TYPE macros by newly developed AC_TYPDEF macro.
+dnl   Missing types are now declared by type definition and not as macros anymore.
+dnl
+dnl Revision 1.35  2004/10/20 15:54:01  meichel
+dnl Added configure tests for <stdbool.h> and a number of C typedefs,
+dnl   needed for JasPer support.
+dnl
+dnl Revision 1.34  2004/08/04 14:50:45  meichel
+dnl Fixed configure test that checks if pthread_t is a pointer type to
+dnl   correctly work on compilers such as gcc 2.95 where assignment from
+dnl   int to void pointer does not cause a compiler error.
+dnl
+dnl Revision 1.33  2004/08/03 16:28:40  meichel
+dnl Added configure test to check if pthread_t is a pointer type
+dnl
+dnl Revision 1.32  2004/08/03 11:29:04  meichel
+dnl Added configure test that checks if <libc.h> needs to be treated as a C++
+dnl   header, i.e. included without extern "C". Needed for QNX.
+dnl
+dnl Revision 1.31  2004/01/21 11:57:56  meichel
+dnl Fixed AC_CHECK_PROTOTYPE autoconf macro to support names containing
+dnl   space or colon characters.
+dnl
+dnl Revision 1.30  2003/12/17 17:36:18  meichel
+dnl Added configure test that checks if libtiff supports LZW compression
+dnl
+dnl Revision 1.29  2003/12/11 13:38:57  meichel
+dnl Added configure tests for <new.h> and std::nothrow
+dnl
+dnl Revision 1.28  2003/12/10 13:29:54  meichel
+dnl Re-worked configure scripts for Autoconf 2.5x
+dnl   Presence of external library is now checked automatically.
+dnl
+dnl Revision 1.27  2003/07/09 12:22:46  meichel
+dnl Added configure test for new-style cast operators such as
+dnl   static_cast<> and const_cast<>.
+dnl
+dnl Revision 1.26  2003/07/03 15:00:55  meichel
+dnl Added configure test for "typename" C++ keyword
+dnl
+dnl Revision 1.25  2003/07/03 14:49:05  meichel
+dnl Fixed AC_CHECK_DECLARATION macro
+dnl
+dnl Revision 1.24  2003/06/06 10:23:41  meichel
+dnl Added configure tests for bool and volatile keywords
+dnl
+dnl Revision 1.23  2003/05/13 09:55:30  meichel
+dnl Fixed minor issue in AC_CHECK_INTP_SELECT configure macro
+dnl
+dnl Revision 1.22  2002/12/16 16:19:25  meichel
+dnl Added configure test that checks if extern "C" inclusion
+dnl   of <math.h> fails, e.g. on HP/UX 10 and WIN32
+dnl
+dnl Revision 1.21  2002/12/16 11:00:57  meichel
+dnl Added configure test that checks if signal handler functions
+dnl   require ellipse (...) parameters, for example on Irix5.
+dnl
+dnl Revision 1.20  2002/12/11 13:08:28  meichel
+dnl Added configure test for type of 5th parameter of getsockopt()
+dnl
+dnl Revision 1.19  2002/05/15 14:13:11  meichel
+dnl Added configure test for readdir_r conforming to Posix 1.c draft 6
+dnl
+dnl Revision 1.18  2002/04/16 14:06:18  joergr
+dnl Added configurable support for C++ ANSI standard includes (e.g. streams).
+dnl Thanks to Andreas Barth <Andreas.Barth@bruker-biospin.de> for his
+dnl contribution.
+dnl
+dnl Revision 1.17  2001/12/18 09:51:57  meichel
+dnl Modified configure test for "const" support of the C compiler
+dnl   in order to avoid a macro recursion error on Sun CC 2.0.1
+dnl
+dnl Revision 1.16  2001/11/02 12:03:42  meichel
+dnl Added new configure tests for std::_Ios_Openmode and ios::nocreate,
+dnl   required for gcc 3.0.x.
+dnl
+dnl Revision 1.15  2001/08/23 16:29:11  meichel
+dnl Added configure tests required by dcmjpeg module
+dnl
+dnl Revision 1.14  2000/12/20 09:54:29  meichel
+dnl Fixed remaining problems with configure on FreeBSD.
+dnl
+dnl Revision 1.13  2000/12/19 12:15:45  meichel
+dnl Updated configure for the FreeBSD Posix implementation which requires
+dnl   a special gcc option -pthread to cause linking with libc_r instead of libc.
+dnl
+dnl Revision 1.12  2000/09/08 14:20:11  meichel
+dnl Added new options to configure
+dnl
+dnl Revision 1.11  2000/09/05 12:19:32  joergr
+dnl Added new test checking for the presence of type ssize_t.
+dnl
+dnl Revision 1.10  2000/03/10 11:55:43  meichel
+dnl Added special configure test for <netinet/in.h> and <netinet/tcp.h>,
+dnl   needed for IRIX 6.
+dnl
+dnl Revision 1.9  2000/02/24 13:51:52  meichel
+dnl Added new check that distinguishes NeXT's libtool from GNU libtool (which
+dnl   has a totally different purpose). Required because the old configure scheme
+dnl   failed if GNU libtool was found in the search path.
+dnl
+dnl Revision 1.8  1999/04/28 16:49:47  meichel
+dnl Added test whether the compiler supports the new explicit template
+dnl   specialization syntax, e.g. template<> int a_class<int>::a_method()
+dnl
+dnl Revision 1.7  1997/09/11 15:53:17  hewett
+dnl Enhanced the configure macro AC_CHECK_PROTOTYPE to check the
+dnl include files passed as aruments before searching for a
+dnl prototype.  This makes the configure.in file considerably
+dnl simpler.  The include files passed as aruments to the
+dnl AC_CHECL_PROTOTYPE macro must have already been tested for
+dnl using the AC_CHECK_HEADERS macro.  If not, the include files
+dnl are assumed not to exist.
+dnl
+dnl Revision 1.6  1997/07/03 09:38:17  meichel
+dnl Corrected bug in configure module - all tests trying to link or run
+dnl   a test program could fail (and, therefore, report an incorrect result)
+dnl   if libg++.a was not found in the default link path.
+dnl
+dnl Revision 1.5  1997/07/02 11:53:02  andreas
+dnl - Preliminary release of the OFFIS Standard Library.
+dnl   In the future this library shall contain a subset of the
+dnl   ANSI C++ Library (Version 3) that works on a lot of different
+dnl   compilers. Additionally this library shall include classes and
+dnl   functions that are often used. All classes and functions begin
+dnl   with OF... This library is independent of the DICOM development and
+dnl   shall contain no DICOM specific stuff.
+dnl
+dnl Revision 1.4  1996/12/03 15:28:19  meichel
+dnl Added support for HP-UX 9.05 systems using GCC 2.7.2.1
+dnl
+dnl Revision 1.3  1996/03/28 11:05:22  meichel
+dnl Added macro AC_CHECK_DECLARATION which checks if a type declaration exists
+dnl in certain header files (e.g. for struct sembuf)
+dnl
+dnl Revision 1.2  1995/11/28 15:59:46  meichel
+dnl Added macro AC_CHECK_PROTOTYPE which allows to check for
+dnl the existance of prototype declarations. Added CVS log.
+dnl
