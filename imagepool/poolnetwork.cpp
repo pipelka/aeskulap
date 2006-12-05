@@ -122,7 +122,12 @@ CONDITION Network::ASC_ConnectAssociation(Association* assoc, const std::string&
 	{
 		const char** transferSyntaxes;
 		int transferSyntaxes_count;
-		const char* const_transferSyntaxes[] = { UID_JPEGProcess14SV1TransferSyntax, UID_LittleEndianExplicitTransferSyntax, UID_BigEndianExplicitTransferSyntax, UID_LittleEndianImplicitTransferSyntax };
+		const char* const_transferSyntaxes[] = { UID_LittleEndianExplicitTransferSyntax, UID_BigEndianExplicitTransferSyntax, UID_LittleEndianImplicitTransferSyntax };
+
+		transferSyntaxes = &const_transferSyntaxes[0];
+		transferSyntaxes_count = DIM_OF(const_transferSyntaxes);
+
+/*		const char* const_transferSyntaxes[] = { UID_JPEGProcess14SV1TransferSyntax, UID_LittleEndianExplicitTransferSyntax, UID_BigEndianExplicitTransferSyntax, UID_LittleEndianImplicitTransferSyntax };
 		if(bProposeCompression) {
 			if(lossy == 8) {
 				const_transferSyntaxes[0] = UID_JPEGProcess1TransferSyntax;
@@ -141,7 +146,7 @@ CONDITION Network::ASC_ConnectAssociation(Association* assoc, const std::string&
 		else {
 			transferSyntaxes = &const_transferSyntaxes[1];
 			transferSyntaxes_count = DIM_OF(const_transferSyntaxes)-1;
-		}
+		}*/
 	
 		cond = ASC_addPresentationContext(params, 1, abstractSyntax, transferSyntaxes, transferSyntaxes_count);
 		assoc->OnAddPresentationContext(params, transferSyntaxes, transferSyntaxes_count);

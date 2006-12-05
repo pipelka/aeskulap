@@ -31,6 +31,8 @@ $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
 
+uninstall:
+	rm -f $(libdir)/$(library)
 
 clean:
 	rm -f $(objs) $(library) $(TRASH)
