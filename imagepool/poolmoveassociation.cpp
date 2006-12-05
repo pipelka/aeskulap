@@ -51,7 +51,10 @@ CONDITION MoveAssociation::SendObject(DcmDataset *dataset) {
 }
 
 void MoveAssociation::OnAddPresentationContext(T_ASC_Parameters *params, const char* transferSyntaxList[], int transferSyntaxListCount) {
+	const char* mpeg_transfer[] = { UID_MPEG2MainProfileAtMainLevelTransferSyntax };
+
 	ASC_addPresentationContext(params, 3, m_abstractSyntax, transferSyntaxList, transferSyntaxListCount);
+	ASC_addPresentationContext(params, 5, m_abstractSyntax, mpeg_transfer, DIM_OF(mpeg_transfer));
 }
 
 CONDITION MoveAssociation::moveSCU(DcmDataset *pdset) {
@@ -139,7 +142,7 @@ void MoveAssociation::subOpCallback(void *pCaller, T_ASC_Network *aNet, T_ASC_As
 CONDITION MoveAssociation::acceptSubAssoc(T_ASC_Network *aNet, T_ASC_Association **assoc) {
 	CONDITION cond = ASC_NORMAL;
 	const char* knownAbstractSyntaxes[] = { UID_VerificationSOPClass };
-	const char* transferSyntaxes[] = { UID_JPEGProcess14SV1TransferSyntax, NULL, NULL, UID_LittleEndianImplicitTransferSyntax };
+	const char* transferSyntaxes[] = { UID_JPEGProcess14SV1TransferSyntax, NULL, NULL, UID_LittleEndianImplicitTransferSyntax, UID_MPEG2MainProfileAtMainLevelTransferSyntax };
 
 	if(m_accept_lossy) {
 		transferSyntaxes[0] = UID_JPEGProcess2_4TransferSyntax;

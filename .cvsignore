@@ -40,3 +40,4 @@ uninstalldirs
 gconf
 stamp-h*
 aeskulap.spec
+.settings

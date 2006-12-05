@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/04/10 12:57:58 $
+    Update Date:      $Date: 2006/12/05 12:50:16 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.29 $
+    CVS/RCS Revision: $Revision: 1.30 $
     Status:           $State: Exp $
 */
 
@@ -144,15 +144,6 @@ MainWindow::~MainWindow() {
 	delete m_settings;
 	delete m_prescandialog;
 }
-
-/*void MainWindow::set_busy_cursor(bool busy) {
-	if(busy) {
-		get_window()->set_cursor(Aeskulap::IconFactory::get_cursor_watch());
-	}
-	else {
-		get_window()->set_cursor();
-	}
-}*/
 
 void MainWindow::on_file_open() {
 	bool bExit = false;

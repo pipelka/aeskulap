@@ -57,9 +57,9 @@
 **      Module Prefix: DIMSE_
 **
 ** Last Update:         $Author: braindead $
-** Update Date:         $Date: 2005/08/23 19:32:01 $
+** Update Date:         $Date: 2006/12/05 12:50:16 $
 ** Source File:         $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/libsrc/dimse.cc,v $
-** CVS/RCS Revision:    $Revision: 1.1 $
+** CVS/RCS Revision:    $Revision: 1.2 $
 ** Status:              $State: Exp $
 **
 ** CVS/RCS Log at end of file
@@ -347,6 +347,7 @@ getTransferSyntax(T_ASC_Association * assoc,
         case EXS_JPEGProcess29TransferSyntax:
         case EXS_JPEGProcess14SV1TransferSyntax:
         case EXS_RLELossless:
+	case EXS_MPEG2MainProfileAtMainLevel:
 #ifdef WITH_ZLIB
         case EXS_DeflatedLittleEndianExplicit:
 #endif
@@ -1761,6 +1762,10 @@ void DIMSE_warning(T_ASC_Association *assoc,
 /*
 ** CVS Log
 ** $Log: dimse.cc,v $
+** Revision 1.2  2006/12/05 12:50:16  braindead
+** - build fixes
+** - added MPEG transfersyntax
+**
 ** Revision 1.1  2005/08/23 19:32:01  braindead
 ** - initial savannah import
 **
