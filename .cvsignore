@@ -38,3 +38,4 @@ log
 *.package
 uninstalldirs
 gconf
+.settings
