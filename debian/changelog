@@ -1,3 +1,9 @@
+aeskulap (0.2.1-3) unstable; urgency=low
+
+  * removed i385 specific compiler options
+
+ -- Alexander Pipelka <pipelka@celeborn.bms-austria.com>  Wed, 13 Dec 2006 15:28:44 +0100
+
 aeskulap (0.2.1-2) unstable; urgency=low
 
   * release build
