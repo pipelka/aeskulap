@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/16 22:46:34 $
+    Update Date:      $Date: 2007/02/22 13:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.20 $
+    CVS/RCS Revision: $Revision: 1.21 $
     Status:           $State: Exp $
 */
 
@@ -50,7 +50,7 @@ static void fix_date(std::string& date) {
 }
 
 static void fix_time(std::string& time) {
-	unsigned int i = time.find(".");
+	std::string::size_type i = time.find(".");
 	if(i != std::string::npos) {
 		time = time.substr(0, i);
 	}

@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/07 07:11:40 $
+    Update Date:      $Date: 2007/02/22 13:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/aconfiguration-gconf.cpp,v $
-    CVS/RCS Revision: $Revision: 1.4 $
+    CVS/RCS Revision: $Revision: 1.5 $
     Status:           $State: Exp $
 */
 
@@ -35,6 +35,7 @@ static Glib::RefPtr<Gnome::Conf::Client> m_conf_client;
 
 Configuration::Configuration() {
 	if(!m_conf_client) {
+		std::cout << "Gnome::Conf::init()" << std::endl;
 		Gnome::Conf::init();
 		m_conf_client = Gnome::Conf::Client::get_default_client();
 	}
@@ -64,6 +65,7 @@ void Configuration::set_local_aet(const std::string& aet) {
 }
 
 unsigned int Configuration::get_local_port() {
+	m_conf_client = Gnome::Conf::Client::get_default_client();
 	gint local_port = m_conf_client->get_int("/apps/aeskulap/preferences/local_port");
 
 	if(local_port <= 0) {
