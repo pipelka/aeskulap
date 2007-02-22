@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 16:01:23 $
+    Update Date:      $Date: 2007/02/22 13:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/aseriesmenu.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -59,6 +59,10 @@ void SeriesMenu::add_series(const Glib::RefPtr<ImagePool::Series>& series, Serie
 }
 
 void SeriesMenu::set_thumbnail(const Glib::RefPtr<ImagePool::Instance>& instance) {
+	if(!instance || instance->pixels() == NULL) {
+		return;
+	}
+
 	Gtk::ImageMenuItem* menuitem = m_menuitem[instance->series()->seriesinstanceuid()];
 	if(menuitem == NULL) {
 		return;

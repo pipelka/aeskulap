@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/20 20:39:37 $
+    Update Date:      $Date: 2007/02/22 13:39:34 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.27 $
+    CVS/RCS Revision: $Revision: 1.28 $
     Status:           $State: Exp $
 */
 
@@ -85,7 +85,7 @@ void SeriesView::on_realize() {
 }
 
 void SeriesView::add_instance(const Glib::RefPtr<ImagePool::Instance>& instance) {
-	if(!instance) {
+	if(!instance || instance->pixels() == NULL) {
 		return;
 	}
 
