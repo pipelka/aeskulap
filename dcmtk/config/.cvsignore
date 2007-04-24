@@ -5,3 +5,6 @@ configure
 CMakeLists.txt
 confmod
 Makefile.def
+configure.lineno
+Makefile.def.in.ori
+lzwtest.tif
