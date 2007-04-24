@@ -69,7 +69,7 @@ install-support: $(DICTFILE) $(PRIVDICTFILE)
 clean:
 	rm -f $(support_progs) $(support_objs) $(objs) $(library) $(TRASH)
 
-distclean: nobuiltindict clean
+distclean: clean
 	rm -f $(DISTTRASH)
 
 
