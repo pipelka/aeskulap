@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/02/22 13:39:34 $
+    Update Date:      $Date: 2007/04/24 10:49:37 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/aseriesmenu.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -42,10 +42,10 @@ namespace Aeskulap {
 void SeriesMenu::add_series(const Glib::RefPtr<ImagePool::Series>& series, SeriesView* w) {
 	char buffer[200];
 	if(!series->description().empty()) {
-		g_snprintf(buffer, sizeof(buffer), gettext("Series %i (%s)\n%s"), m_menuitem.size()+1, series->modality().c_str(), series->description().c_str());
+		g_snprintf(buffer, sizeof(buffer), gettext("Series %li (%s)\n%s"), m_menuitem.size()+1, series->modality().c_str(), series->description().c_str());
 	}
 	else {
-		g_snprintf(buffer, sizeof(buffer), gettext("Series %i (%s)\nNo description"), m_menuitem.size()+1, series->modality().c_str());
+		g_snprintf(buffer, sizeof(buffer), gettext("Series %li (%s)\nNo description"), m_menuitem.size()+1, series->modality().c_str());
 		
 	}
 

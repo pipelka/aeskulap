@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/17 12:24:41 $
+    Update Date:      $Date: 2007/04/24 10:49:37 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.h,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -87,7 +87,7 @@ public:
 
 	const Aeskulap::WindowLevel& get_default_windowlevel();
 
-	bool set_inverted(bool inverted);
+	void set_inverted(bool inverted);
 
 	bool get_inverted();
 

@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/02/22 13:39:34 $
+    Update Date:      $Date: 2007/04/24 10:49:37 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/aconfiguration-gconf.cpp,v $
-    CVS/RCS Revision: $Revision: 1.5 $
+    CVS/RCS Revision: $Revision: 1.6 $
     Status:           $State: Exp $
 */
 
@@ -124,7 +124,7 @@ Configuration::ServerList* Configuration::get_serverlist() {
 		}
 		else {
 			char buffer[50];
-			snprintf(buffer, sizeof(buffer), "Server%i", list->size()+1);
+			snprintf(buffer, sizeof(buffer), "Server%li", list->size()+1);
 			servername = buffer;
 		}
 
@@ -207,7 +207,7 @@ bool Configuration::get_windowlevel_list(const Glib::ustring& modality, WindowLe
 
 	list.clear();
 	
-	for(int i=0; i<dirs.size(); i++) {
+	for(unsigned int i=0; i<dirs.size(); i++) {
 		WindowLevel w;
 		if(get_windowlevel(modality, get_name_from_path(dirs[i]), w)) {
 			list[w.description] = w;
@@ -250,7 +250,7 @@ bool Configuration::unset_windowlevels(const Glib::ustring& modality) {
 		return false;
 	}
 
-	for(int i=0; i<dirs.size(); i++) {
+	for(unsigned int i=0; i<dirs.size(); i++) {
 		Glib::ustring keybase = base+"/"+get_name_from_path(dirs[i]);
 		m_conf_client->unset(keybase+"/center");
 		m_conf_client->unset(keybase+"/width");

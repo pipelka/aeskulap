@@ -1,3 +1,10 @@
+aeskulap (0.2.2-1) feisty; urgency=low
+
+  * updated DCMTK to version 3.5.4
+  * merged Gianluca's WIN32 changes
+
+ -- Alexander Pipelka <pipelka@celeborn.bms-austria.com>  Tue, 24 Apr 2007 12:12:33 +0200
+
 aeskulap (0.2.1-4) unstable; urgency=low
 
   * workaround for obvious gconfmm (2.6.16) bug

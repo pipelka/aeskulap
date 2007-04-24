@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/20 07:14:57 $
+    Update Date:      $Date: 2007/04/24 10:49:37 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.22 $
+    CVS/RCS Revision: $Revision: 1.23 $
     Status:           $State: Exp $
 */
 
@@ -848,7 +848,7 @@ const Aeskulap::WindowLevel& SimpleDisplay::get_default_windowlevel() {
 	return m_disp_params->default_window;
 }
 
-bool SimpleDisplay::set_inverted(bool inverted) {
+void SimpleDisplay::set_inverted(bool inverted) {
 	m_disp_params->inverted = inverted;
 }
 

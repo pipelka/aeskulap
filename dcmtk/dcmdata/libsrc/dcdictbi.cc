@@ -4,18 +4,18 @@
 **
 **   User: pipelka
 **   Host: celeborn
-**   Date: 2007-04-2411:26:10
-**   Prog: /data/workspace/aeskulap-win32-merge/dcmtk/dcmdata/libsrc/mkdictbi
+**   Date: 2007-04-2412:48:55
+**   Prog: /data/workspace/aeskulap/dcmtk/dcmdata/libsrc/mkdictbi
 **
-** From: /data/workspace/aeskulap-win32-merge/dcmtk/dcmdata/libsrc/dicom.dic
-**       /data/workspace/aeskulap-win32-merge/dcmtk/dcmdata/libsrc/private.dic
+** From: /data/workspace/aeskulap/dcmtk/dcmdata/libsrc/dicom.dic
+**       /data/workspace/aeskulap/dcmtk/dcmdata/libsrc/private.dic
 **
 */
 
 #include "dcmtk/dcmdata/dcdict.h"
 #include "dcmtk/dcmdata/dcdicent.h"
 
-const char* dcmBuiltinDictBuildDate = "2007-04-2411:26:10";
+const char* dcmBuiltinDictBuildDate = "2007-04-2412:48:55";
 
 struct DBI_SimpleEntry {
     Uint16 group;
