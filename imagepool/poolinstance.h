@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/17 12:24:41 $
+    Update Date:      $Date: 2007/04/24 10:49:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -82,7 +82,7 @@ public:
 	
 	~Instance();
 
-	void* pixels(int frame=0);
+	void* pixels(unsigned int frame=0);
 	
 	double pixel_value(int x, int y, int frame=0);
 
