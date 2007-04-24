@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1997-2001, OFFIS
+ *  Copyright (C) 1997-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,16 +23,16 @@
  *	    Implementation of supplementary methods for a template list class 
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
+ *  Update Date:      $Date: 2007/04/24 09:53:48 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/ofstd/libsrc/oflist.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #if defined(HAVE_STL) || defined (HAVE_STL_LIST) 
 // We do not need to make this library
@@ -41,7 +41,7 @@ void OF__DUMMY()    // to make the linker happy!
 }
 #else
 
-#include "oflist.h"
+#include "dcmtk/ofstd/oflist.h"
 
 OFListBase::OFListBase()
 : afterLast(NULL)
@@ -129,11 +129,16 @@ void OFListBase::base_recalcListSize()
 /*
 ** CVS/RCS Log:
 ** $Log: oflist.cc,v $
-** Revision 1.1  2005/08/23 19:32:00  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:48  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:16  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.8  2005/12/08 15:48:58  meichel
+** Changed include path schema for all DCMTK header files
 **
 ** Revision 1.7  2001/06/01 15:51:39  meichel
 ** Updated copyright header

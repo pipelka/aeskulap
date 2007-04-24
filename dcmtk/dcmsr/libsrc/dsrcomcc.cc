@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2003, OFFIS
+ *  Copyright (C) 2003-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *    classes: DSRComprehensiveSRConstraintChecker
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,9 +32,9 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrcomcc.h"
+#include "dcmtk/dcmsr/dsrcomcc.h"
 
 
 DSRComprehensiveSRConstraintChecker::DSRComprehensiveSRConstraintChecker()
@@ -89,7 +89,7 @@ OFBool DSRComprehensiveSRConstraintChecker::checkContentRelationship(const E_Val
                  (targetValueType == VT_Waveform) || ((targetValueType == VT_Container) && !byReference /* only by-value */);
         /*
            tbd: check what the standard PS3.3-2003 states in A.35.3.3.1.2 (?):
-                "It is legal to have a CONTAINS relationship by-reference to a target that is not a CONTAINER, 
+                "It is legal to have a CONTAINS relationship by-reference to a target that is not a CONTAINER,
                  such as a TEXT or CODE, which itself has immediate or distant descendants that are CONTAINERS,
                  which may then subsequently have CONTAINS relationships by value with CONTAINERS."
         */
@@ -103,8 +103,8 @@ OFBool DSRComprehensiveSRConstraintChecker::checkContentRelationship(const E_Val
                  (targetValueType == VT_UIDRef)   || (targetValueType == VT_PName) || (targetValueType == VT_Composite);
     }
     /* row 3 of the table */
-    else if ((relationshipType == RT_hasAcqContext) && ((sourceValueType == VT_Container) ||
-        (sourceValueType == VT_Image) || (sourceValueType == VT_Waveform) || (sourceValueType == VT_Composite)))
+    else if ((relationshipType == RT_hasAcqContext) && ((sourceValueType == VT_Container) || (sourceValueType == VT_Image) ||
+        (sourceValueType == VT_Waveform) || (sourceValueType == VT_Composite) || (sourceValueType == VT_Num /* see CP 571 */)))
     {
         result = (targetValueType == VT_Text)     || (targetValueType == VT_Code)  || (targetValueType == VT_Num)  ||
                  (targetValueType == VT_DateTime) || (targetValueType == VT_Date)  || (targetValueType == VT_Time) ||
@@ -142,11 +142,20 @@ OFBool DSRComprehensiveSRConstraintChecker::checkContentRelationship(const E_Val
 /*
  *  CVS/RCS Log:
  *  $Log: dsrcomcc.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.5  2005/12/08 15:47:42  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.4  2005/07/27 16:55:46  joergr
+ *  Added provisional support for CP571, i.e. allow certain relationships needed
+ *  for TID 5203 (Echo Measurement).
  *
  *  Revision 1.3  2003/10/09 13:00:41  joergr
  *  Added check for root template identifier when reading an SR document.

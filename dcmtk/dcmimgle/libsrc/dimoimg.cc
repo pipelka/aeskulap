@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2004, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: DicomMonochromeImage (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,25 +31,25 @@
  */
 
 
-#include "osconfig.h"
-#include "dctypes.h"
-#include "dcdeftag.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dctypes.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
 
-#include "dimoimg.h"
-#include "dimo2img.h"
-#include "dimoipxt.h"
-#include "dimocpt.h"
-#include "dimosct.h"
-#include "dimoflt.h"
-#include "dimorot.h"
-#include "dimoopxt.h"
-#include "digsdfn.h"
-#include "didocu.h"
-#include "diutils.h"
-#include "diregbas.h"
+#include "dcmtk/dcmimgle/dimoimg.h"
+#include "dcmtk/dcmimgle/dimo2img.h"
+#include "dcmtk/dcmimgle/dimoipxt.h"
+#include "dcmtk/dcmimgle/dimocpt.h"
+#include "dcmtk/dcmimgle/dimosct.h"
+#include "dcmtk/dcmimgle/dimoflt.h"
+#include "dcmtk/dcmimgle/dimorot.h"
+#include "dcmtk/dcmimgle/dimoopxt.h"
+#include "dcmtk/dcmimgle/digsdfn.h"
+#include "dcmtk/dcmimgle/didocu.h"
+#include "dcmtk/dcmimgle/diutils.h"
+#include "dcmtk/dcmimgle/diregbas.h"
 
 #define INCLUDE_CMATH
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 /*---------------------*
@@ -674,8 +674,8 @@ void DiMonoImage::Init(DiMonoModality *modality)
                 break;
         }
         deleteInputData();                                  // no longer needed, save memory
-        if ((modality->hasLookupTable()) && (modality->getTableData() != NULL))
-            BitsPerSample = modality->getTableData()->getBits();
+        if (modality->getBits() > 0)
+            BitsPerSample = modality->getBits();            // get bit depth of internal representation
         /* get grayscale related attributes */
         if (checkInterData() && !(Document->getFlags() & CIF_UsePresentationState))
         {
@@ -905,7 +905,7 @@ int DiMonoImage::checkInterData(const int mode)
         ImageStatus = EIS_InvalidImage;
     else if (mode && (ImageStatus == EIS_Normal))
     {
-        const unsigned long count = OFstatic_cast(unsigned long, Columns) * OFstatic_cast(unsigned long, Rows) * NumberOfFrames;
+        const unsigned long count = OFstatic_cast(unsigned long, Columns) * OFstatic_cast(unsigned long, Rows) * TotalNumberOfFrames;
         if ((InterData->getInputCount() != count) && ((InterData->getInputCount() >> 1) != ((count + 1) >> 1)))
         {
             if (DicomImageClass::checkDebugLevel(DicomImageClass::DL_Warnings))
@@ -1926,32 +1926,34 @@ void DiMonoImage::updateImagePixelModuleAttributes(DcmItem &dataset)
         dataset.putAndInsertString(DCM_RescaleSlope, "1");
         delete dataset.remove(DCM_ModalityLUTSequence);
     }
-    /* remove overlays */
+    /* remove embedded overlay planes */
     for (Uint16 grp = 0x6000; grp < 0x601f; grp += 2)
     {
-        /* attributes from Overlay Plane Module in group 0x6000-0x601f */
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayGroupLength.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayRows.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayColumns.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayPlanes.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_NumberOfFramesInOverlay.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayDescription.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayType.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlaySubtype.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayOrigin.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_ImageFrameOrigin.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayPlaneOrigin.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayBitsAllocated.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayBitPosition.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayLabel.getElement()));
-        delete dataset.remove(DcmTagKey(grp, DCM_OverlayData.getElement()));
+        if (!dataset.tagExists(DcmTagKey(grp, DCM_OverlayData.getElement())))
+        {
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayGroupLength.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayRows.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayColumns.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayPlanes.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_NumberOfFramesInOverlay.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayDescription.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayType.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlaySubtype.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayOrigin.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_ImageFrameOrigin.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayPlaneOrigin.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayBitsAllocated.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayBitPosition.getElement()));
+            delete dataset.remove(DcmTagKey(grp, DCM_OverlayLabel.getElement()));
+        }
     }
 }
 
 
 // --- write current image to DICOM dataset
 
-int DiMonoImage::writeImageToDataset(DcmItem &dataset)
+int DiMonoImage::writeImageToDataset(DcmItem &dataset,
+                                     const int mode)
 {
     int result = 0;
     if (InterData != NULL)
@@ -1960,6 +1962,14 @@ int DiMonoImage::writeImageToDataset(DcmItem &dataset)
         const unsigned long count = InterData->getCount();
         if ((BitsPerSample > 0) && (pixel != NULL) && (count > 0))
         {
+            unsigned int bits = BitsPerSample;
+            /* only 'used' pixel data */
+            if (!mode)
+            {
+                double minValue, maxValue;
+                InterData->getMinMaxValues(minValue, maxValue);
+                bits = DicomImageClass::rangeToBits(minValue, maxValue);
+            }
             /* set color model */
             if (getInternalColorModel() == EPI_Monochrome1)
                 dataset.putAndInsertString(DCM_PhotometricInterpretation, "MONOCHROME1");
@@ -2004,8 +2014,8 @@ int DiMonoImage::writeImageToDataset(DcmItem &dataset)
                     dataset.putAndInsertUint16Array(DCM_PixelData, OFstatic_cast(const Uint16 *, pixel), count);
                     break;
             }
-            dataset.putAndInsertUint16(DCM_BitsStored, BitsPerSample);
-            dataset.putAndInsertUint16(DCM_HighBit, BitsPerSample - 1);
+            dataset.putAndInsertUint16(DCM_BitsStored, bits);
+            dataset.putAndInsertUint16(DCM_HighBit, bits - 1);
             /* update other DICOM attributes */
             updateImagePixelModuleAttributes(dataset);
             result = 1;
@@ -2114,11 +2124,25 @@ int DiMonoImage::writeBMP(FILE *stream,
  *
  * CVS/RCS Log:
  * $Log: dimoimg.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:44  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:57  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.62  2005/12/08 15:42:56  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.61  2005/03/09 17:43:41  joergr
+ * Added mode to writeImageToDataset() which allows the value of BitsStored to
+ * be determined either from 'used' or from 'possible' pixel values.
+ * Fixed problem with wrong value for BitsStored in writeImageToDataset().
+ * Do not remove separate overlay planes in writeImageToDataset().
+ *
+ * Revision 1.60  2004/09/22 11:33:38  joergr
+ * Fixed wrong warning message about length of pixel data.
  *
  * Revision 1.59  2004/02/06 11:10:39  joergr
  * Distinguish more clearly between const and non-const access to pixel data.

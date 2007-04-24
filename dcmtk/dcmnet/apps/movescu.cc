@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,39 +22,40 @@
  *  Purpose: Query/Retrieve Service Class User (C-MOVE operation)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
+ *  Update Date:      $Date: 2007/04/24 09:53:49 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/apps/movescu.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h" /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h" /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CSTDARG
 #define INCLUDE_CERRNO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
-#include "dicom.h"
-#include "dimse.h"
-#include "diutil.h"
-#include "dcfilefo.h"
-#include "dcdebug.h"
-#include "dcuid.h"
-#include "dcdict.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dcuid.h"    /* for dcmtk version name */
-#include "ofstd.h"
+#include "dcmtk/dcmnet/dicom.h"
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/dcmdata/dcdicent.h"
 
 #ifdef WITH_ZLIB
 #include <zlib.h>     /* for zlibVersion() */
@@ -104,13 +105,17 @@ OFBool            opt_abortDuringStore = OFFalse;
 OFBool            opt_abortAfterStore = OFFalse;
 OFBool            opt_correctUIDPadding = OFFalse;
 OFCmdUnsignedInt  opt_repeatCount = 1;
-OFCmdUnsignedInt  opt_retrievePort = 104;
+OFCmdUnsignedInt  opt_retrievePort = 0;
 E_TransferSyntax  opt_in_networkTransferSyntax = EXS_Unknown;
 E_TransferSyntax  opt_out_networkTransferSyntax = EXS_Unknown;
 OFBool            opt_abortAssociation = OFFalse;
 const char *      opt_moveDestination = NULL;
 OFCmdSignedInt    opt_cancelAfterNResponses = -1;
 QueryModel        opt_queryModel = QMPatientRoot;
+T_DIMSE_BlockingMode opt_blockMode = DIMSE_BLOCKING;
+int               opt_dimse_timeout = 0;
+int               opt_acse_timeout = 30;
+OFBool            opt_ignorePendingDatasets = OFTrue;
 
 static T_ASC_Network *net = NULL; /* the global DICOM network */
 static DcmDataset *overrideKeys = NULL;
@@ -149,12 +154,25 @@ addOverrideKey(OFConsoleApplication& app, const char* s)
     val[0] = '\0';
     n = sscanf(s, "%x,%x=%s", &g, &e, val);
 
-    if (n < 2) {
-      msg = "bad key format: ";
-      msg += s;
-      app.printError(msg.c_str());
+    if (n != 2) {
+      // not a group-element pair, try to lookup in dictionary
+      DcmTagKey key(0xffff,0xffff);
+      const DcmDataDictionary& globalDataDict = dcmDataDict.rdlock();
+      const DcmDictEntry *dicent = globalDataDict.findEntry(s);
+      dcmDataDict.unlock();
+      if (dicent!=NULL) {
+        // found dictionary name, copy group and element number
+        key = dicent->getKey();
+        g = key.getGroup();
+        e = key.getElement();
+      }
+      else {
+        // not found in dictionary
+        msg = "bad key format or key not found in dictionary: ";
+        msg += s;
+        app.printError(msg.c_str());
+      }
     }
-
     const char* spos = s;
     char ccc;
     do
@@ -254,7 +272,7 @@ main(int argc, char *argv[])
    cmd.addOption("--debug",                     "-d",        "debug mode, print debug information");
   cmd.addGroup("network options:");
     cmd.addSubGroup("override matching keys:");
-      cmd.addOption("--key",                    "-k",    1,  "key: gggg,eeee=\"string\"",
+      cmd.addOption("--key",                    "-k",    1,  "key: gggg,eeee=\"str\" or data dict. name=\"str\"",
                                                              "override matching key");
     cmd.addSubGroup("query information model:");
       cmd.addOption("--patient",                "-P",        "use patient root information model (default)");
@@ -280,6 +298,8 @@ main(int argc, char *argv[])
       cmd.addOption("--prefer-lossless",        "+xs",       "prefer default JPEG lossless TS");
       cmd.addOption("--prefer-jpeg8",           "+xy",       "prefer default JPEG lossy TS for 8 bit data");
       cmd.addOption("--prefer-jpeg12",          "+xx",       "prefer default JPEG lossy TS for 12 bit data");
+      cmd.addOption("--prefer-j2k-lossless",    "+xv",       "prefer JPEG 2000 lossless TS");
+      cmd.addOption("--prefer-j2k-lossy",       "+xw",       "prefer JPEG 2000 lossy TS");
       cmd.addOption("--prefer-rle",             "+xr",       "prefer RLE lossless TS");
       cmd.addOption("--implicit",               "+xi",       "accept implicit VR little endian TS only");
     cmd.addSubGroup("proposed transmission transfer syntaxes (outgoing associations):");
@@ -292,15 +312,19 @@ main(int argc, char *argv[])
       cmd.addOption("--access-full",            "-ac",       "accept connections from any host (default)");
       cmd.addOption("--access-control",         "+ac",       "enforce host access control rules");
 #endif
+    cmd.addSubGroup("port for incoming network associations:");
+      cmd.addOption("--no-port",                "-P",        "No port for incoming associations (default)");
+      cmd.addOption("--port",                   "+P",    1,  "[n]umber: integer",
+                                                             "port number for incoming associations");
+    cmd.addSubGroup("handling of illegal datasets following 'pending' move responses:");
+      cmd.addOption("--pending-ignore",         "-pi",        "Assume no dataset present (default)");
+      cmd.addOption("--pending-read",           "-pr",        "Read and ignore dataset");
+
     cmd.addSubGroup("other network options:");
       cmd.addOption("--timeout",                "-to", 1,    "[s]econds: integer (default: unlimited)", "timeout for connection requests");
+      cmd.addOption("--acse-timeout",           "-ta", 1,    "[s]econds: integer (default: 30)", "timeout for ACSE messages");
+      cmd.addOption("--dimse-timeout",          "-td", 1,    "[s]econds: integer (default: unlimited)", "timeout for DIMSE messages");
 
-      OFString opt6 = "[n]umber: integer (default: ";
-      sprintf(tempstr, "%ld", (long)opt_retrievePort);
-      opt6 += tempstr;
-      opt6 += ")";
-      cmd.addOption("--port",                   "+P",    1,  opt6.c_str(),
-                                                             "port number for incoming associations");
       OFString opt3 = "set max receive pdu to n bytes (default: ";
       sprintf(tempstr, "%ld", (long)ASC_DEFAULTMAXPDU);
       opt3 += tempstr;
@@ -405,8 +429,10 @@ main(int argc, char *argv[])
       if (cmd.findOption("--prefer-lossless")) opt_in_networkTransferSyntax = EXS_JPEGProcess14SV1TransferSyntax;
       if (cmd.findOption("--prefer-jpeg8"))    opt_in_networkTransferSyntax = EXS_JPEGProcess1TransferSyntax;
       if (cmd.findOption("--prefer-jpeg12"))   opt_in_networkTransferSyntax = EXS_JPEGProcess2_4TransferSyntax;
-      if (cmd.findOption("--prefer-rle"))      opt_in_networkTransferSyntax = EXS_RLELossless;
-      if (cmd.findOption("--implicit"))        opt_in_networkTransferSyntax = EXS_LittleEndianImplicit;
+      if (cmd.findOption("--prefer-j2k-lossless")) opt_in_networkTransferSyntax = EXS_JPEG2000LosslessOnly;
+      if (cmd.findOption("--prefer-j2k-lossy"))    opt_in_networkTransferSyntax = EXS_JPEG2000;
+      if (cmd.findOption("--prefer-rle"))          opt_in_networkTransferSyntax = EXS_RLELossless;
+      if (cmd.findOption("--implicit"))            opt_in_networkTransferSyntax = EXS_LittleEndianImplicit;
       cmd.endOptionBlock();
       cmd.beginOptionBlock();
       if (cmd.findOption("--propose-uncompr"))  opt_out_networkTransferSyntax = EXS_Unknown;
@@ -428,7 +454,31 @@ main(int argc, char *argv[])
         dcmConnectionTimeout.set((Sint32) opt_timeout);
       }
 
+      if (cmd.findOption("--acse-timeout"))
+      {
+        OFCmdSignedInt opt_timeout = 0;
+        app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
+        opt_acse_timeout = OFstatic_cast(int, opt_timeout);
+      }
+
+      if (cmd.findOption("--dimse-timeout"))
+      {
+        OFCmdSignedInt opt_timeout = 0;
+        app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
+        opt_dimse_timeout = OFstatic_cast(int, opt_timeout);
+        opt_blockMode = DIMSE_NONBLOCKING;
+      }
+
+      cmd.beginOptionBlock();
       if (cmd.findOption("--port"))    app.checkValue(cmd.getValueAndCheckMinMax(opt_retrievePort, 1, 65535));
+      if (cmd.findOption("--no-port")) { /* do nothing */ }
+      cmd.endOptionBlock();
+
+      cmd.beginOptionBlock();
+      if (cmd.findOption("--pending-ignore")) opt_ignorePendingDatasets = OFTrue;
+      if (cmd.findOption("--pending-read")) opt_ignorePendingDatasets = OFFalse;
+      cmd.endOptionBlock();
+
       if (cmd.findOption("--max-pdu")) app.checkValue(cmd.getValueAndCheckMinMax(opt_maxPDU, ASC_MINIMUMPDUSIZE, ASC_MAXIMUMPDUSIZE));
       if (cmd.findOption("--disable-host-lookup")) dcmDisableGethostbyaddr.set(OFTrue);
       if (cmd.findOption("--repeat"))  app.checkValue(cmd.getValueAndCheckMin(opt_repeatCount, 1));
@@ -455,6 +505,8 @@ main(int argc, char *argv[])
         app.checkConflict("--write-xfer-little", "--prefer-lossless", opt_networkTransferSyntax==EXS_JPEGProcess14SV1TransferSyntax);
         app.checkConflict("--write-xfer-little", "--prefer-jpeg8", opt_networkTransferSyntax==EXS_JPEGProcess1TransferSyntax);
         app.checkConflict("--write-xfer-little", "--prefer-jpeg12", opt_networkTransferSyntax==EXS_JPEGProcess2_4TransferSyntax);
+        app.checkConflict("--write-xfer-little", "--prefer-j2k-lossy", opt_networkTransferSyntax==EXS_JPEG2000);
+        app.checkConflict("--write-xfer-little", "--prefer-j2k-lossless", opt_networkTransferSyntax==EXS_JPEG2000LosslessOnly);
         app.checkConflict("--write-xfer-little", "--prefer-rle", opt_networkTransferSyntax==EXS_RLELossless);
         opt_writeTransferSyntax = EXS_LittleEndianExplicit;
       }
@@ -464,6 +516,8 @@ main(int argc, char *argv[])
         app.checkConflict("--write-xfer-big", "--prefer-lossless", opt_networkTransferSyntax==EXS_JPEGProcess14SV1TransferSyntax);
         app.checkConflict("--write-xfer-big", "--prefer-jpeg8", opt_networkTransferSyntax==EXS_JPEGProcess1TransferSyntax);
         app.checkConflict("--write-xfer-big", "--prefer-jpeg12", opt_networkTransferSyntax==EXS_JPEGProcess2_4TransferSyntax);
+        app.checkConflict("--write-xfer-big", "--prefer-j2k-lossy", opt_networkTransferSyntax==EXS_JPEG2000);
+        app.checkConflict("--write-xfer-big", "--prefer-j2k-lossless", opt_networkTransferSyntax==EXS_JPEG2000LosslessOnly);
         app.checkConflict("--write-xfer-big", "--prefer-rle", opt_networkTransferSyntax==EXS_RLELossless);
         opt_writeTransferSyntax = EXS_BigEndianExplicit;
       }
@@ -568,7 +622,7 @@ main(int argc, char *argv[])
 
 #ifdef HAVE_GETEUID
     /* if retrieve port is privileged we must be as well */
-    if (opt_retrievePort < 1024) {
+    if ((opt_retrievePort > 0) && (opt_retrievePort < 1024)) {
         if (geteuid() != 0) {
             errmsg("cannot listen on port %d, insufficient privileges", opt_retrievePort);
             return 1;
@@ -577,8 +631,8 @@ main(int argc, char *argv[])
 #endif
 
     /* network for move request and responses */
-    OFCondition cond = ASC_initializeNetwork(NET_ACCEPTORREQUESTOR, (int)opt_retrievePort,
-                                 1000, &net);
+    T_ASC_NetworkRole role = (opt_retrievePort > 0) ? NET_ACCEPTORREQUESTOR : NET_REQUESTOR;
+    OFCondition cond = ASC_initializeNetwork(role, OFstatic_cast(int, opt_retrievePort), opt_acse_timeout, &net);
     if (cond.bad())
     {
         errmsg("cannot create network:");
@@ -871,6 +925,22 @@ acceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
           transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
           numTransferSyntaxes = 4;
           break;
+        case EXS_JPEG2000:
+          /* we prefer JPEG2000 Lossy */
+          transferSyntaxes[0] = UID_JPEG2000TransferSyntax;
+          transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+          transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
+          transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
+          numTransferSyntaxes = 4;
+          break;
+        case EXS_JPEG2000LosslessOnly:
+          /* we prefer JPEG2000 Lossless */
+          transferSyntaxes[0] = UID_JPEG2000LosslessOnlyTransferSyntax;
+          transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+          transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
+          transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
+          numTransferSyntaxes = 4;
+          break;
         case EXS_RLELossless:
           /* we prefer RLE Lossless */
           transferSyntaxes[0] = UID_RLELosslessTransferSyntax;
@@ -909,7 +979,7 @@ acceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
             /* the array of Storage SOP Class UIDs comes from dcuid.h */
             cond = ASC_acceptContextsWithPreferredTransferSyntaxes(
                 (*assoc)->params,
-                dcmStorageSOPClassUIDs, numberOfDcmStorageSOPClassUIDs,
+                dcmAllStorageSOPClassUIDs, numberOfAllDcmStorageSOPClassUIDs,
                 transferSyntaxes, numTransferSyntaxes);
         }
     }
@@ -1090,10 +1160,10 @@ static OFCondition storeSCP(
     if (opt_bitPreserving)
     {
       cond = DIMSE_storeProvider(assoc, presID, req, imageFileName, opt_useMetaheader,
-        NULL, storeSCPCallback, (void*)&callbackData, DIMSE_BLOCKING, 0);
+        NULL, storeSCPCallback, (void*)&callbackData, opt_blockMode, opt_dimse_timeout);
     } else {
       cond = DIMSE_storeProvider(assoc, presID, req, (char *)NULL, opt_useMetaheader,
-        &dset, storeSCPCallback, (void*)&callbackData, DIMSE_BLOCKING, 0);
+        &dset, storeSCPCallback, (void*)&callbackData, opt_blockMode, opt_dimse_timeout);
     }
 
     if (cond.bad())
@@ -1127,7 +1197,7 @@ subOpSCP(T_ASC_Association **subAssoc)
     if (!ASC_dataWaiting(*subAssoc, 0)) /* just in case */
         return DIMSE_NODATAAVAILABLE;
 
-    OFCondition cond = DIMSE_receiveCommand(*subAssoc, DIMSE_BLOCKING, 0, &presID,
+    OFCondition cond = DIMSE_receiveCommand(*subAssoc, opt_blockMode, opt_dimse_timeout, &presID,
             &msg, NULL);
 
     if (cond == EC_Normal) {
@@ -1292,9 +1362,9 @@ moveSCU(T_ASC_Association * assoc, const char *fname)
     }
 
     OFCondition cond = DIMSE_moveUser(assoc, presId, &req, dcmff.getDataset(),
-        moveCallback, &callbackData, DIMSE_BLOCKING, 0,
+        moveCallback, &callbackData, opt_blockMode, opt_dimse_timeout,
         net, subOpCallback, NULL,
-        &rsp, &statusDetail, &rspIds);
+        &rsp, &statusDetail, &rspIds, opt_ignorePendingDatasets);
 
     if (cond == EC_Normal) {
         if (opt_verbose) {
@@ -1337,11 +1407,40 @@ cmove(T_ASC_Association * assoc, const char *fname)
 ** CVS Log
 **
 ** $Log: movescu.cc,v $
-** Revision 1.1  2005/08/23 19:32:09  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:49  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:53  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.59  2005/12/08 15:44:20  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.58  2005/11/22 16:44:35  meichel
+** Added option to movescu that allows graceful handling of Move SCPs
+**   that send illegal datasets following pending C-MOVE-RSP messages.
+**
+** Revision 1.57  2005/11/17 13:45:16  meichel
+** Added command line options for DIMSE and ACSE timeouts
+**
+** Revision 1.56  2005/11/16 14:58:07  meichel
+** Set association timeout in ASC_initializeNetwork to 30 seconds. This improves
+**   the responsiveness of the tools if the peer blocks during assoc negotiation.
+**
+** Revision 1.55  2005/11/14 09:06:50  onken
+** Added data dictionary name support for "--key" option
+**
+** Revision 1.54  2005/11/11 16:09:01  onken
+** Added options for JPEG2000 support (lossy and lossless)
+**
+** Revision 1.53  2005/11/03 17:27:10  meichel
+** The movescu tool does not open any listen port by default anymore.
+**
+** Revision 1.52  2005/10/25 08:55:43  meichel
+** Updated list of UIDs and added support for new transfer syntaxes
+**   and storage SOP classes.
 **
 ** Revision 1.51  2004/04/06 18:11:24  joergr
 ** Added missing suffix "TransferSyntax" to some transfer syntax constants.

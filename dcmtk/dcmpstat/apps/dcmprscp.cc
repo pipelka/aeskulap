@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2004, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,16 +22,16 @@
  *  Purpose: Presentation State Viewer - Print Server
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:06 $
+ *  Update Date:      $Date: 2007/04/24 09:53:40 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmpstat/apps/dcmprscp.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
@@ -43,21 +43,22 @@ BEGIN_EXTERN_C
 #endif
 END_EXTERN_C
 
-#include "ofstream.h"
-#include "dvpsdef.h"     /* for constants and macros */
-#include "dviface.h"
-#include "ofbmanip.h"    /* for OFBitmanipTemplate */
-#include "ofdatime.h"    /* for OFDateTime */
-#include "dcuid.h"       /* for dcmtk version name */
-#include "diutil.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dvpsprt.h"
-#include "dvpshlp.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmpstat/dvpsdef.h"     /* for constants and macros */
+#include "dcmtk/dcmpstat/dviface.h"
+#include "dcmtk/ofstd/ofbmanip.h"    /* for OFBitmanipTemplate */
+#include "dcmtk/ofstd/ofdatime.h"    /* for OFDateTime */
+#include "dcmtk/dcmdata/dcuid.h"       /* for dcmtk version name */
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmpstat/dvpsprt.h"
+#include "dcmtk/dcmpstat/dvpshlp.h"
+#include "dcmtk/dcmdata/dcdebug.h"
 
 #ifdef WITH_OPENSSL
-#include "tlstrans.h"
-#include "tlslayer.h"
+#include "dcmtk/dcmtls/tlstrans.h"
+#include "dcmtk/dcmtls/tlslayer.h"
 #endif
 
 #ifdef WITH_ZLIB
@@ -298,18 +299,20 @@ int main(int argc, char *argv[])
 
     /* check if we can get access to the database */
     const char *dbfolder = dvi.getDatabaseFolder();
-    DB_Handle *dbhandle = NULL;
-
     if (opt_verbose)
     {
       *logstream << "Using database in directory '" << dbfolder << "'" << endl;
     }
-    if (DB_createHandle(dbfolder, PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, &dbhandle).bad())
+
+    OFCondition cond2 = EC_Normal;
+    DcmQueryRetrieveIndexDatabaseHandle *dbhandle = new DcmQueryRetrieveIndexDatabaseHandle(dbfolder, PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, cond2);
+    delete dbhandle;
+
+    if (cond2.bad())
     {
-      *logstream << "Unable to access database '" << dbfolder << "'" << endl;
+      CERR << "Unable to access database '" << dbfolder << "'" << endl;
       return 10;
     }
-    DB_destroyHandle(&dbhandle);
 
     /* get print scp data from configuration file */
     unsigned short targetPort   = dvi.getTargetPort(opt_printer);
@@ -394,7 +397,11 @@ int main(int argc, char *argv[])
     if (! dvi.getTLSPEMFormat()) keyFileFormat = SSL_FILETYPE_ASN1;
 
     /* ciphersuites */
+#if OPENSSL_VERSION_NUMBER >= 0x0090700fL
+    OFString tlsCiphersuites(TLS1_TXT_RSA_WITH_AES_128_SHA ":" SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#else
     OFString tlsCiphersuites(SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#endif
     Uint32 tlsNumberOfCiphersuites = dvi.getTargetNumberOfCipherSuites(opt_printer);
     if (tlsNumberOfCiphersuites > 0)
     {
@@ -472,7 +479,7 @@ int main(int argc, char *argv[])
 #endif
 
     /* open listen socket */
-    OFCondition cond = ASC_initializeNetwork(NET_ACCEPTOR, targetPort, 10, &net);
+    OFCondition cond = ASC_initializeNetwork(NET_ACCEPTOR, targetPort, 30, &net);
     if (errorCond(cond, "Error initialising network:")) return 1;
 
 #ifdef WITH_OPENSSL
@@ -580,11 +587,32 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dcmprscp.cc,v $
- * Revision 1.1  2005/08/23 19:32:06  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:40  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:08  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.20  2005/12/08 15:46:05  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.19  2005/11/28 15:29:05  meichel
+ * File dcdebug.h is not included by any other header file in the toolkit
+ *   anymore, to minimize the risk of name clashes of macro debug().
+ *
+ * Revision 1.18  2005/11/23 16:10:32  meichel
+ * Added support for AES ciphersuites in TLS module. All TLS-enabled
+ *   tools now support the "AES TLS Secure Transport Connection Profile".
+ *
+ * Revision 1.17  2005/11/16 14:58:23  meichel
+ * Set association timeout in ASC_initializeNetwork to 30 seconds. This improves
+ *   the responsiveness of the tools if the peer blocks during assoc negotiation.
+ *
+ * Revision 1.16  2005/04/04 10:11:53  meichel
+ * Module dcmpstat now uses the dcmqrdb API instead of imagectn for maintaining
+ *   the index database
  *
  * Revision 1.15  2004/02/04 15:44:38  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

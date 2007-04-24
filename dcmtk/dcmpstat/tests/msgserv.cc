@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2004, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,25 +22,26 @@
  *  Purpose: Sample message server for class DVPSIPCClient
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:03 $
+ *  Update Date:      $Date: 2007/04/24 09:53:49 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmpstat/tests/msgserv.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
+#define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CERRNO
 #define INCLUDE_CTIME
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 #ifdef HAVE_SYS_TIME_H
@@ -48,6 +49,9 @@ BEGIN_EXTERN_C
 #endif
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
 #endif
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
@@ -60,13 +64,14 @@ BEGIN_EXTERN_C
 #endif
 END_EXTERN_C
 
-#include "dvpsmsg.h"     /* for class DVPSIPCMessage */
-#include "cmdlnarg.h"    /* for prepareCmdLineArgs */
-#include "ofconapp.h"    /* for class OFConsoleApplication */
-#include "dcdebug.h"     /* for SetDebugLevel */
-#include "dcmtrans.h"    /* for class DcmTCPConnection */
-#include "dcuid.h"
-#include "dcompat.h"     /* compatability routines */
+#include "dcmtk/dcmpstat/dvpsmsg.h"     /* for class DVPSIPCMessage */
+#include "dcmtk/dcmdata/cmdlnarg.h"    /* for prepareCmdLineArgs */
+#include "dcmtk/ofstd/ofconapp.h"    /* for class OFConsoleApplication */
+#include "dcmtk/dcmdata/dcdebug.h"     /* for SetDebugLevel */
+#include "dcmtk/dcmnet/dcmtrans.h"    /* for class DcmTCPConnection */
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmnet/dcompat.h"     /* compatability routines */
+#include "dcmtk/dcmnet/dul.h"
 
 #define OFFIS_CONSOLE_APPLICATION "msgserv"
 
@@ -102,6 +107,13 @@ int main(int argc, char *argv[])
 #ifdef HAVE_GUSI_H
     GUSISetup(GUSIwithSIOUXSockets);
     GUSISetup(GUSIwithInternetSockets);
+#endif
+
+#ifdef WITH_TCPWRAPPER
+    // this code makes sure that the linker cannot optimize away
+    // the DUL part of the network module where the external flags
+    // for libwrap are defined. Needed on OpenBSD.
+    dcmTCPWrapperDaemonName.set(NULL);
 #endif
 
 #ifdef HAVE_WINSOCK_H
@@ -217,6 +229,8 @@ int main(int argc, char *argv[])
 #else
       nfound = select(s + 1, &fdset, NULL, NULL, &t);
 #endif
+
+
       if (nfound > 0)
       {
         // incoming connection detected
@@ -363,11 +377,25 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: msgserv.cc,v $
- * Revision 1.1  2005/08/23 19:32:03  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:49  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.11  2005/12/14 17:43:42  meichel
+ * Adapted code for compilation with TCP wrappers to NetBSD
+ *
+ * Revision 1.10  2005/12/12 15:14:34  meichel
+ * Added code needed for compilation with TCP wrappers on OpenBSD
+ *
+ * Revision 1.9  2005/12/08 15:47:00  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.8  2005/11/14 18:07:38  meichel
+ * Included cstdlib, needed on HP/UX 10.
  *
  * Revision 1.7  2004/04/21 17:15:45  joergr
  * Included "dcompat" header file required for definition of bzero() on IRIX 5.

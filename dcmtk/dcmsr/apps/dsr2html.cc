@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2004, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,9 +23,8 @@
  *           HTML format
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
- *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmsr/apps/dsr2html.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -33,14 +32,14 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrdoc.h"
-#include "dcdebug.h"
-#include "cmdlnarg.h"
-#include "ofstream.h"
-#include "ofconapp.h"
-#include "dcuid.h"      /* for dcmtk version name */
+#include "dcmtk/dcmsr/dsrdoc.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"      /* for dcmtk version name */
 
 #ifdef WITH_ZLIB
 #include <zlib.h>       /* for zlibVersion() */
@@ -58,7 +57,8 @@ static char rcsid[] = "$dcmtk: " OFFIS_CONSOLE_APPLICATION " v"
 static OFCondition renderFile(ostream &out,
                               const char *ifname,
                               const char *cssName,
-                              const OFBool isDataset,
+                              const char *defaultCharset,
+                              const E_FileReadMode readMode,
                               const E_TransferSyntax xfer,
                               const size_t readFlags,
                               const size_t renderFlags,
@@ -75,7 +75,7 @@ static OFCondition renderFile(ostream &out,
     DcmFileFormat *dfile = new DcmFileFormat();
     if (dfile != NULL)
     {
-        if (isDataset)
+        if (readMode == ERM_dataset)
             result = dfile->getDataset()->loadFile(ifname, xfer);
         else
             result = dfile->loadFile(ifname, xfer);
@@ -97,7 +97,34 @@ static OFCondition renderFile(ostream &out,
                 dsrdoc->setLogStream(&ofConsole);
             result = dsrdoc->read(*dfile->getDataset(), readFlags);
             if (result.good())
-                result = dsrdoc->renderHTML(out, renderFlags, cssName);
+            {
+                // check extended character set
+                const char *charset = dsrdoc->getSpecificCharacterSet();
+                if ((charset == NULL || strlen(charset) == 0) && dsrdoc->containsExtendedCharacters())
+                {
+                  // we have an unspecified extended character set
+                  if (defaultCharset == NULL)
+                  {
+                    /* the dataset contains non-ASCII characters that really should not be there */
+                    CERR << OFFIS_CONSOLE_APPLICATION << ": error: (0008,0005) Specific Character Set absent but extended characters used in file: "<< ifname << endl;
+                    result = EC_IllegalCall;
+                  }
+                  else
+                  {
+                    OFString charset(defaultCharset);
+                    if (charset == "latin-1") dsrdoc->setSpecificCharacterSetType(DSRTypes::CS_Latin1);
+                    else if (charset == "latin-2") dsrdoc->setSpecificCharacterSetType(DSRTypes::CS_Latin2);
+                    else if (charset == "latin-3") dsrdoc->setSpecificCharacterSetType(DSRTypes::CS_Latin3);
+                    else if (charset == "latin-4") dsrdoc->setSpecificCharacterSetType(DSRTypes::CS_Latin4);
+                    else if (charset == "latin-5") dsrdoc->setSpecificCharacterSetType(DSRTypes::CS_Latin5);
+                    else if (charset == "cyrillic") dsrdoc->setSpecificCharacterSetType(DSRTypes::CS_Cyrillic);
+                    else if (charset == "arabic") dsrdoc->setSpecificCharacterSetType(DSRTypes::CS_Arabic);
+                    else if (charset == "greek") dsrdoc->setSpecificCharacterSetType(DSRTypes::CS_Greek);
+                    else if (charset == "hebrew") dsrdoc->setSpecificCharacterSetType(DSRTypes::CS_Hebrew);
+                  }
+                }
+                if (result.good()) result = dsrdoc->renderHTML(out, renderFlags, cssName);
+            }
             else
             {
                 CERR << OFFIS_CONSOLE_APPLICATION << ": error (" << result.text()
@@ -122,8 +149,9 @@ int main(int argc, char *argv[])
     size_t opt_readFlags = 0;
     size_t opt_renderFlags = DSRTypes::HF_renderDcmtkFootnote;
     const char *opt_cssName = NULL;
-    OFBool isDataset = OFFalse;
-    E_TransferSyntax xfer = EXS_Unknown;
+    const char *opt_defaultCharset = NULL;
+    E_FileReadMode opt_readMode = ERM_autoDetect;
+    E_TransferSyntax opt_ixfer = EXS_Unknown;
 
     SetDebugLevel(( 0 ));
 
@@ -144,9 +172,11 @@ int main(int argc, char *argv[])
     cmd.addGroup("input options:");
       cmd.addSubGroup("input file format:");
         cmd.addOption("--read-file",           "+f",     "read file format or data set (default)");
+        cmd.addOption("--read-file-only",      "+fo",    "read file format only");
         cmd.addOption("--read-dataset",        "-f",     "read data set without file meta information");
-      cmd.addSubGroup("input transfer syntax (only with --read-dataset):");
+      cmd.addSubGroup("input transfer syntax:");
         cmd.addOption("--read-xfer-auto",      "-t=",    "use TS recognition (default)");
+        cmd.addOption("--read-xfer-detect",    "-td",    "ignore TS specified in the file meta header");
         cmd.addOption("--read-xfer-little",    "-te",    "read with explicit VR little endian TS");
         cmd.addOption("--read-xfer-big",       "-tb",    "read with explicit VR big endian TS");
         cmd.addOption("--read-xfer-implicit",  "-ti",    "read with implicit VR little endian TS");
@@ -158,7 +188,11 @@ int main(int argc, char *argv[])
         cmd.addOption("--ignore-constraints",  "-Ec",    "ignore relationship content constraints");
         cmd.addOption("--ignore-item-errors",  "-Ee",    "do not abort on content item errors, just warn\n(e.g. missing value type specific attributes)");
         cmd.addOption("--skip-invalid-items",  "-Ei",    "skip invalid content items (incl. sub-tree)");
-
+      cmd.addSubGroup("character set:");
+        cmd.addOption("--charset-require",     "+Cr",    "require declaration of ext. charset (default)");
+        cmd.addOption("--charset-assume",      "+Ca", 1, "charset: string constant (latin-1 to -5,",
+                                                         "greek, cyrillic, arabic, hebrew)\n"
+                                                         "assume charset if undeclared ext. charset found");
     cmd.addGroup("output options:");
       cmd.addSubGroup("HTML compatibility:");
         cmd.addOption("--html-3.2",            "+H3",    "use only HTML version 3.2 compatible features");
@@ -216,32 +250,30 @@ int main(int argc, char *argv[])
 
         /* input options */
         cmd.beginOptionBlock();
-        if (cmd.findOption("--read-file"))
-            isDataset = OFFalse;
-        if (cmd.findOption("--read-dataset"))
-            isDataset = OFTrue;
+        if (cmd.findOption("--read-file")) opt_readMode = ERM_autoDetect;
+        if (cmd.findOption("--read-file-only")) opt_readMode = ERM_fileOnly;
+        if (cmd.findOption("--read-dataset")) opt_readMode = ERM_dataset;
         cmd.endOptionBlock();
 
         cmd.beginOptionBlock();
         if (cmd.findOption("--read-xfer-auto"))
-        {
-            app.checkDependence("--read-xfer-auto", "--read-dataset", isDataset);
-            xfer = EXS_Unknown;
-        }
+            opt_ixfer = EXS_Unknown;
+        if (cmd.findOption("--read-xfer-detect"))
+            dcmAutoDetectDatasetXfer.set(OFTrue);
         if (cmd.findOption("--read-xfer-little"))
         {
-            app.checkDependence("--read-xfer-little", "--read-dataset", isDataset);
-            xfer = EXS_LittleEndianExplicit;
+            app.checkDependence("--read-xfer-little", "--read-dataset", opt_readMode == ERM_dataset);
+            opt_ixfer = EXS_LittleEndianExplicit;
         }
         if (cmd.findOption("--read-xfer-big"))
         {
-            app.checkDependence("--read-xfer-big", "--read-dataset", isDataset);
-            xfer = EXS_BigEndianExplicit;
+            app.checkDependence("--read-xfer-big", "--read-dataset", opt_readMode == ERM_dataset);
+            opt_ixfer = EXS_BigEndianExplicit;
         }
         if (cmd.findOption("--read-xfer-implicit"))
         {
-            app.checkDependence("--read-xfer-implicit", "--read-dataset", isDataset);
-            xfer = EXS_LittleEndianImplicit;
+            app.checkDependence("--read-xfer-implicit", "--read-dataset", opt_readMode == ERM_dataset);
+            opt_ixfer = EXS_LittleEndianImplicit;
         }
         cmd.endOptionBlock();
 
@@ -253,6 +285,25 @@ int main(int argc, char *argv[])
             opt_readFlags |= DSRTypes::RF_ignoreContentItemErrors;
         if (cmd.findOption("--skip-invalid-items"))
             opt_readFlags |= DSRTypes::RF_skipInvalidContentItems;
+
+        /* charset options */
+        cmd.beginOptionBlock();
+        if (cmd.findOption("--charset-require"))
+        {
+           opt_defaultCharset = NULL;
+        }
+        if (cmd.findOption("--charset-assume"))
+        {
+          app.checkValue(cmd.getValue(opt_defaultCharset));
+          OFString charset(opt_defaultCharset);
+          if (charset != "latin-1" && charset != "latin-2" && charset != "latin-3" &&
+              charset != "latin-4" && charset != "latin-5" && charset != "cyrillic" &&
+              charset != "arabic" && charset != "greek" && charset != "hebrew")
+          {
+            app.printError("unknown value for --charset-assume. known values are latin-1 to -5, cyrillic, arabic, greek, hebrew.");
+          }
+        }
+        cmd.endOptionBlock();
 
         /* HTML compatibility */
         cmd.beginOptionBlock();
@@ -344,12 +395,12 @@ int main(int argc, char *argv[])
         ofstream stream(ofname);
         if (stream.good())
         {
-            if (renderFile(stream, ifname, opt_cssName, isDataset, xfer, opt_readFlags, opt_renderFlags, opt_debugMode != 0).bad())
+            if (renderFile(stream, ifname, opt_cssName, opt_defaultCharset, opt_readMode, opt_ixfer, opt_readFlags, opt_renderFlags, opt_debugMode != 0).bad())
                 result = 2;
         } else
             result = 1;
     } else {
-        if (renderFile(COUT, ifname, opt_cssName, isDataset, xfer, opt_readFlags, opt_renderFlags, opt_debugMode != 0).bad())
+        if (renderFile(COUT, ifname, opt_cssName, opt_defaultCharset, opt_readMode, opt_ixfer, opt_readFlags, opt_renderFlags, opt_debugMode != 0).bad())
             result = 3;
     }
 
@@ -360,11 +411,27 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dsr2html.cc,v $
- * Revision 1.1  2005/08/23 19:32:00  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:47  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.23  2005/12/08 15:47:33  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.22  2005/12/02 10:37:30  joergr
+ * Added new command line option that ignores the transfer syntax specified in
+ * the meta header and tries to detect the transfer syntax automatically from
+ * the dataset.
+ * Added new command line option that checks whether a given file starts with a
+ * valid DICOM meta header.
+ *
+ * Revision 1.21  2004/11/22 17:20:16  meichel
+ * Now checking whether extended characters are present in a DICOM SR document,
+ *   preventing generation of incorrect HTML if undeclared extended charset used.
  *
  * Revision 1.20  2004/01/05 14:34:59  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2002-2004, OFFIS
+ *  Copyright (C) 2002-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,28 +22,28 @@
  *  Purpose: encoder codec class for RLE
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:58 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/dcrlecce.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "dcrlecce.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dcrlecce.h"
 
-#include "dcrleenc.h"  /* for class DcmRLEEncoder */
-#include "dcrlecp.h"   /* for class DcmRLECodecParameter */
-#include "dcdeftag.h"  /* for tag constants */
-#include "dcpixseq.h"  /* for class DcmPixelSequence */
-#include "dcpxitem.h"  /* for class DcmPixelItem */
-#include "dcswap.h"    /* for swapIfNecessary */
-#include "ofstd.h"
+#include "dcmtk/dcmdata/dcrleenc.h"  /* for class DcmRLEEncoder */
+#include "dcmtk/dcmdata/dcrlecp.h"   /* for class DcmRLECodecParameter */
+#include "dcmtk/dcmdata/dcdeftag.h"  /* for tag constants */
+#include "dcmtk/dcmdata/dcpixseq.h"  /* for class DcmPixelSequence */
+#include "dcmtk/dcmdata/dcpxitem.h"  /* for class DcmPixelItem */
+#include "dcmtk/dcmdata/dcswap.h"    /* for swapIfNecessary */
+#include "dcmtk/ofstd/ofstd.h"
 
 #define INCLUDE_CSTDIO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 typedef OFList<DcmRLEEncoder *> DcmRLEEncoderList;
@@ -354,9 +354,9 @@ OFCondition DcmRLECodecEncoder::encode(
             // create new UID if mode is true or if we're converting to Secondary Capture
             if (djcp->getConvertToSC() || djcp->getUIDCreation())
             {
-                result = DcmCodec::newInstance(OFstatic_cast(DcmItem *, dataset));
-
-                // set image type to DERIVED\\SECONDARY
+                result = DcmCodec::newInstance(OFstatic_cast(DcmItem *, dataset), "DCM", "121320", "Uncompressed predecessor");
+                
+                // set image type to DERIVED
                 if (result.good()) result = updateImageType(OFstatic_cast(DcmItem *, dataset));
 
                 // update derivation description
@@ -419,11 +419,20 @@ OFCondition DcmRLECodecEncoder::updateDerivationDescription(
 /*
  * CVS/RCS Log
  * $Log: dcrlecce.cc,v $
- * Revision 1.1  2005/08/23 19:31:58  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:25  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.11  2005/12/08 15:41:30  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.10  2004/08/24 14:54:20  meichel
+ *  Updated compression helper methods. Image type is not set to SECONDARY
+ *   any more, support for the purpose of reference code sequence added.
  *
  * Revision 1.9  2004/02/04 16:43:42  joergr
  * Adapted type casts to new-style typecast operators defined in ofcast.h.

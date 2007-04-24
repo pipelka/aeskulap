@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2003, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,44 +23,44 @@
  *    classes: DVPSFilmSession
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dvpsfs.h"
-#include "dvpsdef.h"     /* for constants and macros */
-#include "ofstring.h"
-#include "dvpshlp.h"
-#include "dvpscf.h"
-#include "dvpspl.h"
-#include "dvpspll.h"
-#include "dvpssp.h"
-#include "dvpsspl.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmpstat/dvpsfs.h"
+#include "dcmtk/dcmpstat/dvpsdef.h"     /* for constants and macros */
+#include "dcmtk/ofstd/ofstring.h"
+#include "dcmtk/dcmpstat/dvpshlp.h"
+#include "dcmtk/dcmpstat/dvpscf.h"
+#include "dcmtk/dcmpstat/dvpspl.h"
+#include "dcmtk/dcmpstat/dvpspll.h"
+#include "dcmtk/dcmpstat/dvpssp.h"
+#include "dcmtk/dcmpstat/dvpsspl.h"
 
-#include "dvpsib.h"      /* for DVPSImageBoxContent, needed by MSVC5 with STL */
-#include "dvpsab.h"      /* for DVPSAnnotationContent, needed by MSVC5 with STL */
-#include "dvpsov.h"      /* for DVPSOverlay, needed by MSVC5 with STL */
-#include "dvpsgl.h"      /* for DVPSGraphicLayer, needed by MSVC5 with STL */
-#include "dvpsal.h"      /* for DVPSOverlayCurveActivationLayer, needed by MSVC5 with STL */
-#include "dvpsga.h"      /* for DVPSGraphicAnnotation, needed by MSVC5 with STL */
-#include "dvpscu.h"      /* for DVPSCurve, needed by MSVC5 with STL */
-#include "dvpsvl.h"      /* for DVPSVOILUT, needed by MSVC5 with STL */
-#include "dvpsvw.h"      /* for DVPSVOIWindow, needed by MSVC5 with STL */
-#include "dvpsda.h"      /* for DVPSDisplayedArea, needed by MSVC5 with STL */
-#include "dvpssv.h"      /* for DVPSSoftcopyVOI, needed by MSVC5 with STL */
-#include "dvpsrs.h"      /* for DVPSReferencedSeries, needed by MSVC5 with STL */
-#include "dvpstx.h"      /* for DVPSTextObject, needed by MSVC5 with STL */
-#include "dvpsgr.h"      /* for DVPSGraphicObject, needed by MSVC5 with STL */
-#include "dvpsri.h"      /* for DVPSReferencedImage, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsib.h"      /* for DVPSImageBoxContent, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsab.h"      /* for DVPSAnnotationContent, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsov.h"      /* for DVPSOverlay, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsgl.h"      /* for DVPSGraphicLayer, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsal.h"      /* for DVPSOverlayCurveActivationLayer, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsga.h"      /* for DVPSGraphicAnnotation, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpscu.h"      /* for DVPSCurve, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsvl.h"      /* for DVPSVOILUT, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsvw.h"      /* for DVPSVOIWindow, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsda.h"      /* for DVPSDisplayedArea, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpssv.h"      /* for DVPSSoftcopyVOI, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsrs.h"      /* for DVPSReferencedSeries, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpstx.h"      /* for DVPSTextObject, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsgr.h"      /* for DVPSGraphicObject, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsri.h"      /* for DVPSReferencedImage, needed by MSVC5 with STL */
 
 
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 /* --------------- class DVPSFilmSession --------------- */
 
@@ -987,11 +987,16 @@ void DVPSFilmSession::copyPresentationLUTSettings(DVPSStoredPrint& sp)
 
 /*
  *  $Log: dvpsfs.cc,v $
- *  Revision 1.1  2005/08/23 19:31:59  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:44  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:00  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.14  2005/12/08 15:46:25  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.13  2003/06/04 12:30:28  meichel
  *  Added various includes needed by MSVC5 with STL

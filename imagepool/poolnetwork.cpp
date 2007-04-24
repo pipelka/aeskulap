@@ -27,7 +27,7 @@
 */
 
 // dcmtk includes
-#include <diutil.h>
+#include <dcmtk/dcmnet/diutil.h>
 
 // ImagePool Network class header
 #include "poolnetwork.h"
@@ -232,8 +232,8 @@ CONDITION Network::addAllStoragePresentationContexts(T_ASC_Parameters *params, b
 	}
 
 	/* the array of Storage SOP Class UIDs comes from dcuid.h */
-	for (i=0; i<numberOfDcmStorageSOPClassUIDs && SUCCESS(cond); i++) {
-		cond = ASC_addPresentationContext(params, pid, dcmStorageSOPClassUIDs[i], transferSyntaxes, transferSyntaxes_count);
+	for (i=0; i<numberOfAllDcmStorageSOPClassUIDs && SUCCESS(cond); i++) {
+		cond = ASC_addPresentationContext(params, pid, dcmAllStorageSOPClassUIDs[i], transferSyntaxes, transferSyntaxes_count);
 		pid += 2;	/* only odd presentation context id's */
 	}
 

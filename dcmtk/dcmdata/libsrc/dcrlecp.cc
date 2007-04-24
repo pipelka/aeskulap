@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2002, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,29 +22,31 @@
  *  Purpose: codec parameter for RLE
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/dcrlecp.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "dcrlecp.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dcrlecp.h"
 
 DcmRLECodecParameter::DcmRLECodecParameter(
     OFBool pVerbose,
     OFBool pCreateSOPInstanceUID,
     Uint32 pFragmentSize,
     OFBool pCreateOffsetTable,
-    OFBool pConvertToSC)
+    OFBool pConvertToSC,
+    OFBool pReverseDecompressionByteOrder)
 : DcmCodecParameter()
 , fragmentSize(pFragmentSize)
 , createOffsetTable(pCreateOffsetTable)
 , convertToSC(pConvertToSC)
 , createInstanceUID(pCreateSOPInstanceUID)
+, reverseDecompressionByteOrder(pReverseDecompressionByteOrder)
 , verboseMode(pVerbose)
 {
 }
@@ -56,6 +58,7 @@ DcmRLECodecParameter::DcmRLECodecParameter(const DcmRLECodecParameter& arg)
 , createOffsetTable(arg.createOffsetTable)
 , convertToSC(arg.convertToSC)
 , createInstanceUID(arg.createInstanceUID)
+, reverseDecompressionByteOrder(arg.reverseDecompressionByteOrder)
 , verboseMode(arg.verboseMode)
 {
 }
@@ -78,11 +81,20 @@ const char *DcmRLECodecParameter::className() const
 /*
  * CVS/RCS Log
  * $Log: dcrlecp.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:26  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.3  2005/12/08 15:41:31  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.2  2005/07/26 17:08:35  meichel
+ * Added option to RLE decoder that allows to correctly decode images with
+ *   incorrect byte order of byte segments (LSB instead of MSB).
  *
  * Revision 1.1  2002/06/06 14:52:41  meichel
  * Initial release of the new RLE codec classes

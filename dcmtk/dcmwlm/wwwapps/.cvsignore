@@ -1,5 +1,5 @@
 Makefile
-preplock
-readoviw
 readwlst
+preplock
 writwlst
+readoviw

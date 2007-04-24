@@ -1,2 +1,4 @@
+.project
+configure-stamp
+build-stamp
 Makefile
-configure

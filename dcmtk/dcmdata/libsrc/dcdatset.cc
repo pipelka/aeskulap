@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Implementation of class DcmDataset
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:55 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,27 +31,27 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "ofstream.h"
-#include "ofstack.h"
-#include "ofstd.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/ofstd/ofstack.h"
+#include "dcmtk/ofstd/ofstd.h"
 
-#include "dcdatset.h"
-#include "dcxfer.h"
-#include "dcvrus.h"
-#include "dcdebug.h"
-#include "dcpixel.h"
-#include "dcdeftag.h"
-#include "dcostrma.h"    /* for class DcmOutputStream */
-#include "dcostrmf.h"    /* for class DcmOutputFileStream */
-#include "dcistrma.h"    /* for class DcmInputStream */
-#include "dcistrmf.h"    /* for class DcmInputFileStream */
+#include "dcmtk/dcmdata/dcdatset.h"
+#include "dcmtk/dcmdata/dcxfer.h"
+#include "dcmtk/dcmdata/dcvrus.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcpixel.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/dcostrma.h"    /* for class DcmOutputStream */
+#include "dcmtk/dcmdata/dcostrmf.h"    /* for class DcmOutputFileStream */
+#include "dcmtk/dcmdata/dcistrma.h"    /* for class DcmInputStream */
+#include "dcmtk/dcmdata/dcistrmf.h"    /* for class DcmInputFileStream */
 
 
 // ********************************
@@ -75,9 +75,14 @@ DcmDataset::~DcmDataset()
 {
 }
 
-
 // ********************************
 
+OFCondition DcmDataset::clear()
+{
+    OFCondition result = DcmItem::clear();
+    Length = DCM_UndefinedLength;
+    return result;
+}
 
 DcmEVR DcmDataset::ident() const
 {
@@ -201,13 +206,39 @@ OFCondition DcmDataset::read(DcmInputStream &inStream,
         /* if the transfer state is ERW_init, go ahead and check the transfer syntax which was passed */
         if (fTransferState == ERW_init)
         {
-            /* if the transfer syntax which was passed equals EXS_Unknown we want to */
-            /* determine the transfer syntax from the information in the stream itself. */
-            /* If the transfer syntax is given, we want to use it. */
-            if (xfer == EXS_Unknown)
-                Xfer = checkTransferSyntax(inStream);
-            else
-                Xfer = xfer;
+            if (dcmAutoDetectDatasetXfer.get())
+            {
+                /* To support incorrectly encoded datasets detect the transfer syntax from the stream.  */
+                /* This is possible for given unknown and plain big or little endian transfer syntaxes. */
+                switch( xfer )
+                {
+                    case EXS_Unknown:
+                    case EXS_LittleEndianImplicit:
+                    case EXS_LittleEndianExplicit:
+                    case EXS_BigEndianExplicit:
+                    case EXS_BigEndianImplicit:
+                        Xfer = checkTransferSyntax(inStream);
+                        if( xfer != EXS_Unknown && Xfer != xfer )
+                        {
+                            ofConsole.lockCerr() << "Warning: dcdatset: wrong transfer syntax specified, "
+                                                 << "detecting from dataset" << endl;
+                            ofConsole.unlockCerr();
+                        }
+                        break;
+                    default:
+                        Xfer = xfer;
+                }
+            }
+            else /* default behaviour */
+            {
+                /* If the transfer syntax which was passed equals EXS_Unknown we want to */
+                /* determine the transfer syntax from the information in the stream itself. */
+                /* If the transfer syntax is given, we want to use it. */
+                if (xfer == EXS_Unknown)
+                    Xfer = checkTransferSyntax(inStream);
+                else
+                    Xfer = xfer;
+            }
             /* Check stream compression for this transfer syntax */
             DcmXfer xf(Xfer);
             E_StreamCompression sc = xf.getStreamCompression();
@@ -249,7 +280,7 @@ OFCondition DcmDataset::read(DcmInputStream &inStream,
     }
 
     /* dump information if required */
-    debug(3, ("DcmDataset::read: At End: errorFlag = %s", errorFlag.text()));
+    DCM_dcmdataDebug(3, ("DcmDataset::read: At End: errorFlag = %s", errorFlag.text()));
 
     /* return result flag */
     return errorFlag;
@@ -421,10 +452,15 @@ OFCondition DcmDataset::loadFile(const char *filename,
 
         if (l_error.good())
         {
-            /* read data from file */
-            transferInit();
-            l_error = read(fileStream, readXfer, groupLength, maxReadLength);
-            transferEnd();
+            /* clear this object */
+            l_error = clear();
+            if (l_error.good())
+            {
+                /* read data from file */
+                transferInit();
+                l_error = read(fileStream, readXfer, groupLength, maxReadLength);
+                transferEnd();
+            }
         }
     }
     return l_error;
@@ -559,11 +595,36 @@ void DcmDataset::removeAllButOriginalRepresentations()
 /*
 ** CVS/RCS Log:
 ** $Log: dcdatset.cc,v $
-** Revision 1.1  2005/08/23 19:31:55  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:26  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.40  2005/12/08 15:40:59  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.39  2005/12/02 08:51:44  joergr
+** Changed macro NO_XFER_DETECTION_FOR_DATASETS into a global option that can
+** be enabled and disabled at runtime.
+**
+** Revision 1.38  2005/12/01 09:57:26  joergr
+** Added support for DICOM objects where the dataset is stored with a different
+** transfer syntax than specified in the meta header.  The new behaviour can be
+** disabled by compiling with the macro NO_XFER_DETECTION_FOR_DATASETS defined.
+**
+** Revision 1.37  2005/11/28 15:53:13  meichel
+** Renamed macros in dcdebug.h
+**
+** Revision 1.36  2005/11/11 10:31:58  meichel
+** Added explicit DcmDataset::clear() implementation.
+**
+** Revision 1.35  2005/11/07 17:22:33  meichel
+** Implemented DcmFileFormat::clear(). Now the loadFile methods in class
+**   DcmFileFormat and class DcmDataset both make sure that clear() is called
+**   before new data is read, allowing for a re-use of the object.
 **
 ** Revision 1.34  2004/02/04 16:19:15  joergr
 ** Adapted type casts to new-style typecast operators defined in ofcast.h.

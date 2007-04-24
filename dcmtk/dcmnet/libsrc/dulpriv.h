@@ -51,16 +51,16 @@
 **  the public definitions and prototypes on purpose so that they
 **  exist in only one location.
 **
-** Last Update:		$Author: braindead $, $Date: 2005/08/23 19:32:01 $
+** Last Update:		$Author: braindead $, $Date: 2007/04/24 09:53:35 $
 ** Source File:		$RCSfile: dulpriv.h,v $
-** Revision:		$Revision: 1.1 $
+** Revision:		$Revision: 1.2 $
 ** Status:		$State: Exp $
 */
 
 #ifndef DULPRIVATE_H
 #define DULPRIVATE_H
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 
 #define	PRV_DEFAULTTIMEOUT	-1
@@ -114,11 +114,16 @@ void parseDebug(OFBool flag);
 /*
 ** CVS Log
 ** $Log: dulpriv.h,v $
-** Revision 1.1  2005/08/23 19:32:01  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:35  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:10  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.8  2005/12/08 15:48:09  meichel
+** Updated Makefiles to correctly install header files
 **
 ** Revision 1.7  2004/02/25 12:31:17  meichel
 ** Added global option flag for compatibility with very old DCMTK releases in the

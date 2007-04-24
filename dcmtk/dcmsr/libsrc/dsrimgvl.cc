@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2004, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *    classes: DSRImageReferenceValue
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,10 +32,10 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrimgvl.h"
-#include "dsrxmld.h"
+#include "dcmtk/dcmsr/dsrimgvl.h"
+#include "dcmtk/dcmsr/dsrxmld.h"
 
 
 DSRImageReferenceValue::DSRImageReferenceValue()
@@ -359,11 +359,16 @@ OFBool DSRImageReferenceValue::checkPresentationState(const DSRCompositeReferenc
 /*
  *  CVS/RCS Log:
  *  $Log: dsrimgvl.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.17  2005/12/08 15:47:55  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.16  2004/01/16 10:14:14  joergr
  *  Made readXML() more robust with regard to expected XML structure.

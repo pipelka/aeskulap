@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2002-2003, OFFIS
+ *  Copyright (C) 2002-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,30 +22,30 @@
  *  Purpose: class DcmQuantColorTable
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "diqtctab.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmimage/diqtctab.h"
 
-#include "ofconsol.h"
-#include "diqtpbox.h"
-#include "dcerror.h"   /* for EC_IllegalCall */
-#include "dcelem.h"    /* for DcmElement */
-#include "dcitem.h"    /* for DcmItem */
-#include "dcvrus.h"    /* for DcmUnsignedShort */
-#include "dcvrobow.h"  /* for DcmOtherByteOtherWord */
-#include "dcswap.h"    /* for swapIfNecessary() */
-#include "dcdeftag.h"  /* for tag constants */
-#include "dcuid.h"     /* for OFFIS_DCMTK_VERSION */
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/dcmimage/diqtpbox.h"
+#include "dcmtk/dcmdata/dcerror.h"   /* for EC_IllegalCall */
+#include "dcmtk/dcmdata/dcelem.h"    /* for DcmElement */
+#include "dcmtk/dcmdata/dcitem.h"    /* for DcmItem */
+#include "dcmtk/dcmdata/dcvrus.h"    /* for DcmUnsignedShort */
+#include "dcmtk/dcmdata/dcvrobow.h"  /* for DcmOtherByteOtherWord */
+#include "dcmtk/dcmdata/dcswap.h"    /* for swapIfNecessary() */
+#include "dcmtk/dcmdata/dcdeftag.h"  /* for tag constants */
+#include "dcmtk/dcmdata/dcuid.h"     /* for OFFIS_DCMTK_VERSION */
 
 #define INCLUDE_CSTDIO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 /* ------------------------------------------------------------ */
 
@@ -562,11 +562,16 @@ void DcmQuantColorTable::setDescriptionString(OFString& str) const
  *
  * CVS/RCS Log:
  * $Log: diqtctab.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:47  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:09  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.8  2005/12/08 15:42:28  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.7  2003/12/17 16:34:57  joergr
  * Adapted type casts to new-style typecast operators defined in ofcast.h.

@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2003, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,18 +23,18 @@
  *    classes: DVPSPrintMessageHandler
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "ofstring.h"
-#include "dvpsdef.h"
-#include "dvpspr.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/ofstd/ofstring.h"
+#include "dcmtk/dcmpstat/dvpsdef.h"
+#include "dcmtk/dcmpstat/dvpspr.h"
 
 /* --------------- class DVPSPrintMessageHandler --------------- */
 
@@ -503,7 +503,7 @@ OFCondition DVPSPrintMessageHandler::negotiateAssociation(
   DIC_NODENAME dnlocalHost;
   DIC_NODENAME dnpeerHost;
 
-  OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, 1000, &net);
+  OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, 30, &net);
   if (cond.good()) cond = ASC_createAssociationParameters(&params, peerMaxPDU);
 
   if (tlayer && cond.good())
@@ -641,11 +641,20 @@ void DVPSPrintMessageHandler::setLog(OFConsole *stream, OFBool verbMode, OFBool 
 
 /*
  *  $Log: dvpspr.cc,v $
- *  Revision 1.1  2005/08/23 19:31:59  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:44  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:00  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.20  2005/12/08 15:46:41  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.19  2005/11/16 14:58:24  meichel
+ *  Set association timeout in ASC_initializeNetwork to 30 seconds. This improves
+ *    the responsiveness of the tools if the peer blocks during assoc negotiation.
  *
  *  Revision 1.18  2003/09/05 14:31:33  meichel
  *  Print SCU now supports TLS connections.

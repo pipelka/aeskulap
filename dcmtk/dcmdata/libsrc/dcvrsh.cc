@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2002, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,9 +22,9 @@
  *  Purpose: Implementation of class DcmShortString
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:58 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/dcvrsh.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,7 +32,7 @@
  */
 
 
-#include "dcvrsh.h"
+#include "dcmtk/dcmdata/dcvrsh.h"
 
 
 // ********************************
@@ -90,11 +90,16 @@ OFCondition DcmShortString::getOFString(OFString &stringVal,
 /*
 ** CVS/RCS Log:
 ** $Log: dcvrsh.cc,v $
-** Revision 1.1  2005/08/23 19:31:58  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:26  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.14  2005/12/08 15:42:01  meichel
+** Changed include path schema for all DCMTK header files
 **
 ** Revision 1.13  2002/12/06 13:20:51  joergr
 ** Enhanced "print()" function by re-working the implementation and replacing

@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2004, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -24,18 +24,18 @@
  *
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:06 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:40 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>     /* this includes either winsock.h or winsock2.h */
@@ -47,12 +47,14 @@
 #include <SIOUX.h>
 #endif
 
-#include "ofstream.h"
-#include "dctk.h"        /* for class DcmDataset */
-#include "ofstring.h"    /* for class OFString */
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmdata/dctk.h"        /* for class DcmDataset */
+#include "dcmtk/ofstd/ofstring.h"    /* for class OFString */
 #include "vrscan.h"
-#include "ofconapp.h"    /* for OFConsoleApplication */
-#include "dcmpstat.h"    /* for DcmPresentationState */
+#include "dcmtk/ofstd/ofconapp.h"    /* for OFConsoleApplication */
+#include "dcmtk/dcmpstat/dcmpstat.h"    /* for DcmPresentationState */
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmnet/dul.h"
 
 #ifdef WITH_ZLIB
 #include <zlib.h>        /* for zlibVersion() */
@@ -645,7 +647,7 @@ int checkitem(ostream & out, DcmItem *item,  DcmXfer& oxfer,
 int dcmchk(
   ostream & out,
   const char* ifname,
-  OFBool isDataset,
+  E_FileReadMode readMode,
   E_TransferSyntax xfer,
   OFBool showFullData,
   OFBool loadAllDataInMemory,
@@ -654,7 +656,7 @@ int dcmchk(
 {
     DcmFileFormat *ds = new DcmFileFormat();
 
-    OFCondition cond = ds->loadFile(ifname, xfer, EGL_noChange, DCM_MaxReadLength, isDataset);
+    OFCondition cond = ds->loadFile(ifname, xfer, EGL_noChange, DCM_MaxReadLength, readMode);
     if (! cond.good())
     {
       out << "Error: " << cond.text() << " reading file: " << ifname << endl;
@@ -777,7 +779,7 @@ int dcmchkMetaHeader(ostream& out, DcmMetaInfo* meta, DcmDataset* dset)
             dset->findAndGetOFStringArray(DCM_SOPClassUID, datasetClassUID);
             if (metaHeaderClassUID != datasetClassUID) {
                 out << MSGe_wrongAtt << endl
-                    << "   Inconsistant SOP class information"
+                    << "   Inconsistent SOP class information"
                 << endl << "   Affected attributes: " << endl << "      ";
                 printAttribute(out, meta, msscuid);
                 out << "      ";
@@ -809,7 +811,7 @@ int dcmchkMetaHeader(ostream& out, DcmMetaInfo* meta, DcmDataset* dset)
             dset->findAndGetOFStringArray(DCM_SOPInstanceUID, datasetInstanceUID);
             if (metaHeaderInstanceUID != datasetInstanceUID) {
                 out << MSGe_wrongAtt << endl
-                    << "   Inconsistant SOP instance information"
+                    << "   Inconsistent SOP instance information"
                 << endl << "   Affected attributes: " << endl << "      ";
                 printAttribute(out, meta, mssiuid);
                 out << "      ";
@@ -934,7 +936,7 @@ int checkfile(const char *filename, OFBool verbose, ostream& out, OFConsole *out
           << "-------------------------------------------------------------" << endl << endl;
     }
 
-    dcmchk(out, opt_filename, OFFalse, EXS_Unknown,
+    dcmchk(out, opt_filename, ERM_autoDetect, EXS_Unknown,
           OFFalse /* showFullData */, OFTrue /* loadAllDataInMemory */,
           numberOfErrors, verbose);
 
@@ -996,6 +998,13 @@ int main(int argc, char *argv[])
 #ifdef HAVE_GUSI_H
     GUSISetup(GUSIwithSIOUXSockets);
     GUSISetup(GUSIwithInternetSockets);
+#endif
+
+#ifdef WITH_TCPWRAPPER
+    // this code makes sure that the linker cannot optimize away
+    // the DUL part of the network module where the external flags
+    // for libwrap are defined. Needed on OpenBSD.
+    dcmTCPWrapperDaemonName.set(NULL);
 #endif
 
 #ifdef HAVE_WINSOCK_H
@@ -1086,11 +1095,34 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dcmpschk.cc,v $
- * Revision 1.1  2005/08/23 19:32:06  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:40  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:08  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.22  2005/12/14 17:43:42  meichel
+ * Adapted code for compilation with TCP wrappers to NetBSD
+ *
+ * Revision 1.21  2005/12/12 15:14:34  meichel
+ * Added code needed for compilation with TCP wrappers on OpenBSD
+ *
+ * Revision 1.20  2005/12/08 15:46:07  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.19  2005/12/02 09:46:27  joergr
+ * Added new file read mode that makes it possible to distinguish between DICOM
+ * files, datasets and other non-DICOM files.  For this reason, the last
+ * parameter of method loadFile() changed from OFBool to E_FileReadMode.
+ *
+ * Revision 1.18  2005/11/28 15:29:05  meichel
+ * File dcdebug.h is not included by any other header file in the toolkit
+ *   anymore, to minimize the risk of name clashes of macro debug().
+ *
+ * Revision 1.17  2005/03/09 18:07:53  joergr
+ * Fixed spelling error.
  *
  * Revision 1.16  2004/02/04 15:44:38  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

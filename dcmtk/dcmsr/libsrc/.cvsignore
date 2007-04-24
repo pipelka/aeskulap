@@ -1,2 +1,3 @@
+libdcmsr-3.5.so.4
 Makefile
-*.a
+libdcmsr.so

@@ -1,4 +1,4 @@
-.TH "xml2dsr" 1 "27 May 2004" "OFFIS DCMTK" \" -*- nroff -*-
+.TH "xml2dsr" 1 "20 Dec 2005" "Version Version 3.5.4" "OFFIS DCMTK" \" -*- nroff -*-
 .nh
 .SH NAME
 xml2dsr \- Convert DICOM SR file and data set to XML
@@ -8,10 +8,11 @@ xml2dsr \- Convert DICOM SR file and data set to XML
 .nf
 
 xml2dsr [options] xmlfile-in dsrfile-out
+.fi
 .PP
 .SH "DESCRIPTION"
 .PP
-The \fBxml2dsr\fP utility converts the contents of an XML (Extensible Markup Language) document to DICOM Structured Reporting (SR) format (file format or raw data set). The XML Schema does not yet follow any standard format. However, the \fBxml2dsr\fP application might be enhanced in this aspect in the future (e. g. by supporting HL7/CDA - Clinical Document Architecture).
+The \fBxml2dsr\fP utility converts the contents of an XML (Extensible Markup Language) document to DICOM Structured Reporting (SR) format (file format or raw data set). The XML Schema \fIdsr2xml.xsd\fP does not yet follow any standard format. However, the \fBxml2dsr\fP application might be enhanced in this aspect in the future (e. g. by supporting HL7/CDA - Clinical Document Architecture).
 .PP
 An appropriate XML file can be created using the \fBdsr2xml\fP tool (option \fI+Xn\fP recommended to add XML namespace declaration to the root element).
 .SH "PARAMETERS"
@@ -22,6 +23,7 @@ An appropriate XML file can be created using the \fBdsr2xml\fP tool (option \fI+
 xmlfile-in   XML input filename to be converted (stdin: "-")
 
 dsrfile-out  DICOM SR output filename
+.fi
 .PP
 .SH "OPTIONS"
 .PP
@@ -40,6 +42,17 @@ dsrfile-out  DICOM SR output filename
 
   -d   --debug
          debug mode, print debug information
+.fi
+.PP
+.SS "input options"
+.PP
+.nf
+
+encoding:
+
+  +Ee  --template-envelope
+         template element encloses content items
+.fi
 .PP
 .SS "processing options"
 .PP
@@ -49,9 +62,11 @@ validation:
 
   +Vs  --validate-schema
          validate XML document against Schema
+         (not with --template-envelope)
 
   +Vn  --check-namespace
          check XML namespace in document root
+.fi
 .PP
 .SS "output options"
 .PP
@@ -120,11 +135,12 @@ data set trailing padding (not with --write-dataset):
   +p   --padding-create  [f]ile-pad [i]tem-pad: integer
          align file on multiple of f bytes
          and items on multiple of i bytes
+.fi
 .PP
 .SH "NOTES"
 .PP
 .SS "DICOM Conformance"
-The \fBxml2dsr\fP utility supports the following SOP Classes (according to DICOM 2003 and Supplement 66):
+The \fBxml2dsr\fP utility supports the following SOP Classes (according to DICOM 2004 and Supplement 94):
 .PP
 .PP
 .nf
@@ -136,7 +152,11 @@ ProcedureLog                1.2.840.10008.5.1.4.1.1.88.40
 MammographyCADSR            1.2.840.10008.5.1.4.1.1.88.50
 KeyObjectSelectionDocument  1.2.840.10008.5.1.4.1.1.88.59
 ChestCADSR                  1.2.840.10008.5.1.4.1.1.88.65
+XRayRadiationDoseSR         1.2.840.10008.5.1.4.1.1.88.67
+.fi
 .PP
+.PP
+Please note that currently only mandatory and some optional attributes are supported.
 .SH "COMMAND LINE"
 .PP
 All command line tools use the following notation for parameters: square brackets enclose optional values (0-1), three trailing dots indicate that multiple values are allowed (1-n), a combination of both means 0 to n values.
@@ -149,9 +169,12 @@ In addition, one or more command files can be specified using an '@' sign as a p
 The \fBxml2dsr\fP utility will attempt to load DICOM data dictionaries specified in the \fIDCMDICTPATH\fP environment variable. By default, i.e. if the \fIDCMDICTPATH\fP environment variable is not set, the file \fI<PREFIX>/lib/dicom.dic\fP will be loaded unless the dictionary is built into the application (default for Windows).
 .PP
 The default behaviour should be preferred and the \fIDCMDICTPATH\fP environment variable only used when alternative data dictionaries are required. The \fIDCMDICTPATH\fP environment variable has the same format as the Unix shell \fIPATH\fP variable in that a colon (':') separates entries. The data dictionary code will attempt to load each file specified in the \fIDCMDICTPATH\fP environment variable. It is an error if no data dictionary can be loaded.
+.SH "FILES"
+.PP
+\fIlib/dsr2xml.xsd\fP - XML Schema file
 .SH "SEE ALSO"
 .PP
 \fBdsr2xml\fP(1)
 .SH "COPYRIGHT"
 .PP
-Copyright (C) 2003-2004 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg, Germany. 
+Copyright (C) 2003-2005 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg, Germany. 

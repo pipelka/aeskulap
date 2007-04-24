@@ -22,8 +22,8 @@
  *  Purpose: Implementation of DICOMDIR image support (plugin)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:53 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,13 +31,13 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "ddpiimpl.h"
-#include "dcmimage.h"    /* for class DicomImage */
-#include "discalet.h"    /* for direct image scaling */
+#include "dcmtk/dcmjpeg/ddpiimpl.h"
+#include "dcmtk/dcmimgle/dcmimage.h"    /* for class DicomImage */
+#include "dcmtk/dcmimgle/discalet.h"    /* for direct image scaling */
 
-#include "ofcast.h"
+#include "dcmtk/ofstd/ofcast.h"
 
 
 /*------------------*
@@ -129,11 +129,16 @@ OFBool DicomDirImageImplementation::scaleImage(DcmItem *dataset,
 /*
  *  CVS/RCS Log:
  *  $Log: ddpiimpl.cc,v $
- *  Revision 1.1  2005/08/23 19:31:53  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:26  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:14  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:41  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.2  2005/12/08 15:43:24  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.1  2003/08/12 13:14:54  joergr
  *  Added plugable image support for the new DICOMDIR class.

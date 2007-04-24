@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1999-2004, OFFIS
+ *  Copyright (C) 1999-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,16 +22,16 @@
  *  Purpose: Presentation State Viewer - Network Receive Component (Store SCP)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:06 $
+ *  Update Date:      $Date: 2007/04/24 09:53:40 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmpstat/apps/dcmpsrcv.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
@@ -49,25 +49,27 @@ BEGIN_EXTERN_C
 #endif
 END_EXTERN_C
 
-#include "dvpsdef.h"     /* for constants */
-#include "dvpscf.h"      /* for class DVConfiguration */
-#include "ofbmanip.h"    /* for OFBitmanipTemplate */
-#include "dcuid.h"       /* for dcmtk version name */
-#include "diutil.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "imagedb.h"     /* for LOCK_IMAGE_FILES */
-#include "dvpsmsg.h"     /* for class DVPSIPCClient */
-#include "dcmlayer.h"
-#include "dcfilefo.h"
-#include "dcmpstat.h"
+#include "dcmtk/dcmpstat/dvpsdef.h"     /* for constants */
+#include "dcmtk/dcmpstat/dvpscf.h"      /* for class DVConfiguration */
+#include "dcmtk/ofstd/ofbmanip.h"    /* for OFBitmanipTemplate */
+#include "dcmtk/dcmdata/dcuid.h"       /* for dcmtk version name */
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmqrdb/dcmqrdbi.h"    /* for LOCK_IMAGE_FILES */
+#include "dcmtk/dcmqrdb/dcmqrdbs.h"    /* for DcmQueryRetrieveDatabaseStatus */
+#include "dcmtk/dcmpstat/dvpsmsg.h"     /* for class DVPSIPCClient */
+#include "dcmtk/dcmnet/dcmlayer.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmpstat/dcmpstat.h"
+#include "dcmtk/dcmdata/dcdebug.h"
 
 #ifdef WITH_OPENSSL
-#include "tlstrans.h"
-#include "tlslayer.h"
+#include "dcmtk/dcmtls/tlstrans.h"
+#include "dcmtk/dcmtls/tlslayer.h"
 #endif
 
-#include "ofstream.h"
+#include "dcmtk/ofstd/ofstream.h"
 
 #ifdef WITH_ZLIB
 #include <zlib.h>        /* for zlibVersion() */
@@ -310,7 +312,7 @@ static associationType negotiateAssociation(
         /*  accept any of the storage syntaxes */
         cond = ASC_acceptContextsWithPreferredTransferSyntaxes(
           (*assoc)->params,
-          dcmStorageSOPClassUIDs, numberOfDcmStorageSOPClassUIDs,
+          dcmAllStorageSOPClassUIDs, numberOfAllDcmStorageSOPClassUIDs,
           (const char**)transferSyntaxes, numTransferSyntaxes);
         errorCond(cond, "Cannot accept presentation contexts:");
       }
@@ -332,17 +334,15 @@ static associationType negotiateAssociation(
 class StoreContext
 {
 public:
-  DB_Handle *dbHandle;
+  DcmQueryRetrieveIndexDatabaseHandle *dbHandle;
   DIC_US status;
-  DcmDataset *statusDetail;
   const char *fileName;
   DcmFileFormat *dcmff;
   OFBool opt_correctUIDPadding;
 
-  StoreContext(DB_Handle *handle, DIC_US aStatus, const char *fname, DcmFileFormat *ff, OFBool correctUID)
+  StoreContext(DcmQueryRetrieveIndexDatabaseHandle *handle, DIC_US aStatus, const char *fname, DcmFileFormat *ff, OFBool correctUID)
   : dbHandle(handle)
   , status(aStatus)
-  , statusDetail(NULL)
   , fileName(fname)
   , dcmff(ff)
   , opt_correctUIDPadding(correctUID)
@@ -415,30 +415,22 @@ saveImageToDB(
     T_DIMSE_C_StoreRSP *rsp,            /* final store response */
     DcmDataset **statusDetail)
 {
-    DB_Status dbStatus;
-    dbStatus.status = STATUS_Success;
-    dbStatus.statusDetail = NULL;
+    DcmQueryRetrieveDatabaseStatus dbStatus(STATUS_Success);
 
     /* Store image */
     if (context->status == STATUS_Success)
     {
-      if (DB_storeRequest(context->dbHandle,
-          req->AffectedSOPClassUID, req->AffectedSOPInstanceUID,
+      if (context->dbHandle->storeRequest(req->AffectedSOPClassUID, req->AffectedSOPInstanceUID,
           imageFileName, &dbStatus).bad())
       {
         CERR << "storeSCP: Database: DB_storeRequest Failed ("
-             << DU_cstoreStatusString(dbStatus.status) << ")" << endl;
+             << DU_cstoreStatusString(dbStatus.status()) << ")" << endl;
       }
+      context->status = dbStatus.status();
     }
-    else
-    {
-      dbStatus.status = context->status;
-      dbStatus.statusDetail = context->statusDetail;
-    }
-    rsp->DimseStatus = dbStatus.status;
-    *statusDetail = dbStatus.statusDetail;
-    context->statusDetail = dbStatus.statusDetail;
-    context->status = dbStatus.status;
+
+     rsp->DimseStatus = context->status;
+    *statusDetail = dbStatus.extractStatusDetail();
     return;
 }
 
@@ -514,7 +506,7 @@ static OFCondition storeSCP(
     DcmFileFormat dcmff;
     DcmDataset *dset = dcmff.getDataset();
     DIC_US status = STATUS_Success;
-    DB_Handle *dbhandle = NULL;
+    DcmQueryRetrieveIndexDatabaseHandle *dbhandle = NULL;
 
     if (!dcmIsaStorageSOPClassUID(request->AffectedSOPClassUID))
     {
@@ -525,19 +517,19 @@ static OFCondition storeSCP(
     }
     else
     {
-      if (DB_createHandle(dbfolder, PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, &dbhandle).bad())
+      dbhandle = new DcmQueryRetrieveIndexDatabaseHandle(dbfolder, PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, cond);
+      if (cond.bad())
       {
         CERR << "Unable to access database '" << dbfolder << "'" << endl;
         /* must still receive data */
         strcpy(imageFileName, NULL_DEVICE_NAME);
         /* callback will send back out of resources status */
         status = STATUS_STORE_Refused_OutOfResources;
-        DB_destroyHandle(&dbhandle);
         dbhandle = NULL;
       }
       else
       {
-        if (DB_makeNewStoreFileName(dbhandle,
+        if (dbhandle->makeNewStoreFileName(
             request->AffectedSOPClassUID,
             request->AffectedSOPInstanceUID,
             imageFileName).bad())
@@ -587,7 +579,7 @@ static OFCondition storeSCP(
           if (opt_verbose) CERR << "Store SCP: Deleting Image File: " << imageFileName << endl;
           unlink(imageFileName);
         }
-        if (dbhandle) DB_pruneInvalidRecords(dbhandle);
+        if (dbhandle) dbhandle->pruneInvalidRecords();
     }
 
 #ifdef LOCK_IMAGE_FILES
@@ -597,7 +589,7 @@ static OFCondition storeSCP(
 #endif
 
     /* free DB handle */
-    if (dbhandle) DB_destroyHandle(&dbhandle);
+    delete dbhandle;
 
     if (messageClient)
     {
@@ -760,7 +752,7 @@ static void terminateAllReceivers(DVConfiguration& dvi, OFBool opt_verbose)
   if (! dvi.getTLSPEMFormat()) keyFileFormat = SSL_FILETYPE_ASN1;
 #endif
 
-  if ((ASC_initializeNetwork(NET_REQUESTOR, 0, 1000, &net).bad())) return;
+  if ((ASC_initializeNetwork(NET_REQUESTOR, 0, 30, &net).bad())) return;
 
   Uint32 numReceivers = dvi.getNumberOfTargets(DVPSE_receiver);
   for (Uint32 i=0; i<numReceivers; i++)
@@ -815,7 +807,11 @@ static void terminateAllReceivers(DVConfiguration& dvi, OFBool opt_verbose)
       if (tlsCACertificateFolder==NULL) tlsCACertificateFolder = ".";
 
       /* ciphersuites */
+#if OPENSSL_VERSION_NUMBER >= 0x0090700fL
+      OFString tlsCiphersuites(TLS1_TXT_RSA_WITH_AES_128_SHA ":" SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#else
       OFString tlsCiphersuites(SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#endif
       Uint32 tlsNumberOfCiphersuites = dvi.getTargetNumberOfCipherSuites(recID);
       if (tlsNumberOfCiphersuites > 0)
       {
@@ -1069,7 +1065,11 @@ int main(int argc, char *argv[])
     if (! dvi.getTLSPEMFormat()) keyFileFormat = SSL_FILETYPE_ASN1;
 
     /* ciphersuites */
+#if OPENSSL_VERSION_NUMBER >= 0x0090700fL
+    OFString tlsCiphersuites(TLS1_TXT_RSA_WITH_AES_128_SHA ":" SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#else
     OFString tlsCiphersuites(SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#endif
     Uint32 tlsNumberOfCiphersuites = dvi.getTargetNumberOfCipherSuites(opt_cfgID);
     if (tlsNumberOfCiphersuites > 0)
     {
@@ -1197,18 +1197,21 @@ int main(int argc, char *argv[])
 
     /* check if we can get access to the database */
     const char *dbfolder = dvi.getDatabaseFolder();
-    DB_Handle *dbhandle = NULL;
 
     if (opt_verbose)
     {
       CERR << "Using database in directory '" << dbfolder << "'" << endl;
     }
-    if (DB_createHandle(dbfolder, PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, &dbhandle).bad())
+
+    OFCondition cond2 = EC_Normal;
+    DcmQueryRetrieveIndexDatabaseHandle *dbhandle = new DcmQueryRetrieveIndexDatabaseHandle(dbfolder, PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, cond2);
+    delete dbhandle;
+
+    if (cond2.bad())
     {
       CERR << "Unable to access database '" << dbfolder << "'" << endl;
       return 1;
     }
-    DB_destroyHandle(&dbhandle);
 
     T_ASC_Network *net = NULL; /* the DICOM network and listen port */
     T_ASC_Association *assoc = NULL; /* the DICOM association */
@@ -1268,7 +1271,7 @@ int main(int argc, char *argv[])
     while (!finished1)
     {
       /* open listen socket */
-      cond = ASC_initializeNetwork(NET_ACCEPTOR, networkPort, 10, &net);
+      cond = ASC_initializeNetwork(NET_ACCEPTOR, networkPort, 30, &net);
       if (errorCond(cond, "Error initialising network:"))
       {
       	return 1;
@@ -1491,11 +1494,36 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dcmpsrcv.cc,v $
- * Revision 1.1  2005/08/23 19:32:06  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:40  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:08  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.51  2005/12/08 15:46:10  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.50  2005/11/28 15:29:05  meichel
+ * File dcdebug.h is not included by any other header file in the toolkit
+ *   anymore, to minimize the risk of name clashes of macro debug().
+ *
+ * Revision 1.49  2005/11/23 16:10:32  meichel
+ * Added support for AES ciphersuites in TLS module. All TLS-enabled
+ *   tools now support the "AES TLS Secure Transport Connection Profile".
+ *
+ * Revision 1.48  2005/11/16 14:58:23  meichel
+ * Set association timeout in ASC_initializeNetwork to 30 seconds. This improves
+ *   the responsiveness of the tools if the peer blocks during assoc negotiation.
+ *
+ * Revision 1.47  2005/10/25 08:55:59  meichel
+ * Updated list of UIDs and added support for new transfer syntaxes
+ *   and storage SOP classes.
+ *
+ * Revision 1.46  2005/04/04 10:11:53  meichel
+ * Module dcmpstat now uses the dcmqrdb API instead of imagectn for maintaining
+ *   the index database
  *
  * Revision 1.45  2004/02/04 15:44:38  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

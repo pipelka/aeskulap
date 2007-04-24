@@ -27,27 +27,27 @@
 */
 
 // dcmtk includes
-#include "ofstdinc.h"
-#include <diutil.h>
-#include "dcdeftag.h"
+#include "dcmtk/ofstd/ofstdinc.h"
+#include <dcmtk/dcmnet/diutil.h>
+#include "dcmtk/dcmdata/dcdeftag.h"
 
-#include "dcuid.h"     /* for dcmtk version name */
-#include "djdecode.h"  /* for dcmjpeg decoders */
-#include "djencode.h"  /* for dcmjpeg encoders */
-#include "djrplol.h"   /* for DJ_RPLossless */
-#include "djrploss.h"  /* for DJ_RPLossy */
-#include "dipijpeg.h"  /* for dcmimage JPEG plugin */
-#include "diregist.h"  /* include to support color images */
-#include "ofcmdln.h"
+#include "dcmtk/dcmdata/dcuid.h"     /* for dcmtk version name */
+#include "dcmtk/dcmjpeg/djdecode.h"  /* for dcmjpeg decoders */
+#include "dcmtk/dcmjpeg/djencode.h"  /* for dcmjpeg encoders */
+#include "dcmtk/dcmjpeg/djrplol.h"   /* for DJ_RPLossless */
+#include "dcmtk/dcmjpeg/djrploss.h"  /* for DJ_RPLossy */
+#include "dcmtk/dcmjpeg/dipijpeg.h"  /* for dcmimage JPEG plugin */
+#include "dcmtk/dcmimage/diregist.h"  /* include to support color images */
+#include "dcmtk/ofstd/ofcmdln.h"
 
 // Association class header
 #include "poolassociation.h"
 #include "poolnetwork.h"
 
-#include "djencode.h"
-#include "djdecode.h"
-#include "djrplol.h"
-#include "djrploss.h"
+#include "dcmtk/dcmjpeg/djencode.h"
+#include "dcmtk/dcmjpeg/djdecode.h"
+#include "dcmtk/dcmjpeg/djrplol.h"
+#include "dcmtk/dcmjpeg/djrploss.h"
 
 
 Association::Association() :

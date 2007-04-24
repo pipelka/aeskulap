@@ -49,27 +49,27 @@
 ** Author, Date:	Stephen M. Moore, 14-Apr-1993
 ** Intent:		This file contains functions for construction of
 **			DICOM Upper Layer (DUL) Protocol Data Units (PDUs).
-** Last Update:		$Author: braindead $, $Date: 2005/08/23 19:32:01 $
+** Last Update:		$Author: braindead $, $Date: 2007/04/24 09:53:35 $
 ** Source File:		$RCSfile: dulconst.cc,v $
-** Revision:		$Revision: 1.1 $
+** Revision:		$Revision: 1.2 $
 ** Status:		$State: Exp $
 */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "dicom.h"
-#include "cond.h"
-#include "lst.h"
-#include "dul.h"
+#include "dcmtk/dcmnet/dicom.h"
+#include "dcmtk/dcmnet/cond.h"
+#include "dcmtk/dcmnet/lst.h"
+#include "dcmtk/dcmnet/dul.h"
 #include "dulstruc.h"
 #include "dulpriv.h"
-#include "ofconsol.h"
+#include "dcmtk/ofstd/ofconsol.h"
 
 static OFCondition
 constructSubItem(char *name, unsigned char type,
@@ -923,7 +923,7 @@ constructMaxLength(unsigned long maxPDU, DUL_MAXLENGTH * max,
     max->type = DUL_TYPEMAXLENGTH;
     max->rsv1 = 0;
     max->length = 4;
-    if (compatMode) max->maxLength = DUL_DULCOMPAT | DUL_DIMSECOMPAT | compatMode;
+    if (compatMode & 0x8000) max->maxLength = DUL_DULCOMPAT | DUL_DIMSECOMPAT | compatMode;
     else max->maxLength = maxPDU;
     *rtnLen = 8;
 
@@ -1495,11 +1495,19 @@ streamExtNeg(SOPClassExtendedNegotiationSubItem* extNeg, unsigned char *b, unsig
 /*
 ** CVS Log
 ** $Log: dulconst.cc,v $
-** Revision 1.1  2005/08/23 19:32:01  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:35  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:10  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.16  2005/12/08 15:44:49  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.15  2004/06/16 12:51:34  meichel
+** Fixed minor bug in DUL backward compatibility code
 **
 ** Revision 1.14  2004/02/25 12:31:17  meichel
 ** Added global option flag for compatibility with very old DCMTK releases in the

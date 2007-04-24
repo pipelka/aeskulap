@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2002-2003, OFFIS
+ *  Copyright (C) 2002-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: DcmQuant
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,23 +31,23 @@
  */
 
 
-#include "osconfig.h"
-#include "diquant.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmimage/diquant.h"
 
-#include "ofconsol.h"  /* for ofConsole */
-#include "diqtid.h"    /* for DcmQuantIdent */
-#include "diqtcmap.h"  /* for DcmQuantColorMapping */
-#include "diqtpix.h"   /* for DcmQuantPixel */
-#include "diqthash.h"  /* for DcmQuantColorHashTable */
-#include "diqtctab.h"  /* for DcmQuantColorTable */
-#include "diqtfs.h"    /* for DcmQuantFloydSteinberg */
-#include "dcswap.h"    /* for swapIfNecessary() */
-#include "dcitem.h"    /* for DcmItem */
-#include "dcmimage.h"  /* for DicomImage */
-#include "dcdeftag.h"  /* for tag constants */
-#include "dcpixel.h"   /* for DcmPixelData */
-#include "dcsequen.h"  /* for DcmSequenceOfItems */
-#include "dcuid.h"     /* for dcmGenerateUniqueIdentifier() */
+#include "dcmtk/ofstd/ofconsol.h"  /* for ofConsole */
+#include "dcmtk/dcmimage/diqtid.h"    /* for DcmQuantIdent */
+#include "dcmtk/dcmimage/diqtcmap.h"  /* for DcmQuantColorMapping */
+#include "dcmtk/dcmimage/diqtpix.h"   /* for DcmQuantPixel */
+#include "dcmtk/dcmimage/diqthash.h"  /* for DcmQuantColorHashTable */
+#include "dcmtk/dcmimage/diqtctab.h"  /* for DcmQuantColorTable */
+#include "dcmtk/dcmimage/diqtfs.h"    /* for DcmQuantFloydSteinberg */
+#include "dcmtk/dcmdata/dcswap.h"    /* for swapIfNecessary() */
+#include "dcmtk/dcmdata/dcitem.h"    /* for DcmItem */
+#include "dcmtk/dcmimgle/dcmimage.h"  /* for DicomImage */
+#include "dcmtk/dcmdata/dcdeftag.h"  /* for tag constants */
+#include "dcmtk/dcmdata/dcpixel.h"   /* for DcmPixelData */
+#include "dcmtk/dcmdata/dcsequen.h"  /* for DcmSequenceOfItems */
+#include "dcmtk/dcmdata/dcuid.h"     /* for dcmGenerateUniqueIdentifier() */
 
 
 OFCondition DcmQuant::createPaletteColorImage(
@@ -227,95 +227,6 @@ OFCondition DcmQuant::createPaletteColorImage(
 }
 
 
-
-OFCondition DcmQuant::newInstance(DcmItem *dataset)
-{
-  if (dataset == NULL) return EC_IllegalCall;
-
-  // look up current SOP Class UID and SOP Instance UID
-  const char *classUID = NULL;
-  const char *instanceUID = NULL;
-  OFCondition result = dataset->findAndGetString(DCM_SOPClassUID, classUID);
-  if (result.good()) result = dataset->findAndGetString(DCM_SOPInstanceUID, instanceUID);
-  if (result.good())
-  {
-    if ((classUID == NULL)||(instanceUID == NULL)) result = EC_TagNotFound;
-  }
-
-  // create source image sequence
-  if (result.good())
-  {
-    DcmSequenceOfItems *dseq = new DcmSequenceOfItems(DCM_SourceImageSequence);
-    if (dseq)
-    {
-      DcmItem *ditem = new DcmItem();
-      if (ditem)
-      {
-        dseq->insert(ditem);
-        DcmElement *elem1 = new DcmUniqueIdentifier(DCM_ReferencedSOPClassUID);
-        if (elem1)
-        {
-          result = elem1->putString(classUID);
-          ditem->insert(elem1, OFTrue /*replaceOld*/);
-          if (result.good())
-          {
-            DcmElement *elem2 = new DcmUniqueIdentifier(DCM_ReferencedSOPInstanceUID);
-            if (elem2)
-            {
-              result = elem2->putString(instanceUID);
-              ditem->insert(elem2, OFTrue /*replaceOld*/);
-            } else result = EC_MemoryExhausted;
-          }
-        } else result = EC_MemoryExhausted;
-      } else result = EC_MemoryExhausted;
-      if (result.good()) dataset->insert(dseq, OFTrue); else delete dseq;
-    } else result = EC_MemoryExhausted;
-  }
-
-  // create new SOP instance UID
-  if (result.good())
-  {
-    char new_uid[100];
-    DcmElement *elem = new DcmUniqueIdentifier(DCM_SOPInstanceUID);
-    if (elem)
-    {
-      if (EC_Normal == (result = elem->putString(dcmGenerateUniqueIdentifier(new_uid))))
-        dataset->insert(elem, OFTrue); // replace SOP Instance UID
-        else delete elem;
-    } else result = EC_MemoryExhausted;
-  }
-
-  return result;
-}
-
-
-OFCondition DcmQuant::updateImageType(DcmItem *dataset)
-{
-  if (dataset == NULL) return EC_IllegalCall;
-
-  DcmStack stack;
-  OFString imageType("DERIVED\\SECONDARY");
-  OFString a;
-
-  /* find existing Image Type element */
-  OFCondition status = dataset->search(DCM_ImageType, stack, ESM_fromHere, OFFalse);
-  if (status.good())
-  {
-    DcmElement *elem = OFstatic_cast(DcmElement *, stack.top());
-    unsigned long pos = 2;
-
-    // append old image type information beginning with third entry
-    while ((elem->getOFString(a, pos++)).good())
-    {
-      imageType += "\\";
-      imageType += a;
-    }
-  }
-
-  // insert new Image Type, replace old value
-  return dataset->putAndInsertString(DCM_ImageType, imageType.c_str(), OFTrue);
-}
-
 OFCondition DcmQuant::updateDerivationDescription(DcmItem *dataset, const char *description)
 {
   if (description == NULL) return EC_IllegalCall;
@@ -340,64 +251,24 @@ OFCondition DcmQuant::updateDerivationDescription(DcmItem *dataset, const char *
   return dataset->putAndInsertString(DCM_DerivationDescription, derivationDescription.c_str());
 }
 
-OFCondition DcmQuant::insertStringIfMissing(DcmItem *dataset, const DcmTagKey& tag, const char *val)
-{
-  DcmStack stack;
-  if ((dataset->search(tag, stack, ESM_fromHere, OFFalse)).bad())
-  {
-    return dataset->putAndInsertString(tag, val, OFTrue);
-  }
-  return EC_Normal;
-}
-
-OFCondition DcmQuant::convertToSecondaryCapture(DcmItem *dataset)
-{
-  if (dataset == NULL) return EC_IllegalCall;
-
-  OFCondition result = EC_Normal;
-  char buf[70];
-
-  // SOP Class UID - always replace
-  if (result.good()) result = dataset->putAndInsertString(DCM_SOPClassUID, UID_SecondaryCaptureImageStorage);
-
-  // SOP Instance UID - only insert if missing.
-  dcmGenerateUniqueIdentifier(buf);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_SOPInstanceUID, buf);
-
-  // Type 1 attributes - insert with value if missing
-  dcmGenerateUniqueIdentifier(buf, SITE_STUDY_UID_ROOT);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_StudyInstanceUID, buf);
-  dcmGenerateUniqueIdentifier(buf, SITE_SERIES_UID_ROOT);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_SeriesInstanceUID, buf);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_ConversionType, "WSD");
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_Modality, "OT");
-
-  // Type 2 attributes - insert without value if missing
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_PatientsName, NULL);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_PatientID, NULL);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_PatientsBirthDate, NULL);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_PatientsSex, NULL);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_StudyDate, NULL);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_StudyTime, NULL);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_ReferringPhysiciansName, NULL);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_StudyID, NULL);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_AccessionNumber, NULL);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_SeriesNumber, NULL);
-  if (result.good()) result = insertStringIfMissing(dataset, DCM_InstanceNumber, NULL);
-
-  return result;
-}
-
 
 /*
  *
  * CVS/RCS Log:
  * $Log: diquant.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:47  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:09  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.4  2005/12/08 15:42:33  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.3  2004/08/24 14:55:28  meichel
+ * Removed duplicate code
  *
  * Revision 1.2  2003/12/17 16:34:57  joergr
  * Adapted type casts to new-style typecast operators defined in ofcast.h.

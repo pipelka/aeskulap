@@ -43,16 +43,16 @@
 ** Author, Date:	Stephen M. Moore, 11-May-92
 ** Intent:		This module defines structures and constants needed
 **			to implement the DICOM Upper Layer state machine.
-** Last Update:		$Author: braindead $, $Date: 2005/08/23 19:32:01 $
+** Last Update:		$Author: braindead $, $Date: 2007/04/24 09:53:35 $
 ** Source File:		$RCSfile: dulfsm.h,v $
-** Revision:		$Revision: 1.1 $
+** Revision:		$Revision: 1.2 $
 ** Status:		$State: Exp $
 */
 
 #ifndef DULFSM_H
 #define DULFSM_H
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define	A_ASSOCIATE_REQ_LOCAL_USER	0
 #define	TRANS_CONN_CONFIRM_LOCAL_USER	1
@@ -130,11 +130,16 @@ typedef struct {
 /*
 ** CVS Log
 ** $Log: dulfsm.h,v $
-** Revision 1.1  2005/08/23 19:32:01  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:35  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:10  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.4  2005/12/08 15:48:09  meichel
+** Updated Makefiles to correctly install header files
 **
 ** Revision 1.3  2001/10/12 10:18:39  meichel
 ** Replaced the CONDITION types, constants and functions in the dcmnet module

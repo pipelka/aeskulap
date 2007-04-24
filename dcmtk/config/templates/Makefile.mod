@@ -26,7 +26,7 @@ install-etc: etc-install
 
 install-include: include-install
 
-install-lib: libsrc-install
+install-lib: libsrc-install include-install
 
 install-support: etc-install
 

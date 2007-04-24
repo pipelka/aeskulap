@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2003, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *    classes: DSRCodedEntryValue
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,11 +32,11 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrtypes.h"
-#include "dsrcodvl.h"
-#include "dsrxmld.h"
+#include "dcmtk/dcmsr/dsrtypes.h"
+#include "dcmtk/dcmsr/dsrcodvl.h"
+#include "dcmtk/dcmsr/dsrxmld.h"
 
 
 DSRCodedEntryValue::DSRCodedEntryValue()
@@ -387,14 +387,32 @@ OFBool DSRCodedEntryValue::checkCode(const OFString &codeValue,
 }
 
 
+OFBool DSRCodedEntryValue::valueContainsExtendedCharacters() const
+{
+  return DSRTypes::stringContainsExtendedCharacters(CodeValue)
+    || DSRTypes::stringContainsExtendedCharacters(CodingSchemeDesignator)
+    || DSRTypes::stringContainsExtendedCharacters(CodingSchemeVersion)
+    || DSRTypes::stringContainsExtendedCharacters(CodeMeaning);
+}
+
+
 /*
  *  CVS/RCS Log:
  *  $Log: dsrcodvl.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.20  2005/12/08 15:47:41  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.19  2004/11/22 16:39:12  meichel
+ *  Added method that checks if the SR document contains non-ASCII characters
+ *    in any of the strings affected by SpecificCharacterSet.
  *
  *  Revision 1.18  2003/11/28 16:51:44  joergr
  *  Changed output format of CodingSchemeVersion in print() and renderHTML().

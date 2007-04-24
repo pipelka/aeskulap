@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1999-2004, OFFIS
+ *  Copyright (C) 1999-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: DicomDisplayFunction (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,17 +31,17 @@
  */
 
 
-#include "osconfig.h"
-#include "ofconsol.h"
-#include "ofbmanip.h"
-#include "didispfn.h"
-#include "displint.h"
-#include "dicrvfit.h"
-#include "ofstream.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/ofstd/ofbmanip.h"
+#include "dcmtk/dcmimgle/didispfn.h"
+#include "dcmtk/dcmimgle/displint.h"
+#include "dcmtk/dcmimgle/dicrvfit.h"
+#include "dcmtk/ofstd/ofstream.h"
 
 #define INCLUDE_CCTYPE
 #define INCLUDE_CMATH
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 /*----------------------------*
@@ -181,16 +181,18 @@ DiDisplayFunction::DiDisplayFunction(const double val_min,
         if ((DDLValue != NULL) && (LODValue != NULL))
         {
             register Uint16 i;
-            const double val = (val_max - val_min) / OFstatic_cast(double, MaxDDLValue);
+            const double min = ((DeviceType == EDT_Printer) || (DeviceType == EDT_Scanner)) ? val_max : val_min;
+            const double max = ((DeviceType == EDT_Printer) || (DeviceType == EDT_Scanner)) ? val_min : val_max;
+            const double val = (max - min) / OFstatic_cast(double, MaxDDLValue);
             DDLValue[0] = 0;
-            LODValue[0] = val_min;
+            LODValue[0] = min;
             for (i = 1; i < MaxDDLValue; ++i)
             {
                 DDLValue[i] = i;                            // set DDL values
                 LODValue[i] = LODValue[i - 1] + val;        // compute luminance/OD value
             }
             DDLValue[MaxDDLValue] = MaxDDLValue;
-            LODValue[MaxDDLValue] = val_max;
+            LODValue[MaxDDLValue] = max;
             Valid = 1;
         }
     }
@@ -760,11 +762,19 @@ double DiDisplayFunction::convertODtoLum(const double value,
  *
  * CVS/RCS Log:
  * $Log: didispfn.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:44  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:57  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.44  2005/12/08 15:42:47  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.43  2005/06/24 10:02:16  joergr
+ * Fixed problem in constructor which uses a linear chacteristic curve.
  *
  * Revision 1.42  2004/01/05 14:58:42  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

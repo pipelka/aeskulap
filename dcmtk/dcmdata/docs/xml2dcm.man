@@ -45,6 +45,17 @@ dcmfile-out  DICOM output filename
          debug mode, print debug information
 \endverbatim
 
+\subsection input_options input options
+\verbatim
+input file format:
+
+  +f   --read-meta-info
+         read meta information if present (default)
+
+  -f   --ignore-meta-info
+         ignore file meta information
+\endverbatim
+
 \subsection processing_options processing options
 \verbatim
 validation:
@@ -162,9 +173,6 @@ The basic structure of the XML input expected looks like the following:
   </data-set>
 </file-format>
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 The "file-format" and "meta-header" tags maybe absent for DICOM data sets.
 
@@ -177,6 +185,7 @@ support):
 
 \verbatim
 ASCII         "ISO_IR 6"    (UTF-8)
+UTF-8         "ISO_IR 192"  (UTF-8)
 ISO Latin 1   "ISO_IR 100"  (ISO-8859-1)
 ISO Latin 2   "ISO_IR 101"  (ISO-8859-2)
 ISO Latin 3   "ISO_IR 109"  (ISO-8859-3)
@@ -187,9 +196,6 @@ Arabic        "ISO_IR 127"  (ISO-8859-6)
 Greek         "ISO_IR 126"  (ISO-8859-7)
 Hebrew        "ISO_IR 138"  (ISO-8859-8)
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 Multiple character sets are not supported (only the first value of the
 "Specific Character Set" is used for the character encoding in case of value

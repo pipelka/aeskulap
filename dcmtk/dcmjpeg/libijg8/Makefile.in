@@ -31,25 +31,26 @@ objs = jcomapi.o  jcodec.o  jutils.o  jerror.o  jmemmgr.o  \
 	jdpostct.o jddctmgr.o jidctfst.o jidctflt.o jidctint.o \
 	jidctred.o jdsample.o jdcolor.o  jquant1.o  jquant2.o  \
 	jdmerge.o  jcarith.o  jdarith.o  jaricom.o
-library = libijg8.$(LIBEXT)
-
+library = libijg8$(LIBEXT)
+librarydev = libijg8.so
 
 all: $(library)
 
 install: all
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
-
+	ln -sf $(library) $(librarydev)
 
 clean:
-	rm -f $(objs) $(library) $(TRASH)
+	rm -f $(objs) $(library) $(librarydev) $(TRASH)
 
 distclean:
-	rm -f $(objs) $(library) $(DISTTRASH)
+	rm -f $(objs) $(library) $(librarydev) $(DISTTRASH)
 
 
 dependencies:

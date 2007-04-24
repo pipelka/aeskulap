@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1999-2004, OFFIS
+ *  Copyright (C) 1999-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,24 +22,24 @@
  *  Purpose: Presentation State Viewer - Print Spooler
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:06 $
+ *  Update Date:      $Date: 2007/04/24 09:53:40 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmpstat/apps/dcmprscu.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dcompat.h"     /* compatibility code, needs to be included before dirent.h */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmnet/dcompat.h"     /* compatibility code, needs to be included before dirent.h */
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 /* This #if code is suggested by the gnu autoconf documentation */
@@ -67,24 +67,25 @@ BEGIN_EXTERN_C
 #endif
 END_EXTERN_C
 
-#include "ofstream.h"
-#include "dvpsdef.h"    /* for constants */
-#include "dviface.h"    /* for DVInterface */
-#include "ofstring.h"   /* for OFString */
-#include "ofbmanip.h"   /* for OFBitmanipTemplate */
-#include "ofdatime.h"   /* for OFDateTime */
-#include "dcuid.h"      /* for dcmtk version name */
-#include "cmdlnarg.h"   /* for prepareCmdLineArgs */
-#include "ofconapp.h"   /* for OFConsoleApplication */
-#include "dcmimage.h"
-#include "dvpspr.h"
-#include "dvpssp.h"
-#include "dvpshlp.h"     /* for class DVPSHelper */
-#include "ofstd.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmpstat/dvpsdef.h"    /* for constants */
+#include "dcmtk/dcmpstat/dviface.h"    /* for DVInterface */
+#include "dcmtk/ofstd/ofstring.h"   /* for OFString */
+#include "dcmtk/ofstd/ofbmanip.h"   /* for OFBitmanipTemplate */
+#include "dcmtk/ofstd/ofdatime.h"   /* for OFDateTime */
+#include "dcmtk/dcmdata/dcuid.h"      /* for dcmtk version name */
+#include "dcmtk/dcmdata/cmdlnarg.h"   /* for prepareCmdLineArgs */
+#include "dcmtk/ofstd/ofconapp.h"   /* for OFConsoleApplication */
+#include "dcmtk/dcmimgle/dcmimage.h"
+#include "dcmtk/dcmpstat/dvpspr.h"
+#include "dcmtk/dcmpstat/dvpssp.h"
+#include "dcmtk/dcmpstat/dvpshlp.h"     /* for class DVPSHelper */
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/dcmdata/dcdebug.h"
 
 #ifdef WITH_OPENSSL
-#include "tlstrans.h"
-#include "tlslayer.h"
+#include "dcmtk/dcmtls/tlstrans.h"
+#include "dcmtk/dcmtls/tlslayer.h"
 #endif
 
 #ifdef WITH_ZLIB
@@ -942,7 +943,11 @@ int main(int argc, char *argv[])
     if (! dvi.getTLSPEMFormat()) keyFileFormat = SSL_FILETYPE_ASN1;
 
     /* ciphersuites */
+#if OPENSSL_VERSION_NUMBER >= 0x0090700fL
+    OFString tlsCiphersuites(TLS1_TXT_RSA_WITH_AES_128_SHA ":" SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#else
     OFString tlsCiphersuites(SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#endif
     Uint32 tlsNumberOfCiphersuites = dvi.getTargetNumberOfCipherSuites(opt_printer);
     if (tlsNumberOfCiphersuites > 0)
     {
@@ -1228,11 +1233,24 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dcmprscu.cc,v $
- * Revision 1.1  2005/08/23 19:32:06  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:40  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:08  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.22  2005/12/08 15:46:06  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.21  2005/11/28 15:29:05  meichel
+ * File dcdebug.h is not included by any other header file in the toolkit
+ *   anymore, to minimize the risk of name clashes of macro debug().
+ *
+ * Revision 1.20  2005/11/23 16:10:32  meichel
+ * Added support for AES ciphersuites in TLS module. All TLS-enabled
+ *   tools now support the "AES TLS Secure Transport Connection Profile".
  *
  * Revision 1.19  2004/02/04 15:44:38  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

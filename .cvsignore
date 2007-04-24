@@ -41,3 +41,4 @@ gconf
 stamp-h*
 aeskulap.spec
 .settings
+conftest.foo

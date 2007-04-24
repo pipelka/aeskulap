@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2003, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *    classes: DSRContentItem
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,24 +32,24 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrcitem.h"
-#include "dsrtextn.h"
-#include "dsrcodtn.h"
-#include "dsrnumtn.h"
-#include "dsrdtitn.h"
-#include "dsrdattn.h"
-#include "dsrtimtn.h"
-#include "dsruidtn.h"
-#include "dsrpnmtn.h"
-#include "dsrscotn.h"
-#include "dsrtcotn.h"
-#include "dsrcomtn.h"
-#include "dsrimgtn.h"
-#include "dsrwavtn.h"
-#include "dsrcontn.h"
-#include "dsrreftn.h"
+#include "dcmtk/dcmsr/dsrcitem.h"
+#include "dcmtk/dcmsr/dsrtextn.h"
+#include "dcmtk/dcmsr/dsrcodtn.h"
+#include "dcmtk/dcmsr/dsrnumtn.h"
+#include "dcmtk/dcmsr/dsrdtitn.h"
+#include "dcmtk/dcmsr/dsrdattn.h"
+#include "dcmtk/dcmsr/dsrtimtn.h"
+#include "dcmtk/dcmsr/dsruidtn.h"
+#include "dcmtk/dcmsr/dsrpnmtn.h"
+#include "dcmtk/dcmsr/dsrscotn.h"
+#include "dcmtk/dcmsr/dsrtcotn.h"
+#include "dcmtk/dcmsr/dsrcomtn.h"
+#include "dcmtk/dcmsr/dsrimgtn.h"
+#include "dcmtk/dcmsr/dsrwavtn.h"
+#include "dcmtk/dcmsr/dsrcontn.h"
+#include "dcmtk/dcmsr/dsrreftn.h"
 
 
 // definition of empty default objects
@@ -648,11 +648,16 @@ OFCondition DSRContentItem::setTemplateIdentification(const OFString &templateId
 /*
  *  CVS/RCS Log:
  *  $Log: dsrcitem.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.14  2005/12/08 15:47:39  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.13  2003/10/30 17:59:37  joergr
  *  Added full support for the ContentTemplateSequence (read/write, get/set

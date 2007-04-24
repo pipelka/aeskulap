@@ -51,7 +51,7 @@ dcmfile_in  DICOM query file(s)
 \verbatim
 override matching keys:
 
-  -k    --key  key: gggg,eeee="string"
+  -k    --key  key: gggg,eeee="str" or data dictionary name="str"
           override matching key
 
 query information model:
@@ -84,10 +84,33 @@ post-1993 value representations:
   -u    --disable-new-vr
           disable support for new VRs, convert to OB
 
+proposed transmission transfer syntaxes:
+
+  -x=   --propose-uncompr
+          propose all uncompressed TS, explicit VR
+          with local byte ordering first (default)
+
+  -xe   --propose-little
+          propose all uncompressed TS, explicit VR
+          little endian first
+
+  -xb   --propose-big
+          propose all uncompressed TS, explicit VR
+          big endian first
+
+  -xi   --propose-implicit
+          propose implicit VR little endian TS only
+
 other network options:
 
   -to   --timeout  [s]econds: integer (default: unlimited)
           timeout for connection requests
+
+  -ta   --acse-timeout  [s]econds: integer (default: 30)
+          timeout for ACSE messages
+
+  -td   --dimse-timeout  [s]econds: integer (default: unlimited)
+          timeout for DIMSE messages
 
   -pdu  --max-pdu  [n]umber of bytes: integer [4096..131072]
           set max receive pdu to n bytes (default: 16384)
@@ -190,9 +213,6 @@ example:
 (0010,0010) PN []            # PatientsName
 (0010,0020) LO []            # PatientID
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 Individual attributes of each file sent can be modified or supplemented
 using the "-k key" option.  For example the command:
@@ -200,9 +220,6 @@ using the "-k key" option.  For example the command:
 \verbatim
 findscu -P -k 0010,0010="HEWETT*" caesar 5678 patqry.dcm
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 will, when sent to the SCP caesar at TCP/IP port 5678, cause any PatientsName
 attribute in patqry.dcm to have the value "HEWETT*".  If such an attribute is
@@ -226,9 +243,6 @@ FINDStudyRootQueryRetrieveInformationModel         1.2.840.10008.5.1.4.1.2.2.1
 FINDPatientStudyOnlyQueryRetrieveInformationModel  1.2.840.10008.5.1.4.1.2.3.1
 FINDModalityWorklistInformationModel               1.2.840.10008.5.1.4.31
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 The \b findscu application will propose presentation contexts for one of the
 abovementioned supported SOP Classes depending on command line options (\e -P,
@@ -240,9 +254,6 @@ LittleEndianImplicitTransferSyntax                 1.2.840.10008.1.2
 LittleEndianExplicitTransferSyntax                 1.2.840.10008.1.2.1
 BigEndianExplicitTransferSyntax                    1.2.840.10008.1.2.2
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 The \b findscu application does not support extended negotiation.
 
@@ -288,7 +299,7 @@ environment variable.  It is an error if no data dictionary can be loaded.
 
 \section copyright COPYRIGHT
 
-Copyright (C) 1994-2004 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
+Copyright (C) 1994-2005 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
 Germany.
 
 */

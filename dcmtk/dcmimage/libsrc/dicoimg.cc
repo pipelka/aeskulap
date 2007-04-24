@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2004, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: DicomColorImage (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,20 +31,20 @@
  */
 
 
-#include "osconfig.h"
-#include "dctypes.h"
-#include "dcdeftag.h"
-#include "dcpixel.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dctypes.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/dcpixel.h"
 
-#include "dicoimg.h"
-#include "dimo2img.h"
-#include "dicopxt.h"
-#include "dicocpt.h"
-#include "dicosct.h"
-#include "dicoflt.h"
-#include "dicorot.h"
-#include "dicoopxt.h"
-#include "diutils.h"
+#include "dcmtk/dcmimage/dicoimg.h"
+#include "dcmtk/dcmimgle/dimo2img.h"
+#include "dcmtk/dcmimage/dicopxt.h"
+#include "dcmtk/dcmimage/dicocpt.h"
+#include "dcmtk/dcmimage/dicosct.h"
+#include "dcmtk/dcmimage/dicoflt.h"
+#include "dcmtk/dcmimage/dicorot.h"
+#include "dcmtk/dcmimage/dicoopxt.h"
+#include "dcmtk/dcmimgle/diutils.h"
 
 
 /*----------------*
@@ -244,7 +244,7 @@ int DiColorImage::checkInterData(const int mode)
         ImageStatus = EIS_InvalidImage;
     else if (mode && (ImageStatus == EIS_Normal))
     {
-        const unsigned long count = OFstatic_cast(unsigned long, Columns) * OFstatic_cast(unsigned long, Rows) * NumberOfFrames;
+        const unsigned long count = OFstatic_cast(unsigned long, Columns) * OFstatic_cast(unsigned long, Rows) * TotalNumberOfFrames;
         if ((InterData->getInputCount() != count) && ((InterData->getInputCount() >> 1) != ((count + 1) >> 1)))
         {
             if (DicomImageClass::checkDebugLevel(DicomImageClass::DL_Warnings))
@@ -555,7 +555,8 @@ void DiColorImage::updateImagePixelModuleAttributes(DcmItem &dataset)
 
 // --- write current image to DICOM dataset
 
-int DiColorImage::writeImageToDataset(DcmItem &dataset)
+int DiColorImage::writeImageToDataset(DcmItem &dataset,
+                                      const int /*mode*/)
 {
     int result = 0;
     if ((InterData != NULL) && (InterData->getCount() > 0) && (BitsPerSample > 0))
@@ -741,11 +742,22 @@ int DiColorImage::writeBMP(FILE *stream,
  *
  * CVS/RCS Log:
  * $Log: dicoimg.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:47  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:09  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.35  2005/12/08 15:42:21  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.34  2005/03/09 17:45:36  joergr
+ * Added mode to writeImageToDataset() - only used for monochrome images.
+ *
+ * Revision 1.33  2004/10/19 12:56:17  joergr
+ * Fixed wrong warning message about length of pixel data.
  *
  * Revision 1.32  2004/05/10 10:47:47  joergr
  * Fixed bug that prevented the proper rotation of color images.

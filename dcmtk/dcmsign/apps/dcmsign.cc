@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2004, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,29 +22,29 @@
  *  Purpose: Create and Verify DICOM Digital Signatures
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:10 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dcuid.h"         /* for dcmtk version name */
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"         /* for dcmtk version name */
 
 #ifdef WITH_ZLIB
 #include <zlib.h>         /* for zlibVersion() */
@@ -60,19 +60,19 @@ static char rcsid[] = "$dcmtk: " OFFIS_CONSOLE_APPLICATION " v"
 
 #ifdef WITH_OPENSSL
 
-#include "dcsignat.h"
-#include "sinullpr.h"
-#include "sibrsapr.h"
-#include "siautopr.h"
-#include "sicreapr.h"
-#include "simac.h"
-#include "simd5.h"
-#include "sisha1.h"
-#include "siripemd.h"
-#include "siprivat.h"
-#include "sicert.h"
-#include "dctk.h"
-#include "dcdebug.h"
+#include "dcmtk/dcmsign/dcsignat.h"
+#include "dcmtk/dcmsign/sinullpr.h"
+#include "dcmtk/dcmsign/sibrsapr.h"
+#include "dcmtk/dcmsign/siautopr.h"
+#include "dcmtk/dcmsign/sicreapr.h"
+#include "dcmtk/dcmsign/simac.h"
+#include "dcmtk/dcmsign/simd5.h"
+#include "dcmtk/dcmsign/sisha1.h"
+#include "dcmtk/dcmsign/siripemd.h"
+#include "dcmtk/dcmsign/siprivat.h"
+#include "dcmtk/dcmsign/sicert.h"
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/dcdebug.h"
 
 
 BEGIN_EXTERN_C
@@ -283,8 +283,8 @@ static DcmItem *locateItemforSignatureCreation(DcmItem& dataset, const char *loc
     {
       if (! finished)
       {
-      	CERR << "error: item location string '" << location << "' incomplete." << endl;
-      	return NULL;
+        CERR << "error: item location string '" << location << "' incomplete." << endl;
+        return NULL;
       }
       return result;
     }
@@ -294,7 +294,7 @@ static DcmItem *locateItemforSignatureCreation(DcmItem& dataset, const char *loc
       stack.clear();
       if (EC_Normal != result->search(key, stack, ESM_fromHere, OFFalse))
       {
-      	CERR << "error: attribute " << key << " not found in dataset (item location string is '" << location << "')" << endl;
+        CERR << "error: attribute " << key << " not found in dataset (item location string is '" << location << "')" << endl;
         return NULL;
       }
       if (stack.top()->ident() == EVR_SQ)
@@ -356,11 +356,13 @@ static int do_sign(
   SiMAC *opt_mac,
   SiSecurityProfile *opt_profile,
   DcmAttributeTag *opt_tagList,
-  E_TransferSyntax opt_signatureXfer)
+  E_TransferSyntax opt_signatureXfer,
+  FILE *dumpFile)
 {
   OFCondition sicond = EC_Normal;
   DcmSignature signer;
   signer.attach(dataset);
+  signer.setDumpFile(dumpFile);
   sicond = signer.createSignature(key, cert, *opt_mac, *opt_profile, opt_signatureXfer, opt_tagList);
   if (sicond != EC_Normal)
   {
@@ -447,7 +449,8 @@ static int do_sign_item(
   SiSecurityProfile *opt_profile,
   DcmAttributeTag *opt_tagList,
   const char *opt_location,
-  E_TransferSyntax opt_signatureXfer)
+  E_TransferSyntax opt_signatureXfer,
+  FILE *dumpFile)
 {
   OFCondition sicond = EC_Normal;
   DcmSignature signer;
@@ -456,6 +459,7 @@ static int do_sign_item(
 
   signer.detach();
   signer.attach(sigItem);
+  signer.setDumpFile(dumpFile);
   sicond = signer.createSignature(key, cert, *opt_mac, *opt_profile, opt_signatureXfer, opt_tagList);
   if (sicond != EC_Normal)
   {
@@ -521,10 +525,10 @@ static int do_verify(
             {
               if (EC_Normal == at.getTagVal(tagkey, n))
               {
-              	COUT << "      " << tagkey << " ";
-              	tag = tagkey;
-              	tagName = tag.getTagName();
-              	if (tagName) COUT << tagName << endl; else COUT << endl;
+                COUT << "      " << tagkey << " ";
+                tag = tagkey;
+                tagName = tag.getTagName();
+                if (tagName) COUT << tagName << endl; else COUT << endl;
               }
             }
           } else COUT << "all elements" << endl;
@@ -573,7 +577,7 @@ static int do_verify(
         } else {
           corrupt_counter++;
           COUT << sicond.text() << endl << endl;
-	}
+  }
       }
     }
     signer.detach();
@@ -697,7 +701,7 @@ int main(int argc, char *argv[])
   const char *                  opt_certfile = NULL;
   int                           opt_debugMode = 0;
   OFCmdUnsignedInt              opt_filepad = 0;
-  OFBool                        opt_iDataset = OFFalse;
+  E_FileReadMode                opt_readMode = ERM_autoDetect;
   const char *                  opt_ifname = NULL;
   OFCmdUnsignedInt              opt_itempad = 0;
   E_TransferSyntax              opt_ixfer = EXS_Unknown;
@@ -718,6 +722,7 @@ int main(int argc, char *argv[])
   DcmAttributeTag *             opt_tagList = NULL; // list of attribute tags
   OFBool                        opt_verbose = OFFalse;
   E_TransferSyntax              opt_signatureXfer = EXS_Unknown;
+  FILE *                        opt_dumpFile = NULL;
   int result = 0;
 
   OFConsoleApplication app(OFFIS_CONSOLE_APPLICATION , APPLICATION_ABSTRACT, rcsid);
@@ -733,13 +738,17 @@ int main(int argc, char *argv[])
       cmd.addOption("--version",                                "print version information and exit", OFTrue /* exclusive */);
       cmd.addOption("--verbose",                   "-v",        "verbose mode, print processing details");
       cmd.addOption("--debug",                     "-d",        "debug mode, print debug information");
-
+      cmd.addOption("--dump",                      "+d",     1, "[f]ilename: string",
+                                                                "dump byte stream fed into the MAC codec to file\n"
+                                                                "(only with --sign or --sign-item)");
   cmd.addGroup("input options:");
     cmd.addSubGroup("input file format:");
       cmd.addOption("--read-file",                 "+f",        "read file format or data set (default)");
+      cmd.addOption("--read-file-only",            "+fo",       "read file format only");
       cmd.addOption("--read-dataset",              "-f",        "read data set without file meta information");
-    cmd.addSubGroup("input transfer syntax (only with --read-dataset):", LONGCOL, SHORTCOL);
+    cmd.addSubGroup("input transfer syntax:", LONGCOL, SHORTCOL);
       cmd.addOption("--read-xfer-auto",            "-t=",       "use TS recognition (default)");
+      cmd.addOption("--read-xfer-detect",          "-td",       "ignore TS specified in the file meta header");
       cmd.addOption("--read-xfer-little",          "-te",       "read with explicit VR little endian TS");
       cmd.addOption("--read-xfer-big",             "-tb",       "read with explicit VR big endian TS");
       cmd.addOption("--read-xfer-implicit",        "-ti",       "read with implicit VR little endian TS");
@@ -774,6 +783,11 @@ int main(int argc, char *argv[])
     cmd.addSubGroup("tag selection options:");
       cmd.addOption("--tag",                      "-t",      1, "tag: \"xxxx,xxxx\" or a data dictionary name", "sign only specified tag\nthis option can be specified multiple times");
       cmd.addOption("--tag-file",                 "-tf",     1, "filename: string", "read list of tags from text file");
+    cmd.addSubGroup("signature format options:");
+      cmd.addOption("--format-new",               "-fn",        "use correct DICOM signature format (default)");
+      cmd.addOption("--format-old",               "-fo",        "use old (pre-3.5.4) DCMTK signature format,\n"
+                                                                "non-conformant if signature includes\n"
+                                                                "compressed pixel data");
   cmd.addGroup("output options:");
     cmd.addSubGroup("output transfer syntax:");
       cmd.addOption("--write-xfer-same",          "+t=",        "write with same TS as input (default)");
@@ -820,30 +834,30 @@ int main(int argc, char *argv[])
     if (cmd.findOption("--debug")) opt_debugMode = 5;
 
     cmd.beginOptionBlock();
-    if (cmd.findOption("--read-file")) opt_iDataset = OFFalse;
-    if (cmd.findOption("--read-dataset")) opt_iDataset = OFTrue;
+    if (cmd.findOption("--read-file")) opt_readMode = ERM_autoDetect;
+    if (cmd.findOption("--read-file-only")) opt_readMode = ERM_fileOnly;
+    if (cmd.findOption("--read-dataset")) opt_readMode = ERM_dataset;
     cmd.endOptionBlock();
 
     cmd.beginOptionBlock();
     if (cmd.findOption("--read-xfer-auto"))
-    {
-      if (! opt_iDataset) app.printError("--read-xfer-auto only allowed with --read-dataset");
-      opt_ixfer = EXS_Unknown;
-    }
+        opt_ixfer = EXS_Unknown;
+    if (cmd.findOption("--read-xfer-detect"))
+        dcmAutoDetectDatasetXfer.set(OFTrue);
     if (cmd.findOption("--read-xfer-little"))
     {
-      if (! opt_iDataset) app.printError("--read-xfer-little only allowed with --read-dataset");
-      opt_ixfer = EXS_LittleEndianExplicit;
+        app.checkDependence("--read-xfer-little", "--read-dataset", opt_readMode == ERM_dataset);
+        opt_ixfer = EXS_LittleEndianExplicit;
     }
     if (cmd.findOption("--read-xfer-big"))
     {
-      if (! opt_iDataset) app.printError("--read-xfer-big only allowed with --read-dataset");
-      opt_ixfer = EXS_BigEndianExplicit;
+        app.checkDependence("--read-xfer-big", "--read-dataset", opt_readMode == ERM_dataset);
+        opt_ixfer = EXS_BigEndianExplicit;
     }
     if (cmd.findOption("--read-xfer-implicit"))
     {
-      if (! opt_iDataset) app.printError("--read-xfer-implicit only allowed with --read-dataset");
-      opt_ixfer = EXS_LittleEndianImplicit;
+        app.checkDependence("--read-xfer-implicit", "--read-dataset", opt_readMode == ERM_dataset);
+        opt_ixfer = EXS_LittleEndianImplicit;
     }
     cmd.endOptionBlock();
 
@@ -955,8 +969,8 @@ int main(int argc, char *argv[])
       result = parseTextFile(opt_tagFile, *opt_tagList);
       if (result > 0)
       {
-      	CERR << "error while reading tag file '" << opt_tagFile << "', giving up." << endl;
-      	return result;
+        CERR << "error while reading tag file '" << opt_tagFile << "', giving up." << endl;
+        return result;
       }
     }
 
@@ -987,6 +1001,24 @@ int main(int argc, char *argv[])
     if (cmd.findOption("--length-undefined")) opt_oenctype = EET_UndefinedLength;
     cmd.endOptionBlock();
 
+    if (cmd.findOption("--dump"))
+    {
+      if ((opt_operation != DSO_sign)&&(opt_operation != DSO_signItem)) app.printError("--dump only with --sign or --sign-item");
+      const char *fileName = NULL;
+      app.checkValue(cmd.getValue(fileName));
+      opt_dumpFile = fopen(fileName, "wb");
+      if (opt_dumpFile == NULL)
+      {
+        CERR << "error: unable to create dump file '" << fileName << "'" << endl;
+        return 10;
+      }
+    }
+
+    cmd.beginOptionBlock();
+    if (cmd.findOption("--format-new")) dcmEnableOldSignatureFormat.set(OFFalse);
+    if (cmd.findOption("--format-old")) dcmEnableOldSignatureFormat.set(OFTrue);
+    cmd.endOptionBlock();
+
   }
 
   SetDebugLevel((opt_debugMode));
@@ -1009,14 +1041,15 @@ int main(int argc, char *argv[])
   if (opt_verbose) COUT << "open input file " << opt_ifname << endl;
 
   DcmFileFormat *fileformat = new DcmFileFormat;
-  DcmDataset *dataset = dataset = fileformat->getDataset();
 
-  OFCondition sicond = fileformat->loadFile(opt_ifname, opt_ixfer, EGL_noChange, DCM_MaxReadLength, opt_iDataset);
+  OFCondition sicond = fileformat->loadFile(opt_ifname, opt_ixfer, EGL_noChange, DCM_MaxReadLength, opt_readMode);
   if (sicond.bad())
   {
     CERR << "Error: " << sicond.text() << ": reading file: " <<  opt_ifname << endl;
     return 1;
   }
+
+  DcmDataset *dataset = fileformat->getDataset();
 
   SiCertificate cert;
   SiPrivateKey key;
@@ -1060,12 +1093,12 @@ int main(int argc, char *argv[])
       break;
     case DSO_sign:
       if (opt_verbose) COUT << "create signature in main object." << endl;
-      result = do_sign(dataset, key, cert, opt_mac, opt_profile, opt_tagList, opt_signatureXfer);
+      result = do_sign(dataset, key, cert, opt_mac, opt_profile, opt_tagList, opt_signatureXfer, opt_dumpFile);
       if (result != 0) return result;
       break;
     case DSO_signItem:
       if (opt_verbose) COUT << "create signature in sequence item." << endl;
-      result = do_sign_item(dataset, key, cert, opt_mac, opt_profile, opt_tagList, opt_location, opt_signatureXfer);
+      result = do_sign_item(dataset, key, cert, opt_mac, opt_profile, opt_tagList, opt_location, opt_signatureXfer, opt_dumpFile);
       if (result != 0) return result;
       break;
     case DSO_remove:
@@ -1078,6 +1111,15 @@ int main(int argc, char *argv[])
       result = do_remove_all(dataset, opt_verbose);
       if (result != 0) return result;
       break;
+  }
+
+  if (opt_dumpFile)
+  {
+    if (0 != fclose(opt_dumpFile))
+    {
+      CERR << "Warning: error while closing dump file, content may be incomplete." << endl;
+    }
+    opt_dumpFile = NULL;
   }
 
   if (opt_ofname)
@@ -1093,6 +1135,7 @@ int main(int argc, char *argv[])
       return 1;
     }
 
+    fileformat->loadAllDataIntoMemory();
     sicond = fileformat->saveFile(opt_ofname, opt_oxfer, opt_oenctype, opt_oglenc, opt_opadenc, (Uint32) opt_filepad, (Uint32) opt_itempad, opt_oDataset);
     if (sicond.bad())
     {
@@ -1122,11 +1165,48 @@ int main(int, char *[])
 
 /*
  *  $Log: dcmsign.cc,v $
- *  Revision 1.1  2005/08/23 19:32:10  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:47  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:15  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:42  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.23  2005/12/16 13:16:37  meichel
+ *  Simplified code to avoid warning on Fedora Core 4
+ *
+ *  Revision 1.22  2005/12/16 09:19:17  onken
+ *  - Removed doubled assignment (typo?) to avoid compiler warning
+ *
+ *  Revision 1.21  2005/12/08 15:47:16  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.20  2005/12/02 10:34:26  joergr
+ *  Added new command line option that ignores the transfer syntax specified in
+ *  the meta header and tries to detect the transfer syntax automatically from
+ *  the dataset.
+ *  Added new command line option that checks whether a given file starts with a
+ *  valid DICOM meta header.
+ *
+ *  Revision 1.19  2005/11/24 12:53:39  meichel
+ *  Fixed bug in code that prepares a byte stream that is fed into the MAC
+ *    algorithm when creating or verifying a digital signature. The previous
+ *    implementation was non-conformant when signatures included compressed
+ *    (encapsulated) pixel data because the item length was included in the byte
+ *    stream, while it should not. The global variable dcmEnableOldSignatureFormat
+ *    and a corresponding command line option in dcmsign allow to re-enable the old
+ *    implementation.Fixed bug in code that prepares a byte stream that is fed into the MAC
+ *    algorithm when creating or verifying a digital signature. The previous
+ *    implementation was non-conformant when signatures included compressed
+ *    (encapsulated) pixel data because the item length was included in the byte
+ *    stream, while it should not. The global variable dcmEnableOldSignatureFormat
+ *    and a corresponding command line option in dcmsign allow to re-enable the old
+ *    implementation.
+ *
+ *  Revision 1.18  2005/11/07 17:10:24  meichel
+ *  All tools that both read and write a DICOM file now call loadAllDataIntoMemory()
+ *    to make sure they do not destroy a file when output = input.
  *
  *  Revision 1.17  2004/02/10 17:01:02  joergr
  *  Updated copyright header.

@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2003, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -24,8 +24,8 @@
  *    a matching presentation state.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:06 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:40 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -33,24 +33,25 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
-#include "dctk.h"
-#include "dcdebug.h"
-#include "dcmpstat.h"
-#include "dvpshlp.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dcuid.h"       /* for dcmtk version name */
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmpstat/dcmpstat.h"
+#include "dcmtk/dcmpstat/dvpshlp.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"       /* for dcmtk version name */
+#include "dcmtk/dcmnet/dul.h"
 
 #ifdef WITH_ZLIB
 #include <zlib.h>        /* for zlibVersion() */
@@ -74,11 +75,18 @@ int main(int argc, char *argv[])
     GUSISetup(GUSIwithInternetSockets);
 #endif
 
+#ifdef WITH_TCPWRAPPER
+    // this code makes sure that the linker cannot optimize away
+    // the DUL part of the network module where the external flags
+    // for libwrap are defined. Needed on OpenBSD.
+    dcmTCPWrapperDaemonName.set(NULL);
+#endif
+
     int opt_debugMode = 0;
 
     // Variables for input parameters
     const char* opt_ifname = NULL;
-    OFBool opt_iDataset = OFFalse;
+    E_FileReadMode opt_readMode = ERM_autoDetect;
     E_TransferSyntax opt_ixfer = EXS_Unknown;
 
     // Variables for output parameters
@@ -123,9 +131,11 @@ int main(int argc, char *argv[])
     cmd.addGroup("input options:");
       cmd.addSubGroup("input file format:");
        cmd.addOption("--read-file",               "+f",        "read file format or data set (default)");
+       cmd.addOption("--read-file-only",          "+fo",       "read file format only");
        cmd.addOption("--read-dataset",            "-f",        "read data set without file meta information");
-      cmd.addSubGroup("input transfer syntax (only with --read-dataset):", LONGCOL, SHORTCOL);
+      cmd.addSubGroup("input transfer syntax:", LONGCOL, SHORTCOL);
        cmd.addOption("--read-xfer-auto",          "-t=",       "use TS recognition (default)");
+       cmd.addOption("--read-xfer-detect",        "-td",       "ignore TS specified in the file meta header");
        cmd.addOption("--read-xfer-little",        "-te",       "read with explicit VR little endian TS");
        cmd.addOption("--read-xfer-big",           "-tb",       "read with explicit VR big endian TS");
        cmd.addOption("--read-xfer-implicit",      "-ti",       "read with implicit VR little endian TS");
@@ -194,30 +204,30 @@ int main(int argc, char *argv[])
       if (cmd.findOption("--debug")) opt_debugMode=3;
 
       cmd.beginOptionBlock();
-      if (cmd.findOption("--read-file")) opt_iDataset = OFFalse;
-      if (cmd.findOption("--read-dataset")) opt_iDataset = OFTrue;
+      if (cmd.findOption("--read-file")) opt_readMode = ERM_autoDetect;
+      if (cmd.findOption("--read-file-only")) opt_readMode = ERM_fileOnly;
+      if (cmd.findOption("--read-dataset")) opt_readMode = ERM_dataset;
       cmd.endOptionBlock();
 
       cmd.beginOptionBlock();
       if (cmd.findOption("--read-xfer-auto"))
-      {
-        if (! opt_iDataset) app.printError("--read-xfer-auto only allowed with --read-dataset");
-        opt_ixfer = EXS_Unknown;
-      }
+          opt_ixfer = EXS_Unknown;
+      if (cmd.findOption("--read-xfer-detect"))
+          dcmAutoDetectDatasetXfer.set(OFTrue);
       if (cmd.findOption("--read-xfer-little"))
       {
-        if (! opt_iDataset) app.printError("--read-xfer-little only allowed with --read-dataset");
-        opt_ixfer = EXS_LittleEndianExplicit;
+          app.checkDependence("--read-xfer-little", "--read-dataset", opt_readMode == ERM_dataset);
+          opt_ixfer = EXS_LittleEndianExplicit;
       }
       if (cmd.findOption("--read-xfer-big"))
       {
-        if (! opt_iDataset) app.printError("--read-xfer-big only allowed with --read-dataset");
-        opt_ixfer = EXS_BigEndianExplicit;
+          app.checkDependence("--read-xfer-big", "--read-dataset", opt_readMode == ERM_dataset);
+          opt_ixfer = EXS_BigEndianExplicit;
       }
       if (cmd.findOption("--read-xfer-implicit"))
       {
-        if (! opt_iDataset) app.printError("--read-xfer-implicit only allowed with --read-dataset");
-        opt_ixfer = EXS_LittleEndianImplicit;
+          app.checkDependence("--read-xfer-implicit", "--read-dataset", opt_readMode == ERM_dataset);
+          opt_ixfer = EXS_LittleEndianImplicit;
       }
       cmd.endOptionBlock();
 
@@ -306,7 +316,7 @@ int main(int argc, char *argv[])
              << opt_ifname << endl;
 
 
-    OFCondition error = fileformat.loadFile(opt_ifname, opt_ixfer, EGL_noChange, DCM_MaxReadLength, opt_iDataset);
+    OFCondition error = fileformat.loadFile(opt_ifname, opt_ixfer, EGL_noChange, DCM_MaxReadLength, opt_readMode);
     if (error.bad())
     {
         CERR << "Error: "
@@ -419,11 +429,29 @@ int main(int argc, char *argv[])
 /*
 ** CVS/RCS Log:
 ** $Log: dcmpsmk.cc,v $
-** Revision 1.1  2005/08/23 19:32:06  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:40  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:08  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.22  2005/12/14 17:43:42  meichel
+** Adapted code for compilation with TCP wrappers to NetBSD
+**
+** Revision 1.21  2005/12/12 15:14:34  meichel
+** Added code needed for compilation with TCP wrappers on OpenBSD
+**
+** Revision 1.20  2005/12/08 15:46:08  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.19  2005/12/02 09:47:30  joergr
+** Added new command line option that ignores the transfer syntax specified in
+** the meta header and tries to detect the transfer syntax automatically from
+** the dataset.
+** Added new command line option that checks whether a given file starts with a
+** valid DICOM meta header.
 **
 ** Revision 1.18  2003/09/05 09:27:05  meichel
 ** Modified code to use class DcmPresentationState instead of DVPresentationState.

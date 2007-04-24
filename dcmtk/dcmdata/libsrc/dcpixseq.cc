@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Implementation of class DcmPixelSequence
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:55 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,20 +31,20 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "ofstream.h"
-#include "dcpixseq.h"
-#include "dcpxitem.h"
-#include "dcitem.h"
-#include "dcvr.h"
-#include "dcdebug.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmdata/dcpixseq.h"
+#include "dcmtk/dcmdata/dcpxitem.h"
+#include "dcmtk/dcmdata/dcitem.h"
+#include "dcmtk/dcmdata/dcvr.h"
+#include "dcmtk/dcmdata/dcdebug.h"
 
-#include "dcdeftag.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
 
 
 // ********************************
@@ -56,6 +56,7 @@ DcmPixelSequence::DcmPixelSequence(const DcmTag &tag,
     Xfer(EXS_Unknown)
 {
     Tag.setVR(EVR_OB);
+    Length = DCM_UndefinedLength; // pixel sequences always use undefined length
 }
 
 
@@ -142,10 +143,8 @@ void DcmPixelSequence::print(ostream &out,
 Uint32 DcmPixelSequence::calcElementLength(const E_TransferSyntax xfer,
                                            const E_EncodingType enctype)
 {
-    Uint32 seqlen = DcmElement::calcElementLength(xfer, enctype);
-    if (Length == DCM_UndefinedLength)
-        seqlen += 8;     // for Sequence Delimitation Tag
-    return seqlen;
+    // add 8 bytes for Sequence Delimitation Tag which always exists for Pixel Sequences
+    return DcmElement::calcElementLength(xfer, enctype) + 8;
 }
 
 
@@ -194,8 +193,8 @@ OFCondition DcmPixelSequence::insert(DcmPixelItem *item,
     {
         itemList->seek_to(where);
         itemList->insert(item);
-        Cdebug(3, where< itemList->card(), ("DcmPixelSequence::insert() item at position %d inserted", where));
-        Cdebug(3, where>=itemList->card(), ("DcmPixelSequence::insert() item at last position inserted"));
+        DCM_dcmdataCDebug(3, where< itemList->card(), ("DcmPixelSequence::insert() item at position %d inserted", where));
+        DCM_dcmdataCDebug(3, where>=itemList->card(), ("DcmPixelSequence::insert() item at last position inserted"));
     } else
         errorFlag = EC_IllegalCall;
     return errorFlag;
@@ -376,11 +375,23 @@ OFCondition DcmPixelSequence::storeCompressedFrame(DcmOffsetList &offsetList,
 /*
 ** CVS/RCS Log:
 ** $Log: dcpixseq.cc,v $
-** Revision 1.1  2005/08/23 19:31:55  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:25  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.36  2005/12/08 15:41:26  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.35  2005/11/28 15:53:13  meichel
+** Renamed macros in dcdebug.h
+**
+** Revision 1.34  2005/05/27 09:45:38  meichel
+** Fixed bug that caused incorrect sequence and item lengths to be computed for
+**   compressed pixel data embedded in a sequence such as the IconImageSequence.
 **
 ** Revision 1.33  2004/02/04 16:41:37  joergr
 ** Adapted type casts to new-style typecast operators defined in ofcast.h.

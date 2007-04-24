@@ -30,11 +30,11 @@
 #define IMAGEPOOL_ASSOCIATION_H
 
 // dcmtk includes
-#include "osconfig.h"
-#include <assoc.h>
-#include <cond.h>
-#include <dimse.h>
-#include <dcfilefo.h>
+#include "dcmtk/config/osconfig.h"
+#include <dcmtk/dcmnet/assoc.h>
+#include <dcmtk/dcmnet/cond.h>
+#include <dcmtk/dcmnet/dimse.h>
+#include <dcmtk/dcmdata/dcfilefo.h>
 
 class Network;
 

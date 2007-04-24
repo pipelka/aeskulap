@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2002-2004, OFFIS
+ *  Copyright (C) 2002-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *           Code is based on the CRC32 implementation (C)1986 Gary S. Brown
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:58 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,9 +32,9 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dcpcache.h"
-#include "dcelem.h"      /* for DcmElement, DcmObject */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmdata/dcpcache.h"
+#include "dcmtk/dcmdata/dcelem.h"      /* for DcmElement, DcmObject */
 
 DcmPrivateTagCacheEntry::DcmPrivateTagCacheEntry(const DcmTagKey& tk, const char *pc)
 : tagKey(tk)
@@ -63,33 +63,33 @@ OFBool DcmPrivateTagCacheEntry::isPrivateCreatorFor(const DcmTagKey& tk) const
 /* ======================================================================= */
 
 DcmPrivateTagCache::DcmPrivateTagCache()
-: OFList<DcmPrivateTagCacheEntry *>()
+: list_()
 {
 }
 
 
 DcmPrivateTagCache::~DcmPrivateTagCache()
 {
-  clear();
+  list_.clear();
 }
 
 
 void DcmPrivateTagCache::clear()
 {
-  OFListIterator(DcmPrivateTagCacheEntry *) first = begin();
-  OFListIterator(DcmPrivateTagCacheEntry *) last = end();
+  OFListIterator(DcmPrivateTagCacheEntry *) first = list_.begin();
+  OFListIterator(DcmPrivateTagCacheEntry *) last = list_.end();
   while (first != last)
   {
     delete (*first);
-    first = erase(first);
+    first = list_.erase(first);
   }
 }
 
 
 const char *DcmPrivateTagCache::findPrivateCreator(const DcmTagKey& tk) const
 {
-  OFListConstIterator(DcmPrivateTagCacheEntry *) first = begin();
-  OFListConstIterator(DcmPrivateTagCacheEntry *) last = end();
+  OFListConstIterator(DcmPrivateTagCacheEntry *) first = list_.begin();
+  OFListConstIterator(DcmPrivateTagCacheEntry *) last = list_.end();
   while (first != last)
   {
     if ((*first)->isPrivateCreatorFor(tk)) return (*first)->getPrivateCreator();
@@ -110,7 +110,7 @@ void DcmPrivateTagCache::updateCache(DcmObject *dobj)
       char *c = NULL;
       if ((OFstatic_cast(DcmElement *, dobj)->getString(c)).good() && c)
       {
-        push_back(new DcmPrivateTagCacheEntry(tag, c));
+        list_.push_back(new DcmPrivateTagCacheEntry(tag, c));
       }
     }
   }
@@ -120,11 +120,20 @@ void DcmPrivateTagCache::updateCache(DcmObject *dobj)
 /*
  * CVS/RCS Log:
  * $Log: dcpcache.cc,v $
- * Revision 1.1  2005/08/23 19:31:58  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:26  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.5  2005/12/08 15:41:24  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.4  2004/10/20 15:56:15  meichel
+ * Changed private inheritance from OFList to class member,
+ *   needed for compilation with HAVE_STL.
  *
  * Revision 1.3  2004/02/04 16:40:48  joergr
  * Adapted type casts to new-style typecast operators defined in ofcast.h.

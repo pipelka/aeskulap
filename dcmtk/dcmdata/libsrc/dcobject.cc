@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -24,8 +24,8 @@
  *    DICOM object encoding/decoding, search and lookup facilities.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:55 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -33,40 +33,29 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "ofstd.h"
-#include "ofstream.h"
-#include "dcobject.h"
-#include "dcvr.h"
-#include "dcxfer.h"
-#include "dcswap.h"
-#include "dcdebug.h"
-#include "dcistrma.h"    /* for class DcmInputStream */
-#include "dcostrma.h"    /* for class DcmOutputStream */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmdata/dcobject.h"
+#include "dcmtk/dcmdata/dcvr.h"
+#include "dcmtk/dcmdata/dcxfer.h"
+#include "dcmtk/dcmdata/dcswap.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcistrma.h"    /* for class DcmInputStream */
+#include "dcmtk/dcmdata/dcostrma.h"    /* for class DcmOutputStream */
 
 #define INCLUDE_CSTDIO
 #define INCLUDE_IOMANIP
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
-/*
-** Should automatic correction be applied to input data (e.g. stripping
-** of padding blanks, removal of blanks in UIDs, etc).
-*/
+// global flags
+
 OFGlobal<OFBool> dcmEnableAutomaticInputDataCorrection(OFTrue);
-
-/*
-** Handling of illegal odd-length attributes: If flag is true, odd lengths
-** are respected (i.e. an odd number of bytes is read from the input stream.)
-** After successful reading, padding to even number of bytes is enforced
-** by adding a zero pad byte if dcmEnableAutomaticInputDataCorrection is true.
-** Otherwise the odd number of bytes remains as read.
-**
-** If flag is false, old (pre DCMTK 3.5.2) behaviour applies: The length field
-** implicitly incremented and an even number of bytes is read from the stream.
-*/
 OFGlobal<OFBool> dcmAcceptOddAttributeLength(OFTrue);
-
+OFGlobal<OFBool> dcmEnableCP246Support(OFTrue);
+OFGlobal<OFBool> dcmEnableOldSignatureFormat(OFFalse);
+OFGlobal<OFBool> dcmAutoDetectDatasetXfer(OFFalse);
 
 // ****** public methods **********************************
 
@@ -483,11 +472,35 @@ OFBool DcmObject::containsUnknownVR() const
 /*
  * CVS/RCS Log:
  * $Log: dcobject.cc,v $
- * Revision 1.1  2005/08/23 19:31:55  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:25  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.45  2005/12/08 15:41:19  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.44  2005/12/02 08:53:57  joergr
+ * Changed macro NO_XFER_DETECTION_FOR_DATASETS into a global option that can
+ * be enabled and disabled at runtime.
+ *
+ * Revision 1.43  2005/11/24 12:50:59  meichel
+ * Fixed bug in code that prepares a byte stream that is fed into the MAC
+ *   algorithm when creating or verifying a digital signature. The previous
+ *   implementation was non-conformant when signatures included compressed
+ *   (encapsulated) pixel data because the item length was included in the byte
+ *   stream, while it should not. The global variable dcmEnableOldSignatureFormat
+ *   and a corresponding command line option in dcmsign allow to re-enable the old
+ *   implementation.
+ *
+ * Revision 1.42  2005/05/10 15:27:18  meichel
+ * Added support for reading UN elements with undefined length according
+ *   to CP 246. The global flag dcmEnableCP246Support allows to revert to the
+ *   prior behaviour in which UN elements with undefined length were parsed
+ *   like a normal explicit VR SQ element.
  *
  * Revision 1.41  2004/04/27 09:21:27  wilkens
  * Fixed a bug in dcelem.cc which occurs when one is serializing a dataset

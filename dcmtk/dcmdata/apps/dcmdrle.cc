@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2002-2004, OFFIS
+ *  Copyright (C) 2002-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,31 +22,31 @@
  *  Purpose: Decompress RLE-compressed DICOM file
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
-#include "dctk.h"
-#include "dcdebug.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dcuid.h"     /* for dcmtk version name */
-#include "dcrledrg.h"  /* for DcmRLEDecoderRegistration */
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"     /* for dcmtk version name */
+#include "dcmtk/dcmdata/dcrledrg.h"  /* for DcmRLEDecoderRegistration */
 
 #ifdef WITH_ZLIB
 #include <zlib.h>      /* for zlibVersion() */
@@ -85,9 +85,12 @@ int main(int argc, char *argv[])
   E_PaddingEncoding opt_opadenc = EPD_noChange;
   OFCmdUnsignedInt opt_filepad = 0;
   OFCmdUnsignedInt opt_itempad = 0;
+  E_FileReadMode opt_readMode = ERM_autoDetect;
+  E_TransferSyntax opt_ixfer = EXS_Unknown;
 
   // RLE parameters
   OFBool opt_uidcreation = OFFalse;
+  OFBool opt_reversebyteorder = OFFalse;
 
   OFConsoleApplication app(OFFIS_CONSOLE_APPLICATION , "Decode RLE-compressed DICOM file", rcsid);
   OFCommandLine cmd;
@@ -103,11 +106,22 @@ int main(int argc, char *argv[])
    cmd.addOption("--verbose",                   "-v",        "verbose mode, print processing details");
    cmd.addOption("--debug",                     "-d",        "debug mode, print debug information");
 
+   cmd.addGroup("input options:");
+
+    cmd.addSubGroup("input file format:");
+     cmd.addOption("--read-file",              "+f",        "read file format or data set (default)");
+     cmd.addOption("--read-file-only",         "+fo",       "read file format only");
+     cmd.addOption("--read-dataset",           "-f",        "read data set without file meta information");
+
   cmd.addGroup("processing options:");
 
     cmd.addSubGroup("SOP Instance UID options:");
-     cmd.addOption("--uid-default",        "+ud",     "keep same SOP Instance UID (default)");
-     cmd.addOption("--uid-always",         "+ua",     "always assign new UID");
+     cmd.addOption("--uid-default",             "+ud",     "keep same SOP Instance UID (default)");
+     cmd.addOption("--uid-always",              "+ua",     "always assign new UID");
+
+    cmd.addSubGroup("RLE byte segment order options:");
+     cmd.addOption("--byte-order-default",      "+bd",     "most significant byte first (default)");
+     cmd.addOption("--byte-order-reverse",      "+br",     "least significant byte first");
 
   cmd.addGroup("output options:");
     cmd.addSubGroup("output file format:");
@@ -168,6 +182,29 @@ int main(int argc, char *argv[])
       cmd.endOptionBlock();
 
       cmd.beginOptionBlock();
+      if (cmd.findOption("--byte-order-default")) opt_reversebyteorder = OFFalse;
+      if (cmd.findOption("--byte-order-reverse")) opt_reversebyteorder = OFTrue;
+      cmd.endOptionBlock();
+
+      cmd.beginOptionBlock();
+      if (cmd.findOption("--read-file"))
+      {
+        opt_readMode = ERM_autoDetect;
+        opt_ixfer = EXS_Unknown;
+      }
+      if (cmd.findOption("--read-file-only"))
+      {
+        opt_readMode = ERM_fileOnly;
+        opt_ixfer = EXS_Unknown;
+      }
+      if (cmd.findOption("--read-dataset"))
+      {
+        opt_readMode = ERM_dataset;
+        opt_ixfer = EXS_RLELossless;
+      }
+      cmd.endOptionBlock();
+
+      cmd.beginOptionBlock();
       if (cmd.findOption("--write-file")) opt_oDataset = OFFalse;
       if (cmd.findOption("--write-dataset")) opt_oDataset = OFTrue;
       cmd.endOptionBlock();
@@ -223,7 +260,7 @@ int main(int argc, char *argv[])
     SetDebugLevel((opt_debugMode));
 
     // register global decompression codecs
-    DcmRLEDecoderRegistration::registerCodecs(opt_uidcreation, opt_verbose);
+    DcmRLEDecoderRegistration::registerCodecs(opt_uidcreation, opt_verbose, opt_reversebyteorder);
 
     /* make sure data dictionary is loaded */
     if (!dcmDataDict.isDictionaryLoaded())
@@ -246,7 +283,7 @@ int main(int argc, char *argv[])
     if (opt_verbose)
         COUT << "open input file " << opt_ifname << endl;
 
-    OFCondition error = fileformat.loadFile(opt_ifname);
+    OFCondition error = fileformat.loadFile(opt_ifname, opt_ixfer, EGL_noChange, DCM_MaxReadLength, opt_readMode);
 
     if (error.bad())
     {
@@ -280,6 +317,7 @@ int main(int argc, char *argv[])
     if (opt_verbose)
         COUT << "create output file " << opt_ofname << endl;
 
+    fileformat.loadAllDataIntoMemory();
     error = fileformat.saveFile(opt_ofname, opt_oxfer, opt_oenctype, opt_oglenc, opt_opadenc,
         OFstatic_cast(Uint32, opt_filepad), OFstatic_cast(Uint32, opt_itempad), opt_oDataset);
 
@@ -304,11 +342,35 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dcmdrle.cc,v $
- * Revision 1.1  2005/08/23 19:32:00  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:38  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:57  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.12  2005/12/08 15:40:45  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.11  2005/12/02 09:03:52  joergr
+ * Added new command line option that ignores the transfer syntax specified in
+ * the meta header and tries to detect the transfer syntax automatically from
+ * the dataset.
+ *
+ * Revision 1.10  2005/11/07 17:10:19  meichel
+ * All tools that both read and write a DICOM file now call loadAllDataIntoMemory()
+ *   to make sure they do not destroy a file when output = input.
+ *
+ * Revision 1.9  2005/07/26 17:08:28  meichel
+ * Added option to RLE decoder that allows to correctly decode images with
+ *   incorrect byte order of byte segments (LSB instead of MSB).
+ *
+ * Revision 1.8  2005/05/26 14:52:22  meichel
+ * Added option --read-dataset to dcmdrle that allows to decompress RLE
+ *   compressed DICOM objects that have been stored as dataset without meta-header.
+ *   Such a thing should not exist since the transfer syntax cannot be reliably
+ *   determined without meta-header, but unfortunately it does.
  *
  * Revision 1.7  2004/01/16 10:53:53  joergr
  * Adapted type casts to new-style typecast operators defined in ofcast.h.

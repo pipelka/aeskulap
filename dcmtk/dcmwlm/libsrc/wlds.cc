@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2004, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,9 +22,9 @@
  *  Purpose: (Partially) abstract class for connecting to an arbitrary data source.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:53 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmwlm/libsrc/wlds.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -33,25 +33,25 @@
 
 // ----------------------------------------------------------------------------
 
-#include "osconfig.h"  // specific configuration for operating system
+#include "dcmtk/config/osconfig.h"  // specific configuration for operating system
 
-#include "dicom.h"     // for DIC_NODENAME etc. used in "wltypdef.h"
-#include "wltypdef.h"  // for type definitions
-#include "oftypes.h"   // for OFBool
-#include "dcdatset.h"  // for DcmDataset
-#include "dcvrat.h"    // for DcmAttributTag
-#include "dcvrlo.h"    // for DcmLongString
-#include "dcvrae.h"
-#include "dcvrda.h"
-#include "dcvrcs.h"
-#include "dcvrpn.h"
-#include "dcvrtm.h"
-#include "dcvrsh.h"
-#include "dcdict.h"    // for global variable dcmDataDict
-#include "dcdeftag.h"  // for DCM_OffendingElement, ...
-#include "dcsequen.h"  // for DcmSequenceOfItems
-#include "dcdicent.h"  // needed by MSVC5 with STL
-#include "wlds.h"
+#include "dcmtk/dcmnet/dicom.h"     // for DIC_NODENAME etc. used in "wltypdef.h"
+#include "dcmtk/dcmwlm/wltypdef.h"  // for type definitions
+#include "dcmtk/ofstd/oftypes.h"   // for OFBool
+#include "dcmtk/dcmdata/dcdatset.h"  // for DcmDataset
+#include "dcmtk/dcmdata/dcvrat.h"    // for DcmAttributTag
+#include "dcmtk/dcmdata/dcvrlo.h"    // for DcmLongString
+#include "dcmtk/dcmdata/dcvrae.h"
+#include "dcmtk/dcmdata/dcvrda.h"
+#include "dcmtk/dcmdata/dcvrcs.h"
+#include "dcmtk/dcmdata/dcvrpn.h"
+#include "dcmtk/dcmdata/dcvrtm.h"
+#include "dcmtk/dcmdata/dcvrsh.h"
+#include "dcmtk/dcmdata/dcdict.h"    // for global variable dcmDataDict
+#include "dcmtk/dcmdata/dcdeftag.h"  // for DCM_OffendingElement, ...
+#include "dcmtk/dcmdata/dcsequen.h"  // for DcmSequenceOfItems
+#include "dcmtk/dcmdata/dcdicent.h"  // needed by MSVC5 with STL
+#include "dcmtk/dcmwlm/wlds.h"
 
 // ----------------------------------------------------------------------------
 
@@ -677,6 +677,7 @@ OFBool WlmDataSource::CheckMatchingKey( DcmElement *elem )
 //                   DCM_RequestingPhysician                               (0032,1032)  PN  O  2
 //                   DCM_AdmissionID                                       (0038,0010)  LO  O  2
 //                   DCM_RequestedProcedurePriority                        (0040,1003)  SH  O  2
+//                   DCM_PatientsBirthDate                                 (0010,0030)  DA  O  2
 //                As a result, the following data types have to be supported in this function:
 //                AE, DA, TM, CS, PN, LO and SH. For the correct specification of these datatypes
 //                2003 DICOM standard, part 5, section 6.2, table 6.2-1.
@@ -1296,7 +1297,7 @@ WlmDataSourceStatusType WlmDataSource::CancelFindRequest()
   {
     for( unsigned long i=0 ; i<numOfMatchingDatasets ; i++ )
       delete matchingDatasets[i];
-    delete matchingDatasets;
+    delete[] matchingDatasets;
     matchingDatasets = NULL;
     numOfMatchingDatasets = 0;
   }
@@ -1346,6 +1347,7 @@ OFBool WlmDataSource::IsSupportedMatchingKeyAttribute( DcmElement *element, DcmS
 //                   DCM_RequestingPhysician                               (0032,1032)  PN  O  2
 //                   DCM_AdmissionID                                       (0038,0010)  LO  O  2
 //                   DCM_RequestedProcedurePriority                        (0040,1003)  SH  O  2
+//                   DCM_PatientsBirthDate                                 (0010,0030)  DA  O  2
 // Parameters   : element            - [in] Pointer to the element which shall be checked.
 //                supSequenceElement - [in] Pointer to the superordinate sequence element of which
 //                                     the currently processed element is an attribute, or NULL if
@@ -1387,7 +1389,8 @@ OFBool WlmDataSource::IsSupportedMatchingKeyAttribute( DcmElement *element, DcmS
         elementKey == DCM_PatientsSex                    ||
         elementKey == DCM_RequestingPhysician            ||
         elementKey == DCM_AdmissionID                    ||
-        elementKey == DCM_RequestedProcedurePriority )
+        elementKey == DCM_RequestedProcedurePriority     ||
+        elementKey == DCM_PatientsBirthDate )
       isSupportedMatchingKeyAttribute = OFTrue;
   }
 
@@ -1614,11 +1617,24 @@ OFBool WlmDataSource::IsSupportedReturnKeyAttribute( DcmElement *element, DcmSeq
 /*
 ** CVS Log
 ** $Log: wlds.cc,v $
-** Revision 1.1  2005/08/23 19:31:53  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:47  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:15  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.19  2005/12/08 15:48:32  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.18  2005/09/23 12:57:02  wilkens
+** Added attribute PatientsBirthDate as a matching key attribute to wlmscpfs.
+** Thanks to Andre M. Descombes <andre@descombes.info> for the code template.
+**
+** Revision 1.17  2005/07/01 10:01:31  wilkens
+** Modified a couple of "delete" statements to "delete[]" in order to get rid of
+** valgrind's "Mismatched free() / delete / delete []" error messages.
 **
 ** Revision 1.16  2004/04/06 18:19:31  joergr
 ** Updated data dictionary, UIDs and transfer syntaxes for the latest Final Text

@@ -57,9 +57,9 @@
 **      Module Prefix: DIMSE_
 **
 ** Last Update:         $Author: braindead $
-** Update Date:         $Date: 2005/08/23 19:32:01 $
+** Update Date:         $Date: 2007/04/24 09:53:35 $
 ** Source File:         $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/libsrc/dimmove.cc,v $
-** CVS/RCS Revision:    $Revision: 1.1 $
+** CVS/RCS Revision:    $Revision: 1.2 $
 ** Status:              $State: Exp $
 **
 ** CVS/RCS Log at end of file
@@ -69,21 +69,21 @@
 ** Include Files
 */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CSTDARG
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 
-#include "diutil.h"
-#include "dimse.h"              /* always include the module header */
-#include "cond.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmnet/dimse.h"              /* always include the module header */
+#include "dcmtk/dcmnet/cond.h"
 
 /*
 **
@@ -145,7 +145,8 @@ DIMSE_moveUser(
         DIMSE_SubOpProviderCallback subOpCallback, void *subOpCallbackData,
         /* out */
         T_DIMSE_C_MoveRSP *response, DcmDataset **statusDetail,
-        DcmDataset **rspIds)
+        DcmDataset **rspIds,
+        OFBool ignorePendingDatasets)
 {
     T_DIMSE_Message req, rsp;
     DIC_US msgId;
@@ -233,11 +234,29 @@ DIMSE_moveUser(
                 delete *statusDetail;
                 *statusDetail = NULL;
             }
-            if (response->DataSetType != DIMSE_DATASET_NULL) {
-                DIMSE_warning(assoc, 
-                    "moveUser: Status Pending, but DataSetType!=NULL");
-                DIMSE_warning(assoc, 
-                    "  Assuming NO response identifiers are present");
+            if (response->DataSetType != DIMSE_DATASET_NULL) 
+            {
+                DIMSE_warning(assoc, "moveUser: Status Pending, but DataSetType!=NULL");
+                if (! ignorePendingDatasets)
+                {
+                    // Some systems send an (illegal) dataset following C-MOVE-RSP messages
+                    // with pending status, which is a protocol violation, but we need to
+                    // handle this nevertheless. The MV300 has been reported to exhibit
+                    // this behavior.
+                    DIMSE_warning(assoc, "  Reading but ignoring response identifier set");
+                    DcmDataset *tempset = NULL;
+                    cond = DIMSE_receiveDataSetInMemory(assoc, blockMode, timeout, &presID, &tempset, NULL, NULL);
+                    delete tempset;                
+                    if (cond != EC_Normal) {
+                        return cond;
+                    }
+                }
+                else
+                {
+                    // The alternative is to assume that the command set is wrong
+                    // and not to read a dataset from the network association.
+                    DIMSE_warning(assoc, "  Assuming NO response identifiers are present");
+                }
             }
 
             /* execute callback */
@@ -428,11 +447,20 @@ DIMSE_moveProvider(
 /*
 ** CVS Log
 ** $Log: dimmove.cc,v $
-** Revision 1.1  2005/08/23 19:32:01  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:35  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:10  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.12  2005/12/08 15:44:44  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.11  2005/11/22 16:44:47  meichel
+** Added option to movescu that allows graceful handling of Move SCPs
+**   that send illegal datasets following pending C-MOVE-RSP messages.
 **
 ** Revision 1.10  2002/11/27 13:04:41  meichel
 ** Adapted module dcmnet to use of new header file ofstdinc.h

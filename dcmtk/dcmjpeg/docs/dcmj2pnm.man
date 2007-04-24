@@ -59,13 +59,19 @@ input file format:
   +f    --read-file
           read file format or data set (default)
 
+  +fo   --read-file-only
+          read file format only
+
   -f    --read-dataset
           read data set without file meta information
 
-input transfer syntax (only with --read-dataset):
+input transfer syntax:
 
   -t=   --read-xfer-auto
           use TS recognition (default)
+
+  -td   --read-xfer-detect
+          ignore TS specified in the file meta header
 
   -te   --read-xfer-little
           read with explicit VR little endian TS
@@ -202,10 +208,13 @@ overlay:
           (default for Graphic overlays)
 
   +Omt  --ovl-threshold
-          use overlay mode "Threshold-Replace"
+          use overlay mode "Threshold Replace"
 
   +Omc  --ovl-complement
           use overlay mode "Complement"
+
+  +Omv  --ovl-invert
+          use overlay mode "Invert Bitmap"
 
   +Omi  --ovl-roi
           use overlay mode "Region of Interest"
@@ -262,7 +271,7 @@ compatibility options:
   +Mv   --ignore-vlut-depth
           ignore 3rd value of the VOI LUT descriptor,
           determine bits per table entry automatically
-          
+
 TIFF options:
 
   +Tl   --compr-lzw
@@ -429,7 +438,7 @@ environment variable.  It is an error if no data dictionary can be loaded.
 
 \section copyright COPYRIGHT
 
-Copyright (C) 2001-2004 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
+Copyright (C) 2001-2005 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
 Germany.
 
 */

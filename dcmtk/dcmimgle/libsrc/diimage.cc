@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2004, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: DicomImage (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,19 +31,20 @@
  */
 
 
-#include "osconfig.h"
-#include "dctypes.h"
-#include "dcdeftag.h"
-#include "dcswap.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dctypes.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/dcswap.h"
 
-#include "diimage.h"
-#include "diinpxt.h"
-#include "didocu.h"
-#include "diutils.h"
-#include "ofstd.h"
+#include "dcmtk/dcmimgle/diimage.h"
+#include "dcmtk/dcmimgle/diinpxt.h"
+#include "dcmtk/dcmimgle/didocu.h"
+#include "dcmtk/dcmimgle/diutils.h"
+#include "dcmtk/ofstd/ofstd.h"
 
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
+
 
 /*----------------*
  *  constructors  *
@@ -56,6 +57,7 @@ DiImage::DiImage(const DiDocument *docu,
     Document(docu),
     FirstFrame(0),
     NumberOfFrames(0),
+    TotalNumberOfFrames(0),
     RepresentativeFrame(0),
     Rows(0),
     Columns(0),
@@ -87,11 +89,9 @@ DiImage::DiImage(const DiDocument *docu,
                     ofConsole.unlockCerr();
                 }
                 NumberOfFrames = 1;
-            }
-            else
+            } else
                 NumberOfFrames = OFstatic_cast(Uint32, sl);
-        }
-        else
+        } else
             NumberOfFrames = 1;
         Uint16 us = 0;
         if (Document->getValue(DCM_RepresentativeFrameNumber, us))
@@ -120,6 +120,8 @@ DiImage::DiImage(const DiDocument *docu,
                 RepresentativeFrame = us - 1;
         }
         FirstFrame = (docu->getFrameStart() < NumberOfFrames) ? docu->getFrameStart() : NumberOfFrames - 1;
+        /* store total number of frames in the dataset */
+        TotalNumberOfFrames = NumberOfFrames;
         /* restrict to actually processed/loaded number of frames */
         NumberOfFrames -= FirstFrame;
         if ((docu->getFrameCount() > 0) && (NumberOfFrames > docu->getFrameCount()))
@@ -132,7 +134,16 @@ DiImage::DiImage(const DiDocument *docu,
         {
             ok &= (Document->getValue(DCM_BitsAllocated, BitsAllocated) > 0);
             ok &= (Document->getValue(DCM_BitsStored, BitsStored) > 0);
-            ok &= (Document->getValue(DCM_HighBit, HighBit) > 0);
+            if (((Document->getValue(DCM_HighBit, HighBit) == 0) || (HighBit == 0)) && ok)
+            {
+                HighBit = BitsStored - 1;
+                if (DicomImageClass::checkDebugLevel(DicomImageClass::DL_Warnings))
+                {
+                    ofConsole.lockCerr() << "WARNING: missing value for 'HighBit' "
+                                         << "... assuming " << HighBit << " !" << endl;
+                    ofConsole.unlockCerr();
+                }
+            }
             ok &= (Document->getValue(DCM_PixelRepresentation, us) > 0);
             BitsPerSample = BitsStored;
             hasSignedRepresentation = (us == 1);
@@ -175,9 +186,9 @@ DiImage::DiImage(const DiDocument *docu,
                     } else {
                         Sint32 sl2;
                         hasPixelAspectRatio = (Document->getValue(DCM_PixelAspectRatio, sl2, 0) > 0);
-                        PixelHeight = sl2;
                         if (hasPixelAspectRatio)
                         {
+                            PixelHeight = sl2;
                             if (Document->getValue(DCM_PixelAspectRatio, sl2, 1) < 2)
                             {
                                 if (DicomImageClass::checkDebugLevel(DicomImageClass::DL_Warnings))
@@ -206,9 +217,7 @@ DiImage::DiImage(const DiDocument *docu,
                     convertPixelData(pixel, spp);
                 else
                     ImageStatus = EIS_InvalidValue;
-            }
-            else
-            {
+            } else {
                 ImageStatus = EIS_MissingAttribute;
                 if (DicomImageClass::checkDebugLevel(DicomImageClass::DL_Errors))
                 {
@@ -216,9 +225,7 @@ DiImage::DiImage(const DiDocument *docu,
                     ofConsole.unlockCerr();
                 }
             }
-        }
-        else
-        {
+        } else {
             ImageStatus = EIS_InvalidValue;
             if (DicomImageClass::checkDebugLevel(DicomImageClass::DL_Errors))
             {
@@ -226,9 +233,7 @@ DiImage::DiImage(const DiDocument *docu,
                 ofConsole.unlockCerr();
             }
         }
-    }
-    else
-    {
+    } else {
         ImageStatus = EIS_InvalidDocument;
         if (DicomImageClass::checkDebugLevel(DicomImageClass::DL_Errors))
         {
@@ -245,6 +250,7 @@ DiImage::DiImage(const DiDocument *docu,
     Document(docu),
     FirstFrame(0),
     NumberOfFrames(0),
+    TotalNumberOfFrames(0),
     RepresentativeFrame(0),
     Rows(0),
     Columns(0),
@@ -272,6 +278,7 @@ DiImage::DiImage(const DiImage *image,
     Document(image->Document),
     FirstFrame(image->FirstFrame + fstart),
     NumberOfFrames(fcount),
+    TotalNumberOfFrames(image->TotalNumberOfFrames),
     RepresentativeFrame(image->RepresentativeFrame),
     Rows(image->Rows),
     Columns(image->Columns),
@@ -302,6 +309,7 @@ DiImage::DiImage(const DiImage *image,
     Document(image->Document),
     FirstFrame(image->FirstFrame),
     NumberOfFrames(image->NumberOfFrames),
+    TotalNumberOfFrames(image->TotalNumberOfFrames),
     RepresentativeFrame(image->RepresentativeFrame),
     Rows(rows),
     Columns(columns),
@@ -353,6 +361,7 @@ DiImage::DiImage(const DiImage *image,
     Document(image->Document),
     FirstFrame(image->FirstFrame),
     NumberOfFrames(image->NumberOfFrames),
+    TotalNumberOfFrames(image->TotalNumberOfFrames),
     RepresentativeFrame(image->RepresentativeFrame),
     Rows(((degree == 90) ||(degree == 270)) ? image->Columns : image->Rows),
     Columns(((degree == 90) ||(degree == 270)) ? image->Rows : image->Columns),
@@ -381,6 +390,7 @@ DiImage::DiImage(const DiImage *image,
     Document(image->Document),
     FirstFrame(frame),
     NumberOfFrames(1),
+    TotalNumberOfFrames(image->TotalNumberOfFrames),
     RepresentativeFrame(0),
     Rows(image->Rows),
     Columns(image->Columns),
@@ -858,11 +868,26 @@ int DiImage::writeBMP(FILE *stream,
  *
  * CVS/RCS Log:
  * $Log: diimage.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:44  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:57  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.32  2005/12/08 15:42:51  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.31  2005/12/01 09:52:07  joergr
+ * Added heuristics for images where the value of HighBit is 0.
+ *
+ * Revision 1.30  2005/03/09 17:41:16  joergr
+ * Added heuristics for images where the attribute HighBit is missing.
+ * Fixed possibly uninitialized variable when determining the pixel height.
+ *
+ * Revision 1.29  2004/09/22 11:35:01  joergr
+ * Introduced new member variable "TotalNumberOfFrames".
  *
  * Revision 1.28  2004/03/16 08:18:54  joergr
  * Added support for non-standard encoding of pixel data (OB with BitsAllocated

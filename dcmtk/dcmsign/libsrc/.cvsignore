@@ -1,2 +1,3 @@
 Makefile
-*.a
+libdcmdsig-3.5.so.4
+libdcmdsig.so

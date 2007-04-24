@@ -21,19 +21,20 @@ LOCALINCLUDES = -I$(dcmdatadir)/include -I$(dcmnetdir)/include -I$(ofstddir)/inc
 LOCALDEFS =
 
 objs = wlds.o wlmactmg.o wldsfs.o wlfsim.o
-library = libdcmwlm.$(LIBEXT)
-
+library = libdcmwlm$(LIBEXT)
+librarydev = libdcmwlm.so
 
 all: $(library)
 
 install: all
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
-
+	ln -sf $(library) $(librarydev)
 
 clean:
 	rm -f $(objs) $(library) $(TRASH)

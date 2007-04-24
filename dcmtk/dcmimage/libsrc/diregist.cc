@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2003, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: DicomRegister (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:46 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,19 +31,19 @@
  */
 
 
-#include "osconfig.h"
+#include "dcmtk/config/osconfig.h"
 
-#include "diregist.h"
-#include "dipalimg.h"
-#include "dirgbimg.h"
-#include "dihsvimg.h"
-#include "diargimg.h"
-#include "dicmyimg.h"
-#include "diybrimg.h"
-#include "diyf2img.h"
-#include "diyp2img.h"
-#include "dicomot.h"
-#include "didocu.h"
+#include "dcmtk/dcmimage/diregist.h"
+#include "dcmtk/dcmimage/dipalimg.h"
+#include "dcmtk/dcmimage/dirgbimg.h"
+#include "dcmtk/dcmimage/dihsvimg.h"
+#include "dcmtk/dcmimage/diargimg.h"
+#include "dcmtk/dcmimage/dicmyimg.h"
+#include "dcmtk/dcmimage/diybrimg.h"
+#include "dcmtk/dcmimage/diyf2img.h"
+#include "dcmtk/dcmimage/diyp2img.h"
+#include "dcmtk/dcmimage/dicomot.h"
+#include "dcmtk/dcmimgle/didocu.h"
 
 
 /*----------------*
@@ -113,7 +113,7 @@ DiMonoPixel *DiRegister::createMonoImageData(const DiColorImage *image,
     DiMonoPixel *inter = NULL;
     if (image != NULL)
     {
-        const DiColorPixel *color = image->getInterData();
+        const DiColorPixel *color = image->getColorInterData();
         if (color != NULL)
         {
             DiMonoModality *modality = new DiMonoModality(image->getBits());
@@ -151,11 +151,20 @@ DiMonoPixel *DiRegister::createMonoImageData(const DiColorImage *image,
  *
  * CVS/RCS Log:
  * $Log: diregist.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:46  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:09  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.9  2005/12/08 15:42:34  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.8  2004/07/20 18:13:50  joergr
+ * Added API method to "officially" access the internal intermediate pixel data
+ * representation (e.g. to get Hounsfield Units for CT images).
  *
  * Revision 1.7  2003/12/23 10:54:28  joergr
  * Updated copyright header.

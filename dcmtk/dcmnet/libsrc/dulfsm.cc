@@ -46,14 +46,14 @@
 ** Author, Date:	Stephen M. Moore, 15-Apr-93
 ** Intent:		Define tables and provide functions that implement
 **			the DICOM Upper Layer (DUL) finite state machine.
-** Last Update:		$Author: braindead $, $Date: 2005/08/23 19:32:01 $
+** Last Update:		$Author: braindead $, $Date: 2007/04/24 09:53:35 $
 ** Source File:		$RCSfile: dulfsm.cc,v $
-** Revision:		$Revision: 1.1 $
+** Revision:		$Revision: 1.2 $
 ** Status:		$State: Exp $
 */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
@@ -61,7 +61,8 @@
 #define INCLUDE_CERRNO
 #define INCLUDE_CSIGNAL
 #define INCLUDE_CTIME
-#include "ofstdinc.h"
+#define INCLUDE_UNISTD
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -71,9 +72,6 @@
 #endif
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
@@ -95,19 +93,19 @@ END_EXTERN_C
 #include <GUSI.h>       /* Use the Grand Unified Sockets Interface (GUSI) on Macintosh */
 #endif
 
-#include "ofstream.h"
-#include "dicom.h"
-#include "lst.h"
-#include "cond.h"
-#include "dul.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmnet/dicom.h"
+#include "dcmtk/dcmnet/lst.h"
+#include "dcmtk/dcmnet/cond.h"
+#include "dcmtk/dcmnet/dul.h"
 #include "dulstruc.h"
 #include "dulpriv.h"
 #include "dulfsm.h"
-#include "ofbmanip.h"
-#include "ofconsol.h"
-#include "assoc.h"    /* for ASC_MAXIMUMPDUSIZE */
-#include "dcmtrans.h"
-#include "dcmlayer.h"
+#include "dcmtk/ofstd/ofbmanip.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/dcmnet/assoc.h"    /* for ASC_MAXIMUMPDUSIZE */
+#include "dcmtk/dcmnet/dcmtrans.h"
+#include "dcmtk/dcmnet/dcmlayer.h"
 
 static OFBool debug = OFFalse;
 
@@ -2355,6 +2353,20 @@ requestAssociationTCP(PRIVATE_NETWORKKEY ** network,
         }
 #endif
     }
+    else
+    {
+        // The connect() returned without using the select(), reset the socket if needed
+        if (connectTimeout >= 0)
+        {
+            // reset socket to blocking mode
+#ifdef HAVE_WINSOCK_H
+            arg = FALSE;
+            ioctlsocket(s, FIONBIO, (u_long FAR *) &arg);
+#else
+            fcntl(s, F_SETFL, flags);
+#endif
+        }
+    }
 
     if (rc < 0)
     {
@@ -3572,34 +3584,43 @@ defragmentTCP(DcmTransportConnection *connection, DUL_BLOCKOPTIONS block, time_t
     /* if there is no network connection, return an error */
     if (connection == NULL) return DUL_NULLKEY;
 
-    /* if DUL_NOBLOCK is specified as a blocking option, we only want to wait a certain */
-    /* time for receiving data over the network. If no data was received during that time, */
-    /* DUL_READTIMEOUT shall be returned. Note that if DUL_BLOCK is specified the application */
-    /* will not stop waiting until data is actually received over the network. */
-    if (block == DUL_NOBLOCK) {
+    int timeToWait = 0;
+    if (block == DUL_NOBLOCK) 
+    {       
         /* figure out how long we want to wait: if timerStart equals 0 we want to wait exactly */
         /* timeout seconds starting from the call to select(...) within the below called function; */
         /* if timerStart does not equal 0 we want to substract the time which has already passed */
         /* after the timer was started from timeout and wait the resulting amount of seconds */
         /* starting from the call to select(...) within the below called function. */
-        int timeToWait;
-        if (timerStart == 0)
-            timeToWait = timeout;
-        else
-            timeToWait = timeout - (int) (time(NULL) - timerStart);
-
-        /* go ahead and see if within timeout seconds data will be received over the network. */
-        /* if not, return DUL_READTIMEOUT, if yes, stay in this function. */
-        if (!connection->networkDataAvailable(timeToWait)) return DUL_READTIMEOUT;
+        if (timerStart == 0) timerStart = time(NULL);
     }
 
     /* start a loop: since we want to receive l bytes of data over the network, */
     /* we won't stop waiting for data until we actually did receive l bytes. */
-    while (l > 0) {
+    while (l > 0) 
+    {
         /* receive data from the network connection; wait until */
         /* we actually did receive data or an error occured */
-        do {
-          bytesRead = connection->read((char*)b, size_t(l));
+        do 
+        {
+            /* if DUL_NOBLOCK is specified as a blocking option, we only want to wait a certain 
+             * time for receiving data over the network. If no data was received during that time, 
+             * DUL_READTIMEOUT shall be returned. Note that if DUL_BLOCK is specified the application 
+             * will not stop waiting until data is actually received over the network. 
+             */
+            if (block == DUL_NOBLOCK) 
+            {
+                /* determine remaining time to wait */
+                timeToWait = timeout - (int) (time(NULL) - timerStart);
+            
+                /* go ahead and see if within timeout seconds data will be received over the network. */
+                /* if not, return DUL_READTIMEOUT, if yes, stay in this function. */
+                if (!connection->networkDataAvailable(timeToWait)) return DUL_READTIMEOUT;
+            }
+  
+            /* data has become available, now call read(). */
+            bytesRead = connection->read((char*)b, size_t(l));
+
         } while (bytesRead == -1 && errno == EINTR);
 
         /* if we actually received data, move the buffer pointer to its own end, update the variable */
@@ -3610,7 +3631,7 @@ defragmentTCP(DcmTransportConnection *connection, DUL_BLOCKOPTIONS block, time_t
             if (rtnLen != NULL)
                 *rtnLen += (unsigned long) bytesRead;
         } else {
-            /* in case we did not receive data, an error must have occured; return a corresponding result value */
+            /* in case we did not receive any data, an error must have occured; return a corresponding result value */
             return DUL_NETWORKCLOSED;
         }
     }
@@ -3644,9 +3665,9 @@ dump_pdu(const char *type, void *buffer, unsigned long length)
     int
         position = 0;
 
-    DEBUG_DEVICE << "PDU Type: " << type << " PDU Length: " << length << endl;
+    DEBUG_DEVICE << "PDU Type: " << type << ", PDU Length: " << length-6 << " + 6 bytes PDU header" << endl;
     if (length > 512) {
-            DEBUG_DEVICE << "Only dumping 512 bytes" << endl;
+            DEBUG_DEVICE << "Only dumping 512 bytes." << endl;
             length = 512;
     }
     p = (unsigned char*)buffer;
@@ -3918,11 +3939,33 @@ destroyUserInformationLists(DUL_USERINFO * userInfo)
 /*
 ** CVS Log
 ** $Log: dulfsm.cc,v $
-** Revision 1.1  2005/08/23 19:32:01  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:35  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:10  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.59  2005/12/08 15:44:51  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.58  2005/11/16 16:19:16  meichel
+** Fixed bug in defragmentTCP that could cause the read function to hang
+**   in non-blocking mode (DUL_NOBLOCK) if only a partial PDU is available
+**   for read on the socket.
+**
+** Revision 1.57  2005/11/16 15:11:46  meichel
+** Fixed bug in requestAssociationTCP that could result in association request
+**   failures on systems with high CPU load if an association timout was specified
+**   in dcmConnectionTimeout, because in this case the socket was not always
+**   correctly reset to blocking mode.
+**
+** Revision 1.56  2005/11/15 16:04:54  meichel
+** Clarified description of PDU size reported by dump_pdu().
+**
+** Revision 1.55  2004/08/03 11:42:47  meichel
+** Headers libc.h and unistd.h are now included via ofstdinc.h
 **
 ** Revision 1.54  2004/02/25 12:31:17  meichel
 ** Added global option flag for compatibility with very old DCMTK releases in the

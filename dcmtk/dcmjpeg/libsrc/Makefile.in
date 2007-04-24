@@ -26,25 +26,26 @@ objs = djutils.o  djencode.o djrplol.o  djrploss.o djcparam.o djeijg8.o djdijg8.
        djcodecd.o djdecbas.o djdecext.o djdecpro.o djdecsps.o djdeclol.o djdecsv1.o \
        djcodece.o djencbas.o djencext.o djencpro.o djencsps.o djenclol.o djencsv1.o \
        djeijg12.o djdijg12.o djeijg16.o djdijg16.o djdecode.o dipijpeg.o ddpiimpl.o
-library = libdcmjpeg.$(LIBEXT)
-
+library = libdcmjpeg$(LIBEXT)
+librarydev = libdcmjpeg.so
 
 all: $(library)
 
 install: all
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
-
+	ln -sf $(library) $(librarydev)
 
 clean:
-	rm -f $(objs) $(library) $(TRASH)
+	rm -f $(objs) $(library) $(librarydev) $(TRASH)
 
 distclean:
-	rm -f $(objs) $(library) $(DISTTRASH)
+	rm -f $(objs) $(library) $(librarydev) $(DISTTRASH)
 
 
 dependencies:

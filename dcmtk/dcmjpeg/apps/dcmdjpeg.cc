@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2001-2004, OFFIS
+ *  Copyright (C) 2001-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,32 +22,32 @@
  *  Purpose: Decompress DICOM file
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:42 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
-#include "dctk.h"
-#include "dcdebug.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dcuid.h"       /* for dcmtk version name */
-#include "djdecode.h"    /* for dcmjpeg decoders */
-#include "dipijpeg.h"    /* for dcmimage JPEG plugin */
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"       /* for dcmtk version name */
+#include "dcmtk/dcmjpeg/djdecode.h"    /* for dcmjpeg decoders */
+#include "dcmtk/dcmjpeg/dipijpeg.h"    /* for dcmimage JPEG plugin */
 
 #ifdef WITH_ZLIB
 #include <zlib.h>      /* for zlibVersion() */
@@ -80,12 +80,14 @@ int main(int argc, char *argv[])
   int opt_debugMode = 0;
   OFBool opt_verbose = OFFalse;
   OFBool opt_oDataset = OFFalse;
+  E_FileReadMode opt_readMode = ERM_autoDetect;
   E_TransferSyntax opt_oxfer = EXS_LittleEndianExplicit;
   E_GrpLenEncoding opt_oglenc = EGL_recalcGL;
   E_EncodingType opt_oenctype = EET_ExplicitLength;
   E_PaddingEncoding opt_opadenc = EPD_noChange;
   OFCmdUnsignedInt opt_filepad = 0;
   OFCmdUnsignedInt opt_itempad = 0;
+  E_TransferSyntax opt_ixfer = EXS_Unknown;
 
   // JPEG parameters
   E_DecompressionColorSpaceConversion opt_decompCSconversion = EDC_photometricInterpretation;
@@ -105,6 +107,12 @@ int main(int argc, char *argv[])
    cmd.addOption("--version",                                "print version information and exit", OFTrue /* exclusive */);
    cmd.addOption("--verbose",                   "-v",        "verbose mode, print processing details");
    cmd.addOption("--debug",                     "-d",        "debug mode, print debug information");
+
+   cmd.addGroup("input options:");
+    cmd.addSubGroup("input file format:");
+     cmd.addOption("--read-file",              "+f",        "read file format or data set (default)");
+     cmd.addOption("--read-file-only",         "+fo",       "read file format only");
+     cmd.addOption("--read-dataset",           "-f",        "read data set without file meta information");
 
   cmd.addGroup("processing options:");
     cmd.addSubGroup("color space conversion options:");
@@ -195,6 +203,30 @@ int main(int argc, char *argv[])
       cmd.endOptionBlock();
 
       cmd.beginOptionBlock();
+      if (cmd.findOption("--read-file"))
+      {
+        opt_readMode = ERM_autoDetect;
+        opt_ixfer = EXS_Unknown;
+      }
+      if (cmd.findOption("--read-file-only"))
+      {
+        opt_readMode = ERM_fileOnly;
+        opt_ixfer = EXS_Unknown;
+      }
+      if (cmd.findOption("--read-dataset"))
+      {
+        opt_readMode = ERM_dataset;
+
+        // we don't know the real transfer syntax of the dataset, but this does
+        // not matter. As long as the content of encapsulated pixel sequences is
+        // some kind of JPEG bitstream supported by the underlying library, the
+        // decompression will work. So we simply choose one of the lossless
+        // transfer syntaxes, because these support all bit depths up to 16.
+        opt_ixfer = EXS_JPEGProcess14TransferSyntax;
+      }
+      cmd.endOptionBlock();
+
+      cmd.beginOptionBlock();
       if (cmd.findOption("--write-file")) opt_oDataset = OFFalse;
       if (cmd.findOption("--write-dataset")) opt_oDataset = OFTrue;
       cmd.endOptionBlock();
@@ -278,7 +310,7 @@ int main(int argc, char *argv[])
     if (opt_verbose)
         COUT << "reading input file " << opt_ifname << endl;
 
-    error = fileformat.loadFile(opt_ifname);
+    error = fileformat.loadFile(opt_ifname, opt_ixfer, EGL_noChange, DCM_MaxReadLength, opt_readMode);
     if (error.bad())
     {
         CERR << "Error: "
@@ -300,6 +332,8 @@ int main(int argc, char *argv[])
         CERR << "Error: "
              << error.text()
              << ": decompressing file: " <<  opt_ifname << endl;
+       if (error == EJ_UnsupportedColorConversion)
+           CERR << "Try --conv-never to disable color space conversion" << endl;
         return 1;
     }
 
@@ -313,6 +347,7 @@ int main(int argc, char *argv[])
     if (opt_verbose)
         COUT << "creating output file " << opt_ofname << endl;
 
+    fileformat.loadAllDataIntoMemory();
     error = fileformat.saveFile(opt_ofname, opt_oxfer, opt_oenctype, opt_oglenc,
               opt_opadenc, (Uint32) opt_filepad, (Uint32) opt_itempad, opt_oDataset);
     if (error != EC_Normal)
@@ -336,11 +371,33 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dcmdjpeg.cc,v $
- * Revision 1.1  2005/08/23 19:32:09  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:42  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:12  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:41  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.13  2005/12/08 15:43:21  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.12  2005/12/02 09:41:40  joergr
+ * Added new command line option that checks whether a given file starts with a
+ * valid DICOM meta header.
+ *
+ * Revision 1.11  2005/11/30 14:10:43  onken
+ * Added hint concerning --convert-never option when color conversion fails
+ *
+ * Revision 1.10  2005/11/07 17:10:21  meichel
+ * All tools that both read and write a DICOM file now call loadAllDataIntoMemory()
+ *   to make sure they do not destroy a file when output = input.
+ *
+ * Revision 1.9  2005/05/26 14:35:07  meichel
+ * Added option --read-dataset to dcmdjpeg that allows to decompress JPEG
+ *   compressed DICOM objects that have been stored as dataset without meta-header.
+ *   Such a thing should not exist since the transfer syntax cannot be reliably
+ *   determined without meta-header, but unfortunately it does.
  *
  * Revision 1.8  2004/01/16 14:28:01  joergr
  * Updated copyright header.

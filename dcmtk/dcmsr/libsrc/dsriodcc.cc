@@ -23,8 +23,8 @@
  *    classes: DSRIODConstraintChecker
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,9 +32,9 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsriodcc.h"
+#include "dcmtk/dcmsr/dsriodcc.h"
 
 
 DSRIODConstraintChecker::DSRIODConstraintChecker()
@@ -50,11 +50,16 @@ DSRIODConstraintChecker::~DSRIODConstraintChecker()
 /*
  *  CVS/RCS Log:
  *  $Log: dsriodcc.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.3  2005/12/08 15:47:56  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.2  2003/10/09 13:00:41  joergr
  *  Added check for root template identifier when reading an SR document.

@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2004, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Convert DICOM Images to PPM or PGM using the dcmimage library.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:06 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:42 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,50 +31,50 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
-#include "dctk.h"          /* for various dcmdata headers */
-#include "dcdebug.h"       /* for SetDebugLevel */
-#include "cmdlnarg.h"      /* for prepareCmdLineArgs */
-#include "dcuid.h"         /* for dcmtk version name */
-#include "dcrledrg.h"      /* for DcmRLEDecoderRegistration */
+#include "dcmtk/dcmdata/dctk.h"          /* for various dcmdata headers */
+#include "dcmtk/dcmdata/dcdebug.h"       /* for SetDebugLevel */
+#include "dcmtk/dcmdata/cmdlnarg.h"      /* for prepareCmdLineArgs */
+#include "dcmtk/dcmdata/dcuid.h"         /* for dcmtk version name */
+#include "dcmtk/dcmdata/dcrledrg.h"      /* for DcmRLEDecoderRegistration */
 
-#include "dcmimage.h"      /* for DicomImage */
-#include "digsdfn.h"       /* for DiGSDFunction */
-#include "diciefn.h"       /* for DiCIELABFunction */
+#include "dcmtk/dcmimgle/dcmimage.h"      /* for DicomImage */
+#include "dcmtk/dcmimgle/digsdfn.h"       /* for DiGSDFunction */
+#include "dcmtk/dcmimgle/diciefn.h"       /* for DiCIELABFunction */
 
-#include "ofconapp.h"      /* for OFConsoleApplication */
-#include "ofcmdln.h"       /* for OFCommandLine */
+#include "dcmtk/ofstd/ofconapp.h"      /* for OFConsoleApplication */
+#include "dcmtk/ofstd/ofcmdln.h"       /* for OFCommandLine */
 
-#include "diregist.h"      /* include to support color images */
-#include "ofstd.h"         /* for OFStandard */
+#include "dcmtk/dcmimage/diregist.h"      /* include to support color images */
+#include "dcmtk/ofstd/ofstd.h"         /* for OFStandard */
 
 #ifdef BUILD_DCM2PNM_AS_DCMJ2PNM
-# include "djdecode.h"     /* for dcmjpeg decoders */
-# include "dipijpeg.h"     /* for dcmimage JPEG plugin */
+#include "dcmtk/dcmjpeg/djdecode.h"     /* for dcmjpeg decoders */
+#include "dcmtk/dcmjpeg/dipijpeg.h"     /* for dcmimage JPEG plugin */
 #endif
 
 #ifdef WITH_LIBTIFF
-# include "dipitiff.h"     /* for dcmimage TIFF plugin */
+#include "dcmtk/dcmimage/dipitiff.h"     /* for dcmimage TIFF plugin */
 #endif
 
 #ifdef WITH_LIBPNG
-# include "dipipng.h"      /* for dcmimage PNG plugin */
+#include "dcmtk/dcmimage/dipipng.h"      /* for dcmimage PNG plugin */
 #endif
 
 #ifdef WITH_ZLIB
-# include <zlib.h>         /* for zlibVersion() */
+#include <zlib.h>         /* for zlibVersion() */
 #endif
 
-#include "ofstream.h"
+#include "dcmtk/ofstd/ofstream.h"
 
 #define OFFIS_OUTFILE_DESCRIPTION "output filename to be written (default: stdout)"
 
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
     OFConsoleApplication app(OFFIS_CONSOLE_APPLICATION, consoleDescription, rcsid);
     OFCommandLine cmd;
 
-    int                 opt_readAsDataset = 0;            /* default: fileformat or dataset */
+    E_FileReadMode      opt_readMode = ERM_autoDetect;    /* default: fileformat or dataset */
     E_TransferSyntax    opt_transferSyntax = EXS_Unknown; /* default: xfer syntax recognition */
 
     unsigned long       opt_compatibilityMode = CIF_MayDetachPixelData | CIF_TakeOverExternalDataset;
@@ -194,8 +194,7 @@ int main(int argc, char *argv[])
 
     int                 opt_Overlay[16];
     int                 opt_O_used = 0;                   /* flag for +O parameter */
-    int                 opt_OverlayMode = 0;              /* default: Replace or ROI */
-                        /* 1=replace, 2=threshold-replace, 3=complement, 4=ROI */
+    EM_Overlay          opt_OverlayMode = EMO_Default;    /* default: Replace or ROI */
 
     OFCmdFloat          opt_foregroundDensity = 1.0;
     OFCmdFloat          opt_thresholdDensity  = 0.5;
@@ -235,10 +234,12 @@ int main(int argc, char *argv[])
 
      cmd.addSubGroup("input file format:");
       cmd.addOption("--read-file",          "+f",      "read file format or data set (default)");
+      cmd.addOption("--read-file-only",     "+fo",     "read file format only");
       cmd.addOption("--read-dataset",       "-f",      "read data set without file meta information");
 
-     cmd.addSubGroup("input transfer syntax (only with --read-dataset):");
+     cmd.addSubGroup("input transfer syntax:");
       cmd.addOption("--read-xfer-auto",     "-t=",     "use TS recognition (default)");
+      cmd.addOption("--read-xfer-detect",   "-td",     "ignore TS specified in the file meta header");
       cmd.addOption("--read-xfer-little",   "-te",     "read with explicit VR little endian TS");
       cmd.addOption("--read-xfer-big",      "-tb",     "read with explicit VR big endian TS");
       cmd.addOption("--read-xfer-implicit", "-ti",     "read with implicit VR little endian TS");
@@ -314,8 +315,9 @@ int main(int argc, char *argv[])
       cmd.addOption("--display-overlay",    "+O" ,  1, "[n]umber : integer",
                                                        "display overlay n (0..16, 0=all, default: +O 0)");
       cmd.addOption("--ovl-replace",        "+Omr",    "use overlay mode \"Replace\"\n(default for Graphic overlays)");
-      cmd.addOption("--ovl-threshold",      "+Omt",    "use overlay mode \"Threshold-Replace\"");
+      cmd.addOption("--ovl-threshold",      "+Omt",    "use overlay mode \"Threshold Replace\"");
       cmd.addOption("--ovl-complement",     "+Omc",    "use overlay mode \"Complement\"");
+      cmd.addOption("--ovl-invert",         "+Omv",    "use overlay mode \"Invert Bitmap\"");
       cmd.addOption("--ovl-roi",            "+Omi",    "use overlay mode \"Region of Interest\"\n(default for ROI overlays)");
       cmd.addOption("--set-foreground",     "+Osf", 1, "[d]ensity : float",
                                                        "set overlay foreground density (0..1, def: 1)");
@@ -468,10 +470,9 @@ int main(int argc, char *argv[])
         /* input options: input file format */
 
         cmd.beginOptionBlock();
-        if (cmd.findOption("--read-dataset"))
-            opt_readAsDataset = 1;
-        if (cmd.findOption("--read-file"))
-            opt_readAsDataset = 0;
+        if (cmd.findOption("--read-file")) opt_readMode = ERM_autoDetect;
+        if (cmd.findOption("--read-file-only")) opt_readMode = ERM_fileOnly;
+        if (cmd.findOption("--read-dataset")) opt_readMode = ERM_dataset;
         cmd.endOptionBlock();
 
         /* input options: input transfer syntax */
@@ -479,12 +480,23 @@ int main(int argc, char *argv[])
         cmd.beginOptionBlock();
         if (cmd.findOption("--read-xfer-auto"))
             opt_transferSyntax = EXS_Unknown;
-        if (cmd.findOption("--read-xfer-implicit"))
-            opt_transferSyntax = EXS_LittleEndianImplicit;
+        if (cmd.findOption("--read-xfer-detect"))
+            dcmAutoDetectDatasetXfer.set(OFTrue);
         if (cmd.findOption("--read-xfer-little"))
+        {
+            app.checkDependence("--read-xfer-little", "--read-dataset", opt_readMode == ERM_dataset);
             opt_transferSyntax = EXS_LittleEndianExplicit;
+        }
         if (cmd.findOption("--read-xfer-big"))
+        {
+            app.checkDependence("--read-xfer-big", "--read-dataset", opt_readMode == ERM_dataset);
             opt_transferSyntax = EXS_BigEndianExplicit;
+        }
+        if (cmd.findOption("--read-xfer-implicit"))
+        {
+            app.checkDependence("--read-xfer-implicit", "--read-dataset", opt_readMode == ERM_dataset);
+            opt_transferSyntax = EXS_LittleEndianImplicit;
+        }
         cmd.endOptionBlock();
 
         /* image processing options: compatibility options */
@@ -739,13 +751,15 @@ int main(int argc, char *argv[])
 
         cmd.beginOptionBlock();
         if (cmd.findOption("--ovl-replace"))
-            opt_OverlayMode = 1;
+            opt_OverlayMode = EMO_Replace;
         if (cmd.findOption("--ovl-threshold"))
-            opt_OverlayMode = 2;
+            opt_OverlayMode = EMO_ThresholdReplace;
         if (cmd.findOption("--ovl-complement"))
-            opt_OverlayMode = 3;
+            opt_OverlayMode = EMO_Complement;
+        if (cmd.findOption("--ovl-invert"))
+            opt_OverlayMode = EMO_InvertBitmap;
         if (cmd.findOption("--ovl-roi"))
-            opt_OverlayMode = 4;
+            opt_OverlayMode = EMO_RegionOfInterest;
         cmd.endOptionBlock();
 
         if (cmd.findOption("--set-foreground"))
@@ -876,8 +890,7 @@ int main(int argc, char *argv[])
 #endif
 
     DcmFileFormat *dfile = new DcmFileFormat();
-    OFCondition cond = dfile->loadFile(opt_ifname, opt_transferSyntax, EGL_withoutGL,
-        DCM_MaxReadLength, (opt_readAsDataset ? OFTrue : OFFalse));
+    OFCondition cond = dfile->loadFile(opt_ifname, opt_transferSyntax, EGL_withoutGL, DCM_MaxReadLength, opt_readMode);
 
     if (cond.bad())
     {
@@ -1050,24 +1063,6 @@ int main(int argc, char *argv[])
         }
 
         /* process overlay parameters */
-        EM_Overlay overlayMode;
-        switch (opt_OverlayMode)
-        {
-            case 2:
-                overlayMode = EMO_ThresholdReplace;
-                break;
-            case 3:
-                overlayMode = EMO_Complement;
-                break;
-            case 4:
-                overlayMode = EMO_RegionOfInterest;
-                break;
-            case 1:
-            default:
-                overlayMode = EMO_Replace;
-                break;
-
-        }
         di->hideAllOverlays();
         for (unsigned int k = 0; k < 16; k++)
         {
@@ -1077,9 +1072,9 @@ int main(int argc, char *argv[])
                 {
                     if (opt_verboseMode > 1)
                         OUTPUT << "activating overlay plane " << k + 1 << endl;
-                    if (opt_OverlayMode)
+                    if (opt_OverlayMode != EMO_Default)
                     {
-                        if (!di->showOverlay(k, overlayMode, opt_foregroundDensity, opt_thresholdDensity))
+                        if (!di->showOverlay(k, opt_OverlayMode, opt_foregroundDensity, opt_thresholdDensity))
                         {
                             OFOStringStream oss;
                             oss << "cannot display overlay plane " << k + 1 << OFStringStream_ends;
@@ -1515,11 +1510,26 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dcm2pnm.cc,v $
- * Revision 1.1  2005/08/23 19:32:06  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:42  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.83  2005/12/08 15:42:16  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.82  2005/12/02 09:31:17  joergr
+ * Added new command line option that ignores the transfer syntax specified in
+ * the meta header and tries to detect the transfer syntax automatically from
+ * the dataset.
+ * Added new command line option that checks whether a given file starts with a
+ * valid DICOM meta header.
+ *
+ * Revision 1.81  2005/03/09 17:44:23  joergr
+ * Added support for new overlay mode "invert bitmap".
  *
  * Revision 1.80  2004/01/05 14:46:53  joergr
  * Adapted type casts to new-style typecast operators defined in ofcast.h.

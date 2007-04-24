@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1997-2003, OFFIS
+ *  Copyright (C) 1997-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,9 +22,9 @@
  *  Purpose: A simple string class
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
+ *  Update Date:      $Date: 2007/04/24 09:53:48 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/ofstd/libsrc/ofstring.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -40,17 +40,15 @@
 ** - it is known to be slow but is it reliable
 */
 
-#include "osconfig.h"     /* include OS specific configuration first */
-
-#define HAVE_STD_STRING
+#include "dcmtk/config/osconfig.h"     /* include OS specific configuration first */
 
 #ifndef HAVE_STD_STRING
 
-#include "ofstring.h"
-#include "ofcast.h"
+#include "dcmtk/ofstd/ofstring.h"
+#include "dcmtk/ofstd/ofcast.h"
 
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 /*
 ** Constructors
@@ -1033,14 +1031,16 @@ int ofstring_cc_dummy_to_keep_linker_from_moaning = 0;
 /*
 ** CVS/RCS Log:
 ** $Log: ofstring.cc,v $
-** Revision 1.1  2005/08/23 19:32:00  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:48  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.2  2005/06/26 21:15:18  pipelka
-** -build fixes
+** Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+** - imported dcmtk354 sources
 **
-** Revision 1.1  2005/06/26 19:26:16  pipelka
-** - added dcmtk
+**
+** Revision 1.21  2005/12/08 15:49:01  meichel
+** Changed include path schema for all DCMTK header files
 **
 ** Revision 1.20  2003/07/09 13:58:04  meichel
 ** Adapted type casts to new-style typecast operators defined in ofcast.h

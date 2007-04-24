@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Implementation of class DcmUnsignedLong
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,14 +31,14 @@
  */
 
 
-#include "osconfig.h"
-#include "ofstream.h"
-#include "dcvrul.h"
-#include "dcvm.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmdata/dcvrul.h"
+#include "dcmtk/dcmdata/dcvm.h"
 
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 // ********************************
@@ -299,11 +299,16 @@ OFCondition DcmUnsignedLong::verify(const OFBool autocorrect)
 /*
 ** CVS/RCS Log:
 ** $Log: dcvrul.cc,v $
-** Revision 1.1  2005/08/23 19:31:59  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:26  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.27  2005/12/08 15:42:07  meichel
+** Changed include path schema for all DCMTK header files
 **
 ** Revision 1.26  2004/02/04 16:05:43  joergr
 ** Adapted type casts to new-style typecast operators defined in ofcast.h.

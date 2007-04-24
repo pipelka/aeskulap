@@ -20,13 +20,14 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 11:07:25 $
+    Update Date:      $Date: 2007/04/24 09:53:44 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/aconfiguration.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
 #include "aconfiguration.h"
+#include "gettext.h"
 
 namespace Aeskulap {
 
@@ -73,7 +74,17 @@ Glib::ustring Configuration::get_name_from_path(const Glib::ustring& path) {
 
 } // namespace Aeskulap
 
-// only gconf configuration backend currently
+#ifdef WIN32
+
+// WIN32 configuration backend
+
+#include "aconfiguration-win32.cpp"
+
+#else
+
+// gconf configuration backend
 
 #include "aconfiguration-gconf.cpp"
+
+#endif
 

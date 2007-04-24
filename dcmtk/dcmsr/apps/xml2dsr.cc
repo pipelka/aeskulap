@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2003, OFFIS
+ *  Copyright (C) 2003-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,9 +23,9 @@
  *            reporting file
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmsr/apps/xml2dsr.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -33,14 +33,14 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrdoc.h"
-#include "dcdebug.h"
-#include "cmdlnarg.h"
-#include "ofstream.h"
-#include "ofconapp.h"
-#include "dcuid.h"      /* for dcmtk version name */
+#include "dcmtk/dcmsr/dsrdoc.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"      /* for dcmtk version name */
 
 #ifdef WITH_ZLIB
 #include <zlib.h>       /* for zlibVersion() */
@@ -95,9 +95,15 @@ int main(int argc, char *argv[])
       cmd.addOption("--verbose",               "-v",    "verbose mode, print processing details");
       cmd.addOption("--debug",                 "-d",    "debug mode, print debug information");
 
+    cmd.addGroup("input options:");
+      cmd.addSubGroup("encoding:");
+        cmd.addOption("--template-envelope",   "+Ee",   "template element encloses content items");
+
     cmd.addGroup("processing options:");
       cmd.addSubGroup("validation:");
-        cmd.addOption("--validate-schema",     "+Vs",   "validate XML document against Schema");
+#ifdef LIBXML_SCHEMAS_ENABLED
+        cmd.addOption("--validate-schema",     "+Vs",   "validate XML document against Schema\n(not with --template-envelope)");
+#endif
         cmd.addOption("--check-namespace",     "+Vn",   "check XML namespace in document root");
 
     cmd.addGroup("output options:");
@@ -139,11 +145,14 @@ int main(int argc, char *argv[])
               CERR << "- ZLIB, Version " << zlibVersion() << endl;
 #endif
               CERR << "- LIBXML, Version " << LIBXML_DOTTED_VERSION << endl;
+#ifndef LIBXML_SCHEMAS_ENABLED
+              CERR << "  without XML Schema support" << endl;
+#endif
               return 0;
            }
         }
 
-        /* options */
+        /* general options */
         if (cmd.findOption("--verbose"))
             opt_verbose = OFTrue;
         if (cmd.findOption("--debug"))
@@ -152,15 +161,19 @@ int main(int argc, char *argv[])
             opt_readFlags |= DSRTypes::XF_enableLibxmlErrorOutput;
         }
 
-        /* processing options */
+        /* input options */
+        if (cmd.findOption("--template-envelope"))
+            opt_readFlags |= DSRTypes::XF_templateElementEnclosesItems;
 
+        /* processing options */
+#ifdef LIBXML_SCHEMAS_ENABLED
         if (cmd.findOption("--validate-schema"))
             opt_readFlags |= DSRTypes::XF_validateSchema;
+#endif
         if (cmd.findOption("--check-namespace"))
             opt_readFlags |= DSRTypes::XF_useDcmsrNamespace;
 
         /* output options */
-
         cmd.beginOptionBlock();
         if (cmd.findOption("--write-file"))
             opt_dataset = OFFalse;
@@ -222,6 +235,10 @@ int main(int argc, char *argv[])
             opt_padenc = EPD_withPadding;
         }
         cmd.endOptionBlock();
+
+        /* check conflicts and dependencies */
+        if (opt_readFlags & DSRTypes::XF_validateSchema)
+            app.checkConflict("--validate-schema", "--template-envelope", (opt_readFlags & DSRTypes::XF_templateElementEnclosesItems) > 0);
     }
 
     SetDebugLevel((opt_debug));
@@ -234,6 +251,8 @@ int main(int argc, char *argv[])
              << DCM_DICT_ENVIRONMENT_VARIABLE << endl;
     }
 
+    /* check for compatible libxml version */
+    LIBXML_TEST_VERSION
     /* initialize the XML library (only required for MT-safety) */
     xmlInitParser();
 
@@ -267,8 +286,10 @@ int main(int argc, char *argv[])
             if (opt_verbose)
             {
                 COUT << "reading ";
+#ifdef LIBXML_SCHEMAS_ENABLED
                 if (opt_readFlags & DSRTypes::XF_validateSchema)
                     COUT << "and validating ";
+#endif
                 COUT << "XML input file: " << opt_ifname << endl;
             }
             /* read XML file and feed data into DICOM fileformat */
@@ -315,11 +336,26 @@ int main(int, char *[])
 /*
  * CVS/RCS Log:
  * $Log: xml2dsr.cc,v $
- * Revision 1.1  2005/08/23 19:32:00  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:47  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.5  2005/12/08 15:47:36  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.4  2005/03/22 13:56:14  joergr
+ * Added call of macro LIBXML_TEST_VERSION.
+ *
+ * Revision 1.3  2004/09/09 13:58:36  joergr
+ * Added option to control the way the template identification is encoded for
+ * the XML output ("inside" or "outside" of the content items).
+ *
+ * Revision 1.2  2004/08/04 12:12:37  joergr
+ * Disabled support for XML Schema if not compiled into libxml2 library.
  *
  * Revision 1.1  2003/08/07 12:06:59  joergr
  * Added new command line tool xml2dsr (convert XML document to DICOM SR file).

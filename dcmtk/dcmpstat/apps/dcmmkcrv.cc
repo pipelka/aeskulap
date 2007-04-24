@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2004, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,9 +22,9 @@
  *  Purpose: This application reads a DICOM image, adds a Curve and writes it back.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:03 $
+ *  Update Date:      $Date: 2007/04/24 09:53:40 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmpstat/apps/dcmmkcrv.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,18 +32,19 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
-#include "ofstream.h"
-#include "dctk.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "ofcast.h"
-#include "dcuid.h"       /* for dcmtk version name */
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/ofstd/ofcast.h"
+#include "dcmtk/dcmdata/dcuid.h"       /* for dcmtk version name */
+#include "dcmtk/dcmdata/dcdebug.h"
 
 #ifdef WITH_ZLIB
 #include <zlib.h>        /* for zlibVersion() */
@@ -420,11 +421,20 @@ int main(int argc, char *argv[])
 /*
 ** CVS/RCS Log:
 ** $Log: dcmmkcrv.cc,v $
-** Revision 1.1  2005/08/23 19:32:03  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:40  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:08  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.19  2005/12/08 15:46:02  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.18  2005/11/28 15:29:05  meichel
+** File dcdebug.h is not included by any other header file in the toolkit
+**   anymore, to minimize the risk of name clashes of macro debug().
 **
 ** Revision 1.17  2004/02/04 15:44:38  joergr
 ** Removed acknowledgements with e-mail addresses from CVS log.

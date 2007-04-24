@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1997-2004, OFFIS
+ *  Copyright (C) 1997-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,22 +22,22 @@
  *  Purpose: abstract class DcmCodec and the class DcmCodecStruct
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:55 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dccodec.h"
-#include "oflist.h"
-#include "ofthread.h"
-#include "dcdeftag.h"  /* for tag constants */
-#include "dcuid.h"     /* for dcmGenerateUniqueIdentifer()*/
-#include "dcitem.h"    /* for class DcmItem */
-#include "dcsequen.h"  /* for DcmSequenceOfItems */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmdata/dccodec.h"
+#include "dcmtk/ofstd/oflist.h"
+#include "dcmtk/ofstd/ofthread.h"
+#include "dcmtk/dcmdata/dcdeftag.h"  /* for tag constants */
+#include "dcmtk/dcmdata/dcuid.h"     /* for dcmGenerateUniqueIdentifer()*/
+#include "dcmtk/dcmdata/dcitem.h"    /* for class DcmItem */
+#include "dcmtk/dcmdata/dcsequen.h"  /* for DcmSequenceOfItems */
 
 // static member variables
 OFList<DcmCodecList *> DcmCodecList::registeredCodecs;
@@ -99,8 +99,42 @@ OFCondition DcmCodec::convertToSecondaryCapture(DcmItem *dataset)
   return result;
 }
 
-OFCondition DcmCodec::newInstance(DcmItem *dataset)
+OFCondition DcmCodec::insertCodeSequence(
+    DcmItem *dataset,
+    const DcmTagKey &tagKey,
+    const char *codingSchemeDesignator,
+    const char *codeValue,
+    const char *codeMeaning)
 {
+  if (dataset == NULL || codingSchemeDesignator == NULL || 
+     codeValue == NULL || codeMeaning == NULL) return EC_IllegalCall;
+
+  OFCondition result = EC_Normal;
+  DcmSequenceOfItems *dseq = new DcmSequenceOfItems(tagKey);
+  if (dseq)
+  {
+    DcmItem *ditem = new DcmItem();
+    if (ditem)
+    {
+      dseq->insert(ditem);
+      result = ditem->putAndInsertString(DCM_CodingSchemeDesignator, codingSchemeDesignator);
+      if (result.good()) result = ditem->putAndInsertString(DCM_CodeValue, codeValue);
+      if (result.good()) result = ditem->putAndInsertString(DCM_CodeMeaning, codeMeaning);
+    } else result = EC_MemoryExhausted;
+ 
+    // insert sequence into dataset if everything went well
+    if (result.good()) dataset->insert(dseq, OFTrue /*replaceOld*/); else delete dseq;
+  } else result = EC_MemoryExhausted;
+
+  return result;                
+}
+      
+OFCondition DcmCodec::newInstance(
+  DcmItem *dataset, 
+  const char *purposeOfReferenceCodingScheme,
+  const char *purposeOfReferenceCodeValue,
+  const char *purposeOfReferenceCodeMeaning)  
+{     
   if (dataset == NULL) return EC_IllegalCall;
   OFCondition result = EC_Normal;
 
@@ -136,6 +170,14 @@ OFCondition DcmCodec::newInstance(DcmItem *dataset)
             } else result = EC_MemoryExhausted;
           }
         } else result = EC_MemoryExhausted;
+        
+        if (result.good() && purposeOfReferenceCodingScheme && 
+           purposeOfReferenceCodeValue && purposeOfReferenceCodeMeaning)
+        {
+          // add purpose of reference code sequence
+          result = DcmCodec::insertCodeSequence(ditem, DCM_PurposeOfReferenceCodeSequence, 
+            purposeOfReferenceCodingScheme, purposeOfReferenceCodeValue, purposeOfReferenceCodeMeaning);
+        }
       } else result = EC_MemoryExhausted;
       if (result.good()) dataset->insert(dseq, OFTrue); else delete dseq;
     } else result = EC_MemoryExhausted;
@@ -163,7 +205,7 @@ OFCondition DcmCodec::updateImageType(DcmItem *dataset)
   if (dataset == NULL) return EC_IllegalCall;
 
   DcmStack stack;
-  OFString imageType("DERIVED\\SECONDARY");
+  OFString imageType("DERIVED");
   OFString a;
 
   /* find existing Image Type element */
@@ -171,9 +213,9 @@ OFCondition DcmCodec::updateImageType(DcmItem *dataset)
   if (status.good())
   {
     DcmElement *elem = OFstatic_cast(DcmElement *, stack.top());
-    unsigned long pos = 2;
+    unsigned long pos = 1;
 
-    // append old image type information beginning with third entry
+    // append old image type information beginning with second entry
     while ((elem->getOFString(a, pos++)).good())
     {
       imageType += "\\";
@@ -451,11 +493,20 @@ OFBool DcmCodecList::canChangeCoding(
 /*
 ** CVS/RCS Log:
 ** $Log: dccodec.cc,v $
-** Revision 1.1  2005/08/23 19:31:55  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:25  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.14  2005/12/08 15:40:58  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.13  2004/08/24 14:54:20  meichel
+**  Updated compression helper methods. Image type is not set to SECONDARY
+**   any more, support for the purpose of reference code sequence added.
 **
 ** Revision 1.12  2004/02/04 16:11:42  joergr
 ** Adapted type casts to new-style typecast operators defined in ofcast.h.

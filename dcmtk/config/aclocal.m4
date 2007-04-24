@@ -6,7 +6,7 @@ dnl
 dnl Authors: Andreas Barth, Marco Eichelberg
 dnl
 dnl Last Update:  $Author: braindead $
-dnl Revision:     $Revision: 1.2 $
+dnl Revision:     $Revision: 1.3 $
 dnl Status:       $State: Exp $
 dnl
 
@@ -1480,8 +1480,9 @@ AC_TYPEDEF_HELPER([$1],[],[AC_DEFINE_UNQUOTED(AC_TYPEDEF_TEMP)])
 
 dnl
 dnl $Log: aclocal.m4,v $
-dnl Revision 1.2  2006/11/17 16:54:49  braindead
-dnl - updated dcmtk autoconf stuff to work with newer versions
+dnl Revision 1.3  2007/04/24 09:53:49  braindead
+dnl - updated DCMTK to version 3.5.4
+dnl - merged Gianluca's WIN32 changes
 dnl
 dnl Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
 dnl - imported dcmtk354 sources

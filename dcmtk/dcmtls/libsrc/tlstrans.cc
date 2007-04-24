@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2002, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,15 +23,15 @@
  *    classes: DcmTLSConnection
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:02 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #ifdef WITH_OPENSSL
 
@@ -41,7 +41,7 @@
 #define INCLUDE_CERRNO
 #define INCLUDE_CSIGNAL
 #define INCLUDE_CTIME
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 #ifdef HAVE_SYS_TIME_H
@@ -64,11 +64,11 @@ END_EXTERN_C
 #include <GUSI.h>	/* Use the Grand Unified Sockets Interface (GUSI) on Macintosh */
 #endif
 
-#include "ofbmanip.h"
-#include "tlstrans.h"
-#include "tlslayer.h"
-#include "ofconsol.h"
-#include "dcompat.h"    /* to make sure we have a select prototype */
+#include "dcmtk/ofstd/ofbmanip.h"
+#include "dcmtk/dcmtls/tlstrans.h"
+#include "dcmtk/dcmtls/tlslayer.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/dcmnet/dcompat.h"    /* to make sure we have a select prototype */
 
 
 DcmTLSConnection::DcmTLSConnection(int openSocket, SSL *newTLSConnection)
@@ -342,11 +342,16 @@ void tlstrans_dummy_function()
 
 /*
  *  $Log: tlstrans.cc,v $
- *  Revision 1.1  2005/08/23 19:32:02  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:47  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:14  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.10  2005/12/08 15:48:29  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.9  2002/11/27 12:58:39  meichel
  *  Adapted module dcmtls to use of new header file ofstdinc.h

@@ -1,2 +1,3 @@
+libdcmwlm.so
 Makefile
-*.a
+libdcmwlm-3.5.so.4

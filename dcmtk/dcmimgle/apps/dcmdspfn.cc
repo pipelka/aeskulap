@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2003, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: export display curves to a text file
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:07 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:39 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,20 +31,20 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
-#include "dctk.h"
-#include "cmdlnarg.h"
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
 
-#include "ofconapp.h"
-#include "ofcmdln.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/ofstd/ofcmdln.h"
 
-#include "digsdfn.h"
-#include "diciefn.h"
+#include "dcmtk/dcmimgle/digsdfn.h"
+#include "dcmtk/dcmimgle/diciefn.h"
 
 #define OFFIS_CONSOLE_APPLICATION "dcmdspfn"
 
@@ -341,11 +341,16 @@ int main(int argc, char *argv[])
  *
  * CVS/RCS Log:
  * $Log: dcmdspfn.cc,v $
- * Revision 1.1  2005/08/23 19:32:07  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:39  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.19  2005/12/08 15:42:39  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.18  2003/12/23 15:40:13  joergr
  * Replaced post-increment/decrement operators by pre-increment/decrement

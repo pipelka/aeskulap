@@ -14,7 +14,7 @@ configdir = @configdir@
 include $(configdir)/@common_makefile@
 
 
-all: include-all libsrc-all
+all: include-all libsrc-all apps-all tests-all
 
 install: install-bin install-doc install-support
 

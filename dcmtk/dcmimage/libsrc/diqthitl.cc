@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2002-2003, OFFIS
+ *  Copyright (C) 2002-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,16 +22,16 @@
  *  Purpose: class DcmQuantHistogramItemList
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "diqthitl.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmimage/diqthitl.h"
 
 
 DcmQuantHistogramItemList::DcmQuantHistogramItemList()
@@ -68,11 +68,16 @@ void DcmQuantHistogramItemList::moveto(DcmQuantHistogramItemPointer *array, unsi
  *
  * CVS/RCS Log:
  * $Log: diqthitl.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:47  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:09  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.3  2005/12/08 15:42:31  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.2  2003/12/17 16:34:14  joergr
  * Renamed parameters/variables "list" to avoid name clash with STL class.

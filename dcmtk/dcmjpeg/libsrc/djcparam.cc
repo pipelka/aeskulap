@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1997-2001, OFFIS
+ *  Copyright (C) 1997-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,17 +22,17 @@
  *  Purpose: codec parameter class for dcmjpeg codecs
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:53 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmjpeg/libsrc/djcparam.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "djcparam.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmjpeg/djcparam.h"
 
 DJCodecParameter::DJCodecParameter(
     E_CompressionColorSpaceConversion pCompressionCSConversion,
@@ -57,7 +57,10 @@ DJCodecParameter::DJCodecParameter(
     unsigned long pRoiWidth,
     unsigned long pRoiHeight,
     OFBool pUsePixelValues,
-    OFBool pUseModalityRescale)
+    OFBool pUseModalityRescale,
+    OFBool pAcceptWrongPaletteTags,
+    OFBool pAcrNemaCompatibility,
+    OFBool pTrueLosslessMode)
 : DcmCodecParameter()
 , compressionCSConversion(pCompressionCSConversion)
 , decompressionCSConversion(pDecompressionCSConversion)
@@ -81,6 +84,9 @@ DJCodecParameter::DJCodecParameter(
 , roiHeight(pRoiHeight)
 , usePixelValues(pUsePixelValues)
 , useModalityRescale(pUseModalityRescale)
+, acceptWrongPaletteTags(pAcceptWrongPaletteTags)
+, acrNemaCompatibility(pAcrNemaCompatibility)
+, trueLosslessMode(pTrueLosslessMode)
 , verboseMode(pVerbose)
 {
 }
@@ -110,6 +116,7 @@ DJCodecParameter::DJCodecParameter(const DJCodecParameter& arg)
 , roiHeight(arg.roiHeight)
 , usePixelValues(arg.usePixelValues)
 , useModalityRescale(arg.useModalityRescale)
+, trueLosslessMode(arg.trueLosslessMode)
 , verboseMode(arg.verboseMode)
 {
 }
@@ -117,11 +124,11 @@ DJCodecParameter::DJCodecParameter(const DJCodecParameter& arg)
 DJCodecParameter::~DJCodecParameter()
 {
 }
-  
+
 DcmCodecParameter *DJCodecParameter::clone() const
 {
   return new DJCodecParameter(*this);
-} 
+}
 
 const char *DJCodecParameter::className() const
 {
@@ -132,11 +139,28 @@ const char *DJCodecParameter::className() const
 /*
  * CVS/RCS Log
  * $Log: djcparam.cc,v $
- * Revision 1.1  2005/08/23 19:31:53  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:26  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:41  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.7  2005/12/08 15:43:28  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.6  2005/11/29 15:56:55  onken
+ * Added commandline options --accept-acr-nema and --accept-palettes
+ * (same as in dcm2pnm) to dcmcjpeg and extended dcmjpeg to support
+ * these options. Thanks to Gilles Mevel for suggestion.
+ *
+ * Revision 1.4  2005/11/29 08:48:45  onken
+ * Added support for "true" lossless compression in dcmjpeg, that doesn't
+ *   use dcmimage classes, but compresses raw pixel data (8 and 16 bit) to
+ *   avoid losses in quality caused by color space conversions or modality
+ *   transformations etc.
+ * Corresponding commandline option in dcmcjpeg (new default)
  *
  * Revision 1.3  2001/12/18 10:26:28  meichel
  * Added missing initialization in copy constructor

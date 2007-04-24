@@ -11,7 +11,7 @@ include @common_makefile@
 
 all:
 
-install: install-lib
+install:
 
 install-bin:
 
@@ -30,15 +30,17 @@ libsrc-all:
 
 include-install:
 	./mkinstalldirs $(includedir)
-	$(INSTALL_DATA) include/osconfig.h $(includedir)
-	$(INSTALL_DATA) include/cfunix.h $(includedir)
+	./mkinstalldirs $(includedir)/dcmtk
+	./mkinstalldirs $(includedir)/dcmtk/config
+	$(INSTALL_DATA) include/dcmtk/config/osconfig.h $(includedir)/dcmtk/config
+	$(INSTALL_DATA) include/dcmtk/config/cfunix.h $(includedir)/dcmtk/config
 
 clean:
-	(cd include; rm -f $(TRASH))
+	(cd include/dcmtk/config; rm -f $(TRASH))
 	rm -rf $(TRASH)
 
 distclean:
-	(cd include; rm -f $(DISTTRASH) cfunix.h)
+	(cd include/dcmtk/config; rm -f $(DISTTRASH) cfunix.h)
 	rm -rf $(DISTTRASH) Makefile.def
 
 dependencies:

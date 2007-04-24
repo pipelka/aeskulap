@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Implementation of class DcmSequenceOfItems
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:56 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,40 +31,42 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "ofstream.h"
-#include "ofstd.h"
-#include "ofcast.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofcast.h"
 
-#include "dcsequen.h"
-#include "dcitem.h"
-#include "dcdirrec.h"
-#include "dcvr.h"
-#include "dcpxitem.h"
-#include "dcswap.h"
-#include "dcdebug.h"
-#include "dcmetinf.h"
-#include "dcdeftag.h"
-#include "dcistrma.h"    /* for class DcmInputStream */
-#include "dcostrma.h"    /* for class DcmOutputStream */
+#include "dcmtk/dcmdata/dcsequen.h"
+#include "dcmtk/dcmdata/dcitem.h"
+#include "dcmtk/dcmdata/dcdirrec.h"
+#include "dcmtk/dcmdata/dcvr.h"
+#include "dcmtk/dcmdata/dcpxitem.h"
+#include "dcmtk/dcmdata/dcswap.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcmetinf.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/dcistrma.h"    /* for class DcmInputStream */
+#include "dcmtk/dcmdata/dcostrma.h"    /* for class DcmOutputStream */
 
 
 // ********************************
 
 
-DcmSequenceOfItems::DcmSequenceOfItems(const DcmTag &tag,
-                                       const Uint32 len)
-  : DcmElement(tag, len),
-    itemList(NULL),
-    lastItemComplete(OFTrue),
-    fStartPosition(0)
+DcmSequenceOfItems::DcmSequenceOfItems(
+  const DcmTag &tag,
+  const Uint32 len,
+  OFBool readAsUN)
+: DcmElement(tag, len),
+  itemList(new DcmList),
+  lastItemComplete(OFTrue),
+  fStartPosition(0),
+  readAsUN_(readAsUN)
 {
-    itemList = new DcmList;
 }
 
 
@@ -73,58 +75,19 @@ DcmSequenceOfItems::DcmSequenceOfItems(const DcmTag &tag,
 
 DcmSequenceOfItems::DcmSequenceOfItems(const DcmSequenceOfItems &old)
   : DcmElement(old),
-    itemList(NULL),
-    lastItemComplete(OFTrue),
-    fStartPosition(old.fStartPosition)
+    itemList(new DcmList),
+    lastItemComplete(old.lastItemComplete),
+    fStartPosition(old.fStartPosition),
+    readAsUN_(old.readAsUN_)
 {
-    itemList = new DcmList;
-
-    switch (old.ident())
+    if (!old.itemList->empty())
     {
-        case EVR_SQ:
-        case EVR_pixelSQ:
-        case EVR_fileFormat:
-            if (!old.itemList->empty())
-            {
-                DcmObject *oldDO;
-                DcmObject *newDO;
-                itemList->seek(ELP_first);
-                old.itemList->seek(ELP_first);
-                do {
-                    oldDO = old.itemList->get();
-                    switch (oldDO->ident())
-                    {
-                        case EVR_item:
-                            newDO = new DcmItem(*OFstatic_cast(DcmItem *, oldDO));
-                            break;
-                        case EVR_pixelItem:
-                            newDO = new DcmPixelItem(*OFstatic_cast(DcmPixelItem*, oldDO));
-                            break;
-                        case EVR_metainfo:
-                            newDO = new DcmMetaInfo(*OFstatic_cast(DcmMetaInfo*, oldDO));
-                            break;
-                        case EVR_dataset:
-                            newDO = new DcmDataset(*OFstatic_cast(DcmDataset *, oldDO));
-                            break;
-                        default:
-                            newDO = new DcmItem(oldDO->getTag());
-                            ofConsole.lockCerr() << "DcmSequenceOfItems: Non-item element ("
-                                 << hex << setfill('0')
-                                 << setw(4) << oldDO->getGTag() << ","
-                                 << setw(4) << oldDO->getETag()
-                                 << dec << setfill(' ')
-                                 << ") found" << endl;
-                            ofConsole.unlockCerr();
-                            break;
-                    }
-
-                    itemList->insert(newDO, ELP_next);
-                } while (old.itemList->seek(ELP_next));
-            }
-            break;
-        default:
-            // wrong use of copy constructor, should never happen
-            break;
+        itemList->seek(ELP_first);
+        old.itemList->seek(ELP_first);
+        do 
+        {
+            itemList->insert(old.itemList->get()->clone(), ELP_next);
+        } while (old.itemList->seek(ELP_next));
     }
 }
 
@@ -153,7 +116,8 @@ DcmSequenceOfItems &DcmSequenceOfItems::operator=(const DcmSequenceOfItems &obj)
     DcmElement::operator=(obj);
     lastItemComplete = obj.lastItemComplete;
     fStartPosition = obj.fStartPosition;
-
+    readAsUN_ = obj.readAsUN_;
+    
     DcmList *newList = new DcmList; // DcmList has no copy constructor. Need to copy ourselves.
     if (newList)
     {
@@ -411,9 +375,9 @@ OFCondition DcmSequenceOfItems::makeSubObject(DcmObject *&subObject,
         case EVR_na:
             if (newTag.getXTag() == DCM_Item)
             {
-                /*if (getTag().getXTag() == DCM_DirectoryRecordSequence)
+                if (getTag().getXTag() == DCM_DirectoryRecordSequence)
                     subItem = new DcmDirectoryRecord(newTag, newLength);
-                else*/
+                else
                     subItem = new DcmItem(newTag, newLength);
             }
             else if (newTag.getXTag() == DCM_SequenceDelimitationItem)
@@ -476,7 +440,7 @@ OFCondition DcmSequenceOfItems::readTagAndLength(DcmInputStream &inStream,
         tag = newTag; // return value: assignment-operator
     }
 
-    debug(4, ("in Sequ.readTag errorFlag = %s", l_error.text()));
+    DCM_dcmdataDebug(4, ("in Sequ.readTag errorFlag = %s", l_error.text()));
     return l_error;
 }
 
@@ -507,14 +471,14 @@ OFCondition DcmSequenceOfItems::readSubItem(DcmInputStream &inStream,
         inStream.putback();
         ofConsole.lockCerr() << "DcmSequenceOfItems: Parse error in sequence, found " << newTag << " instead of item tag" << endl;
         ofConsole.unlockCerr();
-        debug(1, ("Warning: DcmSequenceOfItems::readSubItem(): parse error occured:"
+        DCM_dcmdataDebug(1, ("Warning: DcmSequenceOfItems::readSubItem(): parse error occured:"
             " (0x%4.4hx,0x%4.4hx)", newTag.getGTag(), newTag.getETag()));
     }
     else if (l_error != EC_SequEnd)
     {
         ofConsole.lockCerr() << "DcmSequenceOfItems: Parse error in sequence, found " << newTag << " instead of a sequence delimiter" << endl;
         ofConsole.unlockCerr();
-        debug(1, ("Error: DcmSequenceOfItems::readSubItem(): cannot create SubItem"
+        DCM_dcmdataDebug(1, ("Error: DcmSequenceOfItems::readSubItem(): cannot create SubItem"
             " (0x%4.4hx,0x%4.4hx)", newTag.getGTag(), newTag.getETag()));
     } else {
         // inStream.UnsetPutbackMark(); // not needed anymore with new stream architecture
@@ -549,6 +513,8 @@ OFCondition DcmSequenceOfItems::read(DcmInputStream &inStream,
                 fTransferState = ERW_inWork;
             }
 
+            E_TransferSyntax readxfer = readAsUN_ ? EXS_LittleEndianImplicit : xfer;
+            
             itemList->seek(ELP_last); // append data at end
             while (inStream.good() && ((fTransferredBytes < Length) || !lastItemComplete))
             {
@@ -557,7 +523,7 @@ OFCondition DcmSequenceOfItems::read(DcmInputStream &inStream,
 
                 if (lastItemComplete)
                 {
-                    errorFlag = readTagAndLength(inStream, xfer, newTag, newValueLength);
+                    errorFlag = readTagAndLength(inStream, readxfer, newTag, newValueLength);
 
                     if (errorFlag.bad())
                         break;                  // finish while loop
@@ -565,15 +531,13 @@ OFCondition DcmSequenceOfItems::read(DcmInputStream &inStream,
                         fTransferredBytes += 8;
 
                     lastItemComplete = OFFalse;
-                    errorFlag = readSubItem(inStream, newTag, newValueLength,
-                                            xfer, glenc, maxReadLength);
+                    errorFlag = readSubItem(inStream, newTag, newValueLength, readxfer, glenc, maxReadLength);
                     if (errorFlag.good())
                         lastItemComplete = OFTrue;
                 }
                 else
                 {
-                    errorFlag = itemList->get()->read(inStream, xfer, glenc,
-                                                      maxReadLength);
+                    errorFlag = itemList->get()->read(inStream, readxfer, glenc, maxReadLength);
                     if (errorFlag.good())
                         lastItemComplete = OFTrue;
                 }
@@ -864,9 +828,9 @@ OFCondition DcmSequenceOfItems::insert(DcmItem *item,
         itemList->insert(item, whichSide);
         if (before)
         {
-            debug(3, ("DcmSequenceOfItems::insert() item inserted before position %d", where));
+            DCM_dcmdataDebug(3, ("DcmSequenceOfItems::insert() item inserted before position %d", where));
         } else {
-            debug(3, ("DcmSequenceOfItems::insert() item inserted after position %d", where));
+            DCM_dcmdataDebug(3, ("DcmSequenceOfItems::insert() item inserted after position %d", where));
         }
     } else
         errorFlag = EC_IllegalCall;
@@ -1280,14 +1244,34 @@ OFBool DcmSequenceOfItems::containsUnknownVR() const
 /*
 ** CVS/RCS Log:
 ** $Log: dcsequen.cc,v $
-** Revision 1.1  2005/08/23 19:31:56  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:25  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.2  2005/08/11 20:55:04  pipelka
-** - started network client
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+**
+** Revision 1.61  2005/12/08 15:41:36  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.60  2005/11/28 15:53:13  meichel
+** Renamed macros in dcdebug.h
+**
+** Revision 1.59  2005/11/15 18:28:04  meichel
+** Added new global flag dcmEnableUnknownVRConversion that enables the automatic
+**   re-conversion of defined length UN elements read in an explicit VR transfer
+**   syntax, if the real VR is defined in the data dictionary. Default is OFFalse,
+**   i.e. to retain the previous behavior.
+**
+** Revision 1.58  2005/11/07 16:59:26  meichel
+** Cleaned up some copy constructors in the DcmObject hierarchy.
+**
+** Revision 1.57  2005/05/10 15:27:18  meichel
+** Added support for reading UN elements with undefined length according
+**   to CP 246. The global flag dcmEnableCP246Support allows to revert to the
+**   prior behaviour in which UN elements with undefined length were parsed
+**   like a normal explicit VR SQ element.
 **
 ** Revision 1.56  2004/04/27 09:21:27  wilkens
 ** Fixed a bug in dcelem.cc which occurs when one is serializing a dataset

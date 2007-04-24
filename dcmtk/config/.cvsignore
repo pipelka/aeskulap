@@ -1,10 +1,7 @@
-config.log
-config.status
-lzwtest.tif
-Makefile
-Makefile.def
 autom4te.cache
+config.status
+Makefile
 configure
+CMakeLists.txt
 confmod
-configure.lineno
-Makefile.def.in.ori
+Makefile.def

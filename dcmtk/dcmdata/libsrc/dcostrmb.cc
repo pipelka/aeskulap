@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2002-2004, OFFIS
+ *  Copyright (C) 2002-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,18 +23,18 @@
  *    implements output to blocks of memory as needed in the dcmnet module.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:58 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "dcostrmb.h"
-#include "ofconsol.h"
-#include "dcerror.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dcostrmb.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/dcmdata/dcerror.h"
 
 
 DcmBufferConsumer::DcmBufferConsumer(void *buf, Uint32 bufLen)
@@ -124,11 +124,16 @@ void DcmOutputBufferStream::flushBuffer(void *& buffer, Uint32& length)
 /*
  * CVS/RCS Log:
  * $Log: dcostrmb.cc,v $
- * Revision 1.1  2005/08/23 19:31:58  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:26  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.4  2005/12/08 15:41:21  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.3  2004/02/04 16:36:47  joergr
  * Adapted type casts to new-style typecast operators defined in ofcast.h.

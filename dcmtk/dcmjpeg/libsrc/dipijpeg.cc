@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2001-2004, OFFIS
+ *  Copyright (C) 2001-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,9 +22,9 @@
  *  Purpose: Implements JPEG interface for plugable image formats
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:53 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmjpeg/libsrc/dipijpeg.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,15 +32,15 @@
  */
 
 
-#include "osconfig.h"
-#include "ofconsol.h"
-#include "dctypes.h"
-#include "diimage.h"
-#include "dipijpeg.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/dcmdata/dctypes.h"
+#include "dcmtk/dcmimgle/diimage.h"
+#include "dcmtk/dcmjpeg/dipijpeg.h"
 
 #define INCLUDE_CSETJMP
 #define INCLUDE_CSTDIO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 #define boolean ijg_boolean
@@ -257,11 +257,16 @@ OFString DiJPEGPlugin::getLibraryVersionString()
  *
  * CVS/RCS Log:
  * $Log: dipijpeg.cc,v $
- * Revision 1.1  2005/08/23 19:31:53  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:26  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:41  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.9  2005/12/08 15:43:25  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.8  2004/02/06 11:20:59  joergr
  * Distinguish more clearly between const and non-const access to pixel data.

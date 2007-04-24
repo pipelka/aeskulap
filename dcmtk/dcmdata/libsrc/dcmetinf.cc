@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Implementation of class DcmMetaInfo
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:58 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,24 +31,24 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "ofstream.h"
-#include "ofstd.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/ofstd/ofstd.h"
 
-#include "dcmetinf.h"
-#include "dcitem.h"
-#include "dcxfer.h"
-#include "dcvrul.h"
-#include "dcdebug.h"
-#include "dcdeftag.h"
-#include "dcdefine.h"
-#include "dcistrma.h"    /* for class DcmInputStream */
-#include "dcostrma.h"    /* for class DcmOutputStream */
+#include "dcmtk/dcmdata/dcmetinf.h"
+#include "dcmtk/dcmdata/dcitem.h"
+#include "dcmtk/dcmdata/dcxfer.h"
+#include "dcmtk/dcmdata/dcvrul.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/dcdefine.h"
+#include "dcmtk/dcmdata/dcistrma.h"    /* for class DcmInputStream */
+#include "dcmtk/dcmdata/dcostrma.h"    /* for class DcmOutputStream */
 
 
 const Uint32 DCM_GroupLengthElementLength = 12;
@@ -69,19 +69,11 @@ DcmMetaInfo::DcmMetaInfo()
 
 DcmMetaInfo::DcmMetaInfo(const DcmMetaInfo &old)
   : DcmItem(old),
-    preambleUsed(OFFalse),
+    preambleUsed(old.preambleUsed),
     fPreambleTransferState(ERW_init),
-    Xfer(META_HEADER_DEFAULT_TRANSFERSYNTAX)
+    Xfer(old.Xfer)
 {
-    if (old.ident() == EVR_metainfo)
-    {
-        Xfer = old.Xfer;
-        preambleUsed = old.preambleUsed;
-        memcpy(filePreamble, old.filePreamble, 128);
-    } else {
-        // wrong use of copy constructor
-        setPreamble();
-    }
+    memcpy(filePreamble, old.filePreamble, 128);
 }
 
 
@@ -192,7 +184,7 @@ OFBool DcmMetaInfo::checkAndReadPreamble(DcmInputStream &inStream,
         if (inStream.eos() && fTransferredBytes != preambleLen)
         {   // file too short, no preamble
             inStream.putback();
-            debug(4, ("DcmMetaInfo::checkAndReadPreamble() No Preamble available: File too short (%d) < %d bytes",
+            DCM_dcmdataDebug(4, ("DcmMetaInfo::checkAndReadPreamble() No Preamble available: File too short (%d) < %d bytes",
                 preambleLen, DCM_PreambleLen + DCM_MagicLen));
             retval = OFFalse;
             this -> setPreamble();
@@ -233,9 +225,9 @@ OFBool DcmMetaInfo::checkAndReadPreamble(DcmInputStream &inStream,
         } else
             newxfer = xferSyn.getXfer();
     }
-    Cdebug(4, retval==OFTrue, ("DcmMetaInfo::checkAndReadPreamble() found Preamble=[0x%8.8x]", (Uint32)(*filePreamble)));
-    Cdebug(4, retval==OFFalse, ("DcmMetaInfo::checkAndReadPreamble() No Preambel found!"));
-    debug(4, ("DcmMetaInfo::checkAndReadPreamble() TransferSyntax = %s", DcmXfer(newxfer).getXferName()));
+    DCM_dcmdataCDebug(4, retval==OFTrue, ("DcmMetaInfo::checkAndReadPreamble() found Preamble=[0x%8.8x]", (Uint32)(*filePreamble)));
+    DCM_dcmdataCDebug(4, retval==OFFalse, ("DcmMetaInfo::checkAndReadPreamble() No Preambel found!"));
+    DCM_dcmdataDebug(4, ("DcmMetaInfo::checkAndReadPreamble() TransferSyntax = %s", DcmXfer(newxfer).getXferName()));
     return retval;
 } // DcmMetaInfo::checkAndReadPreamble
 
@@ -297,7 +289,7 @@ OFCondition DcmMetaInfo::readGroupLength(DcmInputStream &inStream,
             if (l_error.good() && newTag.getXTag() == xtag && elementList->get() != NULL && newValueLength > 0)
             {
                 l_error = (OFstatic_cast(DcmUnsignedLong *, elementList->get()))->getUint32(headerLen);
-                debug(4, ("DcmMetaInfo::readGroupLength() Group Length of File Meta Header=%d", headerLen+bytesRead));
+                DCM_dcmdataDebug(4, ("DcmMetaInfo::readGroupLength() Group Length of File Meta Header=%d", headerLen+bytesRead));
             } else {
                 l_error = EC_CorruptedData;
                 ofConsole.lockCerr() << "DcmMetaInfo: No Group Length available in Meta Information Header" << endl;
@@ -305,7 +297,7 @@ OFCondition DcmMetaInfo::readGroupLength(DcmInputStream &inStream,
             }
         }
     }
-    debug(4, ("DcmMetaInfo::readGroupLength() returns error = %s", l_error.text()));
+    DCM_dcmdataDebug(4, ("DcmMetaInfo::readGroupLength() returns error = %s", l_error.text()));
     return l_error;
 }
 
@@ -360,7 +352,16 @@ OFCondition DcmMetaInfo::read(DcmInputStream &inStream,
                         Length = DCM_UndefinedLength;
                 }
             }
+#ifdef REJECT_FILE_IF_META_GROUP_LENGTH_ABSENT
+            // this is the old behaviour up to DCMTK 3.5.3: fail with EC_CorruptedData error code
+            // if the file meta header group length (0002,0000) is absent.
             if (fTransferState == ERW_inWork && Length != 0 && errorFlag.good())
+#else
+            // new behaviour: accept file without meta header group length, determine end of
+            // meta header based on heuristic that checks for group 0002 tags.
+            if (fTransferState == ERW_inWork && Length != 0 && ( errorFlag.good() || 
+                ((errorFlag == EC_CorruptedData) && (Length == DCM_UndefinedLength))))
+#endif
             {
                 while (inStream.good() && !inStream.eos() &&
                        ((Length < DCM_UndefinedLength && fTransferredBytes < Length) ||
@@ -519,11 +520,28 @@ OFCondition DcmMetaInfo::write(DcmOutputStream &outStream,
 /*
 ** CVS/RCS Log:
 ** $Log: dcmetinf.cc,v $
-** Revision 1.1  2005/08/23 19:31:58  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:26  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.37  2005/12/08 15:41:18  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.36  2005/11/28 15:53:13  meichel
+** Renamed macros in dcdebug.h
+**
+** Revision 1.35  2005/11/07 16:59:26  meichel
+** Cleaned up some copy constructors in the DcmObject hierarchy.
+**
+** Revision 1.34  2005/05/26 11:51:12  meichel
+** Now reading DICOM files in which the meta header group length attribute
+**   (0002,0000) is absent, based on a heuristic that checks for group 0002
+**   attribute tags. New behaviour can be disabled by compiling with the macro
+**   REJECT_FILE_IF_META_GROUP_LENGTH_ABSENT defined.
 **
 ** Revision 1.33  2004/02/04 16:35:00  joergr
 ** Adapted type casts to new-style typecast operators defined in ofcast.h.

@@ -28,8 +28,8 @@ objs = dcmimage.o didocu.o diimage.o diinpx.o diutils.o \
 	dimo1img.o dimo2img.o dimomod.o dimopx.o dimoopx.o \
 	diovlay.o diovdat.o diovpln.o diovlimg.o dibaslut.o diluptab.o \
 	didispfn.o didislut.o digsdfn.o digsdlut.o diciefn.o dicielut.o
-library = libdcmimgle.$(LIBEXT)
-
+library = libdcmimgle$(LIBEXT)
+librarydev = libdcmimgle.so
 
 all: $(library)
 
@@ -38,10 +38,12 @@ install: install-lib
 install-lib: $(library)
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
+	ln -sf $(library) $(librarydev)
 
 
 clean:

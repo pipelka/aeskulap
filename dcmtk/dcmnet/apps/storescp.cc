@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,26 +22,34 @@
  *  Purpose: Storage Service Class Provider (C-STORE operation)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
+ *  Update Date:      $Date: 2007/04/24 09:53:49 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/apps/storescp.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTRING
 #define INCLUDE_CSTDARG
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#define INCLUDE_CSIGNAL
+#include "dcmtk/ofstd/ofstdinc.h"
+
+#ifdef _WIN32
+#include <process.h>     /* needed for declaration of getpid() */
+#endif
 
 BEGIN_EXTERN_C
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>       /* needed on Solaris for O_RDONLY */
 #endif
 END_EXTERN_C
 
@@ -54,31 +62,45 @@ END_EXTERN_C
 #endif
 
 
-#include "dimse.h"
-#include "diutil.h"
-#include "dcfilefo.h"
-#include "dcdebug.h"
-#include "dcuid.h"
-#include "dcdict.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "ofstd.h"
-#include "ofdatime.h"
-#include "dcuid.h"         /* for dcmtk version name */
-#include "dicom.h"         /* for DICOM_APPLICATION_ACCEPTOR */
-#include "dcdeftag.h"      /* for DCM_StudyInstanceUID */
-#include "dcostrmz.h"      /* for dcmZlibCompressionLevel */
-#include "dcasccfg.h"      /* for class DcmAssociationConfiguration */
-#include "dcasccff.h"      /* for class DcmAssociationConfigurationFile */
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofdatime.h"
+#include "dcmtk/dcmdata/dcuid.h"         /* for dcmtk version name */
+#include "dcmtk/dcmnet/dicom.h"         /* for DICOM_APPLICATION_ACCEPTOR */
+#include "dcmtk/dcmdata/dcdeftag.h"      /* for DCM_StudyInstanceUID */
+#include "dcmtk/dcmdata/dcostrmz.h"      /* for dcmZlibCompressionLevel */
+#include "dcmtk/dcmnet/dcasccfg.h"      /* for class DcmAssociationConfiguration */
+#include "dcmtk/dcmnet/dcasccff.h"      /* for class DcmAssociationConfigurationFile */
 
 #ifdef WITH_OPENSSL
-#include "tlstrans.h"
-#include "tlslayer.h"
+#include "dcmtk/dcmtls/tlstrans.h"
+#include "dcmtk/dcmtls/tlslayer.h"
 #endif
 
 #ifdef WITH_ZLIB
 #include <zlib.h>          /* for zlibVersion() */
 #endif
+
+#if defined(HAVE_MKTEMP) && !defined(HAVE_PROTOTYPE_MKTEMP)
+extern "C" {
+char * mktemp(char *);
+}
+#endif
+
+// Solaris 2.5.1 has mkstemp() in libc.a but no prototype
+#if defined(HAVE_MKSTEMP) && !defined(HAVE_PROTOTYPE_MKSTEMP)
+extern "C" {
+int mkstemp(char *);
+}
+#endif
+
 
 #ifdef PRIVATE_STORESCP_DECLARATIONS
 PRIVATE_STORESCP_DECLARATIONS
@@ -105,14 +127,18 @@ static void executeOnEndOfStudy();
 static void renameOnEndOfStudy();
 static OFString replaceChars( const OFString &srcstr, const OFString &pattern, const OFString &substitute );
 static void executeCommand( const OFString &cmd );
-static void cleanChildren();
+static void cleanChildren(pid_t pid, OFBool synch);
 static OFCondition acceptUnknownContextsWithPreferredTransferSyntaxes(
          T_ASC_Parameters * params,
          const char* transferSyntaxes[],
          int transferSyntaxCount,
          T_ASC_SC_ROLE acceptedRole = ASC_SC_ROLE_DEFAULT);
+static int makeTempFile();
 
 OFBool             opt_uniqueFilenames = OFFalse;
+OFString           opt_fileNameExtension;
+OFBool             opt_timeNames = OFFalse;
+int            timeNameCounter = -1; // "serial number" to differentiate between files with same timestamp
 OFCmdUnsignedInt   opt_port = 0;
 OFBool             opt_refuseAssociation = OFFalse;
 OFBool             opt_rejectWithoutImplementationUID = OFFalse;
@@ -136,6 +162,7 @@ OFBool             opt_abortDuringStore = OFFalse;
 OFBool             opt_abortAfterStore = OFFalse;
 OFBool             opt_promiscuous = OFFalse;
 OFBool             opt_correctUIDPadding = OFFalse;
+OFBool             opt_inetd_mode = OFFalse;
 OFString           callingaetitle;  // calling AE title will be stored here
 OFString           calledaetitle;   // called AE title will be stored here
 const char *       opt_respondingaetitle = APPLICATIONTITLE;
@@ -147,23 +174,57 @@ OFString           subdirectoryPathAndName;
 OFList<OFString>   outputFileNameArray;
 static const char *opt_execOnReception = NULL;        // default: don't execute anything on reception
 static const char *opt_execOnEndOfStudy = NULL;       // default: don't execute anything on end of study
+
 OFString           lastStudySubdirectoryPathAndName;
 static OFBool      opt_renameOnEndOfStudy = OFFalse;  // default: don't rename any files on end of study
 static long        opt_endOfStudyTimeout = -1;        // default: no end of study timeout
 static OFBool      endOfStudyThroughTimeoutEvent = OFFalse;
 static const char *opt_configFile = NULL;
 static const char *opt_profileName = NULL;
+T_DIMSE_BlockingMode opt_blockMode = DIMSE_BLOCKING;
+int                opt_dimse_timeout = 0;
+int                opt_acse_timeout = 30;
+
+#if defined(HAVE_FORK) || defined(_WIN32)
+OFBool             opt_forkMode = OFFalse;
+#endif
+
+#ifdef _WIN32
+OFBool             opt_forkedChild = OFFalse;
+OFBool             opt_execSync = OFFalse;            // default: execute in background
+#endif
 
 #ifdef WITH_OPENSSL
 static int         opt_keyFileFormat = SSL_FILETYPE_PEM;
 static const char *opt_privateKeyFile = NULL;
 static const char *opt_certificateFile = NULL;
 static const char *opt_passwd = NULL;
+#if OPENSSL_VERSION_NUMBER >= 0x0090700fL
+static OFString    opt_ciphersuites(TLS1_TXT_RSA_WITH_AES_128_SHA ":" SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#else
 static OFString    opt_ciphersuites(SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#endif
 static const char *opt_readSeedFile = NULL;
 static const char *opt_writeSeedFile = NULL;
 static DcmCertificateVerification opt_certVerification = DCV_requireCertificate;
 static const char *opt_dhparam = NULL;
+#endif
+
+
+#ifdef HAVE_WAITPID
+/** signal handler for SIGCHLD signals that immediately cleans up
+ *  terminated children.
+ */
+#ifdef SIGNAL_HANDLER_WITH_ELLIPSE
+extern "C" void sigChildHandler(...)
+#else
+extern "C" void sigChildHandler(int)
+#endif
+{
+  int status = 0;
+  waitpid( -1, &status, WNOHANG );
+  signal(SIGCHLD, sigChildHandler);
+}
 #endif
 
 
@@ -193,7 +254,7 @@ int main(int argc, char *argv[])
   OFCommandLine cmd;
 
   cmd.setParamColumn(LONGCOL+SHORTCOL+4);
-  cmd.addParam("port", "tcp/ip port number to listen on");
+  cmd.addParam("port", "tcp/ip port number to listen on", OFCmdParam::PM_Optional);
 
   cmd.setOptionColumns(LONGCOL, SHORTCOL);
   cmd.addGroup("general options:", LONGCOL, SHORTCOL+2);
@@ -204,8 +265,15 @@ int main(int argc, char *argv[])
     OFString opt0 = "write output-files to (existing) directory p\n(default: ";
     opt0 += opt_outputDirectory;
     opt0 += ")";
-    cmd.addOption("--output-directory",          "-od",   1, "[p]ath: string",
-                                                             opt0.c_str());
+    cmd.addOption("--output-directory",          "-od",   1, "[p]ath: string", opt0.c_str());
+
+#if defined(HAVE_FORK) || defined(_WIN32)
+  cmd.addGroup("multi-process options:", LONGCOL, SHORTCOL+2);
+    cmd.addOption("--fork",                                  "fork child process for each association");
+#ifdef _WIN32
+    cmd.addOption("--forked-child",                          "process is forked child, internal use only");
+#endif
+#endif
 
   cmd.addGroup("network options:");
     cmd.addSubGroup("association negotiation profile from configuration file:");
@@ -218,6 +286,8 @@ int main(int argc, char *argv[])
       cmd.addOption("--prefer-lossless",        "+xs",       "prefer default JPEG lossless TS");
       cmd.addOption("--prefer-jpeg8",           "+xy",       "prefer default JPEG lossy TS for 8 bit data");
       cmd.addOption("--prefer-jpeg12",          "+xx",       "prefer default JPEG lossy TS for 12 bit data");
+      cmd.addOption("--prefer-j2k-lossless",    "+xv",       "prefer JPEG 2000 lossless TS");
+      cmd.addOption("--prefer-j2k-lossy",       "+xw",       "prefer JPEG 2000 lossy TS");
       cmd.addOption("--prefer-rle",             "+xr",       "prefer RLE lossless TS");
 #ifdef WITH_ZLIB
       cmd.addOption("--prefer-deflated",        "+xd",       "prefer deflated expl. VR little endian TS");
@@ -232,6 +302,14 @@ int main(int argc, char *argv[])
 #endif
 
     cmd.addSubGroup("other network options:");
+#ifdef HAVE_CONFIG_H
+      // this option is only offered on Posix platforms
+      cmd.addOption("--inetd",                  "-id",       "run from inetd super server (not with --fork)");
+#endif
+
+      cmd.addOption("--acse-timeout",           "-ta", 1, "[s]econds: integer (default: 30)", "timeout for ACSE messages");
+      cmd.addOption("--dimse-timeout",          "-td", 1, "[s]econds: integer (default: unlimited)", "timeout for DIMSE messages");
+
       OFString opt1 = "set my AE title (default: ";
       opt1 += APPLICATIONTITLE;
       opt1 += ")";
@@ -301,6 +379,9 @@ int main(int argc, char *argv[])
     cmd.addSubGroup("filename generation:");
       cmd.addOption("--default-filenames",      "-uf",       "generate filename from instance UID (default)");
       cmd.addOption("--unique-filenames",       "+uf",       "generate unique filenames");
+      cmd.addOption("--timenames",              "-tn",       "generate filename from creation time");
+      cmd.addOption("--filename-extension",     "-fe",   1,  "[e]xtension: string",
+                                                             "append e to all filenames");
 
   cmd.addGroup("event options:", LONGCOL, SHORTCOL+2);
     cmd.addOption(  "--exec-on-reception",      "-xcr",  1,  "[c]ommand: string",
@@ -310,6 +391,9 @@ int main(int argc, char *argv[])
     cmd.addOption(  "--rename-on-eostudy",      "-rns",      "(only w/ -ss) Having received and processed\nall C-STORE-Request messages that belong to\none study, rename output files according to\na certain pattern" );
     cmd.addOption(  "--eostudy-timeout",        "-tos",  1,  "[t]imeout: integer (only w/ -ss, -xcs or -rns)",
                                                              "specifies a timeout of t seconds for\nend-of-study determination" );
+#ifdef _WIN32
+    cmd.addOption(  "--exec-sync",              "-xs",       "execute command synchronously in foreground" );
+#endif
 
 #ifdef WITH_OPENSSL
   cmd.addGroup("transport layer security (TLS) options:");
@@ -376,7 +460,76 @@ int main(int argc, char *argv[])
 
     /* command line parameters */
 
-    app.checkParam(cmd.getParamAndCheckMinMax(1, opt_port, 1, 65535));
+    if (cmd.getParamCount() == 1)
+      app.checkParam(cmd.getParamAndCheckMinMax(1, opt_port, 1, 65535));
+
+#ifdef HAVE_CONFIG_H
+     if (cmd.findOption("--inetd"))
+     {
+       opt_inetd_mode = OFTrue;
+
+       // duplicate stdin, which is the socket passed by inetd
+       int inetd_fd = dup(0);
+       if (inetd_fd < 0) exit(99);
+
+       close(0); // close stdin
+       close(1); // close stdout
+       close(2); // close stderr
+
+       // open new file descriptor for stdin
+       int fd = open("/dev/null",O_RDONLY);
+       if (fd != 0) exit(99);
+
+       // create new file descriptor for stdout
+       fd = makeTempFile();
+       if (fd != 1) exit(99);
+
+       // create new file descriptor for stderr
+       fd = makeTempFile();
+       if (fd != 2) exit(99);
+
+       dcmExternalSocketHandle.set(inetd_fd);
+
+       // the port number is not really used. Set to non-privileged port number
+       // to avoid failing the privilege test.
+       opt_port = 1024;
+     }
+#endif
+
+#if defined(HAVE_FORK) || defined(_WIN32)
+      if (cmd.findOption("--fork"))
+      {
+        app.checkConflict("--inetd", "--fork", opt_inetd_mode);
+        opt_forkMode = OFTrue;
+      }
+#ifdef _WIN32
+      if (cmd.findOption("--forked-child"))
+      {
+        opt_forkedChild = OFTrue;
+      }
+#endif
+#endif
+
+      if (cmd.findOption("--acse-timeout"))
+      {
+        OFCmdSignedInt opt_timeout = 0;
+        app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
+        opt_acse_timeout = OFstatic_cast(int, opt_timeout);
+      }
+
+      if (cmd.findOption("--dimse-timeout"))
+      {
+        OFCmdSignedInt opt_timeout = 0;
+        app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
+        opt_dimse_timeout = OFstatic_cast(int, opt_timeout);
+        opt_blockMode = DIMSE_NONBLOCKING;
+      }
+
+    // omitting the port number is only allowed in inetd mode
+    if ((! opt_inetd_mode) && (cmd.getParamCount() == 0))
+    {
+          app.printError("Missing parameter port");
+    }
 
     if (cmd.findOption("--verbose")) opt_verbose=OFTrue;
     if (cmd.findOption("--debug"))
@@ -389,17 +542,19 @@ int main(int argc, char *argv[])
     if (cmd.findOption("--output-directory")) app.checkValue(cmd.getValue(opt_outputDirectory));
 
     cmd.beginOptionBlock();
-    if (cmd.findOption("--prefer-uncompr"))  opt_networkTransferSyntax = EXS_Unknown;
-    if (cmd.findOption("--prefer-little"))   opt_networkTransferSyntax = EXS_LittleEndianExplicit;
-    if (cmd.findOption("--prefer-big"))      opt_networkTransferSyntax = EXS_BigEndianExplicit;
-    if (cmd.findOption("--prefer-lossless")) opt_networkTransferSyntax = EXS_JPEGProcess14SV1TransferSyntax;
-    if (cmd.findOption("--prefer-jpeg8"))    opt_networkTransferSyntax = EXS_JPEGProcess1TransferSyntax;
-    if (cmd.findOption("--prefer-jpeg12"))   opt_networkTransferSyntax = EXS_JPEGProcess2_4TransferSyntax;
-    if (cmd.findOption("--prefer-rle"))      opt_networkTransferSyntax = EXS_RLELossless;
+    if (cmd.findOption("--prefer-uncompr"))      opt_networkTransferSyntax = EXS_Unknown;
+    if (cmd.findOption("--prefer-little"))       opt_networkTransferSyntax = EXS_LittleEndianExplicit;
+    if (cmd.findOption("--prefer-big"))          opt_networkTransferSyntax = EXS_BigEndianExplicit;
+    if (cmd.findOption("--prefer-lossless"))     opt_networkTransferSyntax = EXS_JPEGProcess14SV1TransferSyntax;
+    if (cmd.findOption("--prefer-jpeg8"))        opt_networkTransferSyntax = EXS_JPEGProcess1TransferSyntax;
+    if (cmd.findOption("--prefer-jpeg12"))       opt_networkTransferSyntax = EXS_JPEGProcess2_4TransferSyntax;
+    if (cmd.findOption("--prefer-j2k-lossless")) opt_networkTransferSyntax = EXS_JPEG2000LosslessOnly;
+    if (cmd.findOption("--prefer-j2k-lossy"))    opt_networkTransferSyntax = EXS_JPEG2000;
+    if (cmd.findOption("--prefer-rle"))          opt_networkTransferSyntax = EXS_RLELossless;
 #ifdef WITH_ZLIB
-    if (cmd.findOption("--prefer-deflated")) opt_networkTransferSyntax = EXS_DeflatedLittleEndianExplicit;
+    if (cmd.findOption("--prefer-deflated"))     opt_networkTransferSyntax = EXS_DeflatedLittleEndianExplicit;
 #endif
-    if (cmd.findOption("--implicit"))        opt_networkTransferSyntax = EXS_LittleEndianImplicit;
+    if (cmd.findOption("--implicit"))            opt_networkTransferSyntax = EXS_LittleEndianImplicit;
     cmd.endOptionBlock();
 
     if (cmd.findOption("--aetitle")) app.checkValue(cmd.getValue(opt_respondingaetitle));
@@ -494,6 +649,8 @@ int main(int argc, char *argv[])
       app.checkConflict("--write-xfer-little", "--prefer-lossless", opt_networkTransferSyntax==EXS_JPEGProcess14SV1TransferSyntax);
       app.checkConflict("--write-xfer-little", "--prefer-jpeg8", opt_networkTransferSyntax==EXS_JPEGProcess1TransferSyntax);
       app.checkConflict("--write-xfer-little", "--prefer-jpeg12", opt_networkTransferSyntax==EXS_JPEGProcess2_4TransferSyntax);
+      app.checkConflict("--write-xfer-little", "--prefer-j2k-lossy", opt_networkTransferSyntax==EXS_JPEG2000);
+      app.checkConflict("--write-xfer-little", "--prefer-j2k-lossless", opt_networkTransferSyntax==EXS_JPEG2000LosslessOnly);
       app.checkConflict("--write-xfer-little", "--prefer-rle", opt_networkTransferSyntax==EXS_RLELossless);
       opt_writeTransferSyntax = EXS_LittleEndianExplicit;
     }
@@ -503,6 +660,8 @@ int main(int argc, char *argv[])
       app.checkConflict("--write-xfer-big", "--prefer-lossless", opt_networkTransferSyntax==EXS_JPEGProcess14SV1TransferSyntax);
       app.checkConflict("--write-xfer-big", "--prefer-jpeg8", opt_networkTransferSyntax==EXS_JPEGProcess1TransferSyntax);
       app.checkConflict("--write-xfer-big", "--prefer-jpeg12", opt_networkTransferSyntax==EXS_JPEGProcess2_4TransferSyntax);
+      app.checkConflict("--write-xfer-big", "--prefer-j2k-lossy", opt_networkTransferSyntax==EXS_JPEG2000);
+      app.checkConflict("--write-xfer-big", "--prefer-j2k-lossless", opt_networkTransferSyntax==EXS_JPEG2000LosslessOnly);
       app.checkConflict("--write-xfer-big", "--prefer-rle", opt_networkTransferSyntax==EXS_RLELossless);
       opt_writeTransferSyntax = EXS_BigEndianExplicit;
     }
@@ -512,6 +671,8 @@ int main(int argc, char *argv[])
       app.checkConflict("--write-xfer-implicit", "--prefer-lossless", opt_networkTransferSyntax==EXS_JPEGProcess14SV1TransferSyntax);
       app.checkConflict("--write-xfer-implicit", "--prefer-jpeg8", opt_networkTransferSyntax==EXS_JPEGProcess1TransferSyntax);
       app.checkConflict("--write-xfer-implicit", "--prefer-jpeg12", opt_networkTransferSyntax==EXS_JPEGProcess2_4TransferSyntax);
+      app.checkConflict("--write-xfer-implicit", "--prefer-j2k-lossy", opt_networkTransferSyntax==EXS_JPEG2000);
+      app.checkConflict("--write-xfer-implicit", "--prefer-j2k-lossless", opt_networkTransferSyntax==EXS_JPEG2000LosslessOnly);
       app.checkConflict("--write-xfer-implicit", "--prefer-rle", opt_networkTransferSyntax==EXS_RLELossless);
       opt_writeTransferSyntax = EXS_LittleEndianImplicit;
     }
@@ -522,6 +683,8 @@ int main(int argc, char *argv[])
       app.checkConflict("--write-xfer-deflated", "--prefer-lossless", opt_networkTransferSyntax==EXS_JPEGProcess14SV1TransferSyntax);
       app.checkConflict("--write-xfer-deflated", "--prefer-jpeg8", opt_networkTransferSyntax==EXS_JPEGProcess1TransferSyntax);
       app.checkConflict("--write-xfer-deflated", "--prefer-jpeg12", opt_networkTransferSyntax==EXS_JPEGProcess2_4TransferSyntax);
+      app.checkConflict("--write-xfer-deflated", "--prefer-j2k-lossy", opt_networkTransferSyntax==EXS_JPEG2000);
+      app.checkConflict("--write-xfer-deflated", "--prefer-j2k-lossless", opt_networkTransferSyntax==EXS_JPEG2000LosslessOnly);
       app.checkConflict("--write-xfer-deflated", "--prefer-rle", opt_networkTransferSyntax==EXS_RLELossless);
       opt_writeTransferSyntax = EXS_DeflatedLittleEndianExplicit;
     }
@@ -609,6 +772,19 @@ int main(int argc, char *argv[])
     if (cmd.findOption("--unique-filenames")) opt_uniqueFilenames = OFTrue;
     cmd.endOptionBlock();
 
+    if (cmd.findOption("--timenames")) opt_timeNames = OFTrue;
+    if (cmd.findOption("--filename-extension"))
+        app.checkValue(cmd.getValue(opt_fileNameExtension));
+    if (cmd.findOption("--timenames"))
+        app.checkConflict("--timenames", "--unique-filenames", opt_uniqueFilenames);
+
+    if (cmd.findOption("--sort-conc-studies"))
+    {
+      app.checkConflict("--sort-conc-studies", "--bit-preserving", opt_bitPreserving);
+      app.checkValue(cmd.getValue(opt_sortConcerningStudies));
+    }
+
+
     if (cmd.findOption("--exec-on-reception")) app.checkValue(cmd.getValue(opt_execOnReception));
 
     if (cmd.findOption("--exec-on-eostudy"))
@@ -629,6 +805,11 @@ int main(int argc, char *argv[])
         app.printError("--eostudy-timeout only in combination with --sort-conc-studies, --exec-on-eostudy or --rename-on-eostudy");
       app.checkValue(cmd.getValueAndCheckMin(opt_endOfStudyTimeout, 0));
     }
+
+#ifdef _WIN32
+    if (cmd.findOption("--exec-sync")) opt_execSync = OFTrue;
+#endif
+
   }
 
 #ifdef WITH_OPENSSL
@@ -767,8 +948,43 @@ int main(int argc, char *argv[])
     }
   }
 
+#ifdef HAVE_FORK
+    if (opt_forkMode)
+      DUL_requestForkOnTransportConnectionReceipt(argc, argv);
+#elif defined(_WIN32)
+  if (opt_forkedChild)
+  {
+    // child process
+    DUL_markProcessAsForkedChild();
+
+    char buf[256];
+    DWORD bytesRead = 0;
+    HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
+
+    // read socket handle number from stdin, i.e. the anonymous pipe
+	// to which our parent process has written the handle number.
+    if (ReadFile(hStdIn, buf, sizeof(buf), &bytesRead, NULL))
+	{
+        // make sure buffer is zero terminated
+		buf[bytesRead] = '\0';
+        dcmExternalSocketHandle.set(atoi(buf));
+    }
+    else
+	{
+      CERR << "Error while reading socket handle: " << GetLastError() << endl;
+      return 1;
+    }
+  }
+  else
+  {
+    // parent process
+    if (opt_forkMode)
+      DUL_requestForkOnTransportConnectionReceipt(argc, argv);
+  }
+#endif
+
   /* initialize network, i.e. create an instance of T_ASC_Network*. */
-  OFCondition cond = ASC_initializeNetwork(NET_ACCEPTOR, OFstatic_cast(int, opt_port), 1000, &net);
+  OFCondition cond = ASC_initializeNetwork(NET_ACCEPTOR, OFstatic_cast(int, opt_port), opt_acse_timeout, &net);
   if (cond.bad())
   {
     DimseCondition::dump(cond);
@@ -861,6 +1077,11 @@ int main(int argc, char *argv[])
 
 #endif
 
+#ifdef HAVE_WAITPID
+  // register signal handler
+  signal(SIGCHLD, sigChildHandler);
+#endif
+
   while (cond.good())
   {
     /* receive an association and acknowledge or reject it. If the association was */
@@ -868,7 +1089,7 @@ int main(int argc, char *argv[])
     cond = acceptAssociation(net, asccfg);
 
     /* remove zombie child processes */
-    cleanChildren();
+    cleanChildren(-1, OFFalse);
 #ifdef WITH_OPENSSL
     /* since storescp is usually terminated with SIGTERM or the like,
      * we write back an updated random seed after every association handled.
@@ -888,6 +1109,11 @@ int main(int argc, char *argv[])
       }
     }
 #endif
+    // if running in inetd mode, we always terminate after one association
+    if (dcmExternalSocketHandle.get() >= 0) break;
+
+    // if running in multi-process mode, always terminate child after one association
+    if (DUL_processIsForkedChild()) break;
 
   }
 
@@ -918,6 +1144,7 @@ static OFCondition acceptAssociation(T_ASC_Network *net, DcmAssociationConfigura
   char buf[BUFSIZ];
   T_ASC_Association *assoc;
   OFCondition cond;
+  OFString sprofile;
 
 #ifdef PRIVATE_STORESCP_VARIABLES
   PRIVATE_STORESCP_VARIABLES
@@ -937,6 +1164,12 @@ static OFCondition acceptAssociation(T_ASC_Network *net, DcmAssociationConfigura
     cond = ASC_receiveAssociation(net, &assoc, opt_maxPDU, NULL, NULL, opt_secureConnection);
   else
     cond = ASC_receiveAssociation(net, &assoc, opt_maxPDU, NULL, NULL, opt_secureConnection, DUL_NOBLOCK, OFstatic_cast(int, opt_endOfStudyTimeout));
+
+  if (cond.code() == DULC_FORKEDCHILD)
+  {
+      // if (opt_verbose) DimseCondition::dump(cond);
+      goto cleanup;
+  }
 
   // if some kind of error occured, take care of it
   if (cond.bad())
@@ -985,12 +1218,30 @@ static OFCondition acceptAssociation(T_ASC_Network *net, DcmAssociationConfigura
     goto cleanup;
   }
 
-  if (opt_verbose) printf("Association Received\n");
+  if (opt_verbose)
+  {
+#if defined(HAVE_FORK) || defined(_WIN32)
+      if (opt_forkMode)
+      {
+        printf("Association Received in %s process (pid: %ld)\n", (DUL_processIsForkedChild() ? "child" : "parent") , OFstatic_cast(long, getpid()));
+      }
+      else printf("Association Received\n");
+#else
+      printf("Association Received\n");
+#endif
+  }
 
   if (opt_debug)
   {
     printf("Parameters:\n");
     ASC_dumpParameters(assoc->params, COUT);
+
+    DIC_AE callingTitle;
+    DIC_AE calledTitle;
+    ASC_getAPTitles(assoc->params, callingTitle, calledTitle, NULL);
+
+    CERR << "called AE:  " << calledTitle << endl
+         << "calling AE: " << callingTitle << endl;
   }
 
   if (opt_refuseAssociation)
@@ -1057,6 +1308,22 @@ static OFCondition acceptAssociation(T_ASC_Network *net, DcmAssociationConfigura
       transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
       numTransferSyntaxes = 4;
       break;
+    case EXS_JPEG2000:
+      /* we prefer JPEG2000 Lossy */
+      transferSyntaxes[0] = UID_JPEG2000TransferSyntax;
+      transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+      transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
+      transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
+      numTransferSyntaxes = 4;
+      break;
+    case EXS_JPEG2000LosslessOnly:
+      /* we prefer JPEG2000 Lossless */
+      transferSyntaxes[0] = UID_JPEG2000LosslessOnlyTransferSyntax;
+      transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+      transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
+      transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
+      numTransferSyntaxes = 4;
+      break;
     case EXS_RLELossless:
       /* we prefer RLE Lossless */
       transferSyntaxes[0] = UID_RLELosslessTransferSyntax;
@@ -1098,7 +1365,6 @@ static OFCondition acceptAssociation(T_ASC_Network *net, DcmAssociationConfigura
   if (opt_profileName)
   {
     /* perform name mangling for config file key */
-    OFString sprofile;
     const char *c = opt_profileName;
     while (*c)
     {
@@ -1125,7 +1391,7 @@ static OFCondition acceptAssociation(T_ASC_Network *net, DcmAssociationConfigura
     }
 
     /* the array of Storage SOP Class UIDs comes from dcuid.h */
-    cond = ASC_acceptContextsWithPreferredTransferSyntaxes( assoc->params, dcmStorageSOPClassUIDs, numberOfDcmStorageSOPClassUIDs, transferSyntaxes, numTransferSyntaxes);
+    cond = ASC_acceptContextsWithPreferredTransferSyntaxes( assoc->params, dcmAllStorageSOPClassUIDs, numberOfAllDcmStorageSOPClassUIDs, transferSyntaxes, numTransferSyntaxes);
     if (cond.bad())
     {
       if (opt_verbose) DimseCondition::dump(cond);
@@ -1264,6 +1530,9 @@ static OFCondition acceptAssociation(T_ASC_Network *net, DcmAssociationConfigura
   }
 
 cleanup:
+
+  if (cond.code() == DULC_FORKEDCHILD) return cond;
+
   cond = ASC_dropSCPAssociation(assoc);
   if (cond.bad())
   {
@@ -1299,7 +1568,7 @@ processCommands(T_ASC_Association * assoc)
   DcmDataset *statusDetail = NULL;
 
   // start a loop to be able to receive more than one DIMSE command
-  while( cond == EC_Normal || cond == DIMSE_NODATAAVAILABLE )
+  while( cond == EC_Normal || cond == DIMSE_NODATAAVAILABLE || cond == DIMSE_OUTOFRESOURCES )
   {
     // receive a DIMSE command over the network
     if( opt_endOfStudyTimeout == -1 )
@@ -1526,7 +1795,7 @@ storeSCPCallback(
           // so that we know that executeOnEndOfStudy() might have to be executed later. In detail, this indicator
           // variable will contain the path and name of the last study's subdirectory, so that we can still remember
           // this directory, when we execute executeOnEndOfStudy(). The memory that is allocated for this variable
-          // here will be freed after the execution of executeOnEndOfStudy(). 
+          // here will be freed after the execution of executeOnEndOfStudy().
           if( ! lastStudyInstanceUID.empty() )
           {
             lastStudySubdirectoryPathAndName = subdirectoryPathAndName;
@@ -1540,9 +1809,9 @@ storeSCPCallback(
           dateTime.setCurrentDateTime();
           // create a name for the new subdirectory. pattern: "[opt_sortConcerningStudies]_[YYYYMMDD]_[HHMMSSMMM]" (use current datetime)
           char buf[32];
-          sprintf(buf, "_%04u%02u%02u_%02u%02u%02u%03u", 
+          sprintf(buf, "_%04u%02u%02u_%02u%02u%02u%03u",
             dateTime.getDate().getYear(), dateTime.getDate().getMonth(), dateTime.getDate().getDay(),
-            dateTime.getTime().getHour(), dateTime.getTime().getMinute(), dateTime.getTime().getIntSecond(), dateTime.getTime().getMilliSecond());          
+            dateTime.getTime().getHour(), dateTime.getTime().getMinute(), dateTime.getTime().getIntSecond(), dateTime.getTime().getMilliSecond());
           OFString subdirectoryName = opt_sortConcerningStudies;
           subdirectoryName += buf;
 
@@ -1570,6 +1839,11 @@ storeSCPCallback(
             rsp->DimseStatus = STATUS_STORE_Error_CannotUnderstand;
             return;
           }
+          // all objects of a study have been received, so a new subdirectory is started.
+          // ->timename counter can be reset, because the next filename can't cause a duplicate.
+          // if no reset would be done, files of a new study (->new directory) would start with a counter in filename
+          if (opt_timeNames)
+            timeNameCounter = -1;
         }
 
         // integrate subdirectory name into file name (note that cbdata->imageFileName currently contains both
@@ -1578,7 +1852,7 @@ storeSCPCallback(
         fileName = subdirectoryPathAndName;
         fileName += tmpstr5;
 
-        // update global variable outputFileNameArray 
+        // update global variable outputFileNameArray
         // (might be used in executeOnReception() and renameOnEndOfStudy)
         outputFileNameArray.push_back(++tmpstr5);
       }
@@ -1587,9 +1861,9 @@ storeSCPCallback(
       {
         fileName = cbdata->imageFileName;
 
-        // update global variables outputFileNameArray 
+        // update global variables outputFileNameArray
         // (might be used in executeOnReception() and renameOnEndOfStudy)
-        char *tmpstr6 = strrchr( fileName.c_str(), PATH_SEPARATOR );
+        const char *tmpstr6 = strrchr( fileName.c_str(), PATH_SEPARATOR );
         outputFileNameArray.push_back(++tmpstr6);
       }
 
@@ -1644,7 +1918,6 @@ storeSCPCallback(
 }
 
 
-
 static OFCondition storeSCP(
   T_ASC_Association *assoc,
   T_DIMSE_Message *msg,
@@ -1681,16 +1954,64 @@ static OFCondition storeSCP(
   }
   else
   {
+    //3 possibilities: create unique filenames (fn), create timestamp fn, create fn from SOP Instance UIDs
     if (opt_uniqueFilenames)
     {
       // create unique filename by generating a temporary UID and using ".X." as an infix
       char buf[70];
       dcmGenerateUniqueIdentifier(buf);
-      sprintf(imageFileName, "%s%c%s.X.%s", opt_outputDirectory.c_str(), PATH_SEPARATOR, dcmSOPClassUIDToModality(req->AffectedSOPClassUID), buf);
+      sprintf(imageFileName, "%s%c%s.X.%s%s", opt_outputDirectory.c_str(), PATH_SEPARATOR, dcmSOPClassUIDToModality(req->AffectedSOPClassUID), buf, opt_fileNameExtension.c_str());
+    }
+    else if (opt_timeNames)
+    {
+      // create a name for the new file. pattern: "[YYYYMMDDHHMMSSMMM]_[NUMBER].MODALITY[EXTENSION]" (use current datetime)
+      // get the current time (needed for file name)
+      OFDateTime dateTime;
+      dateTime.setCurrentDateTime();
+      // used to hold prospective filename
+      char cmpFileName[2048];
+      // next if/else block generates prospective filename, that is compared to last written filename
+      if (timeNameCounter == -1)
+      {
+        // timeNameCounter not set -> last written filename has to be without "serial number"
+        sprintf(cmpFileName, "%04u%02u%02u%02u%02u%02u%03u.%s%s",
+          dateTime.getDate().getYear(), dateTime.getDate().getMonth(), dateTime.getDate().getDay(),
+          dateTime.getTime().getHour(), dateTime.getTime().getMinute(), dateTime.getTime().getIntSecond(), dateTime.getTime().getMilliSecond(),
+          dcmSOPClassUIDToModality(req->AffectedSOPClassUID), opt_fileNameExtension.c_str());
+      }
+      else
+      {
+        // counter was active before, so generate filename with "serial number" for comparison
+        sprintf(cmpFileName, "%04u%02u%02u%02u%02u%02u%03u_%04u.%s%s", //millisecond version
+          dateTime.getDate().getYear(), dateTime.getDate().getMonth(), dateTime.getDate().getDay(),
+          dateTime.getTime().getHour(), dateTime.getTime().getMinute(), dateTime.getTime().getIntSecond(), dateTime.getTime().getMilliSecond(),
+          timeNameCounter, dcmSOPClassUIDToModality(req->AffectedSOPClassUID), opt_fileNameExtension.c_str());
+      }
+      if ( (outputFileNameArray.size()!=0) && (outputFileNameArray.back() == cmpFileName) )
+      {
+        // if this is not the first run and the prospective filename is equal to the last written filename
+        // generate one with a serial number (incremented by 1)
+        timeNameCounter++;
+        sprintf(imageFileName, "%s%c%04u%02u%02u%02u%02u%02u%03u_%04u.%s%s", opt_outputDirectory.c_str(), PATH_SEPARATOR, //millisecond version
+        dateTime.getDate().getYear(), dateTime.getDate().getMonth(), dateTime.getDate().getDay(),
+        dateTime.getTime().getHour(), dateTime.getTime().getMinute(), dateTime.getTime().getIntSecond(), dateTime.getTime().getMilliSecond(),
+        timeNameCounter, dcmSOPClassUIDToModality(req->AffectedSOPClassUID), opt_fileNameExtension.c_str());
+      }
+      else
+      {
+        //first run or filenames are different: create filename without serial number
+        sprintf(imageFileName, "%s%c%04u%02u%02u%02u%02u%02u%03u.%s%s", opt_outputDirectory.c_str(), PATH_SEPARATOR, //millisecond version
+        dateTime.getDate().getYear(), dateTime.getDate().getMonth(), dateTime.getDate().getDay(),
+        dateTime.getTime().getHour(), dateTime.getTime().getMinute(),dateTime.getTime().getIntSecond(), dateTime.getTime().getMilliSecond(),
+        dcmSOPClassUIDToModality(req->AffectedSOPClassUID), opt_fileNameExtension.c_str());
+        // reset counter, because timestamp and therefore filename has changed
+        timeNameCounter = -1;
+      }
     }
     else
     {
-      sprintf(imageFileName, "%s%c%s.%s", opt_outputDirectory.c_str(), PATH_SEPARATOR, dcmSOPClassUIDToModality(req->AffectedSOPClassUID), req->AffectedSOPInstanceUID);
+      // don't create new UID, use the study instance UID as found in object
+      sprintf(imageFileName, "%s%c%s.%s%s", opt_outputDirectory.c_str(), PATH_SEPARATOR, dcmSOPClassUIDToModality(req->AffectedSOPClassUID), req->AffectedSOPInstanceUID, opt_fileNameExtension.c_str());
     }
   }
 
@@ -1716,13 +2037,13 @@ static OFCondition storeSCP(
   // DIMSE_storeProvider must be called with certain parameters.
   if (opt_bitPreserving)
   {
-      cond = DIMSE_storeProvider(assoc, presID, req, imageFileName, opt_useMetaheader, NULL,
-          storeSCPCallback, &callbackData, DIMSE_BLOCKING, 0);
+    cond = DIMSE_storeProvider(assoc, presID, req, imageFileName, opt_useMetaheader, NULL,
+      storeSCPCallback, &callbackData, opt_blockMode, opt_dimse_timeout);
   }
   else
   {
     cond = DIMSE_storeProvider(assoc, presID, req, NULL, opt_useMetaheader, &dset,
-        storeSCPCallback, &callbackData, DIMSE_BLOCKING, 0);
+      storeSCPCallback, &callbackData, opt_blockMode, opt_dimse_timeout);
   }
 
   // if some error occured, dump corresponding information and remove the outfile if necessary
@@ -1843,7 +2164,7 @@ static void renameOnEndOfStudy()
      * current filenames will be changed to a filename that corresponds to the pattern [modality-
      * prefix][consecutive-numbering]. The current filenames of all files that belong to the study
      * are captured in outputFileNameArray. The new filenames will be calculated whithin this
-     * function: The [modality-prefix] will be taken from the old filename (first two characters),
+     * function: The [modality-prefix] will be taken from the old filename,
      * [consecutive-numbering] is a consecutively numbered, 6 digit number which will be calculated
      * starting from 000001.
      *
@@ -1855,12 +2176,12 @@ static void renameOnEndOfStudy()
 
   OFListIterator(OFString) first = outputFileNameArray.begin();
   OFListIterator(OFString) last = outputFileNameArray.end();
-  
+
   // before we deal with all the filenames which are included in the array, we need to distinguish
   // two different cases: If endOfStudyThroughTimeoutEvent is not true, the last filename in the array
   // refers to a file that belongs to a new study of which the first object was just received. (In this
   // case there are at least two filenames in the array). Then, this last filename is - at the end of the
-  // foolowing loop - not supposed to be deleted from the array. If endOfStudyThroughTimeoutEvent is true,
+  // following loop - not supposed to be deleted from the array. If endOfStudyThroughTimeoutEvent is true,
   // all filenames that are captured in the array, refer to files that belong to the same study. Hence,
   // all of these files shall be renamed and all of the filenames within the array shall be deleted.
   if( ! endOfStudyThroughTimeoutEvent ) --last;
@@ -1872,7 +2193,25 @@ static void renameOnEndOfStudy()
     // The value for [consecutive-numbering] will be determined using the counter variable.
     char modalityId[3];
     char newFileName[9];
-    OFStandard::strlcpy( modalityId, (*first).c_str(), 3 );
+    if (opt_timeNames)
+    {
+      // modality prefix are the first 2 characters after serial number (if present)
+      size_t serialPos = (*first).find("_");
+      if (serialPos != OFString_npos)
+      {
+        //serial present: copy modality prefix (skip serial: 1 digit "_" + 4 digits serial + 1 digit ".")
+        OFStandard::strlcpy( modalityId, (*first).substr(serialPos+6, 2).c_str(), 3 );
+      }
+      else
+      {
+        //serial not present, copy starts directly after first "." (skip 17 for timestamp, one for ".")
+        OFStandard::strlcpy( modalityId, (*first).substr(18, 2).c_str(), 3 );
+      }
+    }
+    else
+    {
+      OFStandard::strlcpy( modalityId, (*first).c_str(), 3 );
+    }
     sprintf( newFileName, "%s%06d", modalityId, counter );
 
     // create two strings containing path and file name for
@@ -1886,7 +2225,7 @@ static void renameOnEndOfStudy()
     newPathAndFileName = lastStudySubdirectoryPathAndName;
     newPathAndFileName += PATH_SEPARATOR;
     newPathAndFileName += newFileName;
-    
+
     // rename file
     if( rename( oldPathAndFileName.c_str(), newPathAndFileName.c_str() ) != 0 )
       fprintf( stderr, "storescp: Cannot rename file '%s' to '%s'.\n", oldPathAndFileName.c_str(), newPathAndFileName.c_str() );
@@ -1918,7 +2257,7 @@ static void executeOnEndOfStudy()
 
   // perform substitution for placeholder #p; #p will be substituted by lastStudySubdirectoryPathAndName
   cmd = replaceChars( cmd, OFString(PATH_PLACEHOLDER), lastStudySubdirectoryPathAndName );
-  
+
   // perform substitution for placeholder #a
   cmd = replaceChars( cmd, OFString(CALLING_AETITLE_PLACEHOLDER), callingaetitle );
 
@@ -1963,8 +2302,9 @@ static OFString replaceChars( const OFString &srcstr, const OFString &pattern, c
 
 static void executeCommand( const OFString &cmd )
     /*
-     * This function executes the given command line. Note that the execution will be
-     * performed in a new process so that it does not slow down the execution of storescp.
+     * This function executes the given command line. The execution will be
+     * performed in a new process which can be run in the background
+     * so that it does not slow down the execution of storescp.
      *
      * Parameters:
      *   cmd - [in] The command which shall be executed.
@@ -1978,7 +2318,7 @@ static void executeCommand( const OFString &cmd )
   {
     /* we are the parent process */
     /* remove pending zombie child processes */
-    cleanChildren();
+    cleanChildren(pid, OFTrue);
   }
   else // in case we are the child process, execute the command etc.
   {
@@ -2005,10 +2345,19 @@ static void executeCommand( const OFString &cmd )
   if( !CreateProcess(NULL, OFconst_cast(char *, cmd.c_str()), NULL, NULL, 0, 0, NULL, NULL, &sinfo, &procinfo) )
     fprintf( stderr, "storescp: Error while executing command '%s'.\n" , cmd.c_str() );
 
+  if (opt_execSync)
+  {
+      // Wait until child process exits (makes execution synchronous).
+      WaitForSingleObject(procinfo.hProcess, INFINITE);
+  }
+
+  // Close process and thread handles to avoid resource leak
+  CloseHandle(procinfo.hProcess);
+  CloseHandle(procinfo.hThread);
 #endif
 }
 
-static void cleanChildren()
+static void cleanChildren(pid_t pid, OFBool synch)
     /*
      * This function removes child processes that have terminated,
      * i.e. converted to zombies. Should be called now and then.
@@ -2028,11 +2377,11 @@ static void cleanChildren()
 
 #if defined(HAVE_WAITPID) || defined(HAVE_WAIT3)
     int child = 1;
-    int options = WNOHANG;
+    int options = synch ? 0 : WNOHANG;
     while (child > 0)
     {
 #ifdef HAVE_WAITPID
-        child = OFstatic_cast(int, waitpid(-1, &stat_loc, options));
+        child = OFstatic_cast(int, waitpid(pid, &stat_loc, options));
 #elif defined(HAVE_WAIT3)
         child = wait3(&status, options, &rusage);
 #endif
@@ -2040,6 +2389,8 @@ static void cleanChildren()
         {
            if (errno != ECHILD) CERR << "wait for child failed: " << strerror(errno) << endl;
         }
+
+        if (synch) child = -1; // break out of loop
     }
 #endif
 }
@@ -2182,15 +2533,92 @@ static OFCondition acceptUnknownContextsWithPreferredTransferSyntaxes(
     return cond;
 }
 
+#ifdef HAVE_CONFIG_H
+
+static int makeTempFile()
+{
+    char tempfile[30];
+    OFStandard::strlcpy(tempfile, "/tmp/storescp_XXXXXX", 30);
+#ifdef HAVE_MKSTEMP
+    return mkstemp(tempfile);
+#else /* ! HAVE_MKSTEMP */
+    mktemp(tempfile);
+    return open(tempfile, O_WRONLY|O_CREAT|O_APPEND,0644);
+#endif
+}
+
+#endif
 
 /*
 ** CVS Log
 ** $Log: storescp.cc,v $
-** Revision 1.1  2005/08/23 19:32:09  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:49  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:53  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.89  2005/12/19 10:31:12  joergr
+** Changed printf() type for return value of getpid() to "%ld" and added
+** explicit typecast, needed for Solaris.
+**
+** Revision 1.88  2005/12/16 13:07:03  meichel
+** Changed type to size_t to make code safe on 64bit platforms
+**
+** Revision 1.87  2005/12/14 14:27:36  joergr
+** Added missing header file "fcntl.h", needed for Solaris.
+** Replaced "string::npos" by "OFString_npos".
+** Changed printf() type for return value of getpid() to "%d".
+**
+** Revision 1.86  2005/12/14 10:45:55  meichel
+** Including csignal if present, needed on Solaris.
+**
+** Revision 1.85  2005/12/08 15:44:21  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.84  2005/11/28 16:28:53  meichel
+** Fixed resource leak in Win32 command execution.
+**   Added option --exec-sync that causes synchronous command execution on Windows.
+**
+** Revision 1.83  2005/11/25 11:31:03  meichel
+** StoreSCP now supports multi-process mode both on Posix and Win32 platforms
+**   where a separate client process is forked for each incoming association.
+**
+** Revision 1.82  2005/11/23 16:10:23  meichel
+** Added support for AES ciphersuites in TLS module. All TLS-enabled
+**   tools now support the "AES TLS Secure Transport Connection Profile".
+**
+** Revision 1.81  2005/11/17 13:45:16  meichel
+** Added command line options for DIMSE and ACSE timeouts
+**
+** Revision 1.80  2005/11/16 14:58:07  meichel
+** Set association timeout in ASC_initializeNetwork to 30 seconds. This improves
+**   the responsiveness of the tools if the peer blocks during assoc negotiation.
+**
+** Revision 1.79  2005/11/11 16:09:00  onken
+** Added options for JPEG2000 support (lossy and lossless)
+**
+** Revision 1.78  2005/11/10 09:13:21  onken
+** Added option "--timenames" to support filenames based on timestamps.
+** Added option "--file-extension", that allows to append a suffix
+** to each filename.
+**
+** Revision 1.77  2005/10/25 08:55:43  meichel
+** Updated list of UIDs and added support for new transfer syntaxes
+**   and storage SOP classes.
+**
+** Revision 1.76  2005/08/30 08:35:23  meichel
+** Added command line option --inetd, which allows storescp to run from inetd.
+**
+** Revision 1.75  2005/02/22 09:40:54  meichel
+** Fixed two bugs in "bit-preserving" Store SCP code. Errors while creating or
+**   writing the DICOM file (e.g. file system full) now result in a DIMSE error
+**   response (out of resources) being sent back to the SCU.
+**
+** Revision 1.74  2004/08/03 16:46:00  meichel
+** Minor changes for platforms on which strchr/strrchr return a const pointer.
 **
 ** Revision 1.73  2004/04/07 16:58:55  meichel
 ** Added OFconst_cast, required on Win32

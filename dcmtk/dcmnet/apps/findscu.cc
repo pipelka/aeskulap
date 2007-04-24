@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,23 +22,23 @@
  *  Purpose: Query/Retrieve Service Class User (C-FIND operation)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
+ *  Update Date:      $Date: 2007/04/24 09:53:49 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/apps/findscu.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h" /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h" /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CSTDARG
 #define INCLUDE_CERRNO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 #ifdef HAVE_SYS_FILE_H
@@ -50,23 +50,24 @@ END_EXTERN_C
 #include <GUSI.h>
 #endif
 
-#include "dimse.h"
-#include "diutil.h"
-#include "dcfilefo.h"
-#include "dcdebug.h"
-#include "dcuid.h"
-#include "dcdict.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/dcmdata/dcdicent.h"
 
 #ifdef WITH_ZLIB
 #include <zlib.h>     /* for zlibVersion() */
 #endif
 
 #ifdef WITH_OPENSSL
-#include "tlstrans.h"
-#include "tlslayer.h"
+#include "dcmtk/dcmtls/tlstrans.h"
+#include "dcmtk/dcmtls/tlslayer.h"
 #endif
 
 #define OFFIS_CONSOLE_APPLICATION "findscu"
@@ -88,6 +89,10 @@ static OFBool           opt_extractResponsesToFile = OFFalse;
 static const char *     opt_abstractSyntax = UID_FINDModalityWorklistInformationModel;
 static OFCmdSignedInt   opt_cancelAfterNResponses = -1;
 static DcmDataset *     overrideKeys = NULL;
+static E_TransferSyntax opt_networkTransferSyntax = EXS_Unknown;
+T_DIMSE_BlockingMode    opt_blockMode = DIMSE_BLOCKING;
+int                     opt_dimse_timeout = 0;
+int                     opt_acse_timeout = 30;
 
 typedef struct {
     T_ASC_Association *assoc;
@@ -118,14 +123,28 @@ addOverrideKey(OFConsoleApplication& app, const char* s)
     char msg2[200];
 
     val[0] = '\0';
+    // try to parse group and element number
     n = sscanf(s, "%x,%x=%s", &g, &e, val);
 
-    if (n < 2) {
-      msg = "bad key format: ";
-      msg += s;
-      app.printError(msg.c_str());
+    if (n != 2) {
+      // not a group-element pair, try to lookup in dictionary
+      DcmTagKey key(0xffff,0xffff);
+      const DcmDataDictionary& globalDataDict = dcmDataDict.rdlock();
+      const DcmDictEntry *dicent = globalDataDict.findEntry(s);
+      dcmDataDict.unlock();
+      if (dicent!=NULL) {
+        // found dictionary name, copy group and element number
+        key = dicent->getKey();
+        g = key.getGroup();
+        e = key.getElement();
+      }
+      else {
+        // not found in dictionary
+        msg = "bad key format or dictionary name not found in dictionary: ";
+        msg += s;
+        app.printError(msg.c_str());
+      }
     }
-
     const char* spos = s;
     char ccc;
     do
@@ -170,8 +189,7 @@ addOverrideKey(OFConsoleApplication& app, const char* s)
     }
 }
 
-static OFCondition
-addPresentationContexts(T_ASC_Parameters *params);
+static OFCondition addPresentationContext(T_ASC_Parameters *params);
 
 static OFCondition
 cfind(T_ASC_Association *assoc, const char* fname);
@@ -200,7 +218,11 @@ main(int argc, char *argv[])
     const char *opt_privateKeyFile = NULL;
     const char *opt_certificateFile = NULL;
     const char *opt_passwd = NULL;
+#if OPENSSL_VERSION_NUMBER >= 0x0090700fL
+    OFString    opt_ciphersuites(TLS1_TXT_RSA_WITH_AES_128_SHA ":" SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#else
     OFString    opt_ciphersuites(SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#endif
     const char *opt_readSeedFile = NULL;
     const char *opt_writeSeedFile = NULL;
     DcmCertificateVerification opt_certVerification = DCV_requireCertificate;
@@ -243,7 +265,10 @@ main(int argc, char *argv[])
    cmd.addOption("--debug",                     "-d",        "debug mode, print debug information");
   cmd.addGroup("network options:");
     cmd.addSubGroup("override matching keys:");
-      cmd.addOption("--key",                    "-k",    1,  "key: gggg,eeee=\"string\"", "override matching key");
+      cmd.addOption("--key",                    "-k",    1,  "key: gggg,eeee=\"str\" or data dictionary name=\"str\"",
+                                                             "override matching key");
+
+
     cmd.addSubGroup("query information model:");
       cmd.addOption("--worklist",               "-W",        "use modality worklist information model (default)");
       cmd.addOption("--patient",                "-P",        "use patient root information model");
@@ -261,6 +286,11 @@ main(int argc, char *argv[])
     cmd.addSubGroup("post-1993 value representations:");
       cmd.addOption("--enable-new-vr",          "+u",        "enable support for new VRs (UN/UT) (default)");
       cmd.addOption("--disable-new-vr",         "-u",        "disable support for new VRs, convert to OB");
+    cmd.addSubGroup("proposed transmission transfer syntaxes:");
+      cmd.addOption("--propose-uncompr",        "-x=",       "propose all uncompressed TS, explicit VR\nwith local byte ordering first (default)");
+      cmd.addOption("--propose-little",         "-xe",       "propose all uncompressed TS, explicit VR\nlittle endian first");
+      cmd.addOption("--propose-big",            "-xb",       "propose all uncompressed TS, explicit VR\nbig endian first");
+      cmd.addOption("--propose-implicit",       "-xi",       "propose implicit VR little endian TS only");
     cmd.addSubGroup("other network options:");
       OFString opt3 = "set max receive pdu to n bytes (default: ";
       sprintf(tempstr, "%ld", (long)ASC_DEFAULTMAXPDU);
@@ -274,6 +304,8 @@ main(int argc, char *argv[])
       opt4 += tempstr;
       opt4 += "]";
       cmd.addOption("--timeout",                "-to",   1, "[s]econds: integer (default: unlimited)", "timeout for connection requests");
+      cmd.addOption("--acse-timeout",           "-ta",   1, "[s]econds: integer (default: 30)", "timeout for ACSE messages");
+      cmd.addOption("--dimse-timeout",          "-td",   1, "[s]econds: integer (default: unlimited)", "timeout for DIMSE messages");
       cmd.addOption("--max-pdu",                "-pdu",  1,  opt4.c_str(), opt3.c_str());
       cmd.addOption("--repeat",                          1,  "[n]umber: integer", "repeat n times");
       cmd.addOption("--abort",                               "abort association instead of releasing it");
@@ -369,6 +401,13 @@ main(int argc, char *argv[])
       }
 
       cmd.beginOptionBlock();
+      if (cmd.findOption("--propose-uncompr"))  opt_networkTransferSyntax = EXS_Unknown;
+      if (cmd.findOption("--propose-little"))   opt_networkTransferSyntax = EXS_LittleEndianExplicit;
+      if (cmd.findOption("--propose-big"))      opt_networkTransferSyntax = EXS_BigEndianExplicit;
+      if (cmd.findOption("--propose-implicit")) opt_networkTransferSyntax = EXS_LittleEndianImplicit;
+      cmd.endOptionBlock();
+
+      cmd.beginOptionBlock();
       if (cmd.findOption("--worklist")) opt_abstractSyntax = UID_FINDModalityWorklistInformationModel;
       if (cmd.findOption("--patient"))  opt_abstractSyntax = UID_FINDPatientRootQueryRetrieveInformationModel;
       if (cmd.findOption("--study"))    opt_abstractSyntax = UID_FINDStudyRootQueryRetrieveInformationModel;
@@ -389,11 +428,26 @@ main(int argc, char *argv[])
       }
       cmd.endOptionBlock();
 
-      if (cmd.findOption("--timeout")) 
+      if (cmd.findOption("--timeout"))
       {
         OFCmdSignedInt opt_timeout = 0;
         app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
         dcmConnectionTimeout.set((Sint32) opt_timeout);
+      }
+
+      if (cmd.findOption("--acse-timeout"))
+      {
+        OFCmdSignedInt opt_timeout = 0;
+        app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
+        opt_acse_timeout = OFstatic_cast(int, opt_timeout);
+      }
+
+      if (cmd.findOption("--dimse-timeout"))
+      {
+        OFCmdSignedInt opt_timeout = 0;
+        app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
+        opt_dimse_timeout = OFstatic_cast(int, opt_timeout);
+        opt_blockMode = DIMSE_NONBLOCKING;
       }
 
       if (cmd.findOption("--max-pdu")) app.checkValue(cmd.getValueAndCheckMinMax(opt_maxReceivePDULength, ASC_MINIMUMPDUSIZE, ASC_MAXIMUMPDUSIZE));
@@ -534,7 +588,7 @@ main(int argc, char *argv[])
     }
 
     /* initialize network, i.e. create an instance of T_ASC_Network*. */
-    OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, 1000, &net);
+    OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, opt_acse_timeout, &net);
     if (cond.bad()) {
         DimseCondition::dump(cond);
         exit(1);
@@ -650,7 +704,7 @@ main(int argc, char *argv[])
 
     /* Set the presentation contexts which will be negotiated */
     /* when the network connection will be established */
-    cond = addPresentationContexts(params);
+    cond = addPresentationContext(params);
     if (cond.bad()) {
         DimseCondition::dump(cond);
         exit(1);
@@ -809,44 +863,72 @@ main(int argc, char *argv[])
     delete tLayer;
 #endif
 
-    delete overrideKeys;    
+    delete overrideKeys;
     return 0;
 }
 
-static OFCondition
-addPresentationContexts(T_ASC_Parameters *params)
-{
-    OFCondition cond = EC_Normal;
 
+static OFCondition
+addPresentationContext(T_ASC_Parameters *params)
+{
     /*
-    ** We prefer to accept Explicitly encoded transfer syntaxes.
+    ** We prefer to use Explicitly encoded transfer syntaxes.
     ** If we are running on a Little Endian machine we prefer
     ** LittleEndianExplicitTransferSyntax to BigEndianTransferSyntax.
     ** Some SCP implementations will just select the first transfer
     ** syntax they support (this is not part of the standard) so
     ** organise the proposed transfer syntaxes to take advantage
     ** of such behaviour.
+    **
+    ** The presentation contexts proposed here are only used for
+    ** C-FIND and C-MOVE, so there is no need to support compressed
+    ** transmission.
     */
 
-    const char* transferSyntaxes[] = {
-        NULL, NULL, UID_LittleEndianImplicitTransferSyntax };
+    const char* transferSyntaxes[] = { NULL, NULL, NULL };
+    int numTransferSyntaxes = 0;
 
-    /* gLocalByteOrder is defined in dcxfer.h */
-    if (gLocalByteOrder == EBO_LittleEndian) {
-        /* we are on a little endian machine */
+    switch (opt_networkTransferSyntax) {
+    case EXS_LittleEndianImplicit:
+        /* we only support Little Endian Implicit */
+        transferSyntaxes[0]  = UID_LittleEndianImplicitTransferSyntax;
+        numTransferSyntaxes = 1;
+        break;
+    case EXS_LittleEndianExplicit:
+        /* we prefer Little Endian Explicit */
         transferSyntaxes[0] = UID_LittleEndianExplicitTransferSyntax;
         transferSyntaxes[1] = UID_BigEndianExplicitTransferSyntax;
-    } else {
-        /* we are on a big endian machine */
+        transferSyntaxes[2] = UID_LittleEndianImplicitTransferSyntax;
+        numTransferSyntaxes = 3;
+        break;
+    case EXS_BigEndianExplicit:
+        /* we prefer Big Endian Explicit */
         transferSyntaxes[0] = UID_BigEndianExplicitTransferSyntax;
         transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+        transferSyntaxes[2] = UID_LittleEndianImplicitTransferSyntax;
+        numTransferSyntaxes = 3;
+        break;
+    default:
+        /* We prefer explicit transfer syntaxes.
+         * If we are running on a Little Endian machine we prefer
+         * LittleEndianExplicitTransferSyntax to BigEndianTransferSyntax.
+         */
+        if (gLocalByteOrder == EBO_LittleEndian)  /* defined in dcxfer.h */
+        {
+            transferSyntaxes[0] = UID_LittleEndianExplicitTransferSyntax;
+            transferSyntaxes[1] = UID_BigEndianExplicitTransferSyntax;
+        } else {
+            transferSyntaxes[0] = UID_BigEndianExplicitTransferSyntax;
+            transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+        }
+        transferSyntaxes[2] = UID_LittleEndianImplicitTransferSyntax;
+        numTransferSyntaxes = 3;
+        break;
     }
 
-    cond = ASC_addPresentationContext(
+    return ASC_addPresentationContext(
         params, 1, opt_abstractSyntax,
-        transferSyntaxes, DIM_OF(transferSyntaxes));
-
-    return cond;
+        transferSyntaxes, numTransferSyntaxes);
 }
 
 static void
@@ -1018,7 +1100,7 @@ findSCU(T_ASC_Association * assoc, const char *fname)
     /* finally conduct transmission of data */
     OFCondition cond = DIMSE_findUser(assoc, presId, &req, dcmff.getDataset(),
                           progressCallback, &callbackData,
-                          DIMSE_BLOCKING, 0,
+                          opt_blockMode, opt_dimse_timeout,
                           &rsp, &statusDetail);
 
 
@@ -1082,11 +1164,33 @@ cfind(T_ASC_Association * assoc, const char *fname)
 /*
 ** CVS Log
 ** $Log: findscu.cc,v $
-** Revision 1.1  2005/08/23 19:32:09  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:49  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:53  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.47  2005/12/08 15:44:19  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.46  2005/11/23 16:10:23  meichel
+** Added support for AES ciphersuites in TLS module. All TLS-enabled
+**   tools now support the "AES TLS Secure Transport Connection Profile".
+**
+** Revision 1.45  2005/11/17 13:45:16  meichel
+** Added command line options for DIMSE and ACSE timeouts
+**
+** Revision 1.44  2005/11/16 14:58:07  meichel
+** Set association timeout in ASC_initializeNetwork to 30 seconds. This improves
+**   the responsiveness of the tools if the peer blocks during assoc negotiation.
+**
+** Revision 1.43  2005/11/14 09:06:50  onken
+** Added data dictionary name support for "--key" option
+**
+** Revision 1.42  2005/11/03 17:39:41  meichel
+** Added transfer syntax selection options to findscu.
 **
 ** Revision 1.41  2004/02/27 12:51:51  meichel
 ** Added --cancel option to findscu, similar to the option available in movescu.

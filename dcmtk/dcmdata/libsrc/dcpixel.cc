@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1997-2004, OFFIS
+ *  Copyright (C) 1997-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,18 +22,18 @@
  *  Purpose: class DcmPixelData
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:57 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dcpixel.h"
-#include "dccodec.h"
-#include "dcpixseq.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmdata/dcpixel.h"
+#include "dcmtk/dcmdata/dccodec.h"
+#include "dcmtk/dcmdata/dcpixseq.h"
 
 //
 // class DcmRepresentationEntry
@@ -91,7 +91,7 @@ DcmPixelData::DcmPixelData(
     original(),
     current(),
     existUnencapsulated(OFFalse),
-    isIconImage(OFFalse),
+    alwaysUnencapsulated(OFFalse),
     unencapsulatedVR(EVR_UNKNOWN),
     pixelSeqForWrite(NULL)
 {
@@ -110,6 +110,7 @@ DcmPixelData::DcmPixelData(
     original(),
     current(),
     existUnencapsulated(oldPixelData.existUnencapsulated),
+    alwaysUnencapsulated(oldPixelData.alwaysUnencapsulated),
     unencapsulatedVR(oldPixelData.unencapsulatedVR),
     pixelSeqForWrite(NULL)
 {
@@ -153,6 +154,7 @@ DcmPixelData &DcmPixelData::operator=(const DcmPixelData &obj)
   {
     DcmPolymorphOBOW::operator=(obj);
     existUnencapsulated = obj.existUnencapsulated;
+    alwaysUnencapsulated = obj.alwaysUnencapsulated;
     unencapsulatedVR = obj.unencapsulatedVR;
     pixelSeqForWrite = NULL;
     repList.clear();
@@ -190,7 +192,7 @@ DcmPixelData::calcElementLength(
     errorFlag = EC_Normal;
     Uint32 elementLength = 0;
 
-    if (xferSyn.isEncapsulated() && (! isIconImage))
+    if (xferSyn.isEncapsulated() && (! alwaysUnencapsulated))
     {
         DcmRepresentationListIterator found;
         errorFlag =
@@ -218,7 +220,7 @@ DcmPixelData::canChooseRepresentation(
     const DcmRepresentationEntry findEntry(repType, repParam, NULL);
     DcmRepresentationListIterator resultIt(repListEnd);
     if ((!toType.isEncapsulated() && existUnencapsulated) ||
-        (toType.isEncapsulated() && isIconImage && existUnencapsulated) ||
+        (toType.isEncapsulated() && alwaysUnencapsulated && existUnencapsulated) ||
         (toType.isEncapsulated() && findRepresentationEntry(findEntry, resultIt) == EC_Normal))
     {
         // representation found
@@ -258,7 +260,7 @@ DcmPixelData::canWriteXfer(
 {
     DcmXfer newXferSyn(newXfer);
     DcmRepresentationListIterator found;
-    OFBool result = existUnencapsulated && (!newXferSyn.isEncapsulated() || isIconImage);
+    OFBool result = existUnencapsulated && (!newXferSyn.isEncapsulated() || alwaysUnencapsulated);
 
     if (!result && newXferSyn.isEncapsulated())
         result = (findConformingEncapsulatedRepresentation(newXferSyn, NULL, found) == EC_Normal);
@@ -277,7 +279,7 @@ DcmPixelData::chooseRepresentation(
     const DcmRepresentationEntry findEntry(repType, repParam, NULL);
     DcmRepresentationListIterator result(repListEnd);
     if ((!toType.isEncapsulated() && existUnencapsulated) ||
-        (toType.isEncapsulated() && existUnencapsulated && isIconImage) ||
+        (toType.isEncapsulated() && existUnencapsulated && alwaysUnencapsulated) ||
         (toType.isEncapsulated() && findRepresentationEntry(findEntry, result) == EC_Normal))
     {
         // representation found
@@ -514,7 +516,7 @@ DcmPixelData::getLength(const E_TransferSyntax xfer,
     errorFlag = EC_Normal;
     Uint32 valueLength = 0;
 
-    if (xferSyn.isEncapsulated() && !isIconImage)
+    if (xferSyn.isEncapsulated() && !alwaysUnencapsulated)
     {
         DcmRepresentationListIterator foundEntry;
         errorFlag = findConformingEncapsulatedRepresentation(
@@ -750,7 +752,7 @@ DcmPixelData::read(
                    * although we're decoding an encapsulated transfer syntax.
                    * This is probably an icon image.
                    */
-                  isIconImage = OFTrue;
+                  alwaysUnencapsulated = OFTrue;
                 }
             }
 
@@ -932,7 +934,7 @@ OFCondition DcmPixelData::write(
   else
   {
     DcmXfer xferSyn(oxfer);
-    if (xferSyn.isEncapsulated() && (! isIconImage))
+    if (xferSyn.isEncapsulated() && (! alwaysUnencapsulated))
     {
       if (fTransferState == ERW_init)
       {
@@ -987,7 +989,7 @@ OFCondition DcmPixelData::writeSignatureFormat(
   else if (Tag.isSignable())
   {
     DcmXfer xferSyn(oxfer);
-    if (xferSyn.isEncapsulated() && (! isIconImage))
+    if (xferSyn.isEncapsulated() && (! alwaysUnencapsulated))
     {
       if (fTransferState == ERW_init)
       {
@@ -1026,14 +1028,34 @@ OFCondition DcmPixelData::loadAllDataIntoMemory(void)
         return (*current)->pixSeq->loadAllDataIntoMemory();
 }
 
+void DcmPixelData::setNonEncapsulationFlag(OFBool flag)
+{
+   alwaysUnencapsulated = flag;
+}
+
+
 /*
 ** CVS/RCS Log:
 ** $Log: dcpixel.cc,v $
-** Revision 1.1  2005/08/23 19:31:57  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:26  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.37  2005/12/08 15:41:25  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.36  2005/05/26 09:06:55  meichel
+** Renamed isIconImage flag to alwaysUnencapsulated to clarify meaning.
+**   Added public method DcmPixelData::setNonEncapsulationFlag() that allows
+**   DcmCodec instances to enable the flag. Improved documentation.
+**
+** Revision 1.35  2004/07/01 12:28:12  meichel
+** Fixed copy constructor for class DcmPixelData which did not work correctly
+**   under certain circumstances due to an uninitialized attribute.
 **
 ** Revision 1.34  2004/04/07 13:56:08  meichel
 ** Compressed image datasets containing uncompressed icon images

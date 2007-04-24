@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2001-2004, OFFIS
+ *  Copyright (C) 2001-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -19,26 +19,26 @@
  *
  *  Author:  Norbert Olges, Marco Eichelberg
  *
- *  Purpose: decompression routines of the IJG JPEG library configured for 16 bits/sample. 
+ *  Purpose: decompression routines of the IJG JPEG library configured for 16 bits/sample.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:53 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmjpeg/libsrc/djdijg16.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "djdijg16.h"
-#include "djcparam.h"
-#include "ofconsol.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmjpeg/djdijg16.h"
+#include "dcmtk/dcmjpeg/djcparam.h"
+#include "dcmtk/ofstd/ofconsol.h"
 
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSETJMP
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 // These two macros are re-defined in the IJG header files.
 // We undefine them here and hope that IJG's configure has
@@ -85,7 +85,7 @@ struct DJDIJG16SourceManagerStruct
 
   // buffer from which reading will continue as soon as the current buffer is empty
   Uint8 *next_buffer;
-  
+
   // buffer size
   Uint32 next_buffer_size;
 };
@@ -94,7 +94,7 @@ struct DJDIJG16SourceManagerStruct
 void DJDIJG16ErrorExit(j_common_ptr);
 void DJDIJG16OutputMessage(j_common_ptr cinfo);
 void DJDIJG16initSource(j_decompress_ptr);
-int DJDIJG16fillInputBuffer(j_decompress_ptr);
+ijg_boolean DJDIJG16fillInputBuffer(j_decompress_ptr);
 void DJDIJG16skipInputData(j_decompress_ptr, long);
 void DJDIJG16termSource(j_decompress_ptr);
 
@@ -122,7 +122,7 @@ void DJDIJG16initSource(j_decompress_ptr /* cinfo */)
 {
 }
 
-int DJDIJG16fillInputBuffer(j_decompress_ptr cinfo)
+ijg_boolean DJDIJG16fillInputBuffer(j_decompress_ptr cinfo)
 {
   DJDIJG16SourceManagerStruct *src = (DJDIJG16SourceManagerStruct *)(cinfo->src);
 
@@ -207,7 +207,7 @@ OFCondition DJDecompressIJG16Bit::init()
   suspension = 0;
   decompressedColorModel = EPI_Unknown;
   cleanup(); // prevent double initialization
-  
+
   cinfo = new jpeg_decompress_struct();
   if (cinfo)
   {
@@ -241,12 +241,12 @@ OFCondition DJDecompressIJG16Bit::init()
       jerr->instance = this;
       jerr->pub.error_exit = DJDIJG16ErrorExit;
       jerr->pub.output_message = DJDIJG16OutputMessage;
-      if (setjmp(OFconst_cast(DJDIJG16ErrorStruct *, jerr)->setjmp_buffer)) 
+      if (setjmp(OFconst_cast(DJDIJG16ErrorStruct *, jerr)->setjmp_buffer))
       {
         // the IJG error handler will cause the following code to be executed
-        char buffer[JMSG_LENGTH_MAX];     
+        char buffer[JMSG_LENGTH_MAX];
         (*cinfo->err->format_message)((jpeg_common_struct *)cinfo, buffer); /* Create the message */
-      	cleanup();
+        cleanup();
         return makeOFCondition(OFM_dcmjpeg, EJCode_IJG16_Decompression, OF_error, buffer);
       }
     }
@@ -256,7 +256,7 @@ OFCondition DJDecompressIJG16Bit::init()
       cinfo = NULL;
       return EC_MemoryExhausted;
     }
-    jpeg_create_decompress(cinfo); 
+    jpeg_create_decompress(cinfo);
     cinfo->src = &OFconst_cast(DJDIJG16SourceManagerStruct *, src)->pub;
   } else return EC_MemoryExhausted;
 
@@ -282,7 +282,8 @@ OFCondition DJDecompressIJG16Bit::decode(
   Uint8 *compressedFrameBuffer,
   Uint32 compressedFrameBufferSize,
   Uint8 *uncompressedFrameBuffer,
-  Uint32 uncompressedFrameBufferSize)
+  Uint32 uncompressedFrameBufferSize,
+  OFBool isSigned)
 {
 
   if (cinfo==NULL || compressedFrameBuffer==NULL || uncompressedFrameBuffer==NULL) return EC_IllegalCall;
@@ -290,7 +291,7 @@ OFCondition DJDecompressIJG16Bit::decode(
   if (setjmp(((DJDIJG16ErrorStruct *)(cinfo->err))->setjmp_buffer))
   {
      // the IJG error handler will cause the following code to be executed
-     char buffer[JMSG_LENGTH_MAX];    
+     char buffer[JMSG_LENGTH_MAX];
      (*cinfo->err->format_message)((jpeg_common_struct *)cinfo, buffer); /* Create the message */
      cleanup();
      return makeOFCondition(OFM_dcmjpeg, EJCode_IJG16_Decompression, OF_error, buffer);
@@ -303,30 +304,33 @@ OFCondition DJDecompressIJG16Bit::decode(
   src->next_buffer_size       = compressedFrameBufferSize;
 
   // Obtain image info
-  if (suspension < 2) 
+  if (suspension < 2)
   {
-    if (JPEG_SUSPENDED == jpeg_read_header(cinfo, TRUE)) 
+    if (JPEG_SUSPENDED == jpeg_read_header(cinfo, TRUE))
     {
       suspension = 1;
       return EJ_Suspension;
     }
 
     // check if color space conversion is enabled
-    OFBool colorSpaceConversion = OFFalse;    
+    OFBool colorSpaceConversion = OFFalse;
     switch(cparam->getDecompressionColorSpaceConversion())
     {
-        case EDC_photometricInterpretation: // color space conversion if DICOM photometric interpretation is YCbCr       
-          colorSpaceConversion = dicomPhotometricInterpretationIsYCbCr; 
+        case EDC_photometricInterpretation: // color space conversion if DICOM photometric interpretation is YCbCr
+          colorSpaceConversion = dicomPhotometricInterpretationIsYCbCr;
           break;
         case EDC_lossyOnly: // color space conversion if lossy JPEG
-          if (cinfo->process != JPROC_LOSSLESS) colorSpaceConversion = OFTrue;          
+          if (cinfo->process != JPROC_LOSSLESS) colorSpaceConversion = OFTrue;
           break;
         case EDC_always: // always do color space conversion
           colorSpaceConversion = OFTrue;
           break;
         case EDC_never: // never do color space conversion
-          break;          
+          break;
     }
+    //  Decline color space conversion to RGB for signed pixel data, because IJG can handle only unsigned
+    if ( colorSpaceConversion && isSigned )
+      return EJ_UnsupportedColorConversion;
 
     // Set color space for decompression
     if (colorSpaceConversion)
@@ -337,18 +341,18 @@ OFCondition DJDecompressIJG16Bit::decode(
           decompressedColorModel = EPI_Monochrome2;
           break;
         case JCS_YCbCr: // enforce conversion YCbCr to RGB
-          cinfo->jpeg_color_space = JCS_YCbCr;          
-          cinfo->out_color_space = JCS_RGB;          
+          cinfo->jpeg_color_space = JCS_YCbCr;
+          cinfo->out_color_space = JCS_RGB;
           decompressedColorModel = EPI_RGB;
           break;
         case JCS_RGB: // enforce conversion YCbCr to RGB
-          cinfo->jpeg_color_space = JCS_YCbCr;          
+          cinfo->jpeg_color_space = JCS_YCbCr;
           decompressedColorModel = EPI_RGB;
           break;
         default:
           decompressedColorModel = EPI_Unknown;
           break;
-      }      
+      }
     }
     else
     {
@@ -369,7 +373,7 @@ OFCondition DJDecompressIJG16Bit::decode(
         default:
           decompressedColorModel = EPI_Unknown;
           break;
-      }      
+      }
 #else
       decompressedColorModel = EPI_Unknown;
 #endif
@@ -384,9 +388,9 @@ OFCondition DJDecompressIJG16Bit::decode(
   int bufsize = 0;
   size_t rowsize = 0;
 
-  if (suspension < 3) 
+  if (suspension < 3)
   {
-    if (FALSE == jpeg_start_decompress(cinfo)) 
+    if (FALSE == jpeg_start_decompress(cinfo))
     {
       suspension = 2;
       return EJ_Suspension;
@@ -402,11 +406,11 @@ OFCondition DJDecompressIJG16Bit::decode(
     bufsize = cinfo->output_width * cinfo->output_components;
     rowsize = bufsize * sizeof(JSAMPLE);
     buffer = (JSAMPARRAY)jsampBuffer;
-  }  
+  }
 
   if (uncompressedFrameBufferSize < rowsize * cinfo->output_height) return EJ_IJG16_FrameBufferTooSmall;
 
-  while (cinfo->output_scanline < cinfo->output_height) 
+  while (cinfo->output_scanline < cinfo->output_height)
   {
     if (0 == jpeg_read_scanlines(cinfo, buffer, 1))
     {
@@ -415,8 +419,8 @@ OFCondition DJDecompressIJG16Bit::decode(
     }
     memcpy(uncompressedFrameBuffer + (cinfo->output_scanline-1) * rowsize, *buffer, rowsize);
   }
-  
-  if (FALSE == jpeg_finish_decompress(cinfo)) 
+
+  if (FALSE == jpeg_finish_decompress(cinfo))
   {
     suspension = 4;
     return EJ_Suspension;
@@ -429,7 +433,7 @@ void DJDecompressIJG16Bit::outputMessage() const
 {
   if (cinfo && cparam->isVerbose())
   {
-    char buffer[JMSG_LENGTH_MAX];    
+    char buffer[JMSG_LENGTH_MAX];
     (*cinfo->err->format_message)((jpeg_common_struct *)cinfo, buffer); /* Create the message */
     ofConsole.lockCerr() << buffer << endl;
     ofConsole.unlockCerr();
@@ -439,11 +443,24 @@ void DJDecompressIJG16Bit::outputMessage() const
 /*
  * CVS/RCS Log
  * $Log: djdijg16.cc,v $
- * Revision 1.1  2005/08/23 19:31:53  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:26  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:41  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.13  2005/12/08 15:43:37  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.12  2005/11/30 14:08:50  onken
+ * Added check to decline automatic IJG color space conversion of signed pixel
+ * data, because IJG lib only handles unsigned input for conversions.
+ *
+ * Revision 1.11  2005/11/14 17:09:39  meichel
+ * Changed some function return types from int to ijg_boolean, to avoid
+ *   compilation errors if the ijg_boolean type is ever changed.
  *
  * Revision 1.10  2004/05/07 12:18:45  meichel
  * Added explicit typecast to volatile variables, needed for MSVC

@@ -1,3 +1,3 @@
-Makefile
-*.a
+libdcmjpeg-3.5.so.4
 libdcmjpeg.so
+Makefile

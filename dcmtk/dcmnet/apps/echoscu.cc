@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,36 +22,36 @@
  *  Purpose: Verification Service Class User (C-ECHO operation)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
+ *  Update Date:      $Date: 2007/04/24 09:53:49 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/apps/echoscu.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CSTDARG
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "dimse.h"
-#include "diutil.h"
-#include "dcfilefo.h"
-#include "dcdebug.h"
-#include "dcdict.h"
-#include "dcuid.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"    /* for dcmtk version name */
 
 #ifdef WITH_OPENSSL
-#include "tlstrans.h"
-#include "tlslayer.h"
+#include "dcmtk/dcmtls/tlstrans.h"
+#include "dcmtk/dcmtls/tlslayer.h"
 #endif
 
 #ifdef WITH_ZLIB
@@ -73,6 +73,8 @@ static char rcsid[] = "$dcmtk: " OFFIS_CONSOLE_APPLICATION " v"
 
 static OFBool opt_verbose = OFFalse;
 static OFBool opt_debug = OFFalse;
+static T_DIMSE_BlockingMode opt_blockMode = DIMSE_BLOCKING;
+static int opt_dimse_timeout = 0;
 
 static void errmsg(const char *msg)
 {
@@ -110,7 +112,9 @@ static const char* transferSyntaxes[] = {
       UID_DeflatedExplicitVRLittleEndianTransferSyntax,
       UID_JPEG2000LosslessOnlyTransferSyntax,
       UID_JPEG2000TransferSyntax,
-      UID_MPEG2MainProfileAtMainLevelTransferSyntax
+      UID_MPEG2MainProfileAtMainLevelTransferSyntax,
+      UID_JPEG2000Part2MulticomponentImageCompressionLosslessOnlyTransferSyntax,
+      UID_JPEG2000Part2MulticomponentImageCompressionTransferSyntax
 };
 
 // ********************************************
@@ -132,6 +136,7 @@ main(int argc, char *argv[])
     OFCmdUnsignedInt opt_numPresentationCtx  = 1;
     OFCmdUnsignedInt maxXferSyntaxes         = (OFCmdUnsignedInt)(DIM_OF(transferSyntaxes));
     OFBool           opt_secureConnection    = OFFalse; /* default: no secure connection */
+    int opt_acse_timeout = 30;
 
 #ifdef WITH_OPENSSL
     int         opt_keyFileFormat = SSL_FILETYPE_PEM;
@@ -139,7 +144,11 @@ main(int argc, char *argv[])
     const char *opt_privateKeyFile = NULL;
     const char *opt_certificateFile = NULL;
     const char *opt_passwd = NULL;
+#if OPENSSL_VERSION_NUMBER >= 0x0090700fL
+    OFString    opt_ciphersuites(TLS1_TXT_RSA_WITH_AES_128_SHA ":" SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#else
     OFString    opt_ciphersuites(SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#endif
     const char *opt_readSeedFile = NULL;
     const char *opt_writeSeedFile = NULL;
     DcmCertificateVerification opt_certVerification = DCV_requireCertificate;
@@ -199,7 +208,9 @@ main(int argc, char *argv[])
       cmd.addOption("--propose-pc", "-ppc", 1, "[n]umber: integer (1..128)", "propose n presentation contexts");
 
     cmd.addSubGroup("other network options:");
-      cmd.addOption("--timeout",     "-to", 1, "[s]econds: integer (default: unlimited)", "timeout for connection requests");
+      cmd.addOption("--timeout",       "-to", 1, "[s]econds: integer (default: unlimited)", "timeout for connection requests");
+      cmd.addOption("--acse-timeout",  "-ta", 1, "[s]econds: integer (default: 30)", "timeout for ACSE messages");
+      cmd.addOption("--dimse-timeout", "-td", 1, "[s]econds: integer (default: unlimited)", "timeout for DIMSE messages");
 
       OFString opt3 = "set max receive pdu to n bytes (default: ";
       sprintf(tempstr, "%ld", (long)ASC_DEFAULTMAXPDU);
@@ -302,6 +313,21 @@ main(int argc, char *argv[])
         OFCmdSignedInt opt_timeout = 0;
         app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
         dcmConnectionTimeout.set((Sint32) opt_timeout);
+      }
+
+      if (cmd.findOption("--acse-timeout"))
+      {
+        OFCmdSignedInt opt_timeout = 0;
+        app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
+        opt_acse_timeout = OFstatic_cast(int, opt_timeout);
+      }
+
+      if (cmd.findOption("--dimse-timeout"))
+      {
+        OFCmdSignedInt opt_timeout = 0;
+        app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
+        opt_dimse_timeout = OFstatic_cast(int, opt_timeout);
+        opt_blockMode = DIMSE_NONBLOCKING;
       }
 
       if (cmd.findOption("--max-pdu")) app.checkValue(cmd.getValueAndCheckMinMax(opt_maxReceivePDULength, ASC_MINIMUMPDUSIZE, ASC_MAXIMUMPDUSIZE));
@@ -419,7 +445,7 @@ main(int argc, char *argv[])
     }
 
     /* initialize network, i.e. create an instance of T_ASC_Network*. */
-    OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, 1000, &net);
+    OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, opt_acse_timeout, &net);
     if (cond.bad()) {
         DimseCondition::dump(cond);
         exit(1);
@@ -719,8 +745,7 @@ echoSCU(T_ASC_Association * assoc)
     }
 
     /* send C-ECHO-RQ and handle response */
-    OFCondition cond = DIMSE_echoUser(assoc, msgId, DIMSE_BLOCKING, 0,
-        &status, &statusDetail);
+    OFCondition cond = DIMSE_echoUser(assoc, msgId, opt_blockMode, opt_dimse_timeout, &status, &statusDetail);
 
     /* depending on if a response was received, dump some information */
     if (cond.good()) {
@@ -768,11 +793,31 @@ cecho(T_ASC_Association * assoc, unsigned long num_repeat)
 /*
 ** CVS Log
 ** $Log: echoscu.cc,v $
-** Revision 1.1  2005/08/23 19:32:09  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:49  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:53  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.39  2005/12/08 15:44:18  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.38  2005/11/23 16:10:23  meichel
+** Added support for AES ciphersuites in TLS module. All TLS-enabled
+**   tools now support the "AES TLS Secure Transport Connection Profile".
+**
+** Revision 1.37  2005/11/17 13:45:16  meichel
+** Added command line options for DIMSE and ACSE timeouts
+**
+** Revision 1.36  2005/11/16 14:58:07  meichel
+** Set association timeout in ASC_initializeNetwork to 30 seconds. This improves
+**   the responsiveness of the tools if the peer blocks during assoc negotiation.
+**
+** Revision 1.35  2005/10/25 08:55:43  meichel
+** Updated list of UIDs and added support for new transfer syntaxes
+**   and storage SOP classes.
 **
 ** Revision 1.34  2004/04/06 18:12:26  joergr
 ** Added missing suffix "TransferSyntax" to some transfer syntax constants.

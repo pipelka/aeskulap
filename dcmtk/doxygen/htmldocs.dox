@@ -12,14 +12,15 @@ DCMTK contains the following sub-packages, each in its own sub-directory:
 \li \ref mod_dcmdata
 \li \ref mod_dcmimage
 \li \ref mod_dcmimgle
-\li \ref mod_dcmjpeg
+\if MODULE_DCMJP2K \li \ref mod_dcmjp2k
+\endif \li \ref mod_dcmjpeg
 \li \ref mod_dcmnet
 \li \ref mod_dcmpstat
 \li \ref mod_dcmsign
 \li \ref mod_dcmsr
 \li \ref mod_dcmtls
 \li \ref mod_dcmwlm
-\li \ref mod_imagectn
+\li \ref mod_dcmqrdb
 \li \ref mod_ofstd
 
 Each sub-directory (except config) contains further sub-directories for
@@ -30,13 +31,14 @@ and test programs (tests).
 To build and install the DCMTK package see the \ref file_install "INSTALL"
 file.  For copyright information see the \ref file_copyright "COPYRIGHT" file.
 For information about the history of this software see the
-\ref file_history "HISTORY" file.  For answers to some frequently asked
-questions see the \ref file_faq "FAQ" file.
+\ref file_history "HISTORY" file.  For answers to frequently asked questions
+(FAQ) see: \b http://forum.dcmtk.org/faq
 
 If you find bugs or other problems with this software we would appreciate
 hearing about them.  Please send electronic mail to \b dicom-bugs@offis.de.
 Please try to describe the problem in detail and if possible give a suggested
-fix.
+fix.   For general questions on how to compile, install or use the toolkit we
+recommend the public discussion forum at: \b http://forum.dcmtk.org
 
 */
 
@@ -55,8 +57,4 @@ fix.
 /*!
     \page file_history HISTORY file
     \verbinclude HISTORY
-*/
-/*!
-    \page file_faq FAQ file
-    \verbinclude FAQ
 */

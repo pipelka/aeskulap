@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2003, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,20 +23,20 @@
  *    class DcmUIDHandler
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:01 $
+ *  Update Date:      $Date: 2007/04/24 09:53:35 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/libsrc/dccfuidh.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "dccfuidh.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmnet/dccfuidh.h"
 
-#include "dcuid.h"    /* for dcmFindUIDFromName() */ 
-#include "dcxfer.h"   /* for gLocalByteOrder */
+#include "dcmtk/dcmdata/dcuid.h"    /* for dcmFindUIDFromName() */ 
+#include "dcmtk/dcmdata/dcxfer.h"   /* for gLocalByteOrder */
 
 #define SymbolicUID_LocalEndianExplicit    "LocalEndianExplicit"
 #define SymbolicUID_OppositeEndianExplicit "OppositeEndianExplicit"
@@ -140,11 +140,16 @@ OFBool DcmUIDHandler::isValidUID() const
 /*
  * CVS/RCS Log
  * $Log: dccfuidh.cc,v $
- * Revision 1.1  2005/08/23 19:32:01  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:35  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:10  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.2  2005/12/08 15:44:33  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.1  2003/06/10 14:30:15  meichel
  * Initial release of class DcmAssociationConfiguration and support

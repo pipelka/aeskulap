@@ -1,6 +1,6 @@
 /*
 *
-*  Copyright (C) 1996-2002, OFFIS
+*  Copyright (C) 1996-2005, OFFIS
 *
 *  This software and supporting documentation were developed by
 *
@@ -22,9 +22,9 @@
 *  Purpose: Class for managing file system interaction.
 *
 *  Last Update:      $Author: braindead $
-*  Update Date:      $Date: 2005/08/23 19:31:54 $
+*  Update Date:      $Date: 2007/04/24 09:53:47 $
 *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmwlm/libsrc/wlfsim.cc,v $
-*  CVS/RCS Revision: $Revision: 1.1 $
+*  CVS/RCS Revision: $Revision: 1.2 $
 *  Status:           $State: Exp $
 *
 *  CVS/RCS Log at end of file
@@ -33,10 +33,10 @@
 
 // ----------------------------------------------------------------------------
 
-#include "osconfig.h"
+#include "dcmtk/config/osconfig.h"
 
 #define INCLUDE_CLIMITS
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 #ifdef HAVE_SYS_TYPES_H
@@ -50,25 +50,25 @@ BEGIN_EXTERN_C
 #endif
 END_EXTERN_C
 
-#include "diutil.h"
-#include "ofconsol.h"
-#include "ofstd.h"
-#include "ofoset.h"
-#include "ofsetit.h"
-#include "ofdate.h"
-#include "oftime.h"
-#include "oftypes.h"
-#include "dicom.h"
-#include "dcdatset.h"
-#include "dcitem.h"
-#include "dcvrda.h"
-#include "dcvrtm.h"
-#include "wltypdef.h"
-#include "dctk.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofoset.h"
+#include "dcmtk/ofstd/ofsetit.h"
+#include "dcmtk/ofstd/ofdate.h"
+#include "dcmtk/ofstd/oftime.h"
+#include "dcmtk/ofstd/oftypes.h"
+#include "dcmtk/dcmnet/dicom.h"
+#include "dcmtk/dcmdata/dcdatset.h"
+#include "dcmtk/dcmdata/dcitem.h"
+#include "dcmtk/dcmdata/dcvrda.h"
+#include "dcmtk/dcmdata/dcvrtm.h"
+#include "dcmtk/dcmwlm/wltypdef.h"
+#include "dcmtk/dcmdata/dctk.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "wlfsim.h"
+#include "dcmtk/dcmwlm/wlfsim.h"
 
 // ----------------------------------------------------------------------------
 
@@ -78,7 +78,8 @@ WlmFileSystemInteractionManager::WlmFileSystemInteractionManager()
 // Task         : Constructor.
 // Parameters   : none.
 // Return Value : none.
-  : verboseMode( OFFalse ), debugMode( OFFalse ), logStream( NULL ), dfPath( NULL ), calledApplicationEntityTitle( NULL ),
+  : verboseMode( OFFalse ), debugMode( OFFalse ), logStream( NULL ), dfPath( NULL ),
+    enableRejectionOfIncompleteWlFiles( OFTrue ), calledApplicationEntityTitle( NULL ),
     matchingRecords( NULL ), numOfMatchingRecords( 0 )
 {
 }
@@ -129,6 +130,18 @@ void WlmFileSystemInteractionManager::SetDebug( OFBool value )
 // Return Value : none.
 {
   debugMode = value;
+}
+
+// ----------------------------------------------------------------------------
+
+void WlmFileSystemInteractionManager::SetEnableRejectionOfIncompleteWlFiles( OFBool value )
+// Date         : May 3, 2005
+// Author       : Thomas Wilkens
+// Task         : Set value in member variable.
+// Parameters   : value - [in] The value to set.
+// Return Value : none.
+{
+  enableRejectionOfIncompleteWlFiles = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -249,7 +262,7 @@ unsigned long WlmFileSystemInteractionManager::DetermineMatchingRecords( DcmData
     {
       if( verboseMode )
       {
-        sprintf( msg, "  - Could not read worklist file %s properly. File will be ignored.", worklistFiles[i].c_str() );
+        sprintf( msg, "Could not read worklist file %s properly. File will be ignored.", worklistFiles[i].c_str() );
         DumpMessage( msg );
       }
     }
@@ -261,47 +274,63 @@ unsigned long WlmFileSystemInteractionManager::DetermineMatchingRecords( DcmData
       {
         if( verboseMode )
         {
-          sprintf( msg, "  - Worklist file %s is empty. File will be ignored.", worklistFiles[i].c_str() );
+          sprintf( msg, "Worklist file %s is empty. File will be ignored.", worklistFiles[i].c_str() );
           DumpMessage( msg );
         }
       }
       else
       {
-        // check if the current dataset matches the matching key attribute values
-        if( !DatasetMatchesSearchMask( dataset, searchMask ) )
+        // in case option --enable-file-reject is set, we have to check if the current
+        // .wl-file meets certain conditions; in detail, the file's dataset has to be
+        // checked whether it contains all necessary return type 1 attributes and contains
+        // information in all these attributes; if this is condition is not met, the
+        // .wl-file shall be rejected
+        if( enableRejectionOfIncompleteWlFiles && !DatasetIsComplete( dataset ) )
         {
           if( verboseMode )
           {
-            sprintf( msg, "Information from worklist file %s does not match query.", worklistFiles[i].c_str() );
+            sprintf( msg, "Worklist file %s is incomplete. File will be ignored.", worklistFiles[i].c_str() );
             DumpMessage( msg );
           }
         }
         else
         {
-          if( verboseMode )
+          // check if the current dataset matches the matching key attribute values
+          if( !DatasetMatchesSearchMask( dataset, searchMask ) )
           {
-            sprintf( msg, "Information from worklist file %s matches query.", worklistFiles[i].c_str() );
-            DumpMessage( msg );
-          }
-
-          // since the dataset matches the matching key attribute values
-          // we need to insert it into the matchingRecords array
-          if( numOfMatchingRecords == 0 )
-          {
-            matchingRecords = new DcmDataset*[1];
-            matchingRecords[0] = new DcmDataset( *dataset );
+            if( verboseMode )
+            {
+              sprintf( msg, "Information from worklist file %s does not match query.", worklistFiles[i].c_str() );
+              DumpMessage( msg );
+            }
           }
           else
           {
-            DcmDataset **tmp = new DcmDataset*[numOfMatchingRecords + 1];
-            for( unsigned long j=0 ; j<numOfMatchingRecords ; j++ )
-              tmp[j] = matchingRecords[j];
-            tmp[numOfMatchingRecords] = new DcmDataset( *dataset );
-            delete matchingRecords;
-            matchingRecords = tmp;
-          }
+            if( verboseMode )
+            {
+              sprintf( msg, "Information from worklist file %s matches query.", worklistFiles[i].c_str() );
+              DumpMessage( msg );
+            }
 
-          numOfMatchingRecords++;
+            // since the dataset matches the matching key attribute values
+            // we need to insert it into the matchingRecords array
+            if( numOfMatchingRecords == 0 )
+            {
+              matchingRecords = new DcmDataset*[1];
+              matchingRecords[0] = new DcmDataset( *dataset );
+            }
+            else
+            {
+              DcmDataset **tmp = new DcmDataset*[numOfMatchingRecords + 1];
+              for( unsigned long j=0 ; j<numOfMatchingRecords ; j++ )
+                tmp[j] = matchingRecords[j];
+              tmp[numOfMatchingRecords] = new DcmDataset( *dataset );
+              delete[] matchingRecords;
+              matchingRecords = tmp;
+            }
+
+            numOfMatchingRecords++;
+          }
         }
       }
     }
@@ -478,7 +507,7 @@ void WlmFileSystemInteractionManager::ClearMatchingRecords()
 {
   for( unsigned int i=0 ; i<numOfMatchingRecords ; i++ )
     delete matchingRecords[i];
-  delete matchingRecords;
+  delete[] matchingRecords;
   matchingRecords = NULL;
   numOfMatchingRecords = 0;
 }
@@ -618,6 +647,196 @@ OFBool WlmFileSystemInteractionManager::IsWorklistFile( const char *fname )
 
 // ----------------------------------------------------------------------------
 
+OFBool WlmFileSystemInteractionManager::DatasetIsComplete( DcmDataset *dataset )
+// Date         : May 2, 2005
+// Author       : Thomas Wilkens
+// Task         : This function checks if the given dataset (which represents the information from a
+//                worklist file) contains all necessary return type 1 information. According to the
+//                DICOM standard part 4 annex K, the following attributes are type 1 attributes in
+//                C-Find RSP messages:
+//                      Attribute                             Tag      Return Key Type
+//                  SpecificCharacterSet                  (0008,0005)        1C (will be checked in WlmDataSourceFileSystem::StartFindRequest(...); this attribute does not have to be checked here)
+//                  ScheduledProcedureStepSequence        (0040,0100)        1
+//                   > ScheduledStationAETitle            (0040,0001)        1
+//                   > ScheduledProcedureStepStartDate    (0040,0002)        1
+//                   > ScheduledProcedureStepStartTime    (0040,0003)        1
+//                   > Modality                           (0008,0060)        1
+//                   > ScheduledProcedureStepDescription  (0040,0007)        1C (The ScheduledProcedureStepDescription (0040,0007) or the ScheduledProtocolCodeSequence (0040,0008) or both shall be supported by the SCP; we actually support both, so we have to check if at least one of the two attributes contains valid information.)
+//                   > ScheduledProtocolCodeSequence      (0040,0008)        1C (see abobve)
+//                   > > CodeValue                        (0008,0100)        1
+//                   > > CodingSchemeDesignator           (0008,0102)        1
+//                   > ScheduledProcedureStepID           (0040,0009)        1
+//                  RequestedProcedureID                  (0040,1001)        1
+//                  RequestedProcedureDescription         (0032,1060)        1C (The RequestedProcedureDescription (0032,1060) or the RequestedProcedureCodeSequence (0032,1064) or both shall be supported by the SCP; we actually support both, so we have to check if at least one of the two attributes contains valid information.)
+//                  RequestedProcedureCodeSequence        (0032,1064)        1C (see abobve)
+//                   > > CodeValue                        (0008,0100)        1
+//                   > > CodingSchemeDesignator           (0008,0102)        1
+//                  StudyInstanceUID                      (0020,000D)        1
+//                  ReferencedStudySequence               (0008,1110)        2
+//                   > ReferencedSOPClassUID              (0008,1150)        1C (Required if a sequence item is present)
+//                   > ReferencedSOPInstanceUID           (0008,1155)        1C (Required if a sequence item is present)
+//                  ReferencedPatientSequence             (0008,1120)        2
+//                   > ReferencedSOPClassUID              (0008,1150)        1C (Required if a sequence item is present)
+//                   > ReferencedSOPInstanceUID           (0008,1155)        1C (Required if a sequence item is present)
+//                  PatientsName                          (0010,0010)        1
+//                  PatientID                             (0010,0020)        1
+// Parameters   : dataset - [in] The dataset of the worklist file which is currently examined.
+// Return Value : OFTrue in case the given dataset contains all necessary return type 1 information,
+//                OFFalse otherwise.
+{
+  DcmElement *scheduledProcedureStepSequence = NULL;
+
+  // intialize returnValue
+  OFBool complete = OFTrue;
+
+  // the dataset is considered to be incomplete...
+  // ...if the ScheduledProcedureStepSequence is missing or
+  // ...if the ScheduledProcedureStepSequence does not have exactly one item
+  if( dataset->findAndGetElement( DCM_ScheduledProcedureStepSequence, scheduledProcedureStepSequence ).bad() || ((DcmSequenceOfItems*)scheduledProcedureStepSequence)->card() != 1 )
+    complete = OFFalse;
+  else
+  {
+    // so the ScheduledProcedureStepSequence is existent and has exactly one item;
+    // get this one and only item from the ScheduledProcedureStepSequence
+    DcmItem *scheduledProcedureStepSequenceItem = ((DcmSequenceOfItems*)scheduledProcedureStepSequence)->getItem(0);
+
+    // the dataset is considered to be incomplete...
+    // ...if ScheduledStationAETitle is missing or empty in the ScheduledProcedureStepSequence, or
+    // ...if ScheduledProcedureStepStartDate is missing or empty in the ScheduledProcedureStepSequence, or
+    // ...if ScheduledProcedureStepStartTime is missing or empty in the ScheduledProcedureStepSequence, or
+    // ...if Modality is missing or empty in the ScheduledProcedureStepSequence, or
+    // ...if ScheduledProcedureStepID is missing or empty in the ScheduledProcedureStepSequence, or
+    // ...if RequestedProcedureID is missing or empty in the dataset, or
+    // ...if StudyInstanceUID is missing or empty in the dataset, or
+    // ...if PatientsName is missing or empty in the dataset, or
+    // ...if PatientID is missing or empty in the dataset, or
+    // ...if inside the ScheduledProcedureStepSequence, no information can be retrieved from
+    //    the ScheduledProcedureStepDescription attribute and (at the same time) also no
+    //    complete information can be retrieved from the ScheduledProtocolCodeSequence attribute, or
+    // ...if inside the dataset, no information can be retrieved from the RequestedProcedureDescription
+    //    attribute and (at the same time) also no complete information can be retrieved from the
+    //    RequestedProcedureCodeSequence attribute, or
+    // ...if inside the dataset, the ReferencedStudySequence is either absent or it is existent and non-empty but incomplete, or
+    // ...if inside the dataset, the ReferencedPatientSequence is either absent or it is existent and non-empty but incomplete
+    if( AttributeIsAbsentOrEmpty( DCM_ScheduledStationAETitle, scheduledProcedureStepSequenceItem ) ||
+        AttributeIsAbsentOrEmpty( DCM_ScheduledProcedureStepStartDate, scheduledProcedureStepSequenceItem ) ||
+        AttributeIsAbsentOrEmpty( DCM_ScheduledProcedureStepStartTime, scheduledProcedureStepSequenceItem ) ||
+        AttributeIsAbsentOrEmpty( DCM_Modality, scheduledProcedureStepSequenceItem ) ||
+        AttributeIsAbsentOrEmpty( DCM_ScheduledProcedureStepID, scheduledProcedureStepSequenceItem ) ||
+        AttributeIsAbsentOrEmpty( DCM_RequestedProcedureID, dataset ) ||
+        AttributeIsAbsentOrEmpty( DCM_StudyInstanceUID, dataset ) ||
+        AttributeIsAbsentOrEmpty( DCM_PatientsName, dataset ) ||
+        AttributeIsAbsentOrEmpty( DCM_PatientID, dataset ) ||
+        DescriptionAndCodeSequenceAttributesAreIncomplete( DCM_ScheduledProcedureStepDescription, DCM_ScheduledProtocolCodeSequence, scheduledProcedureStepSequenceItem ) ||
+        DescriptionAndCodeSequenceAttributesAreIncomplete( DCM_RequestedProcedureDescription, DCM_RequestedProcedureCodeSequence, dataset ) ||
+        ReferencedStudyOrPatientSequenceIsAbsentOrExistentButNonEmptyAndIncomplete( DCM_ReferencedStudySequence, dataset ) ||
+        ReferencedStudyOrPatientSequenceIsAbsentOrExistentButNonEmptyAndIncomplete( DCM_ReferencedPatientSequence, dataset ) )
+      complete = OFFalse;
+  }
+
+  // return result
+  return( complete );
+}
+
+// ----------------------------------------------------------------------------
+
+OFBool WlmFileSystemInteractionManager::ReferencedStudyOrPatientSequenceIsAbsentOrExistentButNonEmptyAndIncomplete( DcmTagKey sequenceTagKey, DcmItem *dset )
+// Date         : May 4, 2005
+// Author       : Thomas Wilkens
+// Task         : This function checks if the specified sequence attribute is absent or existent but non-empty
+//                and incomplete in the given dataset.
+// Parameters   : sequenceTagKey - [in] The sequence attribute which shall be checked.
+//                dset           - [in] The dataset in which the attribute is contained.
+// Return Value : OFTrue in case the sequence attribute is absent or existent but non-empty and incomplete, OFFalse otherwise.
+{
+  DcmElement *sequence = NULL;
+  OFBool result;
+
+  // if the sequence attribute is absent, we want to return OFTrue
+  if( dset->findAndGetElement( sequenceTagKey, sequence ).bad() )
+    result = OFTrue;
+  else
+  {
+    // if the sequence attribute is existent but empty, we want to return OFFalse
+    // (note that the sequence is actually type 2, so being empty is ok)
+    if( ((DcmSequenceOfItems*)sequence)->card() == 0 )
+      result = OFFalse;
+    else
+    {
+      // if the sequence attribute is existent and non-empty, we need
+      // to check every item in the sequence for completeness
+      result = OFFalse;
+      for( unsigned long i=0 ; i<((DcmSequenceOfItems*)sequence)->card() && !result ; i++ )
+      {
+        if( AttributeIsAbsentOrEmpty( DCM_ReferencedSOPClassUID, ((DcmSequenceOfItems*)sequence)->getItem(i) ) ||
+            AttributeIsAbsentOrEmpty( DCM_ReferencedSOPInstanceUID, ((DcmSequenceOfItems*)sequence)->getItem(i) ) )
+          result = OFTrue;
+      }
+    }
+  }
+
+  // return result
+  return( result );
+}
+
+// ----------------------------------------------------------------------------
+
+OFBool WlmFileSystemInteractionManager::DescriptionAndCodeSequenceAttributesAreIncomplete( DcmTagKey descriptionTagKey, DcmTagKey codeSequenceTagKey, DcmItem *dset )
+// Date         : May 4, 2005
+// Author       : Thomas Wilkens
+// Task         : This function checks if the specified description and code sequence attribute are both incomplete in the given dataset.
+// Parameters   : descriptionTagKey  - [in] The description attribute which shall be checked.
+//                codeSequenceTagKey - [in] The codeSequence attribute which shall be checked.
+//                dset               - [in] The dataset in which the attributes are contained.
+// Return Value : OFTrue in case both attributes are incomplete, OFFalse otherwise.
+{
+  DcmElement *codeSequence = NULL;
+
+  // check if the code sequence attribute is complete,
+  // i.e. if complete information can be retrieved from this attribute
+
+  // if the attribute is not existent or has no items, we consider it incomplete
+  OFBool codeSequenceComplete = OFTrue;
+  if( dset->findAndGetElement( codeSequenceTagKey, codeSequence ).bad() || ((DcmSequenceOfItems*)codeSequence)->card() == 0 )
+    codeSequenceComplete = OFFalse;
+  else
+  {
+    // if it is existent and has items, check every item for completeness
+    for( unsigned long i=0 ; i<((DcmSequenceOfItems*)codeSequence)->card() && codeSequenceComplete ; i++ )
+    {
+      if( AttributeIsAbsentOrEmpty( DCM_CodeValue, ((DcmSequenceOfItems*)codeSequence)->getItem(i) ) ||
+          AttributeIsAbsentOrEmpty( DCM_CodingSchemeDesignator, ((DcmSequenceOfItems*)codeSequence)->getItem(i) ) )
+        codeSequenceComplete = OFFalse;
+    }
+  }
+
+  // now check the above condition
+  if( !codeSequenceComplete && AttributeIsAbsentOrEmpty( descriptionTagKey, dset ) )
+    return( OFTrue );
+  else
+    return( OFFalse );
+}
+
+// ----------------------------------------------------------------------------
+
+OFBool WlmFileSystemInteractionManager::AttributeIsAbsentOrEmpty( DcmTagKey elemTagKey, DcmItem *dset )
+// Date         : May 4, 2005
+// Author       : Thomas Wilkens
+// Task         : This function checks if the specified attribute is absent or contains an empty value in the given dataset.
+// Parameters   : elemTagKey - [in] The attribute which shall be checked.
+//                dset       - [in] The dataset in which the attribute is contained.
+// Return Value : OFTrue in case the attribute is absent or contains an empty value, OFFalse otherwise.
+{
+  DcmElement *elem = NULL;
+
+  if( dset->findAndGetElement( elemTagKey, elem ).bad() || elem->getLength() == 0 )
+    return( OFTrue );
+  else
+    return( OFFalse );
+}
+
+// ----------------------------------------------------------------------------
+
 OFBool WlmFileSystemInteractionManager::DatasetMatchesSearchMask( DcmDataset *dataset, DcmDataset *searchMask )
 // Date         : July 11, 2002
 // Author       : Thomas Wilkens
@@ -722,6 +941,11 @@ OFBool WlmFileSystemInteractionManager::DatasetMatchesSearchMask( DcmDataset *da
           matchFound = RequestedProcedurePrioritiesMatch( mkaValuesDataset[13], mkaValuesSearchMask[13] );
           break;
 
+        case 14:
+          // matching key attribute is DCM_PatientsBirthDate (DA, 2)
+          matchFound = PatientsBirthDatesMatch( mkaValuesDataset[14], mkaValuesSearchMask[14] );
+          break;
+
         default:
           break;
       }
@@ -771,6 +995,7 @@ void WlmFileSystemInteractionManager::DetermineMatchingKeyAttributeValues( DcmDa
       case 11 : tag = DCM_RequestingPhysician              ; break;
       case 12 : tag = DCM_AdmissionID                      ; break;
       case 13 : tag = DCM_RequestedProcedurePriority       ; break;
+      case 14 : tag = DCM_PatientsBirthDate                ; break;
       default:                                               break;
     }
 
@@ -1221,6 +1446,38 @@ OFBool WlmFileSystemInteractionManager::RequestedProcedurePrioritiesMatch( const
     else
       return( WildcardMatch( datasetValue, searchMaskValue ) );
   }
+}
+
+// ----------------------------------------------------------------------------
+
+OFBool WlmFileSystemInteractionManager::PatientsBirthDatesMatch( const char *datasetValue, const char *searchMaskValue )
+// Date         : September 23, 2005
+// Author       : Thomas Wilkens
+// Task         : This function returns OFTrue if the dataset's and the search mask's values in
+//                attribute patient's birth date match; otherwise OFFalse will be returned.
+// Parameters   : datasetValue    - [in] Value for the corresponding attribute in the dataset; might be NULL.
+//                searchMaskValue - [in] Value for the corresponding attribute in the search mask; never NULL.
+// Return Value : OFTrue if the values match, OFFalse otherwise.
+{
+  OFBool isMatch = OFFalse;
+
+  // before matching, determine if the date value is a date range value
+  OFBool dateIsDateRange = ( strchr( searchMaskValue, '-' ) != NULL ) ? OFTrue : OFFalse;
+
+  // depending upon this information, perform different kinds of matching
+  if( dateIsDateRange )
+  {
+    // perform range matching
+    isMatch = DateRangeMatch( datasetValue, searchMaskValue );
+  }
+  else
+  {
+    // perform single value matching
+    isMatch = DateSingleValueMatch( datasetValue, searchMaskValue );
+  }
+
+  // return result
+  return( isMatch );
 }
 
 // ----------------------------------------------------------------------------
@@ -1956,11 +2213,32 @@ void WlmFileSystemInteractionManager::ExtractValuesFromRange( const char *range,
 /*
 ** CVS Log
 ** $Log: wlfsim.cc,v $
-** Revision 1.1  2005/08/23 19:31:54  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:47  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:15  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.16  2005/12/08 15:48:34  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.15  2005/09/23 12:57:02  wilkens
+** Added attribute PatientsBirthDate as a matching key attribute to wlmscpfs.
+** Thanks to Andre M. Descombes <andre@descombes.info> for the code template.
+**
+** Revision 1.14  2005/07/01 10:01:31  wilkens
+** Modified a couple of "delete" statements to "delete[]" in order to get rid of
+** valgrind's "Mismatched free() / delete / delete []" error messages.
+**
+** Revision 1.13  2005/05/04 11:34:46  wilkens
+** Added two command line options --enable-file-reject (default) and
+** --disable-file-reject to wlmscpfs: these options can be used to enable or
+** disable a file rejection mechanism which makes sure only complete worklist files
+** will be used during the matching process. A worklist file is considered to be
+** complete if it contains all necessary type 1 information which the SCP might
+** have to return to an SCU in a C-Find response message.
 **
 ** Revision 1.12  2004/01/07 08:32:34  wilkens
 ** Added new sequence type return key attributes to wlmscpfs. Fixed bug that for

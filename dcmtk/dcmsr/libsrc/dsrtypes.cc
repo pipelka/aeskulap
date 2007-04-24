@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2004, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *    classes: DSRTypes
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,37 +32,38 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrtypes.h"
-#include "dsrtextn.h"
-#include "dsrcodtn.h"
-#include "dsrnumtn.h"
-#include "dsrdtitn.h"
-#include "dsrdattn.h"
-#include "dsrtimtn.h"
-#include "dsruidtn.h"
-#include "dsrpnmtn.h"
-#include "dsrscotn.h"
-#include "dsrtcotn.h"
-#include "dsrcomtn.h"
-#include "dsrimgtn.h"
-#include "dsrwavtn.h"
-#include "dsrcontn.h"
-#include "dsrreftn.h"
-#include "dsrbascc.h"
-#include "dsrenhcc.h"
-#include "dsrcomcc.h"
-#include "dsrkeycc.h"
-#include "dsrmamcc.h"
-#include "dsrchecc.h"
-#include "dsrprocc.h"
+#include "dcmtk/dcmsr/dsrtypes.h"
+#include "dcmtk/dcmsr/dsrtextn.h"
+#include "dcmtk/dcmsr/dsrcodtn.h"
+#include "dcmtk/dcmsr/dsrnumtn.h"
+#include "dcmtk/dcmsr/dsrdtitn.h"
+#include "dcmtk/dcmsr/dsrdattn.h"
+#include "dcmtk/dcmsr/dsrtimtn.h"
+#include "dcmtk/dcmsr/dsruidtn.h"
+#include "dcmtk/dcmsr/dsrpnmtn.h"
+#include "dcmtk/dcmsr/dsrscotn.h"
+#include "dcmtk/dcmsr/dsrtcotn.h"
+#include "dcmtk/dcmsr/dsrcomtn.h"
+#include "dcmtk/dcmsr/dsrimgtn.h"
+#include "dcmtk/dcmsr/dsrwavtn.h"
+#include "dcmtk/dcmsr/dsrcontn.h"
+#include "dcmtk/dcmsr/dsrreftn.h"
+#include "dcmtk/dcmsr/dsrbascc.h"
+#include "dcmtk/dcmsr/dsrenhcc.h"
+#include "dcmtk/dcmsr/dsrcomcc.h"
+#include "dcmtk/dcmsr/dsrkeycc.h"
+#include "dcmtk/dcmsr/dsrmamcc.h"
+#include "dcmtk/dcmsr/dsrchecc.h"
+#include "dcmtk/dcmsr/dsrprocc.h"
+#include "dcmtk/dcmsr/dsrxrdcc.h"
 
-#include "ofstd.h"
+#include "dcmtk/ofstd/ofstd.h"
 
 #define INCLUDE_CSTDIO
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 /*---------------------------------*
@@ -113,14 +114,17 @@ const size_t DSRTypes::XF_alwaysWriteItemIdentifier      = 1 << 2;
 const size_t DSRTypes::XF_codeComponentsAsAttribute      = 1 << 3;
 const size_t DSRTypes::XF_relationshipTypeAsAttribute    = 1 << 4;
 const size_t DSRTypes::XF_valueTypeAsAttribute           = 1 << 5;
-const size_t DSRTypes::XF_useDcmsrNamespace              = 1 << 6;
-const size_t DSRTypes::XF_addSchemaReference             = 1 << 7;
-const size_t DSRTypes::XF_validateSchema                 = 1 << 8;
-const size_t DSRTypes::XF_enableLibxmlErrorOutput        = 1 << 9;
+const size_t DSRTypes::XF_templateIdentifierAsAttribute  = 1 << 6;
+const size_t DSRTypes::XF_useDcmsrNamespace              = 1 << 7;
+const size_t DSRTypes::XF_addSchemaReference             = 1 << 8;
+const size_t DSRTypes::XF_validateSchema                 = 1 << 9;
+const size_t DSRTypes::XF_enableLibxmlErrorOutput        = 1 << 10;
+const size_t DSRTypes::XF_templateElementEnclosesItems   = 1 << 11;
 /* shortcuts */
 const size_t DSRTypes::XF_encodeEverythingAsAttribute    = DSRTypes::XF_codeComponentsAsAttribute |
                                                            DSRTypes::XF_relationshipTypeAsAttribute |
-                                                           DSRTypes::XF_valueTypeAsAttribute;
+                                                           DSRTypes::XF_valueTypeAsAttribute |
+                                                           DSRTypes::XF_templateIdentifierAsAttribute;
 
 /* print flags */
 const size_t DSRTypes::PF_printItemPosition              = 1 << 0;
@@ -246,14 +250,15 @@ const OFCondition SR_EC_CorruptedXMLStructure               (ECC_CorruptedXMLStr
 
 static const S_DocumentTypeNameMap DocumentTypeNameMap[] =
 {
-    {DSRTypes::DT_invalid,          "",                              "",   "invalid document type"},
-    {DSRTypes::DT_BasicTextSR,      UID_BasicTextSR,                 "SR", "Basic Text SR"},
-    {DSRTypes::DT_EnhancedSR,       UID_EnhancedSR,                  "SR", "Enhanced SR"},
-    {DSRTypes::DT_ComprehensiveSR,  UID_ComprehensiveSR,             "SR", "Comprehensive SR"},
-    {DSRTypes::DT_KeyObjectDoc,     UID_KeyObjectSelectionDocument,  "KO", "Key Object Selection Document"},
-    {DSRTypes::DT_MammographyCadSR, UID_MammographyCADSR,            "SR", "Mammography CAD SR"},
-    {DSRTypes::DT_ChestCadSR,       UID_ChestCADSR,                  "SR", "Chest CAD SR"},
-    {DSRTypes::DT_ProcedureLog,     UID_ProcedureLogStorage,         "SR", "Procedure Log"}
+    {DSRTypes::DT_invalid,             "",                             "",   "invalid document type"},
+    {DSRTypes::DT_BasicTextSR,         UID_BasicTextSR,                "SR", "Basic Text SR"},
+    {DSRTypes::DT_EnhancedSR,          UID_EnhancedSR,                 "SR", "Enhanced SR"},
+    {DSRTypes::DT_ComprehensiveSR,     UID_ComprehensiveSR,            "SR", "Comprehensive SR"},
+    {DSRTypes::DT_KeyObjectDoc,        UID_KeyObjectSelectionDocument, "KO", "Key Object Selection Document"},
+    {DSRTypes::DT_MammographyCadSR,    UID_MammographyCADSR,           "SR", "Mammography CAD SR"},
+    {DSRTypes::DT_ChestCadSR,          UID_ChestCADSR,                 "SR", "Chest CAD SR"},
+    {DSRTypes::DT_ProcedureLog,        UID_ProcedureLogStorage,        "SR", "Procedure Log"},
+    {DSRTypes::DT_XRayRadiationDoseSR, UID_XRayRadiationDoseSR,        "SR", "X-Ray Radiation Dose SR"}
 };
 
 
@@ -341,19 +346,21 @@ static const S_VerificationFlagNameMap VerificationFlagNameMap[] =
 
 static const S_CharacterSetNameMap CharacterSetNameMap[] =
 {
+    // columns: enum, DICOM, HTML, XML (if "?" a warning is reported)
     {DSRTypes::CS_invalid,  "",           "",           ""},
     {DSRTypes::CS_ASCII,    "ISO_IR 6",   "",           "UTF-8"},
     {DSRTypes::CS_Latin1,   "ISO_IR 100", "ISO-8859-1", "ISO-8859-1"},
     {DSRTypes::CS_Latin2,   "ISO_IR 101", "ISO-8859-2", "ISO-8859-2"},
     {DSRTypes::CS_Latin3,   "ISO_IR 109", "ISO-8859-3", "ISO-8859-3"},
     {DSRTypes::CS_Latin4,   "ISO_IR 110", "ISO-8859-4", "ISO-8859-4"},
-    {DSRTypes::CS_Latin5,   "ISO_IR 148", "ISO-8859-9", "ISO-8859-9"},
     {DSRTypes::CS_Cyrillic, "ISO_IR 144", "ISO-8859-5", "ISO-8859-5"},
     {DSRTypes::CS_Arabic,   "ISO_IR 127", "ISO-8859-6", "ISO-8859-6"},
     {DSRTypes::CS_Greek,    "ISO_IR 126", "ISO-8859-7", "ISO-8859-7"},
     {DSRTypes::CS_Hebrew,   "ISO_IR 138", "ISO-8859-8", "ISO-8859-8"},
-    {DSRTypes::CS_Thai,     "ISO_IR 166", "",           ""},
-    {DSRTypes::CS_Japanese, "ISO_IR 13",  "",           ""}
+    {DSRTypes::CS_Latin5,   "ISO_IR 148", "ISO-8859-9", "ISO-8859-9"},
+    {DSRTypes::CS_Japanese, "ISO_IR 13",  "?",          "?"},  /* JIS_X0201 ? */
+    {DSRTypes::CS_Thai,     "ISO_IR 166", "?",          "?"},  /* TIS-620 ? */
+    {DSRTypes::CS_UTF8,     "ISO_IR 192", "UTF-8",      "UTF-8"}
 };
 
 
@@ -1167,6 +1174,9 @@ DSRIODConstraintChecker *DSRTypes::createIODConstraintChecker(const E_DocumentTy
         case DT_ProcedureLog:
             checker = new DSRProcedureLogConstraintChecker();
             break;
+        case DT_XRayRadiationDoseSR:
+            checker = new DSRXRayRadiationDoseSRConstraintChecker();
+            break;
         default:
             break;
     }
@@ -1453,15 +1463,84 @@ OFCondition DSRTypes::appendStream(ostream &mainStream,
     return result;
 }
 
+static OFBool checkForNonASCIICharacters(DcmElement& elem)
+{
+  char *c = NULL;
+  if (elem.getString(c).good() && c)
+  {
+    while (*c)
+    {
+      if (OFstatic_cast(unsigned char, *c) > 127) return OFTrue;
+      ++c;
+    }
+  }
+  return OFFalse;
+}
+
+OFBool DSRTypes::stringContainsExtendedCharacters(const OFString &s)
+{
+  const char *c = s.c_str();
+  if (c)
+  {
+    while (*c)
+    {
+      if (OFstatic_cast(unsigned char, *c) > 127) return OFTrue;
+      ++c;
+    }
+  }
+  return OFFalse;  
+}
+
+OFBool DSRTypes::elementContainsExtendedCharacters(DcmElement &elem)
+{
+  if (elem.isaString())
+  {
+    return checkForNonASCIICharacters(elem);
+  }
+  else if (! elem.isLeaf()) // element is a sequence
+  {  
+    DcmStack stack;
+    while (elem.nextObject(stack, OFTrue).good())
+    {
+      if (stack.top()->isaString())
+      {
+        if (checkForNonASCIICharacters(* OFstatic_cast(DcmElement *, stack.top()))) 
+          return OFTrue;
+      }
+    }  
+    return OFFalse;
+  }
+  return OFFalse;
+}
 
 /*
  *  CVS/RCS Log:
  *  $Log: dsrtypes.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.48  2005/12/08 15:48:19  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.47  2005/11/30 12:01:15  joergr
+ *  Added support for X-Ray Radiation Dose SR documents.
+ *
+ *  Revision 1.46  2004/11/29 17:11:37  joergr
+ *  Added warning message when character set is unknown, unsupported  or cannot
+ *  be mapped to the output format. Added support for UTF-8 character set.
+ *
+ *  Revision 1.45  2004/11/22 16:35:40  meichel
+ *  Added helper methods to check strings and DICOM elements for presence of
+ *    extended (non-ASCII) characters
+ *
+ *  Revision 1.44  2004/09/09 14:02:02  joergr
+ *  Added flags to control the way the template identification is encoded in
+ *  writeXML() and expected in readXML().
  *
  *  Revision 1.43  2004/02/11 15:58:32  joergr
  *  Renamed UID_ProcedureLog to UID_ProcedureLogStorage.

@@ -24,18 +24,20 @@ objs = assoc.o cond.o dcompat.o dimcancl.o dimcmd.o dimdump.o dimecho.o \
 	dulfsm.o dulparse.o dulpres.o dul.o lst.o extneg.o dimget.o dcmlayer.o \
 	dcmtrans.o dcasccfg.o dcasccff.o dccfuidh.o dccftsmp.o dccfpcmp.o \
 	dccfrsmp.o dccfenmp.o dccfprmp.o
-library = libdcmnet.$(LIBEXT)
-
+library = libdcmnet$(LIBEXT)
+librarydev = libdcmnet.so
 
 all: $(library)
 
 install: all
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
+	ln -sf $(library) $(librarydev)
 
 
 clean:

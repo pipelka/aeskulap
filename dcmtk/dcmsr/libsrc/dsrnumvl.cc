@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2003, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *    classes: DSRNumericMeasurementValue
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,11 +32,11 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrtypes.h"
-#include "dsrnumvl.h"
-#include "dsrxmld.h"
+#include "dcmtk/dcmsr/dsrtypes.h"
+#include "dcmtk/dcmsr/dsrnumvl.h"
+#include "dcmtk/dcmsr/dsrxmld.h"
 
 
 DSRNumericMeasurementValue::DSRNumericMeasurementValue()
@@ -139,17 +139,20 @@ OFCondition DSRNumericMeasurementValue::readXML(const DSRXMLDocument &doc,
     if (cursor.valid())
     {
         cursor.gotoChild();
-        /* get "value" element */
-        doc.getStringFromNodeContent(doc.getNamedNode(cursor, "value"), NumericValue);
-        /* get "unit" element */
-        result = MeasurementUnit.readXML(doc, doc.getNamedNode(cursor, "unit"));
+        /* get "value" element (might be absent since "Measured Value Sequence" is type 2) */
+        if (!doc.getStringFromNodeContent(doc.getNamedNode(cursor, "value", OFFalse /*required*/), NumericValue).empty())
+        {
+            /* get "unit" element (only if "value" present) */
+            result = MeasurementUnit.readXML(doc, doc.getNamedNode(cursor, "unit"));
+        } else
+            result = EC_Normal;
         if (result.good())
         {
             /* get "qualifier" element (optional, do not report if absent or erroneous) */
             ValueQualifier.readXML(doc, doc.getNamedNode(cursor, "qualifier", OFFalse /*required*/));
-            if (!isValid())
-                result = SR_EC_InvalidValue;
         }
+        if (!isValid())
+            result = SR_EC_InvalidValue;
     }
     return result;
 }
@@ -160,14 +163,17 @@ OFCondition DSRNumericMeasurementValue::writeXML(ostream &stream,
                                                  OFConsole *logStream) const
 {
     DSRTypes::writeStringValueToXML(stream, NumericValue, "value", (flags & DSRTypes::XF_writeEmptyTags) > 0);
-    /* write measurement unit */
-    if (flags & DSRTypes::XF_codeComponentsAsAttribute)
-        stream << "<unit";     // bracket ">" is closed in the next writeXML() routine
-    else
-        stream << "<unit>" << endl;
-    MeasurementUnit.writeXML(stream, flags, logStream);
-    stream << "</unit>" << endl;
-    if (!ValueQualifier.isEmpty())
+    if (!MeasurementUnit.isEmpty() || (flags & DSRTypes::XF_writeEmptyTags))
+    {
+        /* write measurement unit */
+        if (flags & DSRTypes::XF_codeComponentsAsAttribute)
+            stream << "<unit";     // bracket ">" is closed in the next writeXML() routine
+        else
+            stream << "<unit>" << endl;
+        MeasurementUnit.writeXML(stream, flags, logStream);
+        stream << "</unit>" << endl;
+    }
+    if (!ValueQualifier.isEmpty() || (flags & DSRTypes::XF_writeEmptyTags))
     {
         /* write value qualifier */
         if (flags & DSRTypes::XF_codeComponentsAsAttribute)
@@ -417,14 +423,35 @@ OFBool DSRNumericMeasurementValue::checkNumericValueQualifier(const DSRCodedEntr
 }
 
 
+OFBool DSRNumericMeasurementValue::valueContainsExtendedCharacters() const
+{
+  return MeasurementUnit.valueContainsExtendedCharacters() || ValueQualifier.valueContainsExtendedCharacters();
+}
+
+
 /*
  *  CVS/RCS Log:
  *  $Log: dsrnumvl.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.20  2005/12/08 15:48:00  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.19  2004/11/22 16:39:12  meichel
+ *  Added method that checks if the SR document contains non-ASCII characters
+ *    in any of the strings affected by SpecificCharacterSet.
+ *
+ *  Revision 1.18  2004/09/03 09:07:53  joergr
+ *  Fixed inconsistency in readXML() method that prevented support for empty
+ *  MeasuredValueSequence.
+ *  Removed output of empty measurement unit in writeXML() by default. Added
+ *  output of empty value qualifier in writeXML() if flag is set accordingly.
  *
  *  Revision 1.17  2003/08/07 17:29:13  joergr
  *  Removed libxml dependency from header files. Simplifies linking (MSVC).

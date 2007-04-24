@@ -21,18 +21,20 @@ LOCALINCLUDES = -I$(ofstddir)/include -I$(dcmdatadir)/include -I$(dcmnetdir)/inc
 LOCALDEFS =
 
 objs = tlstrans.o tlslayer.o
-library = libdcmtls.$(LIBEXT)
-
+library = libdcmtls$(LIBEXT)
+librarydev = libdcmtls.so
 
 all: $(library)
 
 install: all
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
+	ln -sf $(library) $(librarydev)
 
 clean:
 	rm -f $(objs) $(library) $(TRASH)

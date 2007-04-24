@@ -54,6 +54,13 @@ port  tcp/ip port number to listen on
 
   -dfp  --data-files-path  [p]ath: string
           path to worklist data files (default: /home/www/wlist)
+
+  -efr    --enable-file-reject
+          enable rejection of incomplete worklist-files
+          (default)
+
+  -dfr    --disable-file-reject
+          disable rejection of incomplete worklist-files
 \endverbatim
 
 \subsection returned_character_set_options returned character set options
@@ -90,6 +97,12 @@ network host access control (tcp wrapper) options:
           enforce host access control rules
 
 other network options:
+
+  -ta   --acse-timeout  [s]econds: integer (default: 30)
+          timeout for ACSE messages
+
+  -td   --dimse-timeout  [s]econds: integer (default: unlimited)
+          timeout for DIMSE messages
 
         --max-associations  [a]ssocs: integer (default: 50)
           limit maximum number of parallel associations
@@ -175,6 +188,14 @@ contained in a C-FIND response which is returned by this application is always
 determined by the returned character set option which was specified when this
 application was started.
 
+The options --enable-file-reject and --disable-file-reject can be used to
+enable or disable a file rejection mechanism which makes sure only complete
+worklist files will be used during the matching process. A worklist file is
+considered to be complete if it contains all necessary type 1 information which
+the SCP might have to return to an SCU in a C-Find response message. Table K.6-1
+in part 4 annex K of the DICOM standard lists all corresponding type 1
+attributes (see column "Return Key Type").
+
 \subsection dicom_conformance DICOM Conformance
 
 The \b wlmscpfs application supports the following SOP Classes as an SCP:
@@ -183,9 +204,6 @@ The \b wlmscpfs application supports the following SOP Classes as an SCP:
 VerificationSOPClass                  1.2.840.10008.1.1
 FINDModalityWorklistInformationModel  1.2.840.10008.5.1.4.31
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 The \b wlmscpfs application will accept presentation contexts for all of the
 abovementioned supported SOP Classes using any of the transfer syntaxes:
@@ -195,9 +213,6 @@ LittleEndianImplicitTransferSyntax    1.2.840.10008.1.2
 LittleEndianExplicitTransferSyntax    1.2.840.10008.1.2.1
 BigEndianExplicitTransferSyntax       1.2.840.10008.1.2.2
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 The default behaviour of the wlmscpfs application is to prefer transfer
 syntaxes having an explicit encoding over the default implicit transfer
@@ -216,6 +231,7 @@ matching keys:
 (0008,0090) ReferringPhysiciansName
 (0010,0010) PatientsName
 (0010,0020) PatientID
+(0010,0030) PatientsBirthDate
 (0010,0040) PatientsSex
 (0032,1032) RequestingPhysician
 (0038,0010) AdmissionID
@@ -228,9 +244,6 @@ matching keys:
 (0040,1001) RequestedProcedureID
 (0040,1003) RequestedProcedurePriority
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 As return keys the following attributes are currently supported by \b wlmscpfs:
 
@@ -368,7 +381,7 @@ environment variable.  It is an error if no data dictionary can be loaded.
 
 \section copyright COPYRIGHT
 
-Copyright (C) 1996-2004 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
+Copyright (C) 1996-2005 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
 Germany.
 
 */

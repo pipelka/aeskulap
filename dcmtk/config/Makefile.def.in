@@ -9,11 +9,11 @@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 
-bindir = @bindir@
-etcdir = @sysconfdir@
-datadir = @datadir@/data
-docdir = @datadir@/doc
-mandir = @mandir@
+bindir = $(DESTDIR)@bindir@
+etcdir = $(DESTDIR)@sysconfdir@
+datadir = $(DESTDIR)@datadir@/data
+docdir = $(DESTDIR)@datadir@/doc
+mandir = $(DESTDIR)@mandir@
 libdir = $(DESTDIR)@libdir@
 includedir = $(DESTDIR)@includedir@
 
@@ -45,21 +45,21 @@ DEBUG = @DEBUG@
 GLOBALDEFS = @DEFS@
 
 #
-# ARCHCFLAGS defines special machine archtecture compiler settings
+# ARCH defines special machine archtecture compiler settings
 # (e.g. -arch i386 on NeXT)
 #
 
-# ARCHCFLAGS =
+# ARCH =
 
 CC = @CC@
 CFLAGS = @CFLAGS@ -fPIC
-CXX = @CXX@
-CXXFLAGS = @CXXFLAGS@ -fPIC
+CXX = @CXX@ -fPIC
+CXXFLAGS = @CXXFLAGS@ -fno-rtti -fno-exceptions
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 RANLIB = :
 AR = @CC@
-ARFLAGS = -shared -fPIC -o
+ARFLAGS = -shared -Wl,-soname -Wl,$(library) -o
 LIBS = @LIBS@
 MATHLIBS = @MATHLIBS@
 OPENSSLLIBS = @OPENSSLLIBS@
@@ -68,7 +68,7 @@ PNGLIBS = @PNGLIBS@
 ZLIBLIBS = @ZLIBLIBS@
 XMLLIBS = @XMLLIBS@
 TCPWRAPPERLIBS = @TCPWRAPPERLIBS@
-LIBEXT = so
+LIBEXT = -3.5.so.4
 BINEXT = @BINEXT@
 INSTALL_PRIVATE_DICTIONARY = @INSTALL_PRIVATE_DICTIONARY@
 
@@ -81,14 +81,13 @@ DISTTRASH = $(TRASH) Makefile *.cache *.log *.status
 includes = -I. -I$(srcdir) -I$(top_srcdir)/include -I$(configdir)/include $(LOCALINCLUDES)
 defines = $(GLOBALDEFS) $(LOCALDEFS) $(DEBUG) $(LOCALDEBUG)
 
-
 .SUFFIXES:
 .SUFFIXES: .o .cc .c .h
 
 .cc.o:
-	$(CXX)	$(defines) -c $(includes) $(ARCHCFLAGS) \
+	$(CXX)	$(defines) -c $(includes) $(ARCH) \
 		$(CPPFLAGS) $(CXXFLAGS) $<
 
 .c.o:
-	$(CC)	$(defines) -c $(includes) $(ARCHCFLAGS) \
+	$(CC)	$(defines) -c $(includes) $(ARCH) \
 		$(CPPFLAGS) $(CFLAGS) $<

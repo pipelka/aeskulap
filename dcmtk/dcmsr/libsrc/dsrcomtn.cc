@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2003, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *    classes: DSRCompositeTreeNode
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,13 +32,13 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrtypes.h"
-#include "dsrcomtn.h"
-#include "dsrxmld.h"
+#include "dcmtk/dcmsr/dsrtypes.h"
+#include "dcmtk/dcmsr/dsrcomtn.h"
+#include "dcmtk/dcmsr/dsrxmld.h"
 
-#include "dcuid.h"
+#include "dcmtk/dcmdata/dcuid.h"
 
 
 DSRCompositeTreeNode::DSRCompositeTreeNode(const E_RelationshipType relationshipType)
@@ -140,11 +140,16 @@ OFCondition DSRCompositeTreeNode::renderHTMLContentItem(ostream &docStream,
 /*
  *  CVS/RCS Log:
  *  $Log: dsrcomtn.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.17  2005/12/08 15:47:43  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.16  2003/09/15 14:13:42  joergr
  *  Introduced new class to facilitate checking of SR IOD relationship content
