@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2003, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,32 +22,27 @@
  *  Purpose: Test if a file uses DICOM Part 10 format.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/apps/dcmftest.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#define INCLUDE_LIBC
+#define INCLUDE_UNISTD
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#ifdef HAVE_LIBC_H
-#include <libc.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#include "dcmetinf.h"
-#include "ofconapp.h"
-#include "dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/dcmdata/dcmetinf.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"    /* for dcmtk version name */
 
 #define OFFIS_CONSOLE_APPLICATION "dcmftest"
 
@@ -107,11 +102,19 @@ int main(int argc, char *argv[])
 /*
 ** CVS/RCS Log:
 ** $Log: dcmftest.cc,v $
-** Revision 1.1  2005/08/23 19:32:00  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:38  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:57  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.18  2005/12/08 15:40:47  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.17  2004/08/03 11:41:04  meichel
+** Headers libc.h and unistd.h are now included via ofstdinc.h
 **
 ** Revision 1.16  2003/11/13 10:53:26  joergr
 ** Made help text consistent with revised man page. Replaced tabs by spaces.

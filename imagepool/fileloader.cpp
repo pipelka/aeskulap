@@ -20,16 +20,16 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/09/24 10:36:55 $
+    Update Date:      $Date: 2007/04/24 09:53:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/fileloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
 #include <gtkmm.h>
 
-#include "dcfilefo.h"
-#include "dcdeftag.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
 
 #include "imagepool.h"
 #include "fileloader.h"
@@ -56,7 +56,7 @@ bool FileLoader::load(const std::list< Glib::ustring >& filelist) {
 }
 
 void FileLoader::prescan_files(std::list< Glib::ustring >* filelist) {
-	std::string studyinstanceuid;
+	OFString studyinstanceuid;
 	std::list< Glib::ustring >::iterator i = filelist->begin();
 	unsigned int curr = 0;
 	unsigned int max = filelist->size();
@@ -70,16 +70,28 @@ void FileLoader::prescan_files(std::list< Glib::ustring >* filelist) {
 							(*i).c_str(),
 							EXS_Unknown,
 							EGL_noChange,
-							DCM_MaxReadLength,
-							false);
+							DCM_MaxReadLength);
 	
+/*
+    OFCondition findAndGetOFString(const DcmTagKey &tagKey,
+                                   OFString &value,
+                                   const unsigned long pos = 0,
+                                   const OFBool searchIntoSub = OFFalse);
+*/
+        // OFCondition status = dfile.getDataset()->findAndGetOFString(DCM_StudyInstanceUID, studyinstanceuid);
 		if(cond.good() && dfile.getDataset()->findAndGetOFString(DCM_StudyInstanceUID, studyinstanceuid).good()) {
-			std::string seriesinstanceuid;
+			OFString seriesinstanceuid;
 			dfile.getDataset()->findAndGetOFString(DCM_SeriesInstanceUID, seriesinstanceuid);
 
-			m_cache[studyinstanceuid].m_instancecount++;
-			m_cache[studyinstanceuid].m_seriesuid.insert(seriesinstanceuid);
-			m_cache[studyinstanceuid].m_seriescount = m_cache[studyinstanceuid].m_seriesuid.size();
+			std::string studyUID;
+			std::string seriesUID;
+
+			studyUID = studyinstanceuid.c_str();
+			seriesUID = seriesinstanceuid.c_str();
+
+			m_cache[studyUID].m_instancecount++;
+			m_cache[studyUID].m_seriesuid.insert(seriesUID);
+			m_cache[studyUID].m_seriescount = m_cache[studyUID].m_seriesuid.size();
 		}
 	}
 }
@@ -87,7 +99,7 @@ void FileLoader::prescan_files(std::list< Glib::ustring >* filelist) {
 bool FileLoader::run() {
 	std::list< Glib::ustring >* filelist = m_filelist;
 	std::list< Glib::ustring >::iterator i = filelist->begin();
-	std::string studyinstanceuid;
+	OFString studyinstanceuid;
 
 	for(; i != filelist->end(); i++) {
 		DcmFileFormat dfile;
@@ -96,8 +108,7 @@ bool FileLoader::run() {
 							(*i).c_str(),
 							EXS_Unknown,
 							EGL_noChange,
-							DCM_MaxReadLength,
-							false);
+							DCM_MaxReadLength);
 		
 		if(!cond.good()) {
 			std::cout << "unable to open file !!!" << std::endl;

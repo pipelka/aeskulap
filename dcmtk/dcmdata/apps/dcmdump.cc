@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,26 +22,26 @@
  *  Purpose: List the contents of a dicom file
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "ofstream.h"
-#include "dctk.h"
-#include "dcdebug.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dcuid.h"       /* for dcmtk version name */
-#include "dcistrmz.h"    /* for dcmZlibExpectRFC1950Encoding */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"       /* for dcmtk version name */
+#include "dcmtk/dcmdata/dcistrmz.h"    /* for dcmZlibExpectRFC1950Encoding */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef WITH_ZLIB
 #include <zlib.h>        /* for zlibVersion() */
@@ -60,7 +60,7 @@ static char rcsid[] = "$dcmtk: " OFFIS_CONSOLE_APPLICATION " v"
 
 static int dumpFile(ostream & out,
             const char *ifname,
-            const OFBool isDataset,
+            const E_FileReadMode readMode,
             const E_TransferSyntax xfer,
             const size_t printFlags,
             const OFBool loadIntoMemory,
@@ -76,6 +76,7 @@ static int printTagCount = 0;
 static const int MAX_PRINT_TAG_NAMES = 1024;
 static const char* printTagNames[MAX_PRINT_TAG_NAMES];
 static const DcmTagKey* printTagKeys[MAX_PRINT_TAG_NAMES];
+static OFCmdUnsignedInt maxReadLength = 4096; // default is 4 KB
 
 static OFBool addPrintTagName(const char* tagName)
 {
@@ -120,8 +121,8 @@ int main(int argc, char *argv[])
     OFBool loadIntoMemory = OFTrue;
     size_t printFlags = DCMTypes::PF_shortenLongTagValues /*| DCMTypes::PF_showTreeStructure*/;
     OFBool printFilename = OFFalse;
-    OFBool isDataset = OFFalse;
     OFBool writePixelData = OFFalse;
+    E_FileReadMode readMode = ERM_autoDetect;
     E_TransferSyntax xfer = EXS_Unknown;
     OFBool stopOnErrors = OFTrue;
     const char *current = NULL;
@@ -150,56 +151,69 @@ int main(int argc, char *argv[])
     cmd.addParam("dcmfile-in", "DICOM input filename to be dumped", OFCmdParam::PM_MultiMandatory);
 
     cmd.addGroup("general options:", LONGCOL, SHORTCOL + 2);
-      cmd.addOption("--help",                 "-h",        "print this help text and exit");
-      cmd.addOption("--version",                           "print version information and exit", OFTrue /* exclusive */);
-      cmd.addOption("--debug",                "-d",        "debug mode, print debug information");
+      cmd.addOption("--help",                 "-h",     "print this help text and exit");
+      cmd.addOption("--version",                        "print version information and exit", OFTrue /* exclusive */);
+#ifdef USE_EXPERIMENTAL_QUIET_MODE
+      cmd.addOption("--quiet",                "-q",     "quiet mode, print no warnings and errors");
+#endif
+      cmd.addOption("--debug",                "-d",     "debug mode, print debug information");
 
     cmd.addGroup("input options:");
       cmd.addSubGroup("input file format:");
-        cmd.addOption("--read-file",          "+f",        "read file format or data set (default)");
-        cmd.addOption("--read-dataset",       "-f",        "read data set without file meta information");
-      cmd.addSubGroup("input transfer syntax (only with --read-dataset):");
-        cmd.addOption("--read-xfer-auto",     "-t=",       "use TS recognition (default)");
-        cmd.addOption("--read-xfer-little",   "-te",       "read with explicit VR little endian TS");
-        cmd.addOption("--read-xfer-big",      "-tb",       "read with explicit VR big endian TS");
-        cmd.addOption("--read-xfer-implicit", "-ti",       "read with implicit VR little endian TS");
+        cmd.addOption("--read-file",          "+f",     "read file format or data set (default)");
+        cmd.addOption("--read-file-only",     "+fo",    "read file format only");
+        cmd.addOption("--read-dataset",       "-f",     "read data set without file meta information");
+      cmd.addSubGroup("input transfer syntax:");
+        cmd.addOption("--read-xfer-auto",     "-t=",    "use TS recognition (default)");
+        cmd.addOption("--read-xfer-detect",   "-td",    "ignore TS specified in the file meta header");
+        cmd.addOption("--read-xfer-little",   "-te",    "read with explicit VR little endian TS");
+        cmd.addOption("--read-xfer-big",      "-tb",    "read with explicit VR big endian TS");
+        cmd.addOption("--read-xfer-implicit", "-ti",    "read with implicit VR little endian TS");
       cmd.addSubGroup("parsing of odd-length attributes:");
-        cmd.addOption("--accept-odd-length",  "+ao",       "accept odd length attributes (default)");
-        cmd.addOption("--assume-even-length", "+ae",       "assume real length is one byte larger");
+        cmd.addOption("--accept-odd-length",  "+ao",    "accept odd length attributes (default)");
+        cmd.addOption("--assume-even-length", "+ae",    "assume real length is one byte larger");
+      cmd.addSubGroup("handling of undefined length UN elements:");
+       cmd.addOption("--enable-cp246",        "+ui",    "read undefined len UN as implicit VR (default)");
+       cmd.addOption("--disable-cp246",       "-ui",    "read undefined len UN as explicit VR");
+      cmd.addSubGroup("handling of defined length UN elements:");
+       cmd.addOption("--retain-un",           "-uc",    "retain elements as UN (default)");
+       cmd.addOption("--convert-un",          "+uc",    "convert to real VR if known");
       cmd.addSubGroup("automatic data correction:");
-        cmd.addOption("--enable-correction",  "+dc",       "enable automatic data correction (default)");
-        cmd.addOption("--disable-correction", "-dc",       "disable automatic data correction");
+        cmd.addOption("--enable-correction",  "+dc",    "enable automatic data correction (default)");
+        cmd.addOption("--disable-correction", "-dc",    "disable automatic data correction");
 #ifdef WITH_ZLIB
     cmd.addSubGroup("bitstream format of deflated input:");
-     cmd.addOption("--bitstream-deflated",      "+bd",       "expect deflated bitstream (default)");
-     cmd.addOption("--bitstream-zlib",          "+bz",       "expect deflated zlib bitstream");
+     cmd.addOption("--bitstream-deflated",    "+bd",    "expect deflated bitstream (default)");
+     cmd.addOption("--bitstream-zlib",        "+bz",    "expect deflated zlib bitstream");
 #endif
 
     cmd.addGroup("output options:");
       cmd.addSubGroup("printing:");
-        cmd.addOption("--load-all",           "+M",        "load very long tag values (default)");
-        cmd.addOption("--load-short",         "-M",        "do not load very long values (e.g. pixel data)");
-        cmd.addOption("--print-all",          "+L",        "print long tag values completely");
-        cmd.addOption("--print-short",        "-L",        "print long tag values shortened (default)");
-        cmd.addOption("--print-filename",     "+F",        "print header with filename for each input file");
+        cmd.addOption("--load-all",           "+M",     "load very long tag values (default)");
+        cmd.addOption("--load-short",         "-M",     "do not load very long values (e.g. pixel data)");
+        cmd.addOption("--max-read-length",    "+R",  1, "[k]bytes: integer [4..4194302] (default: 4)",
+                                                        "set threshold for long values to k kbytes");
+        cmd.addOption("--print-all",          "+L",     "print long tag values completely");
+        cmd.addOption("--print-short",        "-L",     "print long tag values shortened (default)");
+        cmd.addOption("--print-filename",     "+F",     "print header with filename for each input file");
 
       cmd.addSubGroup("error handling:");
-        cmd.addOption("--stop-on-error",      "-E",        "do not print if file is damaged (default)");
-        cmd.addOption("--ignore-errors",      "+E",        "attempt to print even if file is damaged");
+        cmd.addOption("--stop-on-error",      "-E",     "do not print if file is damaged (default)");
+        cmd.addOption("--ignore-errors",      "+E",     "attempt to print even if file is damaged");
 
       cmd.addSubGroup("searching:");
-        cmd.addOption("--search",             "+P",    1,  "[t]ag: \"xxxx,xxxx\" or a data dictionary name",
-                                                           "print the value of tag t\nthis option can be specified multiple times\n(default: the complete file is printed)");
+        cmd.addOption("--search",             "+P",  1, "[t]ag: \"xxxx,xxxx\" or a data dictionary name",
+                                                        "print the value of tag t\nthis option can be specified multiple times\n(default: the complete file is printed)");
 
-        cmd.addOption("--search-all",         "+s",        "print all instances of searched tags (default)");
-        cmd.addOption("--search-first",       "-s",        "only print first instance of searched tags");
+        cmd.addOption("--search-all",         "+s",     "print all instances of searched tags (default)");
+        cmd.addOption("--search-first",       "-s",     "only print first instance of searched tags");
 
-        cmd.addOption("--prepend",            "+p",        "prepend sequence hierarchy to printed tag,\ndenoted by: (xxxx,xxxx).(xxxx,xxxx).*\n(only with --search-all or --search-first)");
-        cmd.addOption("--no-prepend",         "-p",        "do not prepend hierarchy to tag (default)");
+        cmd.addOption("--prepend",            "+p",     "prepend sequence hierarchy to printed tag,\ndenoted by: (xxxx,xxxx).(xxxx,xxxx).*\n(only with --search-all or --search-first)");
+        cmd.addOption("--no-prepend",         "-p",     "do not prepend hierarchy to tag (default)");
 
       cmd.addSubGroup("writing:");
-        cmd.addOption("--write-pixel",        "+W",    1,  "[d]irectory : string",
-                                                           "write pixel data to a .raw file stored in d\n(little endian, filename created automatically)");
+        cmd.addOption("--write-pixel",        "+W",  1, "[d]irectory : string",
+                                                        "write pixel data to a .raw file stored in d\n(little endian, filename created automatically)");
 
     /* evaluate command line */
     prepareCmdLineArgs(argc, argv, OFFIS_CONSOLE_APPLICATION);
@@ -224,32 +238,39 @@ int main(int argc, char *argv[])
 
       /* options */
 
+#ifdef USE_EXPERIMENTAL_QUIET_MODE
+      if (cmd.findOption("--quiet"))
+      {
+        // tbd: disable ofConsole output!
+        app.setQuietMode();
+      }
+#endif
       if (cmd.findOption("--debug")) opt_debugMode = 5;
 
       cmd.beginOptionBlock();
-      if (cmd.findOption("--read-file")) isDataset = OFFalse;
-      if (cmd.findOption("--read-dataset")) isDataset = OFTrue;
+      if (cmd.findOption("--read-file")) readMode = ERM_autoDetect;
+      if (cmd.findOption("--read-file-only")) readMode = ERM_fileOnly;
+      if (cmd.findOption("--read-dataset")) readMode = ERM_dataset;
       cmd.endOptionBlock();
 
       cmd.beginOptionBlock();
       if (cmd.findOption("--read-xfer-auto"))
-      {
-        app.checkDependence("--read-xfer-auto", "--read-dataset", isDataset);
         xfer = EXS_Unknown;
-      }
+      if (cmd.findOption("--read-xfer-detect"))
+        dcmAutoDetectDatasetXfer.set(OFTrue);
       if (cmd.findOption("--read-xfer-little"))
       {
-        app.checkDependence("--read-xfer-little", "--read-dataset", isDataset);
+        app.checkDependence("--read-xfer-little", "--read-dataset", readMode == ERM_dataset);
         xfer = EXS_LittleEndianExplicit;
       }
       if (cmd.findOption("--read-xfer-big"))
       {
-        app.checkDependence("--read-xfer-big", "--read-dataset", isDataset);
+        app.checkDependence("--read-xfer-big", "--read-dataset", readMode == ERM_dataset);
         xfer = EXS_BigEndianExplicit;
       }
       if (cmd.findOption("--read-xfer-implicit"))
       {
-        app.checkDependence("--read-xfer-implicit", "--read-dataset", isDataset);
+        app.checkDependence("--read-xfer-implicit", "--read-dataset", readMode == ERM_dataset);
         xfer = EXS_LittleEndianImplicit;
       }
       cmd.endOptionBlock();
@@ -262,6 +283,28 @@ int main(int argc, char *argv[])
       if (cmd.findOption("--assume-even-length"))
       {
         dcmAcceptOddAttributeLength.set(OFFalse);
+      }
+      cmd.endOptionBlock();
+
+      cmd.beginOptionBlock();
+      if (cmd.findOption("--enable-cp246"))
+      {
+        dcmEnableCP246Support.set(OFTrue);
+      }
+      if (cmd.findOption("--disable-cp246"))
+      {
+        dcmEnableCP246Support.set(OFFalse);
+      }
+      cmd.endOptionBlock();
+
+      cmd.beginOptionBlock();
+      if (cmd.findOption("--retain-un"))
+      {
+        dcmEnableUnknownVRConversion.set(OFFalse);
+      }
+      if (cmd.findOption("--convert-un"))
+      {
+        dcmEnableUnknownVRConversion.set(OFTrue);
       }
       cmd.endOptionBlock();
 
@@ -289,6 +332,11 @@ int main(int argc, char *argv[])
       cmd.endOptionBlock();
 #endif
 
+      if (cmd.findOption("--max-read-length"))
+      {
+          app.checkValue(cmd.getValueAndCheckMinMax(maxReadLength, 4, 4194302));
+          maxReadLength *= 1024; // convert kbytes to bytes
+      }
       cmd.beginOptionBlock();
       if (cmd.findOption("--load-all")) loadIntoMemory = OFTrue;
       if (cmd.findOption("--load-short")) loadIntoMemory = OFFalse;
@@ -372,7 +420,7 @@ int main(int argc, char *argv[])
         /* print header with filename */
         COUT << "# " << OFFIS_CONSOLE_APPLICATION << " (" << i << "/" << count << "): " << current << endl;
       }
-      errorCount += dumpFile(COUT, current, isDataset, xfer, printFlags, loadIntoMemory, stopOnErrors,
+      errorCount += dumpFile(COUT, current, readMode, xfer, printFlags, loadIntoMemory, stopOnErrors,
         writePixelData, pixelDirectory);
     }
 
@@ -410,7 +458,7 @@ static void printResult(ostream& out, DcmStack& stack, size_t printFlags)
 
 static int dumpFile(ostream & out,
             const char *ifname,
-            const OFBool isDataset,
+            const E_FileReadMode readMode,
             const E_TransferSyntax xfer,
             const size_t printFlags,
             const OFBool loadIntoMemory,
@@ -428,9 +476,8 @@ static int dumpFile(ostream & out,
 
     DcmFileFormat dfile;
     DcmObject *dset = &dfile;
-    if (isDataset) dset = dfile.getDataset();
-
-    OFCondition cond = dfile.loadFile(ifname, xfer, EGL_noChange, DCM_MaxReadLength, isDataset);
+    if (readMode == ERM_dataset) dset = dfile.getDataset();
+    OFCondition cond = dfile.loadFile(ifname, xfer, EGL_noChange, maxReadLength, readMode);
     if (! cond.good())
     {
         CERR << OFFIS_CONSOLE_APPLICATION << ": error: " << dfile.error().text()
@@ -496,11 +543,47 @@ static int dumpFile(ostream & out,
 /*
  * CVS/RCS Log:
  * $Log: dcmdump.cc,v $
- * Revision 1.1  2005/08/23 19:32:00  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:38  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:57  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.55  2005/12/08 15:40:46  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.54  2005/12/07 16:42:49  onken
+ * Changed default and minimum value of --max-read-length to 4 KB
+ *
+ * Revision 1.53  2005/12/02 09:16:17  joergr
+ * Added new command line option that ignores the transfer syntax specified in
+ * the meta header and tries to detect the transfer syntax automatically from
+ * the dataset.
+ * Added new command line option that checks whether a given file starts with a
+ * valid DICOM meta header.
+ * Added experimental support for a "quiet" mode.
+ * Made description of option --max-read-length more consistent with the other
+ * command line tools.
+ *
+ * Revision 1.52  2005/12/01 11:25:44  joergr
+ * Removed superfluous local variable. Changed type of variable "maxReadLength".
+ *
+ * Revision 1.51  2005/11/17 11:26:11  onken
+ * Option --max-read-length now uses OFCommandLine to check, whether option
+ * value is in range
+ *
+ * Revision 1.50  2005/11/16 14:59:11  onken
+ * *** empty log message ***
+ *
+ * Revision 1.49  2005/11/16 14:55:56  onken
+ * Added "--max-read-length" option to dcmdump and dcm2xml to override
+ * DCMTK-internal threshold (4096K) for long attribute values.
+ *
+ * Revision 1.48  2005/11/15 18:33:20  meichel
+ * Added new command line option --convert-un that enables the re-conversion of
+ *   defined length UN elements.
  *
  * Revision 1.47  2004/01/16 10:52:42  joergr
  * Adapted type casts to new-style typecast operators defined in ofcast.h.

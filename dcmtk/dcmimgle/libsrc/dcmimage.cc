@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2003, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: DicomImage-Interface (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,24 +31,24 @@
  */
 
 
-#include "osconfig.h"
-#include "dctypes.h"
-#include "dcdeftag.h"
-#include "dcobject.h"
-#include "dcuid.h"
-#include "dcdict.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dctypes.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/dcobject.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcdict.h"
 
-#include "dcmimage.h"
-#include "diovlimg.h"
-#include "dimo1img.h"
-#include "dimo2img.h"
-#include "didocu.h"
-#include "diregbas.h"
-#include "diplugin.h"
-#include "dcdicent.h"  /* needed by MSVC5 */
+#include "dcmtk/dcmimgle/dcmimage.h"
+#include "dcmtk/dcmimgle/diovlimg.h"
+#include "dcmtk/dcmimgle/dimo1img.h"
+#include "dcmtk/dcmimgle/dimo2img.h"
+#include "dcmtk/dcmimgle/didocu.h"
+#include "dcmtk/dcmimgle/diregbas.h"
+#include "dcmtk/dcmimgle/diplugin.h"
+#include "dcmtk/dcmdata/dcdicent.h"  /* needed by MSVC5 */
 
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifndef FILENAME_MAX
 #define FILENAME_MAX 255
@@ -820,11 +820,16 @@ int DicomImage::writePluginFormat(const DiPluginFormat *plugin,
  *
  * CVS/RCS Log:
  * $Log: dcmimage.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:44  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:57  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.26  2005/12/08 15:42:42  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.25  2003/12/23 16:03:18  joergr
  * Replaced post-increment/decrement operators by pre-increment/decrement

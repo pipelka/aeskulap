@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2001, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -24,15 +24,15 @@
  *    the IJG library from the central DCMTK configuration file osconfig.h
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:02 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
+#include "dcmtk/config/osconfig.h"
 
 /* We assume ANSI C and don't support DOS, 
  * so the following settings need not be tested 
@@ -85,11 +85,16 @@
 
 /*
  *  $Log: jconfig8.h,v $
- *  Revision 1.1  2005/08/23 19:32:02  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:47  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:04  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:41  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.4  2005/12/08 15:47:55  meichel
+ *  Updated Makefiles to correctly install header files
  *
  *  Revision 1.3  2001/12/18 09:48:54  meichel
  *  Modified configure test for "const" support of the C compiler

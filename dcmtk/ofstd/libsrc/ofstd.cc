@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2001-2004, OFFIS
+ *  Copyright (C) 2001-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -93,8 +93,8 @@
  *  Purpose: Class for various helper functions
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:48 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -102,22 +102,20 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "ofstd.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/ofstd/ofstd.h"
 
 #define INCLUDE_CMATH
 #define INCLUDE_CFLOAT
 #define INCLUDE_CSTRING
 #define INCLUDE_CSTDIO
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#define INCLUDE_UNISTD
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>    /* for stat() */
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>      /* for access() */
 #endif
 #ifdef HAVE_IO_H
 #include <io.h>          /* for access() on Win32 */
@@ -1626,11 +1624,22 @@ unsigned int OFStandard::my_sleep(unsigned int seconds)
 
 /*
  *  $Log: ofstd.cc,v $
- *  Revision 1.1  2005/08/23 19:32:00  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:48  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:16  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.34  2005/12/08 15:49:00  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.33  2004/08/04 12:11:52  joergr
+ *  Replaced non-Unix newline characters.
+ *
+ *  Revision 1.32  2004/08/03 11:45:48  meichel
+ *  Headers libc.h and unistd.h are now included via ofstdinc.h
  *
  *  Revision 1.31  2004/05/26 10:14:47  meichel
  *  Completed isinf() workaround for MacOS X

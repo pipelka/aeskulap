@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1999-2004, OFFIS
+ *  Copyright (C) 1999-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: convert VeriLUM CCx_xx.dat files to DCMTK display files
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:07 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:39 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,16 +31,16 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "ofstream.h"
-#include "ofconsol.h"
-#include "ofstd.h"
-#include "dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/dcmdata/dcuid.h"    /* for dcmtk version name */
 
 
 #define OFFIS_CONSOLE_APPLICATION "dconvlum"
@@ -124,11 +124,16 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dconvlum.cc,v $
- * Revision 1.1  2005/08/23 19:32:07  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:39  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.20  2005/12/08 15:42:41  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.19  2004/01/05 14:49:53  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

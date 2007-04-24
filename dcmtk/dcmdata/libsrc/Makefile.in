@@ -44,8 +44,8 @@ objs = dcpixseq.o dcpxitem.o dcuid.o dcerror.o \
 	dcostrma.o dcostrmb.o dcostrmf.o dcostrmz.o
 support_objs = mkdeftag.o mkdictbi.o dcdictzz.o
 support_progs = mkdeftag mkdictbi
-library = libdcmdata.$(LIBEXT)
-
+library = libdcmdata$(LIBEXT)
+librarydev = libdcmdata.so
 
 all: $(library)
 
@@ -54,6 +54,7 @@ install: install-lib install-support
 install-lib: $(library)
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 install-support: $(DICTFILE) $(PRIVDICTFILE)
 	$(configdir)/mkinstalldirs $(libdir)
@@ -68,13 +69,14 @@ install-support: $(DICTFILE) $(PRIVDICTFILE)
 clean:
 	rm -f $(support_progs) $(support_objs) $(objs) $(library) $(TRASH)
 
-distclean: clean
+distclean: nobuiltindict clean
 	rm -f $(DISTTRASH)
 
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
+	ln -sf $(library) $(librarydev)
 
 
 mkdeftag: mkdeftag.o $(dictobjs) cmdlnarg.o
@@ -87,7 +89,7 @@ mkdictbi: mkdictbi.o $(dictobjs) cmdlnarg.o
 # Generate a new include file of defined tags
 
 gendeftag: mkdeftag $(DICTFILE) $(PRIVDICTFILE)
-	`pwd`/mkdeftag `pwd`/$(DICTFILE) `pwd`/$(PRIVDICTFILE) > $(top_srcdir)/include/dcdeftag.h
+	`pwd`/mkdeftag `pwd`/$(DICTFILE) `pwd`/$(PRIVDICTFILE) > $(top_srcdir)/include/dcmtk/dcmdata/dcdeftag.h
 
 # Generate a file which can be used as a builtin dictionary
 

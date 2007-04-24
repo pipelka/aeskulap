@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1997-2004, OFFIS
+ *  Copyright (C) 1997-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -25,16 +25,16 @@
  *  not be used directly in applications. No identification exists.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:56 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dcvrpobw.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmdata/dcvrpobw.h"
 
 
 DcmPolymorphOBOW::DcmPolymorphOBOW(
@@ -44,7 +44,7 @@ DcmPolymorphOBOW::DcmPolymorphOBOW(
     changeVR(OFFalse),
     currentVR(EVR_OW)
 {
-    if (Tag.getEVR() == EVR_ox) Tag.setVR(EVR_OW);
+    if (Tag.getEVR() == EVR_ox || Tag.getEVR() == EVR_lt) Tag.setVR(EVR_OW);
 }
 
 DcmPolymorphOBOW::DcmPolymorphOBOW(const DcmPolymorphOBOW & oldObj)
@@ -310,11 +310,20 @@ OFCondition DcmPolymorphOBOW::writeSignatureFormat(
 /*
 ** CVS/RCS Log:
 ** $Log: dcvrpobw.cc,v $
-** Revision 1.1  2005/08/23 19:31:56  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:26  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.17  2005/12/08 15:42:00  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.16  2005/11/15 16:59:25  meichel
+** Added new pseudo VR type EVR_lt that is used for LUT Data when read in
+**   implicit VR, which may be US, SS or OW. DCMTK always treats EVR_lt like OW.
 **
 ** Revision 1.15  2004/02/04 16:08:14  joergr
 ** Adapted type casts to new-style typecast operators defined in ofcast.h.

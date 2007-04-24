@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2003, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,23 +23,23 @@
  *    class DcmAssociationConfigurationFile
  * 
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:01 $
+ *  Update Date:      $Date: 2007/04/24 09:53:35 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/libsrc/dcasccff.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "dcasccff.h"
-#include "dcasccfg.h" /* for class DcmAssociationConfiguration */
-#include "dcerror.h"  /* for EC_IllegalCall */
-#include "ofconfig.h" /* for class OFConfigFile */
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmnet/dcasccff.h"
+#include "dcmtk/dcmnet/dcasccfg.h" /* for class DcmAssociationConfiguration */
+#include "dcmtk/dcmdata/dcerror.h"  /* for EC_IllegalCall */
+#include "dcmtk/ofstd/ofconfig.h" /* for class OFConfigFile */
 
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 /* config file keys for the association configuration */
@@ -498,11 +498,16 @@ OFCondition DcmAssociationConfigurationFile::parseProfiles(
 /*
  * CVS/RCS Log
  * $Log: dcasccff.cc,v $
- * Revision 1.1  2005/08/23 19:32:01  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:35  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:10  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.4  2005/12/08 15:44:26  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.3  2003/08/11 18:31:46  joergr
  * Included "ctype" header file required for gcc 3.2.3 on Debian Linux.

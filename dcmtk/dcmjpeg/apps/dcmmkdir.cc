@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2001-2004, OFFIS
+ *  Copyright (C) 2001-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -37,8 +37,8 @@
  *  - Hemodynamic Waveform Interchange on Diskette (STD-WVFM-HD-FD)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:42 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -56,11 +56,16 @@
 /*
  * CVS/RCS Log:
  * $Log: dcmmkdir.cc,v $
- * Revision 1.1  2005/08/23 19:32:09  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:42  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:12  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:41  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.3  2005/12/08 15:43:23  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.2  2004/01/16 14:28:01  joergr
  * Updated copyright header.

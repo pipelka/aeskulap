@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2003-2004, OFFIS
+ *  Copyright (C) 2003-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -24,18 +24,18 @@
  *    class DcmProfileMap
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:01 $
+ *  Update Date:      $Date: 2007/04/24 09:53:35 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/libsrc/dccfprmp.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "dccfprmp.h" /* for class DcmProfileMap */
-#include "dcerror.h"  /* for EC_IllegalCall */
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmnet/dccfprmp.h" /* for class DcmProfileMap */
+#include "dcmtk/dcmdata/dcerror.h"  /* for EC_IllegalCall */
 
 
 DcmProfileEntry::DcmProfileEntry(
@@ -177,11 +177,16 @@ const char *DcmProfileMap::getExtendedNegotiationKey(const char *key) const
 /*
  * CVS/RCS Log
  * $Log: dccfprmp.cc,v $
- * Revision 1.1  2005/08/23 19:32:01  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:35  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:10  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.4  2005/12/08 15:44:30  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.3  2004/05/06 16:36:30  joergr
  * Added typecasts to keep Sun CC 2.0.1 quiet.

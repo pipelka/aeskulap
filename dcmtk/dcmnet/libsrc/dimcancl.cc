@@ -58,9 +58,9 @@
 **
 **
 ** Last Update:		$Author: braindead $
-** Update Date:		$Date: 2005/08/23 19:32:01 $
+** Update Date:		$Date: 2007/04/24 09:53:35 $
 ** Source File:		$Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/libsrc/dimcancl.cc,v $
-** CVS/RCS Revision:	$Revision: 1.1 $
+** CVS/RCS Revision:	$Revision: 1.2 $
 ** Status:		$State: Exp $
 **
 ** CVS/RCS Log at end of file
@@ -70,21 +70,21 @@
 ** Include Files
 */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CSTDARG
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 
-#include "diutil.h"
-#include "dimse.h"		/* always include the module header */
-#include "cond.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmnet/dimse.h"		/* always include the module header */
+#include "dcmtk/dcmnet/cond.h"
 
 OFCondition
 DIMSE_sendCancelRequest(T_ASC_Association * assoc, 
@@ -134,11 +134,16 @@ DIMSE_checkForCancelRQ(T_ASC_Association * assoc,
 /*
 ** CVS Log
 ** $Log: dimcancl.cc,v $
-** Revision 1.1  2005/08/23 19:32:01  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:35  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:10  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.7  2005/12/08 15:44:37  meichel
+** Changed include path schema for all DCMTK header files
 **
 ** Revision 1.6  2002/11/27 13:04:38  meichel
 ** Adapted module dcmnet to use of new header file ofstdinc.h

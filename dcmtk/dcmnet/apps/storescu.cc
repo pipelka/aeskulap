@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2003, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,16 +22,16 @@
  *  Purpose: Storage Service Class User (C-STORE operation)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
+ *  Update Date:      $Date: 2007/04/24 09:53:49 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/apps/storescu.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h" /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h" /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
@@ -39,7 +39,7 @@
 #define INCLUDE_CERRNO
 #define INCLUDE_CSTDARG
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 #ifdef HAVE_SYS_FILE_H
@@ -51,34 +51,34 @@ END_EXTERN_C
 #include <GUSI.h>
 #endif
 
-#include "ofstring.h"
-#include "dimse.h"
-#include "diutil.h"
-#include "dcdatset.h"
-#include "dcmetinf.h"
-#include "dcfilefo.h"
-#include "dcdebug.h"
-#include "dcuid.h"
-#include "dcdict.h"
-#include "dcdeftag.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dcuid.h"     /* for dcmtk version name */
-#include "dicom.h"     /* for DICOM_APPLICATION_REQUESTOR */
-#include "dcostrmz.h"  /* for dcmZlibCompressionLevel */
-#include "dcasccfg.h"  /* for class DcmAssociationConfiguration */
-#include "dcasccff.h"  /* for class DcmAssociationConfigurationFile */
+#include "dcmtk/ofstd/ofstring.h"
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmdata/dcdatset.h"
+#include "dcmtk/dcmdata/dcmetinf.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"     /* for dcmtk version name */
+#include "dcmtk/dcmnet/dicom.h"     /* for DICOM_APPLICATION_REQUESTOR */
+#include "dcmtk/dcmdata/dcostrmz.h"  /* for dcmZlibCompressionLevel */
+#include "dcmtk/dcmnet/dcasccfg.h"  /* for class DcmAssociationConfiguration */
+#include "dcmtk/dcmnet/dcasccff.h"  /* for class DcmAssociationConfigurationFile */
 
 #ifdef ON_THE_FLY_COMPRESSION
-#include "djdecode.h"  /* for dcmjpeg decoders */
-#include "djencode.h"  /* for dcmjpeg encoders */
-#include "dcrledrg.h"  /* for DcmRLEDecoderRegistration */
-#include "dcrleerg.h"  /* for DcmRLEEncoderRegistration */
+#include "dcmtk/dcmjpeg/djdecode.h"  /* for dcmjpeg decoders */
+#include "dcmtk/dcmjpeg/djencode.h"  /* for dcmjpeg encoders */
+#include "dcmtk/dcmdata/dcrledrg.h"  /* for DcmRLEDecoderRegistration */
+#include "dcmtk/dcmdata/dcrleerg.h"  /* for DcmRLEEncoderRegistration */
 #endif
 
 #ifdef WITH_OPENSSL
-#include "tlstrans.h"
-#include "tlslayer.h"
+#include "dcmtk/dcmtls/tlstrans.h"
+#include "dcmtk/dcmtls/tlslayer.h"
 #endif
 
 #ifdef WITH_ZLIB
@@ -122,6 +122,9 @@ static OFString accessionNumberPrefix;  // AccessionNumber is SH (maximum 16 cha
 static OFBool opt_secureConnection = OFFalse; /* default: no secure connection */
 static const char *opt_configFile = NULL;
 static const char *opt_profileName = NULL;
+T_DIMSE_BlockingMode opt_blockMode = DIMSE_BLOCKING;
+int opt_dimse_timeout = 0;
+int opt_acse_timeout = 30;
 
 #ifdef WITH_ZLIB
 static OFCmdUnsignedInt opt_compressionLevel = 0;
@@ -133,7 +136,11 @@ static OFBool      opt_doAuthenticate = OFFalse;
 static const char *opt_privateKeyFile = NULL;
 static const char *opt_certificateFile = NULL;
 static const char *opt_passwd = NULL;
+#if OPENSSL_VERSION_NUMBER >= 0x0090700fL
+static OFString    opt_ciphersuites(TLS1_TXT_RSA_WITH_AES_128_SHA ":" SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#else
 static OFString    opt_ciphersuites(SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#endif
 static const char *opt_readSeedFile = NULL;
 static const char *opt_writeSeedFile = NULL;
 static DcmCertificateVerification opt_certVerification = DCV_requireCertificate;
@@ -172,7 +179,7 @@ main(int argc, char *argv[])
     const char *opt_ourTitle = APPLICATIONTITLE;
 
     OFList<OFString> fileNameList;       // list of files to transfer to SCP
-    OFList<OFString> sopClassUIDList; // the list of sop classes
+    OFList<OFString> sopClassUIDList;    // the list of sop classes
     OFList<OFString> sopInstanceUIDList; // the list of sop instances
 
     T_ASC_Network *net;
@@ -232,7 +239,10 @@ main(int argc, char *argv[])
       cmd.addOption("--propose-lossless",       "-xs",       "propose default JPEG lossless TS\nand all uncompressed transfer syntaxes");
       cmd.addOption("--propose-jpeg8",          "-xy",       "propose default JPEG lossy TS for 8 bit data\nand all uncompressed transfer syntaxes");
       cmd.addOption("--propose-jpeg12",         "-xx",       "propose default JPEG lossy TS for 12 bit data\nand all uncompressed transfer syntaxes");
+      cmd.addOption("--propose-j2k-lossless",   "-xv",       "propose default JPEG 2000 lossless TS\nand all uncompressed transfer syntaxes");
+      cmd.addOption("--propose-j2k-lossy",      "-xw",       "propose default JPEG 2000 lossy TS\nand all uncompressed transfer syntaxes");
       cmd.addOption("--propose-rle",            "-xr",       "propose RLE lossless TS\nand all uncompressed transfer syntaxes");
+      cmd.addOption("--propose-mpeg",           "-mp",       "propose MPEG TS");
 #ifdef WITH_ZLIB
       cmd.addOption("--propose-deflated",       "-xd",       "propose deflated expl. VR little endian TS\nand all uncompressed transfer syntaxes");
 #endif
@@ -248,7 +258,9 @@ main(int argc, char *argv[])
 #endif
 
     cmd.addSubGroup("other network options:");
-      cmd.addOption("--timeout",     "-to", 1, "[s]econds: integer (default: unlimited)", "timeout for connection requests");
+      cmd.addOption("--timeout",       "-to", 1, "[s]econds: integer (default: unlimited)", "timeout for connection requests");
+      cmd.addOption("--acse-timeout",  "-ta", 1, "[s]econds: integer (default: 30)", "timeout for ACSE messages");
+      cmd.addOption("--dimse-timeout", "-td", 1, "[s]econds: integer (default: unlimited)", "timeout for DIMSE messages");
 
       OFString opt3 = "set max receive pdu to n bytes (default: ";
       sprintf(tempstr, "%ld", (long)ASC_DEFAULTMAXPDU);
@@ -371,16 +383,19 @@ main(int argc, char *argv[])
       if (cmd.findOption("--call")) app.checkValue(cmd.getValue(opt_peerTitle));
 
       cmd.beginOptionBlock();
-      if (cmd.findOption("--propose-uncompr"))  opt_networkTransferSyntax = EXS_Unknown;
-      if (cmd.findOption("--propose-little"))   opt_networkTransferSyntax = EXS_LittleEndianExplicit;
-      if (cmd.findOption("--propose-big"))      opt_networkTransferSyntax = EXS_BigEndianExplicit;
-      if (cmd.findOption("--propose-implicit")) opt_networkTransferSyntax = EXS_LittleEndianImplicit;
-      if (cmd.findOption("--propose-lossless")) opt_networkTransferSyntax = EXS_JPEGProcess14SV1TransferSyntax;
-      if (cmd.findOption("--propose-jpeg8"))    opt_networkTransferSyntax = EXS_JPEGProcess1TransferSyntax;
-      if (cmd.findOption("--propose-jpeg12"))   opt_networkTransferSyntax = EXS_JPEGProcess2_4TransferSyntax;
-      if (cmd.findOption("--propose-rle"))      opt_networkTransferSyntax = EXS_RLELossless;
+      if (cmd.findOption("--propose-uncompr"))      opt_networkTransferSyntax = EXS_Unknown;
+      if (cmd.findOption("--propose-little"))       opt_networkTransferSyntax = EXS_LittleEndianExplicit;
+      if (cmd.findOption("--propose-big"))          opt_networkTransferSyntax = EXS_BigEndianExplicit;
+      if (cmd.findOption("--propose-implicit"))     opt_networkTransferSyntax = EXS_LittleEndianImplicit;
+      if (cmd.findOption("--propose-lossless"))     opt_networkTransferSyntax = EXS_JPEGProcess14SV1TransferSyntax;
+      if (cmd.findOption("--propose-jpeg8"))        opt_networkTransferSyntax = EXS_JPEGProcess1TransferSyntax;
+      if (cmd.findOption("--propose-jpeg12"))       opt_networkTransferSyntax = EXS_JPEGProcess2_4TransferSyntax;
+      if (cmd.findOption("--propose-j2k-lossless")) opt_networkTransferSyntax = EXS_JPEG2000LosslessOnly;
+      if (cmd.findOption("--propose-j2k-lossy"))    opt_networkTransferSyntax = EXS_JPEG2000;
+      if (cmd.findOption("--propose-rle"))          opt_networkTransferSyntax = EXS_RLELossless;
+      if (cmd.findOption("--propose-mpeg"))         opt_networkTransferSyntax = EXS_MPEG2MainProfileAtMainLevel;
 #ifdef WITH_ZLIB
-      if (cmd.findOption("--propose-deflated")) opt_networkTransferSyntax = EXS_DeflatedLittleEndianExplicit;
+      if (cmd.findOption("--propose-deflated"))     opt_networkTransferSyntax = EXS_DeflatedLittleEndianExplicit;
 #endif
       cmd.endOptionBlock();
 
@@ -390,16 +405,18 @@ main(int argc, char *argv[])
       if (cmd.findOption("--config-file"))
       {
         app.checkValue(cmd.getValue(opt_configFile));
-        app.checkValue(cmd.getValue(opt_profileName));        
+        app.checkValue(cmd.getValue(opt_profileName));
 
         // check conflicts with other command line options
-        app.checkConflict("--config-file", "--propose-little", (opt_networkTransferSyntax == EXS_LittleEndianExplicit));
-        app.checkConflict("--config-file", "--propose-big", (opt_networkTransferSyntax == EXS_BigEndianExplicit));
-        app.checkConflict("--config-file", "--propose-implicit", (opt_networkTransferSyntax == EXS_LittleEndianImplicit));
-        app.checkConflict("--config-file", "--propose-lossless", (opt_networkTransferSyntax == EXS_JPEGProcess14SV1TransferSyntax));
-        app.checkConflict("--config-file", "--propose-jpeg8", (opt_networkTransferSyntax == EXS_JPEGProcess1TransferSyntax));
-        app.checkConflict("--config-file", "--propose-jpeg12", (opt_networkTransferSyntax == EXS_JPEGProcess2_4TransferSyntax));
-        app.checkConflict("--config-file", "--propose-rle", (opt_networkTransferSyntax == EXS_RLELossless));
+        app.checkConflict("--config-file", "--propose-little",       (opt_networkTransferSyntax == EXS_LittleEndianExplicit));
+        app.checkConflict("--config-file", "--propose-big",          (opt_networkTransferSyntax == EXS_BigEndianExplicit));
+        app.checkConflict("--config-file", "--propose-implicit",     (opt_networkTransferSyntax == EXS_LittleEndianImplicit));
+        app.checkConflict("--config-file", "--propose-lossless",     (opt_networkTransferSyntax == EXS_JPEGProcess14SV1TransferSyntax));
+        app.checkConflict("--config-file", "--propose-jpeg8",        (opt_networkTransferSyntax == EXS_JPEGProcess1TransferSyntax));
+        app.checkConflict("--config-file", "--propose-jpeg12",       (opt_networkTransferSyntax == EXS_JPEGProcess2_4TransferSyntax));
+        app.checkConflict("--config-file", "--propose-j2k-lossless", (opt_networkTransferSyntax == EXS_JPEG2000LosslessOnly));
+        app.checkConflict("--config-file", "--propose-j2k-lossy",    (opt_networkTransferSyntax == EXS_JPEG2000));
+        app.checkConflict("--config-file", "--propose-rle",          (opt_networkTransferSyntax == EXS_RLELossless));
 #ifdef WITH_ZLIB
         app.checkConflict("--config-file", "--propose-deflated", (opt_networkTransferSyntax == EXS_DeflatedLittleEndianExplicit));
 #endif
@@ -419,7 +436,7 @@ main(int argc, char *argv[])
       cmd.beginOptionBlock();
       if (cmd.findOption("--compression-level"))
       {
-          if ((opt_networkTransferSyntax != EXS_DeflatedLittleEndianExplicit) 
+          if ((opt_networkTransferSyntax != EXS_DeflatedLittleEndianExplicit)
             && (opt_configFile == NULL))
           {
              app.printError("--compression-level only allowed with --propose-deflated or --config-file");
@@ -443,12 +460,28 @@ main(int argc, char *argv[])
       }
       cmd.endOptionBlock();
 
-      if (cmd.findOption("--timeout")) 
+      if (cmd.findOption("--timeout"))
       {
         OFCmdSignedInt opt_timeout = 0;
         app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
         dcmConnectionTimeout.set((Sint32) opt_timeout);
       }
+
+      if (cmd.findOption("--acse-timeout"))
+      {
+        OFCmdSignedInt opt_timeout = 0;
+        app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
+        opt_acse_timeout = OFstatic_cast(int, opt_timeout);
+      }
+
+      if (cmd.findOption("--dimse-timeout"))
+      {
+        OFCmdSignedInt opt_timeout = 0;
+        app.checkValue(cmd.getValueAndCheckMin(opt_timeout, 1));
+        opt_dimse_timeout = OFstatic_cast(int, opt_timeout);
+        opt_blockMode = DIMSE_NONBLOCKING;
+      }
+
 
       if (cmd.findOption("--max-pdu")) app.checkValue(cmd.getValueAndCheckMinMax(opt_maxReceivePDULength, ASC_MINIMUMPDUSIZE, ASC_MAXIMUMPDUSIZE));
 
@@ -589,11 +622,11 @@ main(int argc, char *argv[])
       char sopClassUID[128];
       char sopInstanceUID[128];
       OFBool ignoreName;
-      
+
       for (int i=3; i <= paramCount; i++)
       {
         ignoreName = OFFalse;
-        
+
         cmd.getParam(i, currentFilename);
         if (access(currentFilename, R_OK) < 0)
         {
@@ -660,7 +693,7 @@ main(int argc, char *argv[])
     }
 
     /* initialize network, i.e. create an instance of T_ASC_Network*. */
-    OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, 1000, &net);
+    OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, opt_acse_timeout, &net);
     if (cond.bad()) {
         DimseCondition::dump(cond);
         return 1;
@@ -823,6 +856,14 @@ main(int argc, char *argv[])
             DimseCondition::dump(cond);
             return 1;
         }
+    }
+
+    /* dump the connection parameters if in debug mode*/
+    if (opt_debug)
+    {
+        ostream& out = ofConsole.lockCout();     
+        ASC_dumpConnectionParameters(assoc, out);
+        ofConsole.unlockCout();
     }
 
     /* dump the presentation contexts which have been accepted/refused */
@@ -1090,10 +1131,10 @@ addStoragePresentationContexts(T_ASC_Parameters *params, OFList<OFString>& sopCl
     }
 
     if (!opt_proposeOnlyRequiredPresentationContexts) {
-        // add all the known storage sop classes to the list
+        // add the (short list of) known storage sop classes to the list
         // the array of Storage SOP Class UIDs comes from dcuid.h
-        for (int i=0; i<numberOfDcmStorageSOPClassUIDs; i++) {
-            sopClasses.push_back(dcmStorageSOPClassUIDs[i]);
+        for (int i=0; i<numberOfDcmShortSCUStorageSOPClassUIDs; i++) {
+            sopClasses.push_back(dcmShortSCUStorageSOPClassUIDs[i]);
         }
     }
 
@@ -1399,7 +1440,7 @@ storeSCU(T_ASC_Association * assoc, const char *fname)
     /* finally conduct transmission of data */
     cond = DIMSE_storeUser(assoc, presId, &req,
         NULL, dcmff.getDataset(), progressCallback, NULL,
-        DIMSE_BLOCKING, 0,
+        opt_blockMode, opt_dimse_timeout,
         &rsp, &statusDetail, NULL, DU_fileSize(fname));
 
     /*
@@ -1473,11 +1514,33 @@ cstore(T_ASC_Association * assoc, const OFString& fname)
 /*
 ** CVS Log
 ** $Log: storescu.cc,v $
-** Revision 1.1  2005/08/23 19:32:09  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:49  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:53  pipelka
-** - added dcmtk
+** Revision 1.2  2007/02/26 08:24:57  pipelka
+** - storescu fix
+**
+** Revision 1.64  2005/12/08 15:44:22  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.63  2005/11/23 16:10:23  meichel
+** Added support for AES ciphersuites in TLS module. All TLS-enabled
+**   tools now support the "AES TLS Secure Transport Connection Profile".
+**
+** Revision 1.62  2005/11/17 13:45:16  meichel
+** Added command line options for DIMSE and ACSE timeouts
+**
+** Revision 1.61  2005/11/16 14:58:07  meichel
+** Set association timeout in ASC_initializeNetwork to 30 seconds. This improves
+**   the responsiveness of the tools if the peer blocks during assoc negotiation.
+**
+** Revision 1.60  2005/11/11 16:09:01  onken
+** Added options for JPEG2000 support (lossy and lossless)
+**
+** Revision 1.59  2005/10/25 08:55:43  meichel
+** Updated list of UIDs and added support for new transfer syntaxes
+**   and storage SOP classes.
 **
 ** Revision 1.58  2004/01/21 10:18:39  meichel
 ** StoreSCU with --no-halt option now also continues if errors other than a

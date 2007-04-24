@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2001, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,17 +23,17 @@
  *    classes: DVPSIPCMessage
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dcompat.h"
+#include "dcmtk/dcmnet/dcompat.h"
 
 BEGIN_EXTERN_C
 #ifdef HAVE_WINDOWS_H
@@ -42,11 +42,11 @@ BEGIN_EXTERN_C
 #endif
 END_EXTERN_C
 
-#include "dvpsmsg.h"
-#include "ofstring.h"    /* for class OFString */
-#include "ofbmanip.h"    /* for OFBitmanipTemplate<> */
-#include "dcswap.h"      /* for swapIfNecessary() */
-#include "dcmtrans.h"    /* for class DcmTransportConnection */
+#include "dcmtk/dcmpstat/dvpsmsg.h"
+#include "dcmtk/ofstd/ofstring.h"    /* for class OFString */
+#include "dcmtk/ofstd/ofbmanip.h"    /* for OFBitmanipTemplate<> */
+#include "dcmtk/dcmdata/dcswap.h"      /* for swapIfNecessary() */
+#include "dcmtk/dcmnet/dcmtrans.h"    /* for class DcmTransportConnection */
 
 /* --------------- class DVPSIPCMessage --------------- */
 
@@ -426,11 +426,16 @@ void DVPSIPCClient::notifySentDICOMObject(Uint32 status, const char *txt)
 
 /*
  *  $Log: dvpsmsg.cc,v $
- *  Revision 1.1  2005/08/23 19:31:59  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:44  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:00  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.11  2005/12/08 15:46:35  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.10  2001/06/05 10:30:56  joergr
  *  Replaced some #ifdef _WIN32 statements by #ifdef HAVE_WINDOWS_H or #ifdef

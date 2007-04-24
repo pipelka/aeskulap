@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2003, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: DicomColorPixel (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,14 +31,14 @@
  */
 
 
-#include "osconfig.h"
-#include "dctypes.h"
-#include "dcdeftag.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dctypes.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
 
-#include "dicopx.h"
-#include "dimopx.h"
-#include "diinpx.h"
-#include "didocu.h"
+#include "dcmtk/dcmimage/dicopx.h"
+#include "dcmtk/dcmimgle/dimopx.h"
+#include "dcmtk/dcmimgle/diinpx.h"
+#include "dcmtk/dcmimgle/didocu.h"
 
 
 /*----------------*
@@ -69,13 +69,24 @@ DiColorPixel::DiColorPixel(const DiDocument *docu,
             }
             if (docu->getValue(DCM_PlanarConfiguration, us))
             {
-                PlanarConfiguration = (us == 1);
-                if ((us != 0) && (us != 1))
+                /* only use Planar Configuration attribute if there are multiple planes */
+                if (samples > 1)
                 {
+                    PlanarConfiguration = (us == 1);
+                    if ((us != 0) && (us != 1))
+                    {
+                        if (DicomImageClass::checkDebugLevel(DicomImageClass::DL_Warnings))
+                        {
+                            ofConsole.lockCerr() << "WARNING: invalid value for 'PlanarConfiguration' (" << us
+                                                 << ") ... assuming 'color-by-pixel' (0) !" << endl;
+                            ofConsole.unlockCerr();
+                        }
+                    }
+                } else {
                     if (DicomImageClass::checkDebugLevel(DicomImageClass::DL_Warnings))
                     {
-                        ofConsole.lockCerr() << "WARNING: invalid value for 'PlanarConfiguration' (" << us
-                                             << ") ... assuming 'color-by-pixel' (0) !" << endl;
+                        ofConsole.lockCerr() << "WARNING: unexpected attribute 'PlanarConfiguration' (" << us
+                                             << ") ... ignoring !" << endl;
                         ofConsole.unlockCerr();
                     }
                 }
@@ -97,9 +108,7 @@ DiColorPixel::DiColorPixel(const DiDocument *docu,
                 // number of pixels allocated for the intermediate buffer
                 Count = pixel->getComputedCount() / ((sample_rate == 0) ? samples : sample_rate);
             }
-        }
-        else
-        {
+        } else {
             status = EIS_MissingAttribute;
             if (DicomImageClass::checkDebugLevel(DicomImageClass::DL_Errors))
             {
@@ -131,11 +140,20 @@ DiColorPixel::~DiColorPixel()
  *
  * CVS/RCS Log:
  * $Log: dicopx.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:47  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:09  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.15  2005/12/08 15:42:23  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.14  2004/06/03 09:08:01  joergr
+ * Changed error message on unexpected attribute PlanarConfiguration into a
+ * warning message.
  *
  * Revision 1.13  2003/12/23 10:54:28  joergr
  * Updated copyright header.

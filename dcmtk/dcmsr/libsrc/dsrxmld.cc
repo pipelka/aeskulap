@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2003-2004, OFFIS
+ *  Copyright (C) 2003-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *    classes: DSRXMLDocument
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,19 +32,20 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrxmld.h"
+#include "dcmtk/dcmsr/dsrxmld.h"
 
 #define INCLUDE_CSTDARG
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef WITH_LIBXML
 #include <libxml/xmlschemas.h>
 
+#ifdef LIBXML_SCHEMAS_ENABLED
 #ifdef HAVE_VPRINTF
 // function required to avoid issue with 'std' namespace
-static void errorFunction(void *ctx, const char *msg, ...)
+extern "C" void errorFunction(void *ctx, const char *msg, ...)
 {
     va_list ap;
     va_start(ap, msg);
@@ -56,9 +57,10 @@ static void errorFunction(void *ctx, const char *msg, ...)
     va_end(ap);
 }
 #endif
+#endif /* LIBXML_SCHEMAS_ENABLED */
 
 // 'libxml' shall be quiet in non-debug mode
-static void noErrorFunction(void * /*ctx*/, const char * /*msg*/, ...)
+extern "C" void noErrorFunction(void * /*ctx*/, const char * /*msg*/, ...)
 {
     /* do nothing */
 }
@@ -144,6 +146,7 @@ OFCondition DSRXMLDocument::read(const OFString &filename,
         if (flags & XF_validateSchema)
         {
             xmlGenericError(xmlGenericErrorContext, "--- libxml validating ---\n");
+#ifdef LIBXML_SCHEMAS_ENABLED
 #if 1
             /* create context for Schema validation */
             xmlSchemaParserCtxtPtr context = xmlSchemaNewParserCtxt(DCMSR_XML_XSD_FILE);
@@ -179,7 +182,7 @@ OFCondition DSRXMLDocument::read(const OFString &filename,
             } else
                 xmlGenericError(xmlGenericErrorContext, "error: failed to compile schema \"%s\"\n", DCMSR_XML_XSD_FILE);
             xmlSchemaFreeParserCtxt(context);
-#else
+#else // 0
             /* ### the following code fragment is not yet working! ### */
 
             /* create context for Schema validation */
@@ -196,6 +199,9 @@ OFCondition DSRXMLDocument::read(const OFString &filename,
                 xmlSchemaSetValidErrors(context, NULL, NULL, NULL);
             /* validate the document */
             isValid = (xmlSchemaValidateDoc(context, Document) == 0);
+#endif
+#else /* LIBXML_SCHEMAS_ENABLED */
+            xmlGenericError(xmlGenericErrorContext, "no support for XML Schema\n");
 #endif
         }
         xmlGenericError(xmlGenericErrorContext, "-------------------------\n");
@@ -253,7 +259,7 @@ OFCondition DSRXMLDocument::setEncodingHandler(const char *charset)
 #else /* WITH_LIBXML */
 OFCondition DSRXMLDocument::setEncodingHandler(const char *)
 {
-	return EC_IllegalCall;
+    return EC_IllegalCall;
 }
 #endif
 
@@ -341,7 +347,7 @@ OFBool DSRXMLDocument::matchNode(const DSRXMLCursor &cursor,
 OFBool DSRXMLDocument::matchNode(const DSRXMLCursor &,
                                  const char *) const
 {
-	return OFFalse;
+    return OFFalse;
 }
 #endif
 
@@ -413,7 +419,7 @@ OFBool DSRXMLDocument::convertUtf8ToCharset(const xmlChar *fromString,
 OFBool DSRXMLDocument::convertUtf8ToCharset(const xmlChar *,
                                             OFString &) const
 {
-	return OFFalse;
+    return OFFalse;
 }
 #endif
 
@@ -435,7 +441,7 @@ OFBool DSRXMLDocument::hasAttribute(const DSRXMLCursor &cursor,
 OFBool DSRXMLDocument::hasAttribute(const DSRXMLCursor &,
                                     const char *) const
 {
-	return OFFalse;
+    return OFFalse;
 }
 #endif
 
@@ -741,11 +747,25 @@ void DSRXMLDocument::printGeneralNodeError(const DSRXMLCursor &cursor,
 /*
  *  CVS/RCS Log:
  *  $Log: dsrxmld.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.11  2005/12/16 15:46:43  meichel
+ *  Declared libxml2 callback functions as extern "C"
+ *
+ *  Revision 1.10  2005/12/08 15:48:25  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.9  2004/09/03 08:50:48  joergr
+ *  Replaced tabs by spaces.
+ *
+ *  Revision 1.8  2004/08/04 12:12:18  joergr
+ *  Disabled support for XML Schema if not compiled into libxml2 library.
  *
  *  Revision 1.7  2004/04/07 12:04:48  joergr
  *  Adapted code to avoid warnings reported by gcc when compiling without libxml

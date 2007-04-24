@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2004, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,40 +23,40 @@
  *    classes: DVPSPrintSCP
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "ofstream.h"
-#include "dvpsprt.h"
-#include "dvpsdef.h"     /* for constants */
-#include "dviface.h"
-#include "dvpsfs.h"
-#include "dvpssp.h"
-#include "dvpshlp.h"
-#include "ofdatime.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmpstat/dvpsprt.h"
+#include "dcmtk/dcmpstat/dvpsdef.h"     /* for constants */
+#include "dcmtk/dcmpstat/dviface.h"
+#include "dcmtk/dcmpstat/dvpsfs.h"
+#include "dcmtk/dcmpstat/dvpssp.h"
+#include "dcmtk/dcmpstat/dvpshlp.h"
+#include "dcmtk/ofstd/ofdatime.h"
 
-#include "dvpsov.h"      /* for DVPSOverlay, needed by MSVC5 with STL */
-#include "dvpsgl.h"      /* for DVPSGraphicLayer, needed by MSVC5 with STL */
-#include "dvpsrs.h"      /* for DVPSReferencedSeries, needed by MSVC5 with STL */
-#include "dvpsal.h"      /* for DVPSOverlayCurveActivationLayer, needed by MSVC5 with STL */
-#include "dvpsga.h"      /* for DVPSGraphicAnnotation, needed by MSVC5 with STL */
-#include "dvpscu.h"      /* for DVPSCurve, needed by MSVC5 with STL */
-#include "dvpsvl.h"      /* for DVPSVOILUT, needed by MSVC5 with STL */
-#include "dvpsvw.h"      /* for DVPSVOIWindow, needed by MSVC5 with STL */
-#include "dvpsda.h"      /* for DVPSDisplayedArea, needed by MSVC5 with STL */
-#include "dvpssv.h"      /* for DVPSSoftcopyVOI, needed by MSVC5 with STL */
-#include "dvpsib.h"      /* for DVPSImageBoxContent, needed by MSVC5 with STL */
-#include "dvpsab.h"      /* for DVPSAnnotationContent, needed by MSVC5 with STL */
-#include "dvpstx.h"      /* for DVPSTextObject, needed by MSVC5 with STL */
-#include "dvpsgr.h"      /* for DVPSGraphicObject, needed by MSVC5 with STL */
-#include "dvpsri.h"      /* for DVPSReferencedImage, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsov.h"      /* for DVPSOverlay, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsgl.h"      /* for DVPSGraphicLayer, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsrs.h"      /* for DVPSReferencedSeries, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsal.h"      /* for DVPSOverlayCurveActivationLayer, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsga.h"      /* for DVPSGraphicAnnotation, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpscu.h"      /* for DVPSCurve, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsvl.h"      /* for DVPSVOILUT, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsvw.h"      /* for DVPSVOIWindow, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsda.h"      /* for DVPSDisplayedArea, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpssv.h"      /* for DVPSSoftcopyVOI, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsib.h"      /* for DVPSImageBoxContent, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsab.h"      /* for DVPSAnnotationContent, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpstx.h"      /* for DVPSTextObject, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsgr.h"      /* for DVPSGraphicObject, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsri.h"      /* for DVPSReferencedImage, needed by MSVC5 with STL */
 
 DVPSPrintSCP::DVPSPrintSCP(DVInterface &iface, const char *cfname)
 : dviface(iface)
@@ -1265,11 +1265,16 @@ void DVPSPrintSCP::dumpNMessage(T_DIMSE_Message &msg, DcmItem *dataset, OFBool o
 
 /*
  *  $Log: dvpsprt.cc,v $
- *  Revision 1.1  2005/08/23 19:31:59  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:44  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:00  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.19  2005/12/08 15:46:42  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.18  2004/02/04 15:57:49  joergr
  *  Removed acknowledgements with e-mail addresses from CVS log.

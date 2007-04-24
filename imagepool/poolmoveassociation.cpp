@@ -29,9 +29,32 @@
 #include "poolnetwork.h"
 #include "poolmoveassociation.h"
 
-#include <diutil.h>
-#include "djencode.h"
-#include "djrplol.h"
+
+
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofdatime.h"
+#include "dcmtk/dcmdata/dcuid.h"         /* for dcmtk version name */
+#include "dcmtk/dcmnet/dicom.h"         /* for DICOM_APPLICATION_ACCEPTOR */
+#include "dcmtk/dcmdata/dcdeftag.h"      /* for DCM_StudyInstanceUID */
+#include "dcmtk/dcmdata/dcostrmz.h"      /* for dcmZlibCompressionLevel */
+#include "dcmtk/dcmnet/dcasccfg.h"      /* for class DcmAssociationConfiguration */
+#include "dcmtk/dcmnet/dcasccff.h"      /* for class DcmAssociationConfigurationFile */
+
+#ifdef WITH_OPENSSL
+#include "dcmtk/dcmtls/tlstrans.h"
+#include "dcmtk/dcmtls/tlslayer.h"
+#endif
+
+#include "dcmtk/dcmjpeg/djencode.h"
+#include "dcmtk/dcmjpeg/djrplol.h"
 
 
 MoveAssociation::MoveAssociation() {
@@ -182,7 +205,7 @@ CONDITION MoveAssociation::acceptSubAssoc(T_ASC_Network *aNet, T_ASC_Association
 			// the array of Storage SOP Class UIDs comes from dcuid.h
 			cond = ASC_acceptContextsWithPreferredTransferSyntaxes(
 					(*assoc)->params,
-					dcmStorageSOPClassUIDs, numberOfDcmStorageSOPClassUIDs,
+					dcmAllStorageSOPClassUIDs, numberOfAllDcmStorageSOPClassUIDs,
 					transferSyntaxes, DIM_OF(transferSyntaxes));
 		}
 	}

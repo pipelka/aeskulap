@@ -57,9 +57,9 @@
 **      Module Prefix: DIMSE_
 **
 ** Last Update:         $Author: braindead $
-** Update Date:         $Date: 2006/12/05 12:50:16 $
+** Update Date:         $Date: 2007/04/24 09:53:35 $
 ** Source File:         $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/libsrc/dimse.cc,v $
-** CVS/RCS Revision:    $Revision: 1.2 $
+** CVS/RCS Revision:    $Revision: 1.3 $
 ** Status:              $State: Exp $
 **
 ** CVS/RCS Log at end of file
@@ -69,18 +69,16 @@
 ** Include Files
 */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CSTDARG
 #define INCLUDE_CERRNO
-#include "ofstdinc.h"
+#define INCLUDE_UNISTD
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 #ifdef HAVE_UNIX_H
 #if defined(macintosh) && defined (HAVE_WINSOCK_H)
 /* unix.h defines timeval incompatible with winsock.h */
@@ -93,21 +91,21 @@
 #include <fcntl.h>
 #endif
 
-#include "diutil.h"
-#include "dimse.h"              /* always include the module header */
-#include "cond.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmnet/dimse.h"              /* always include the module header */
+#include "dcmtk/dcmnet/cond.h"
 #include "dimcmd.h"
-#include "dcdeftag.h"    /* for tag names */
-#include "dcdict.h"      /* for dcmDataDict */
-#include "dcfilefo.h"    /* for class DcmFileFormat */
-#include "dcmetinf.h"    /* for class DcmMetaInfo */
-#include "dcistrmb.h"    /* for class DcmInputBufferStream */
-#include "dcostrmb.h"    /* for class DcmOutputBufferStream */
-#include "dcostrmf.h"    /* for class DcmOutputFileStream */
-#include "dcvrul.h"      /* for class DcmUnsignedLong */
-#include "dcvrobow.h"    /* for class DcmOtherByteOtherWord */
-#include "dcvrsh.h"      /* for class DcmShortString */
-#include "dcdicent.h"    /* for DcmDictEntry, needed for MSVC5 */
+#include "dcmtk/dcmdata/dcdeftag.h"    /* for tag names */
+#include "dcmtk/dcmdata/dcdict.h"      /* for dcmDataDict */
+#include "dcmtk/dcmdata/dcfilefo.h"    /* for class DcmFileFormat */
+#include "dcmtk/dcmdata/dcmetinf.h"    /* for class DcmMetaInfo */
+#include "dcmtk/dcmdata/dcistrmb.h"    /* for class DcmInputBufferStream */
+#include "dcmtk/dcmdata/dcostrmb.h"    /* for class DcmOutputBufferStream */
+#include "dcmtk/dcmdata/dcostrmf.h"    /* for class DcmOutputFileStream */
+#include "dcmtk/dcmdata/dcvrul.h"      /* for class DcmUnsignedLong */
+#include "dcmtk/dcmdata/dcvrobow.h"    /* for class DcmOtherByteOtherWord */
+#include "dcmtk/dcmdata/dcvrsh.h"      /* for class DcmShortString */
+#include "dcmtk/dcmdata/dcdicent.h"    /* for DcmDictEntry, needed for MSVC5 */
 /*
  * Type definitions
  */
@@ -347,7 +345,13 @@ getTransferSyntax(T_ASC_Association * assoc,
         case EXS_JPEGProcess29TransferSyntax:
         case EXS_JPEGProcess14SV1TransferSyntax:
         case EXS_RLELossless:
-	case EXS_MPEG2MainProfileAtMainLevel:
+        case EXS_JPEGLSLossless:
+        case EXS_JPEGLSLossy:
+        case EXS_JPEG2000LosslessOnly:
+        case EXS_JPEG2000:
+        case EXS_MPEG2MainProfileAtMainLevel:
+        case EXS_JPEG2000MulticomponentLosslessOnly:
+        case EXS_JPEG2000Multicomponent:        	
 #ifdef WITH_ZLIB
         case EXS_DeflatedLittleEndianExplicit:
 #endif
@@ -1049,10 +1053,12 @@ DIMSE_sendMessageUsingMemoryData(T_ASC_Association * assoc,
  * Message Receive
  */
 
-static OFCondition
-ignoreDataSet(T_ASC_Association * assoc,
-              T_DIMSE_BlockingMode blocking, int timeout,
-              DIC_UL * bytesRead, DIC_UL * pdvCount)
+OFCondition DIMSE_ignoreDataSet(
+  T_ASC_Association * assoc,
+  T_DIMSE_BlockingMode blocking, 
+  int timeout,
+  DIC_UL * bytesRead, 
+  DIC_UL * pdvCount)
 {
     OFCondition cond = EC_Normal;
     DUL_PDV pdv;
@@ -1060,7 +1066,7 @@ ignoreDataSet(T_ASC_Association * assoc,
 
     while (!last) {
         cond = DIMSE_readNextPDV(assoc, blocking, timeout, &pdv);
-        if (cond != EC_Normal) {
+        if (cond.bad()) {
             break;
         }
         if (pdv.pdvType != DUL_DATASETPDV) {
@@ -1442,7 +1448,7 @@ DIMSE_receiveDataSetInFile(T_ASC_Association *assoc,
     if ((assoc == NULL) || (presID==NULL) || (filestream==NULL)) return DIMSE_NULLKEY;
 
     *presID = 0;        /* invalid value */
-
+    Uint32 written = 0;
     while (!last)
     {
         cond = DIMSE_readNextPDV(assoc, blocking, timeout, &pdv);
@@ -1490,10 +1496,10 @@ DIMSE_receiveDataSetInFile(T_ASC_Association *assoc,
 
         if (!last)
         {
-          filestream->write((void *)(pdv.data), (Uint32)(pdv.fragmentLength));
-          if (! filestream->good())
+          written = filestream->write((void *)(pdv.data), (Uint32)(pdv.fragmentLength));
+          if ((! filestream->good()) || (written != (Uint32)(pdv.fragmentLength)))
           {
-              cond = ignoreDataSet(assoc, blocking, timeout, &bytesRead, &pdvCount);
+              cond = DIMSE_ignoreDataSet(assoc, blocking, timeout, &bytesRead, &pdvCount);
               if (cond == EC_Normal)
               {
                 cond = makeDcmnetCondition(DIMSEC_OUTOFRESOURCES, OF_error, "DIMSE_receiveDataSetInFile: Cannot write to file");
@@ -1577,7 +1583,7 @@ DIMSE_receiveDataSetInMemory(T_ASC_Association * assoc,
     if (dset == NULL)
     {
         /* if this is the case, just go ahead an receive data, but do not store it anywhere */
-        cond = ignoreDataSet(assoc, blocking, timeout, &bytesRead, &pdvCount);
+        cond = DIMSE_ignoreDataSet(assoc, blocking, timeout, &bytesRead, &pdvCount);
 
         /* if receiving was successful, let the caller know though that no DcmDataset variable could be created */
         if (cond == EC_Normal)
@@ -1762,15 +1768,33 @@ void DIMSE_warning(T_ASC_Association *assoc,
 /*
 ** CVS Log
 ** $Log: dimse.cc,v $
-** Revision 1.2  2006/12/05 12:50:16  braindead
-** - build fixes
-** - added MPEG transfersyntax
+** Revision 1.3  2007/04/24 09:53:35  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/08/23 19:32:01  braindead
-** - initial savannah import
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
 **
-** Revision 1.1  2005/06/26 19:26:10  pipelka
-** - added dcmtk
+**
+** Revision 1.43  2005/12/08 15:44:45  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.42  2005/10/25 08:55:46  meichel
+** Updated list of UIDs and added support for new transfer syntaxes
+**   and storage SOP classes.
+**
+** Revision 1.41  2005/03/17 16:25:44  meichel
+** Fixed bug in the network module, which refused transmission in JPEG-LS or
+**   JPEG 2000 transfer syntaxes even if an appropriate configuration file was
+**   used with storescu and storescp.
+**
+** Revision 1.40  2005/02/22 09:40:58  meichel
+** Fixed two bugs in "bit-preserving" Store SCP code. Errors while creating or
+**   writing the DICOM file (e.g. file system full) now result in a DIMSE error
+**   response (out of resources) being sent back to the SCU.
+**
+** Revision 1.39  2004/08/03 11:42:47  meichel
+** Headers libc.h and unistd.h are now included via ofstdinc.h
 **
 ** Revision 1.38  2004/02/04 15:35:17  joergr
 ** Removed acknowledgements with e-mail addresses from CVS log.

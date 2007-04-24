@@ -27,20 +27,21 @@ objs = dsrdoc.o dsrtree.o dsrtncsr.o dsrdoctn.o dsrdoctr.o \
 	dsrscotn.o dsrtcotn.o dsrcomtn.o dsrimgtn.o dsrwavtn.o dsrcontn.o \
 	dsrreftn.o dsrsoprf.o dsrcsidl.o dsrxmlc.o  dsrxmld.o  dsriodcc.o \
 	dsrbascc.o dsrenhcc.o dsrcomcc.o dsrkeycc.o dsrmamcc.o dsrchecc.o \
-	dsrprocc.o
-library = libdcmsr.$(LIBEXT)
-
+	dsrprocc.o dsrxrdcc.o
+library = libdcmsr$(LIBEXT)
+librarydev = libdcmsr.so
 
 all: $(library)
 
 install: all
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
-
+	ln -sf $(library) $(librarydev)
 
 clean:
 	rm -f $(objs) $(library) $(TRASH)

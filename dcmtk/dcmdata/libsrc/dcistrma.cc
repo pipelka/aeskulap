@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2002, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,19 +22,19 @@
  *  Purpose: base classes for input streams
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:58 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/dcistrma.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "dcistrma.h"
-#include "dcistrmz.h" /* for DcmZLibInputFilter */
-#include "dcerror.h"  /* for EC_IllegalCall */
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dcistrma.h"
+#include "dcmtk/dcmdata/dcistrmz.h" /* for DcmZLibInputFilter */
+#include "dcmtk/dcmdata/dcerror.h"  /* for EC_IllegalCall */
 
 DcmInputStream::DcmInputStream(DcmProducer *initial)
 : current_(initial)
@@ -141,11 +141,16 @@ OFCondition DcmInputStream::installCompressionFilter(E_StreamCompression filterT
 /*
  * CVS/RCS Log:
  * $Log: dcistrma.cc,v $
- * Revision 1.1  2005/08/23 19:31:58  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:25  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.2  2005/12/08 15:41:12  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.1  2002/08/27 16:55:48  meichel
  * Initial release of new DICOM I/O stream classes that add support for stream

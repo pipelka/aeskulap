@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2001, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,9 +23,9 @@
  *           management service class providers based on the file system.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
+ *  Update Date:      $Date: 2007/04/24 09:53:42 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmwlm/apps/wlcefs.h,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -35,7 +35,8 @@
 #ifndef WlmConsoleEngineFileSystem_h
 #define WlmConsoleEngineFileSystem_h
 
-#include "osconfig.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmnet/dimse.h"
 
 class WlmDataSource;
 class OFConsoleApplication;
@@ -79,6 +80,14 @@ class WlmConsoleEngineFileSystem
     int opt_maxAssociations;
     /// indicates if an expansion of empty sequences in C-Find RQ messages shall take place or not
     OFBool opt_noSequenceExpansion;
+    /// indicates if wl-files which are lacking return type 1 attributes or information in such attributes shall be rejected or not
+    OFBool opt_enableRejectionOfIncompleteWlFiles;
+    /// blocking mode for DIMSE operations
+    T_DIMSE_BlockingMode opt_blockMode;
+    /// timeout for DIMSE operations
+    int opt_dimse_timeout;
+    /// timeout for ACSE operations
+    int opt_acse_timeout;
     /// instance of console application class (for handling command line arguments)
     OFConsoleApplication *app;
     /// instance of command line class (for handling command line arguments)

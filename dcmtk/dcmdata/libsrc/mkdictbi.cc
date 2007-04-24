@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2002, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -24,26 +24,24 @@
  *  the dcmdata library.  
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:55 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/mkdictbi.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#define INCLUDE_LIBC
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#ifdef HAVE_LIBC_H
-#include <libc.h>
-#endif
 #ifdef HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif
@@ -60,11 +58,11 @@
 #include <GUSI.h>
 #endif
 
-#include "dcdict.h"
-#include "cmdlnarg.h"
-#include "ofstring.h"
-#include "ofdatime.h"
-#include "dcdicent.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofstring.h"
+#include "dcmtk/ofstd/ofdatime.h"
+#include "dcmtk/dcmdata/dcdicent.h"
 
 #define PRIVATE_TAGS_IFNAME "WITH_PRIVATE_TAGS"
 
@@ -270,8 +268,8 @@ main(int argc, char* argv[])
     fputs("**\n", fout);
     fprintf(fout, "*/\n");
     fprintf(fout, "\n");
-    fprintf(fout, "#include \"dcdict.h\"\n");
-    fprintf(fout, "#include \"dcdicent.h\"\n");
+    fprintf(fout, "#include \"dcmtk/dcmdata/dcdict.h\"\n");
+    fprintf(fout, "#include \"dcmtk/dcmdata/dcdicent.h\"\n");
     fprintf(fout, "\n");
     fprintf(fout, "const char* dcmBuiltinDictBuildDate = \"%s\";\n", dateString.c_str());
     fprintf(fout, "\n");
@@ -362,11 +360,22 @@ main(int argc, char* argv[])
 /*
 ** CVS/RCS Log:
 ** $Log: mkdictbi.cc,v $
-** Revision 1.1  2005/08/23 19:31:55  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:26  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.27  2005/12/09 15:04:37  meichel
+** Updated build system for dcdeftag/dcdictzz to reflect new directory structure
+**
+** Revision 1.26  2005/12/08 15:42:13  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.25  2004/08/03 11:41:10  meichel
+** Headers libc.h and unistd.h are now included via ofstdinc.h
 **
 ** Revision 1.24  2002/11/27 12:07:02  meichel
 ** Adapted module dcmdata to use of new header file ofstdinc.h

@@ -30,9 +30,9 @@
 #  input directory.
 #
 #  Last Update:      $Author: braindead $
-#  Update Date:      $Date: 2005/08/23 19:32:00 $
+#  Update Date:      $Date: 2007/04/24 09:53:49 $
 #  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/config/cleandsp.pl,v $
-#  CVS/RCS Revision: $Revision: 1.1 $
+#  CVS/RCS Revision: $Revision: 1.2 $
 #  Status:           $State: Exp $
 #
 #  CVS/RCS Log at end of file
@@ -332,8 +332,13 @@ exit 0;
 
 #
 # $Log: cleandsp.pl,v $
-# Revision 1.1  2005/08/23 19:32:00  braindead
-# - initial savannah import
+# Revision 1.2  2007/04/24 09:53:49  braindead
+# - updated DCMTK to version 3.5.4
+# - merged Gianluca's WIN32 changes
+#
+# Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
+# - imported dcmtk354 sources
+#
 #
 # Revision 1.1  2003/09/10 14:12:27  meichel
 # Initial release of Perl script "cleandsp.pl" which cleans up the

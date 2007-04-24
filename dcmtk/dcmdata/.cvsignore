@@ -1,4 +1,4 @@
-config.log
 config.status
 Makefile
-*.lineno
+configure
+CMakeLists.txt

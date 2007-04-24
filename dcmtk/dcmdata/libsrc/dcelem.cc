@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,9 +22,9 @@
  *  Purpose: Implementation of class DcmElement
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:58 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/dcelem.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,21 +32,21 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_NEW
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "ofstd.h"
-#include "dcelem.h"
-#include "dcobject.h"
-#include "dcdefine.h"
-#include "dcswap.h"
-#include "dcdebug.h"
-#include "dcistrma.h"    /* for class DcmInputStream */
-#include "dcostrma.h"    /* for class DcmOutputStream */
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/dcmdata/dcelem.h"
+#include "dcmtk/dcmdata/dcobject.h"
+#include "dcmtk/dcmdata/dcdefine.h"
+#include "dcmtk/dcmdata/dcswap.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcistrma.h"    /* for class DcmInputStream */
+#include "dcmtk/dcmdata/dcostrma.h"    /* for class DcmOutputStream */
 
 
 //
@@ -296,23 +296,25 @@ OFCondition DcmElement::getOFStringArray(OFString &value,
     /* this is a general implementation which is only used when the derived
        VR class does not reimplement it
      */
-    OFString string;
-    unsigned long i = 0;
+    errorFlag = EC_Normal;
     const unsigned long count = getVM();
-    /* iterate over all values and convert them to a character string */
-    while ((i < count) && (errorFlag = getOFString(string, i, normalize)).good())
+    /* intialize result string */
+    value.clear();
+    if (count > 0)
     {
-        /* intialize result string */
-        if (i == 0)
+        OFString string;
+        unsigned long i = 0;
+        /* reserve number of bytes expected (heuristic) */
+        value.reserve(OFstatic_cast(unsigned int, getLength()));
+        /* iterate over all values and convert them to a character string */
+        while ((i < count) && (errorFlag = getOFString(string, i, normalize)).good())
         {
-            /* reserve number of bytes expected (heuristic) */
-            value.reserve(OFstatic_cast(unsigned int, getLength()));
-            value.clear();
-        } else
-            value += '\\';
-        /* append current value to the result string */
-        value += string;
-        i++;
+            if (i > 0)
+                value += '\\';
+            /* append current value to the result string */
+            value += string;
+            i++;
+        }
     }
     return errorFlag;
 }
@@ -937,7 +939,7 @@ OFCondition DcmElement::write(DcmOutputStream &outStream,
             /* write tag and length information to it, do something */
             if (fTransferState == ERW_init)
             {
-                /* first compare with DCM_TagInfoLength (12). If there is not enough space 
+                /* first compare with DCM_TagInfoLength (12). If there is not enough space
                  * in the buffer, check if the buffer is still sufficient for the requirements
                  * of this element, which may need only 8 instead of 12 bytes.
                  */
@@ -1067,11 +1069,20 @@ OFCondition DcmElement::writeXML(ostream &out,
 /*
 ** CVS/RCS Log:
 ** $Log: dcelem.cc,v $
-** Revision 1.1  2005/08/23 19:31:58  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:25  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.51  2005/12/08 15:41:08  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.50  2005/07/27 09:31:45  joergr
+** Fixed bug in getOFStringArray() which prevented the result string from being
+** cleared under certain circumstances.
 **
 ** Revision 1.49  2004/04/27 09:21:27  wilkens
 ** Fixed a bug in dcelem.cc which occurs when one is serializing a dataset

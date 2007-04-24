@@ -50,6 +50,11 @@ dcmfile-out  DICOM output filename
 
   -d    --debug
           debug mode, print debug information
+
+  +d    --dump  [f]ilename: string
+          dump byte stream fed into the MAC codec to file
+          (only with --sign or --sign-item)
+
 \endverbatim
 
 \subsection input_options input options
@@ -59,13 +64,19 @@ input file format:
   +f    --read-file
           read file format or data set (default)
 
+  +fo   --read-file-only
+          read file format only
+
   -f    --read-dataset
           read data set without file meta information
 
-input transfer syntax (only with --read-dataset):
+input transfer syntax:
 
   -t=   --read-xfer-auto
           use TS recognition (default)
+
+  -td   --read-xfer-detect
+          ignore TS specified in the file meta header
 
   -te   --read-xfer-little
           read with explicit VR little endian TS
@@ -150,6 +161,16 @@ tag selection options:
 
   -tf   --tag-file  filename: string
           read list of tags from text file
+
+signature format options:
+
+  -fn   --format-new
+          use correct DICOM signature format (default)
+
+  -fo   --format-old
+          use old (pre-3.5.4) DCMTK signature format, non-conformant
+          if signature includes compressed pixel data
+
 \endverbatim
 
 \subsection output_options output options
@@ -207,9 +228,6 @@ On the command line, attribute keys are specified as
 --tag "Name"       where 'Name' is a symbolic attribute name from
                    the DICOM dictionary (see below).
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 When attribute tags are read from file with the \e --tag-file option, a plain
 text file of max. 64 kbyte is expected.  Tags within the file are either
@@ -223,9 +241,6 @@ following format:
 \verbatim
 SequenceName[index].SequenceName[index].SequenceName[index](...)
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 where SequenceName is either a symbolic attribute name from the data dictionary
 or a numeric tag in the format (gggg,eeee) and index is an unsigned decimal
@@ -235,9 +250,6 @@ sequence.  As an example, the following location string
 \verbatim
 ReferencedSeriesSequence[0].ReferencedImageSequence[1]
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 would cause a digital signature to be created in the second item of the
 ReferencedImageSequence (0008,1140) which is located in the first item of the
@@ -282,7 +294,7 @@ environment variable.  It is an error if no data dictionary can be loaded.
 
 \section copyright COPYRIGHT
 
-Copyright (C) 2000-2004 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
+Copyright (C) 2000-2005 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
 Germany.
 
 */

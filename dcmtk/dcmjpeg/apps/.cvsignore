@@ -1,5 +1,5 @@
 Makefile
-dcmcjpeg
-dcmdjpeg
-dcmj2pnm
 dcmmkdir
+dcmdjpeg
+dcmcjpeg
+dcmj2pnm

@@ -45,28 +45,28 @@
 ** Intent:              This file contains functions for parsing Dicom
 **                      Upper Layer (DUL) Protocol Data Units (PDUs)
 **                      into logical in-memory structures.
-** Last Update:         $Author: braindead $, $Date: 2005/08/23 19:32:01 $
+** Last Update:         $Author: braindead $, $Date: 2007/04/24 09:53:35 $
 ** Source File:         $RCSfile: dulparse.cc,v $
-** Revision:            $Revision: 1.1 $
+** Revision:            $Revision: 1.2 $
 ** Status:              $State: Exp $
 */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "ofstream.h"
-#include "dicom.h"
-#include "cond.h"
-#include "lst.h"
-#include "dul.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmnet/dicom.h"
+#include "dcmtk/dcmnet/cond.h"
+#include "dcmtk/dcmnet/lst.h"
+#include "dcmtk/dcmnet/dul.h"
 #include "dulstruc.h"
 #include "dulpriv.h"
-#include "ofconsol.h"
+#include "dcmtk/ofstd/ofconsol.h"
 
 static OFCondition
 parseSubItem(DUL_SUBITEM * subItem, unsigned char *buf,
@@ -767,11 +767,16 @@ trim_trailing_spaces(char *s)
 /*
 ** CVS Log
 ** $Log: dulparse.cc,v $
-** Revision 1.1  2005/08/23 19:32:01  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:35  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:10  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.24  2005/12/08 15:44:52  meichel
+** Changed include path schema for all DCMTK header files
 **
 ** Revision 1.23  2004/02/04 15:33:48  joergr
 ** Removed acknowledgements with e-mail addresses from CVS log.

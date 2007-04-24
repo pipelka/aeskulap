@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2002, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,21 +22,21 @@
  *  Purpose: singleton class that registers RLE decoder.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/dcrledrg.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "dcrledrg.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dcrledrg.h"
 
-#include "dccodec.h"  /* for DcmCodecStruct */
-#include "dcrleccd.h" /* for class DcmRLECodecDecoder */
-#include "dcrlecp.h"  /* for class DcmRLECodecParameter */
+#include "dcmtk/dcmdata/dccodec.h"  /* for DcmCodecStruct */
+#include "dcmtk/dcmdata/dcrleccd.h" /* for class DcmRLECodecDecoder */
+#include "dcmtk/dcmdata/dcrlecp.h"  /* for class DcmRLECodecParameter */
 
 // initialization of static members
 OFBool DcmRLEDecoderRegistration::registered                  = OFFalse;
@@ -45,13 +45,16 @@ DcmRLECodecDecoder *DcmRLEDecoderRegistration::codec          = NULL;
 
 void DcmRLEDecoderRegistration::registerCodecs(
     OFBool pCreateSOPInstanceUID,
-    OFBool pVerbose)
+    OFBool pVerbose,
+    OFBool pReverseDecompressionByteOrder)
 {
   if (! registered)
   {
     cp = new DcmRLECodecParameter(
       pVerbose,
-      pCreateSOPInstanceUID);
+      pCreateSOPInstanceUID,
+      0, OFTrue, OFFalse,
+      pReverseDecompressionByteOrder);
       
     if (cp)
     {
@@ -82,11 +85,20 @@ void DcmRLEDecoderRegistration::cleanup()
 /*
  * CVS/RCS Log
  * $Log: dcrledrg.cc,v $
- * Revision 1.1  2005/08/23 19:31:59  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:25  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.3  2005/12/08 15:41:33  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.2  2005/07/26 17:08:35  meichel
+ * Added option to RLE decoder that allows to correctly decode images with
+ *   incorrect byte order of byte segments (LSB instead of MSB).
  *
  * Revision 1.1  2002/06/06 14:52:42  meichel
  * Initial release of the new RLE codec classes

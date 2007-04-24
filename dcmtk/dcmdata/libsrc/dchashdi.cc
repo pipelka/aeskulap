@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1997-2004, OFFIS
+ *  Copyright (C) 1997-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,25 +22,25 @@
  *  Purpose: Hash table interface for DICOM data dictionary
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:55 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/dchashdi.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dchashdi.h"
-#include "dcdicent.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmdata/dchashdi.h"
+#include "dcmtk/dcmdata/dcdicent.h"
 
 #define INCLUDE_CSTDIO
 #define INCLUDE_CASSERT
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef PRINT_REPLACED_DICTIONARY_ENTRIES
-#include "ofconsol.h"   /* for ofConsole */
+#include "dcmtk/ofstd/ofconsol.h"   /* for ofConsole */
 #endif
 
 /*
@@ -537,11 +537,16 @@ DcmHashDict::loadSummary(ostream& out)
 /*
 ** CVS/RCS Log:
 ** $Log: dchashdi.cc,v $
-** Revision 1.1  2005/08/23 19:31:55  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:25  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.20  2005/12/08 15:41:11  meichel
+** Changed include path schema for all DCMTK header files
 **
 ** Revision 1.19  2004/02/04 16:33:02  joergr
 ** Adapted type casts to new-style typecast operators defined in ofcast.h.

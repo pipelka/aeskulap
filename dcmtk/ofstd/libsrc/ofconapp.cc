@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1999-2003, OFFIS
+ *  Copyright (C) 1999-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,9 +22,9 @@
  *  Purpose: Handle console applications (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/ofstd/libsrc/ofconapp.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,10 +32,10 @@
  */
 
 
-#include "osconfig.h"
+#include "dcmtk/config/osconfig.h"
 
-#include "ofconapp.h"
-#include "ofstring.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/ofstd/ofstring.h"
 
 
 
@@ -254,11 +254,16 @@ void OFConsoleApplication::checkConflict(const char *firstOpt,
  *
  * CVS/RCS Log:
  * $Log: ofconapp.cc,v $
- * Revision 1.1  2005/08/23 19:32:00  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:47  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:16  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.21  2005/12/08 15:48:50  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.20  2003/06/12 13:22:43  joergr
  * Enhanced method printWarning(). Added method quietMode().

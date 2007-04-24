@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: class DcmVR: Value Representation
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:56 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,24 +31,20 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "ofconsol.h"
-#include "dcvr.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/dcmdata/dcvr.h"
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
-
+#include "dcmtk/ofstd/ofstdinc.h"
 
 /*
-** Global flag to enable/disable the generation of VR=UN
-*/
+ * global flags
+ */
 OFGlobal<OFBool> dcmEnableUnknownVRGeneration(OFTrue);
-
-/*
-** Global flag to enable/disable the generation of VR=UT
-*/
 OFGlobal<OFBool> dcmEnableUnlimitedTextVRGeneration(OFTrue);
+OFGlobal<OFBool> dcmEnableUnknownVRConversion(OFFalse);
 
 /*
 ** VR property table
@@ -99,9 +95,9 @@ static const DcmVREntry DcmVRDict[] = {
     { EVR_UL, "UL", sizeof(Uint32), DCMVR_PROP_NONE, 4, 4 },
     { EVR_US, "US", sizeof(Uint16), DCMVR_PROP_NONE, 2, 2 },
     { EVR_UT, "UT", sizeof(char), DCMVR_PROP_ISASTRING|DCMVR_PROP_EXTENDEDLENGTHENCODING, 0, DCM_UndefinedLength },
-
     { EVR_ox, "ox", sizeof(Uint8), DCMVR_PROP_NONSTANDARD | DCMVR_PROP_EXTENDEDLENGTHENCODING, 0, DCM_UndefinedLength },
     { EVR_xs, "xs", sizeof(Uint16), DCMVR_PROP_NONSTANDARD, 2, 2 },
+    { EVR_lt, "lt", sizeof(Uint16), DCMVR_PROP_NONSTANDARD | DCMVR_PROP_EXTENDEDLENGTHENCODING, 0, DCM_UndefinedLength },
     { EVR_na, "na", 0, DCMVR_PROP_NONSTANDARD, 0, 0 },
     { EVR_up, "up", sizeof(Uint32), DCMVR_PROP_NONSTANDARD, 4, 4 },
 
@@ -150,7 +146,7 @@ static const int DcmVRDict_DIM = sizeof(DcmVRDict) / sizeof(DcmVREntry);
 
 #ifdef DEBUG
 
-#include "ofstream.h"
+#include "dcmtk/ofstd/ofstream.h"
 
 class DcmVRDict_checker {
 private:
@@ -237,6 +233,9 @@ DcmVR::getValidEVR() const
             break;
         case EVR_xs:
             evr = EVR_US;
+            break;
+        case EVR_lt:
+            evr = EVR_OW;
             break;
         case EVR_ox:
         case EVR_pixelSQ:
@@ -339,9 +338,14 @@ OFBool DcmVR::isEquivalent(const DcmVR& avr) const
       case EVR_ox:
           result = (evr == EVR_OB || evr == EVR_OW);
           break;
+      case EVR_lt:
+          result = (evr == EVR_OW || evr == EVR_US || evr == EVR_SS);
+          break;
       case EVR_OB:
-      case EVR_OW:
           result = (evr == EVR_ox);
+          break;
+      case EVR_OW:
+          result = (evr == EVR_ox || evr == EVR_lt);
           break;
       case EVR_up:
           result = (evr == EVR_UL);
@@ -354,7 +358,7 @@ OFBool DcmVR::isEquivalent(const DcmVR& avr) const
           break;
       case EVR_SS:
       case EVR_US:
-          result = (evr == EVR_xs);
+          result = (evr == EVR_xs || evr == EVR_lt);
           break;
       default:
           break;
@@ -366,11 +370,26 @@ OFBool DcmVR::isEquivalent(const DcmVR& avr) const
 /*
  * CVS/RCS Log:
  * $Log: dcvr.cc,v $
- * Revision 1.1  2005/08/23 19:31:56  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:25  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.33  2005/12/08 15:41:44  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.32  2005/11/15 18:28:04  meichel
+ * Added new global flag dcmEnableUnknownVRConversion that enables the automatic
+ *   re-conversion of defined length UN elements read in an explicit VR transfer
+ *   syntax, if the real VR is defined in the data dictionary. Default is OFFalse,
+ *   i.e. to retain the previous behavior.
+ *
+ * Revision 1.31  2005/11/15 16:59:25  meichel
+ * Added new pseudo VR type EVR_lt that is used for LUT Data when read in
+ *   implicit VR, which may be US, SS or OW. DCMTK always treats EVR_lt like OW.
  *
  * Revision 1.30  2004/02/04 16:47:59  joergr
  * Adapted type casts to new-style typecast operators defined in ofcast.h.

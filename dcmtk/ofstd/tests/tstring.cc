@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1997-2003, OFFIS
+ *  Copyright (C) 1997-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -38,22 +38,22 @@
  *
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:03 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/ofstd/tests/tstring.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "ofstring.h"
-#include "ofconsol.h"
-#include "ofstd.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/ofstd/ofstring.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/ofstd/ofstd.h"
 
 #define INCLUDE_CASSERT
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 OFString X = "Hello";
@@ -229,11 +229,16 @@ int main()
 **
 ** CVS/RCS Log:
 ** $Log: tstring.cc,v $
-** Revision 1.1  2005/08/23 19:32:03  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:47  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:57  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.7  2005/12/08 15:49:10  meichel
+** Changed include path schema for all DCMTK header files
 **
 ** Revision 1.6  2003/07/04 13:31:52  meichel
 ** Fixed issues with compiling with HAVE_STD_STRING

@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1997-2001, OFFIS
+ *  Copyright (C) 1997-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,26 +22,26 @@
  *  Purpose: singleton class that registers encoders for all supported JPEG processes.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:53 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmjpeg/libsrc/djencode.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "djencode.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmjpeg/djencode.h"
 
-#include "dccodec.h"  /* for DcmCodecStruct */
-#include "djencbas.h" 
-#include "djencext.h"
-#include "djencsps.h"
-#include "djencpro.h"
-#include "djencsv1.h"
-#include "djenclol.h"
-#include "djcparam.h"
+#include "dcmtk/dcmdata/dccodec.h"  /* for DcmCodecStruct */
+#include "dcmtk/dcmjpeg/djencbas.h"
+#include "dcmtk/dcmjpeg/djencext.h"
+#include "dcmtk/dcmjpeg/djencsps.h"
+#include "dcmtk/dcmjpeg/djencpro.h"
+#include "dcmtk/dcmjpeg/djencsv1.h"
+#include "dcmtk/dcmjpeg/djenclol.h"
+#include "dcmtk/dcmjpeg/djcparam.h"
 
 // initialization of static members
 OFBool DJEncoderRegistration::registered                  = OFFalse;
@@ -74,7 +74,10 @@ void DJEncoderRegistration::registerCodecs(
     unsigned long pRoiWidth,
     unsigned long pRoiHeight,
     OFBool pUsePixelValues,
-    OFBool pUseModalityRescale)
+    OFBool pUseModalityRescale,
+    OFBool pAcceptWrongPaletteTags,
+    OFBool pAcrNemaCompatibility,
+    OFBool pRealLossless)
 {
   if (! registered)
   {
@@ -101,7 +104,10 @@ void DJEncoderRegistration::registerCodecs(
       pRoiWidth,
       pRoiHeight,
       pUsePixelValues,
-      pUseModalityRescale);
+      pUseModalityRescale,
+      pAcceptWrongPaletteTags,
+      pAcrNemaCompatibility,
+      pRealLossless);
     if (cp)
     {
       // baseline JPEG
@@ -169,11 +175,28 @@ void DJEncoderRegistration::cleanup()
 /*
  * CVS/RCS Log
  * $Log: djencode.cc,v $
- * Revision 1.1  2005/08/23 19:31:53  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:26  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:41  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.7  2005/12/08 15:43:45  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.6  2005/11/29 15:56:55  onken
+ * Added commandline options --accept-acr-nema and --accept-palettes
+ * (same as in dcm2pnm) to dcmcjpeg and extended dcmjpeg to support
+ * these options. Thanks to Gilles Mevel for suggestion.
+ *
+ * Revision 1.4  2005/11/29 08:48:45  onken
+ * Added support for "true" lossless compression in dcmjpeg, that doesn't
+ *   use dcmimage classes, but compresses raw pixel data (8 and 16 bit) to
+ *   avoid losses in quality caused by color space conversions or modality
+ *   transformations etc.
+ * Corresponding commandline option in dcmcjpeg (new default)
  *
  * Revision 1.3  2001/12/04 17:10:20  meichel
  * Fixed codec registration: flag registered was never set to true

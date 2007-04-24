@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2004, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: DVPresentationState
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,49 +31,52 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dviface.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmpstat/dviface.h"
 
-#include "dvpsdef.h"     /* for constants */
-#include "ofstring.h"    /* for class OFString */
-#include "ofbmanip.h"    /* for OFBitmanipTemplate */
-#include "ofdatime.h"    /* for OFDateTime */
-#include "oflist.h"      /* for class OFList */
-#include "oflogfil.h"    /* for class OFLogFile */
-#include "ofstream.h"
-#include "ofcast.h"
+#include "dcmtk/dcmpstat/dvpsdef.h"     /* for constants */
+#include "dcmtk/ofstd/ofstring.h"    /* for class OFString */
+#include "dcmtk/ofstd/ofbmanip.h"    /* for OFBitmanipTemplate */
+#include "dcmtk/ofstd/ofdatime.h"    /* for OFDateTime */
+#include "dcmtk/ofstd/oflist.h"      /* for class OFList */
+#include "dcmtk/ofstd/oflogfil.h"    /* for class OFLogFile */
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/ofstd/ofcast.h"
 
-#include "digsdfn.h"     /* for DiGSDFunction */
-#include "diciefn.h"     /* for DiCIELABFunction */
-#include "diutil.h"      /* for DU_getStringDOElement */
-#include "dvpssp.h"      /* for class DVPSStoredPrint */
-#include "dvpshlp.h"     /* for class DVPSHelper */
-#include "dcmimage.h"    /* for class DicomImage */
-#include "dvsighdl.h"    /* for class DVSignatureHandler */
-#include "dcsignat.h"    /* for class DcmSignature */
-#include "dsrdoc.h"      /* for class DSRDocument */
-#include "dsrcodvl.h"    /* for class DSRCodedEntryValue */
+#include "dcmtk/dcmimgle/digsdfn.h"     /* for DiGSDFunction */
+#include "dcmtk/dcmimgle/diciefn.h"     /* for DiCIELABFunction */
+#include "dcmtk/dcmnet/diutil.h"      /* for DU_getStringDOElement */
+#include "dcmtk/dcmpstat/dvpssp.h"      /* for class DVPSStoredPrint */
+#include "dcmtk/dcmpstat/dvpshlp.h"     /* for class DVPSHelper */
+#include "dcmtk/dcmimgle/dcmimage.h"    /* for class DicomImage */
+#include "dcmtk/dcmpstat/dvsighdl.h"    /* for class DVSignatureHandler */
+#include "dcmtk/dcmsign/dcsignat.h"    /* for class DcmSignature */
+#include "dcmtk/dcmsr/dsrdoc.h"      /* for class DSRDocument */
+#include "dcmtk/dcmsr/dsrcodvl.h"    /* for class DSRCodedEntryValue */
 
-#include "dvpsib.h"      /* for DVPSImageBoxContent, needed by MSVC5 with STL */
-#include "dvpsab.h"      /* for DVPSAnnotationContent, needed by MSVC5 with STL */
-#include "dvpsov.h"      /* for DVPSOverlay, needed by MSVC5 with STL */
-#include "dvpsgl.h"      /* for DVPSGraphicLayer, needed by MSVC5 with STL */
-#include "dvpsal.h"      /* for DVPSOverlayCurveActivationLayer, needed by MSVC5 with STL */
-#include "dvpsga.h"      /* for DVPSGraphicAnnotation, needed by MSVC5 with STL */
-#include "dvpscu.h"      /* for DVPSCurve, needed by MSVC5 with STL */
-#include "dvpsvl.h"      /* for DVPSVOILUT, needed by MSVC5 with STL */
-#include "dvpsvw.h"      /* for DVPSVOIWindow, needed by MSVC5 with STL */
-#include "dvpsda.h"      /* for DVPSDisplayedArea, needed by MSVC5 with STL */
-#include "dvpssv.h"      /* for DVPSSoftcopyVOI, needed by MSVC5 with STL */
-#include "dvpsrs.h"      /* for DVPSReferencedSeries, needed by MSVC5 with STL */
-#include "dvpstx.h"      /* for DVPSTextObject, needed by MSVC5 with STL */
-#include "dvpsgr.h"      /* for DVPSGraphicObject, needed by MSVC5 with STL */
-#include "dvpsri.h"      /* for DVPSReferencedImage, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsib.h"      /* for DVPSImageBoxContent, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsab.h"      /* for DVPSAnnotationContent, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsov.h"      /* for DVPSOverlay, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsgl.h"      /* for DVPSGraphicLayer, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsal.h"      /* for DVPSOverlayCurveActivationLayer, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsga.h"      /* for DVPSGraphicAnnotation, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpscu.h"      /* for DVPSCurve, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsvl.h"      /* for DVPSVOILUT, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsvw.h"      /* for DVPSVOIWindow, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsda.h"      /* for DVPSDisplayedArea, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpssv.h"      /* for DVPSSoftcopyVOI, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsrs.h"      /* for DVPSReferencedSeries, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpstx.h"      /* for DVPSTextObject, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsgr.h"      /* for DVPSGraphicObject, needed by MSVC5 with STL */
+#include "dcmtk/dcmpstat/dvpsri.h"      /* for DVPSReferencedImage, needed by MSVC5 with STL */
+#include "dcmtk/dcmqrdb/dcmqrdbi.h"    /* for DB_UpperMaxBytesPerStudy */
+#include "dcmtk/dcmqrdb/dcmqrdbs.h"    /* for DcmQueryRetrieveDatabaseStatus */
 
 #define INCLUDE_CSTDIO
 #define INCLUDE_CCTYPE
 #define INCLUDE_CMATH
-#include "ofstdinc.h"
+#define INCLUDE_UNISTD
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 #ifdef HAVE_SYS_TYPES_H
@@ -87,9 +90,6 @@ BEGIN_EXTERN_C
 #endif
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h> /* for wait3 */
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>      /* for execl, fork */
 #endif
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>    /* for stat, fstat */
@@ -108,8 +108,8 @@ END_EXTERN_C
 #endif
 
 #ifdef WITH_OPENSSL
-#include "tlstrans.h"
-#include "tlslayer.h"
+#include "dcmtk/dcmtls/tlstrans.h"
+#include "dcmtk/dcmtls/tlslayer.h"
 
 BEGIN_EXTERN_C
 #include <openssl/evp.h>
@@ -665,25 +665,24 @@ OFCondition DVInterface::savePState(OFBool replaceSOPInstanceUID)
     if (replaceSOPInstanceUID) instanceUID=pState->createInstanceUID(); else instanceUID=pState->getInstanceUID();
     if (instanceUID==NULL) return EC_IllegalCall;
 
-    DB_Status dbStatus;
-    dbStatus.status = STATUS_Success;
-    dbStatus.statusDetail = NULL;
-    DB_Handle *handle = NULL;
+    DcmQueryRetrieveDatabaseStatus dbStatus(STATUS_Success);
+    OFCondition result=EC_Normal;
     char imageFileName[MAXPATHLEN+1];
-    if (DB_createHandle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, &handle).bad())
+
+    DcmQueryRetrieveIndexDatabaseHandle dbhandle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, result);
+    if (result.bad())
     {
         writeLogMessage(DVPSM_error, "DCMPSTAT", "Save presentation state to database failed: could not lock index file.");
         return EC_IllegalCall;
     }
 
-    OFCondition result=EC_Normal;
-    if (DB_makeNewStoreFileName(handle, UID_GrayscaleSoftcopyPresentationStateStorage, instanceUID, imageFileName).good())
+    if (dbhandle.makeNewStoreFileName(UID_GrayscaleSoftcopyPresentationStateStorage, instanceUID, imageFileName).good())
     {
         // now store presentation state as filename
         result = savePState(imageFileName, OFFalse);
         if (EC_Normal==result)
         {
-            if (DB_storeRequest(handle, UID_GrayscaleSoftcopyPresentationStateStorage,
+            if (dbhandle.storeRequest(UID_GrayscaleSoftcopyPresentationStateStorage,
                 instanceUID, imageFileName, &dbStatus).bad())
             {
                 result = EC_IllegalCall;
@@ -713,13 +712,13 @@ OFCondition DVInterface::savePState(OFBool replaceSOPInstanceUID)
                 ((!imageInDatabase) || (getSeriesStruct(studyUID, seriesUID, instanceUID2) == NULL)))
             {
                 releaseDatabase();   /* avoid deadlocks */
-                if (DB_makeNewStoreFileName(handle, sopClass, instanceUID2, imageFileName).good())
+                if (dbhandle.makeNewStoreFileName(sopClass, instanceUID2, imageFileName).good())
                 {
                     // now store presentation state as filename
                     result = saveCurrentImage(imageFileName);
                     if (EC_Normal==result)
                     {
-                        if (DB_storeRequest(handle, sopClass, instanceUID2, imageFileName, &dbStatus).bad())
+                        if (dbhandle.storeRequest(sopClass, instanceUID2, imageFileName, &dbStatus).bad())
                         {
                             result = EC_IllegalCall;
                             writeLogMessage(DVPSM_error, "DCMPSTAT", "Save presentation state to database failed: could not register image in index file.");
@@ -737,7 +736,6 @@ OFCondition DVInterface::savePState(OFBool replaceSOPInstanceUID)
             }
         }
     }
-    DB_destroyHandle(&handle);
     return result;
 }
 
@@ -804,25 +802,24 @@ OFCondition DVInterface::saveStructuredReport()
     if (pReport->getSOPInstanceUID(instanceUID).length() == 0)
         return EC_IllegalCall;
 
-    DB_Status dbStatus;
-    dbStatus.status = STATUS_Success;
-    dbStatus.statusDetail = NULL;
-    DB_Handle *handle = NULL;
+    DcmQueryRetrieveDatabaseStatus dbStatus(STATUS_Success);
     char filename[MAXPATHLEN+1];
-    if (DB_createHandle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, &handle).bad())
+    OFCondition result = EC_Normal;
+
+    DcmQueryRetrieveIndexDatabaseHandle dbhandle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, result);
+    if (result.bad())
     {
         writeLogMessage(DVPSM_error, "DCMPSTAT", "Save structured report to database failed: could not lock index file.");
         return EC_IllegalCall;
     }
 
-    OFCondition result = EC_Normal;
-    if (DB_makeNewStoreFileName(handle, sopClassUID.c_str(), instanceUID.c_str(), filename).good())
+    if (dbhandle.makeNewStoreFileName(sopClassUID.c_str(), instanceUID.c_str(), filename).good())
     {
         // now store presentation state as filename
         result = saveStructuredReport(filename);
         if (EC_Normal == result)
         {
-            if (DB_storeRequest(handle, sopClassUID.c_str(), instanceUID.c_str(), filename, &dbStatus).bad())
+            if (dbhandle.storeRequest(sopClassUID.c_str(), instanceUID.c_str(), filename, &dbStatus).bad())
             {
                 result = EC_IllegalCall;
                 writeLogMessage(DVPSM_error, "DCMPSTAT", "Save structured report to database failed: could not register in index file.");
@@ -835,7 +832,6 @@ OFCondition DVInterface::saveStructuredReport()
             }
         }
     }
-    DB_destroyHandle(&handle);
     return result;
 }
 
@@ -1240,15 +1236,16 @@ const char *DVInterface::getFilename(const char *studyUID,
 OFCondition DVInterface::lockDatabase()
 {
     if (pHandle) return EC_Normal; // may be called multiple times
-    DB_Handle *handle = NULL;
-    if (DB_createHandle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, &handle).good())
+
+    OFCondition result;
+    pHandle = new DcmQueryRetrieveIndexDatabaseHandle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, result);
+    if (result.good())
     {
-        pHandle = OFreinterpret_cast(DB_Private_Handle *, handle);
         lockingMode = OFFalse;
-        if (DB_lock(pHandle, OFFalse).good())
+        if (pHandle->DB_lock(OFFalse).good())
         {
             if (databaseIndexFile.length() == 0)
-                databaseIndexFile = pHandle->indexFilename;
+                databaseIndexFile = pHandle->getIndexFilename();
             return EC_Normal;
         }
     }
@@ -1259,15 +1256,13 @@ OFCondition DVInterface::lockDatabase()
 OFCondition DVInterface::lockExclusive()
 {
     if (pHandle && lockingMode) return EC_Normal;
-
     OFCondition result = EC_Normal;
-    if (pHandle == NULL)
-        result = lockDatabase();
-    if (EC_Normal == result)
+    if (pHandle == NULL) result = lockDatabase();
+    if (result.good())
     {
         // we now have a shared lock.
-        DB_unlock(pHandle);
-        if (DB_lock(pHandle, OFTrue).good())
+        pHandle->DB_unlock();
+        if (pHandle->DB_lock(OFTrue).good())
             lockingMode = OFTrue;
         else
             result = EC_IllegalCall;
@@ -1280,11 +1275,11 @@ OFCondition DVInterface::unlockExclusive()
 {
     if (pHandle && lockingMode)
     {
-        if (DB_unlock(pHandle).good())
+        if (pHandle->DB_unlock().good())
         {
-            DB_destroyHandle(OFreinterpret_cast(DB_Handle **, &pHandle));
-            lockingMode=OFFalse;
+            delete pHandle;
             pHandle=NULL;
+            lockingMode=OFFalse;
             clearIndexCache();
             return EC_Normal;
         }
@@ -1296,15 +1291,14 @@ OFCondition DVInterface::unlockExclusive()
 OFCondition DVInterface::releaseDatabase()
 {
     if (pHandle == NULL) return EC_Normal;
-
-    if (DB_unlock(pHandle).good())
+    OFCondition cond = pHandle->DB_unlock();
+    if (cond.good())
     {
-        DB_destroyHandle(OFreinterpret_cast(DB_Handle **, &pHandle));
-        pHandle=NULL;
-        clearIndexCache();
-        return EC_Normal;
+      delete pHandle;
+      pHandle = NULL; 
+      clearIndexCache();
     }
-    return EC_IllegalCall;
+    return cond;
 }
 
 
@@ -1380,9 +1374,9 @@ OFBool DVInterface::createIndexCache()
         if (idxCache.empty())
         {
             int counter = 0;
-            DB_IdxInitLoop(pHandle, &counter);
+            pHandle->DB_IdxInitLoop(&counter);
             IdxRecord record;
-            while (DB_IdxGetNext(pHandle, &counter, &record).good())
+            while (pHandle->DB_IdxGetNext(&counter, &record).good())
             {
                 if (!idxCache.isElem(record.StudyInstanceUID))
                     idxCache.addItem(record.StudyInstanceUID);
@@ -1521,7 +1515,7 @@ OFBool DVInterface::readIndexRecord(const int pos,
     {
         if ((oldpos != NULL) && (pos == *oldpos))                      // record already read
             return OFTrue;
-        if (DB_IdxRead(pHandle, pos, &record).good())
+        if (pHandle->DB_IdxRead(pos, &record).good())
         {
             if (oldpos != NULL)
                 *oldpos = pos;
@@ -1990,29 +1984,13 @@ const char *DVInterface::getPresentationLabel()
 
 OFCondition DVInterface::instanceReviewed(int pos)
 {
-    IdxRecord record;
-    int recpos;
-    clearIndexRecord(record, recpos);
-    if (readIndexRecord(pos, record, &recpos))
-    {
-        if (record.hstat != DVIF_objectIsNotNew)
-        {
-            OFBool wasNew = OFTrue;
-            if (lockExclusive() == EC_Normal)
-            {
-                wasNew = newInstancesReceived();
-                record.hstat = DVIF_objectIsNotNew;
-                lseek(pHandle->pidx, OFstatic_cast(long, SIZEOF_STUDYDESC + recpos * SIZEOF_IDXRECORD), SEEK_SET);
-                write(pHandle->pidx, OFreinterpret_cast(char *, &record), SIZEOF_IDXRECORD);
-                lseek(pHandle->pidx, 0L, SEEK_SET);
-            }
-            unlockExclusive();
-            if (!wasNew)
-                resetDatabaseReferenceTime();
-        }
-        return EC_Normal;
-    }
-    return EC_IllegalCall;
+    lockDatabase();
+    OFBool wasNew = newInstancesReceived();
+    if (pHandle == NULL) return EC_IllegalCall;
+    OFCondition result = pHandle->instanceReviewed(pos);
+    if (!wasNew) resetDatabaseReferenceTime();
+    releaseDatabase();
+    return result;
 }
 
 
@@ -2058,7 +2036,7 @@ int DVInterface::deleteImageFile(const char *filename)
     {
         const char *pos;
         if (((pos = strrchr(filename, OFstatic_cast(int, PATH_SEPARATOR))) == NULL) ||   // check whether image file resides in index.dat directory
-            (strncmp(filename, pHandle->storageArea, pos - filename) == 0))
+            (strncmp(filename, pHandle->getStorageArea(), pos - filename) == 0))
         {
 //            DB_deleteImageFile((/*const */char *)filename);
             if (unlink(filename) == 0)
@@ -2085,7 +2063,7 @@ OFCondition DVInterface::deleteStudy(const char *studyUID)
                 StudyDescRecord *study_desc = OFstatic_cast(StudyDescRecord *, malloc(SIZEOF_STUDYDESC));
                 if (study_desc != NULL)
                 {
-                    if (DB_GetStudyDesc(pHandle, study_desc).good())
+                    if (pHandle->DB_GetStudyDesc(study_desc).good())
                     {
                         int idx = findStudyIdx(study_desc, studyUID);
                         if (idx >= 0)
@@ -2099,7 +2077,7 @@ OFCondition DVInterface::deleteStudy(const char *studyUID)
                                     {
                                         do /* for all instances */
                                         {
-                                            DB_IdxRemove(pHandle, series->List.getPos());
+                                            pHandle->DB_IdxRemove(series->List.getPos());
                                             deleteImageFile(series->List.getFilename());
                                         } while (series->List.gotoNext());
                                     }
@@ -2107,7 +2085,7 @@ OFCondition DVInterface::deleteStudy(const char *studyUID)
                             } while (study->List.gotoNext());
                             study_desc[idx].NumberofRegistratedImages = 0;
                             study_desc[idx].StudySize = 0;
-                            DB_StudyDescChange(pHandle, study_desc);
+                            pHandle->DB_StudyDescChange(study_desc);
                         }
                     }
                     free(study_desc);
@@ -2139,14 +2117,14 @@ OFCondition DVInterface::deleteSeries(const char *studyUID,
                 StudyDescRecord *study_desc = OFstatic_cast(StudyDescRecord *, malloc(SIZEOF_STUDYDESC));
                 if (study_desc != NULL)
                 {
-                    if (DB_GetStudyDesc(pHandle, study_desc).good())
+                    if (pHandle->DB_GetStudyDesc(study_desc).good())
                     {
                         int idx = findStudyIdx(study_desc, studyUID);
                         if (idx >= 0)
                         {
                             do /* for all images */
                             {
-                                DB_IdxRemove(pHandle, series->List.getPos());
+                                pHandle->DB_IdxRemove(series->List.getPos());
                                 if (study_desc[idx].NumberofRegistratedImages > 0)
                                 {
                                     study_desc[idx].NumberofRegistratedImages--;
@@ -2154,7 +2132,7 @@ OFCondition DVInterface::deleteSeries(const char *studyUID,
                                 }
                                 deleteImageFile(series->List.getFilename());
                             } while (series->List.gotoNext());
-                            DB_StudyDescChange(pHandle, study_desc);
+                            pHandle->DB_StudyDescChange(study_desc);
                         }
                     }
                     free(study_desc);
@@ -2183,11 +2161,11 @@ OFCondition DVInterface::deleteInstance(const char *studyUID,
         if (lockExclusive() == EC_Normal)
         {
             wasNew = newInstancesReceived();
-            DB_IdxRemove(pHandle, series->List.getPos());
+            pHandle->DB_IdxRemove(series->List.getPos());
             StudyDescRecord *study_desc = OFstatic_cast(StudyDescRecord *, malloc(SIZEOF_STUDYDESC));
             if (study_desc != NULL)
             {
-                if (DB_GetStudyDesc(pHandle, study_desc).good())
+                if (pHandle->DB_GetStudyDesc(study_desc).good())
                 {
                     register int i = 0;
                     for (i = 0; i < PSTAT_MAXSTUDYCOUNT; i++)
@@ -2199,7 +2177,7 @@ OFCondition DVInterface::deleteInstance(const char *studyUID,
                             {
                                 study_desc[i].NumberofRegistratedImages--;
                                 study_desc[i].StudySize -= series->List.getImageSize();
-                                DB_StudyDescChange(pHandle, study_desc);
+                                pHandle->DB_StudyDescChange(study_desc);
                             }
                             break;
                         }
@@ -2566,7 +2544,7 @@ OFCondition DVInterface::terminateQueryRetrieveServer()
 
   writeLogMessage(DVPSM_informational, "DCMPSTAT", "Terminating query/retrieve server process ...");
 
-  OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, 1000, &net);
+  OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, 30, &net);
   if (cond.good())
   {
     cond = ASC_createAssociationParameters(&params, DEFAULT_MAXPDU);
@@ -2740,25 +2718,24 @@ OFCondition DVInterface::saveDICOMImage(
   char uid[100];
   dcmGenerateUniqueIdentifier(uid);
 
-  DB_Status dbStatus;
-  dbStatus.status = STATUS_Success;
-  dbStatus.statusDetail = NULL;
-  DB_Handle *handle = NULL;
+  DcmQueryRetrieveDatabaseStatus dbStatus(STATUS_Success);
   char imageFileName[MAXPATHLEN+1];
-  if (DB_createHandle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, &handle).bad())
+
+  OFCondition result = EC_Normal;
+  DcmQueryRetrieveIndexDatabaseHandle handle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, result);
+  if (result.bad())
   {
     writeLogMessage(DVPSM_error, "DCMPSTAT", "Save image to database failed: could not lock index file.");
-    return EC_IllegalCall;
+    return result;
   }
 
-  OFCondition result=EC_Normal;
-  if (DB_makeNewStoreFileName(handle, UID_SecondaryCaptureImageStorage, uid, imageFileName).good())
+  if (handle.makeNewStoreFileName(UID_SecondaryCaptureImageStorage, uid, imageFileName).good())
   {
      // now store presentation state as filename
      result = saveDICOMImage(imageFileName, pixelData, width, height, aspectRatio, OFTrue, uid);
      if (EC_Normal==result)
      {
-       if (DB_storeRequest(handle, UID_SecondaryCaptureImageStorage, uid, imageFileName, &dbStatus).bad())
+       if (handle.storeRequest(UID_SecondaryCaptureImageStorage, uid, imageFileName, &dbStatus).bad())
        {
          result = EC_IllegalCall;
          writeLogMessage(DVPSM_error, "DCMPSTAT", "Save image to database failed: could not register in index file.");
@@ -2771,7 +2748,6 @@ OFCondition DVInterface::saveDICOMImage(
        }
      }
   }
-  DB_destroyHandle(&handle);
   return result;
 }
 
@@ -2906,24 +2882,23 @@ OFCondition DVInterface::saveHardcopyGrayscaleImage(
   char uid[100];
   dcmGenerateUniqueIdentifier(uid);
 
-  DB_Status dbStatus;
-  dbStatus.status = STATUS_Success;
-  dbStatus.statusDetail = NULL;
-  DB_Handle *handle = NULL;
+  DcmQueryRetrieveDatabaseStatus dbStatus(STATUS_Success);
   char imageFileName[MAXPATHLEN+1];
-  if (DB_createHandle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, &handle).bad())
-  {
-    writeLogMessage(DVPSM_error, "DCMPSTAT", "Save hardcopy grayscale image to database failed: could not lock index file.");
-    return EC_IllegalCall;
-  }
 
   OFCondition result=EC_Normal;
-  if (DB_makeNewStoreFileName(handle, UID_HardcopyGrayscaleImageStorage, uid, imageFileName).good())
+  DcmQueryRetrieveIndexDatabaseHandle handle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, result);
+  if (result.bad())
+  {
+    writeLogMessage(DVPSM_error, "DCMPSTAT", "Save hardcopy grayscale image to database failed: could not lock index file.");
+    return result;
+  }
+
+  if (handle.makeNewStoreFileName(UID_HardcopyGrayscaleImageStorage, uid, imageFileName).good())
   {
      result = saveHardcopyGrayscaleImage(imageFileName, pixelData, width, height, aspectRatio, OFTrue, uid);
      if (EC_Normal==result)
      {
-       if (DB_storeRequest(handle, UID_HardcopyGrayscaleImageStorage, uid, imageFileName, &dbStatus).bad())
+       if (handle.storeRequest(UID_HardcopyGrayscaleImageStorage, uid, imageFileName, &dbStatus).bad())
        {
          result = EC_IllegalCall;
          writeLogMessage(DVPSM_error, "DCMPSTAT", "Save hardcopy grayscale image to database failed: could not register in index file.");
@@ -2936,7 +2911,6 @@ OFCondition DVInterface::saveHardcopyGrayscaleImage(
        }
      }
   }
-  DB_destroyHandle(&handle);
   return result;
 }
 
@@ -2965,25 +2939,24 @@ OFCondition DVInterface::saveFileFormatToDB(DcmFileFormat &fileformat)
   }
   if ((instanceUID==NULL)||(classUID==NULL)) return EC_IllegalCall;
 
-  DB_Status dbStatus;
-  dbStatus.status = STATUS_Success;
-  dbStatus.statusDetail = NULL;
-  DB_Handle *handle = NULL;
+  DcmQueryRetrieveDatabaseStatus dbStatus(STATUS_Success);
   char imageFileName[MAXPATHLEN+1];
-  if (DB_createHandle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, &handle).bad())
-  {
-    writeLogMessage(DVPSM_error, "DCMPSTAT", "Save fileformat to database failed: could not lock index file.");
-    return EC_IllegalCall;
-  }
 
   OFCondition result=EC_Normal;
-  if (DB_makeNewStoreFileName(handle, classUID, instanceUID, imageFileName).good())
+  DcmQueryRetrieveIndexDatabaseHandle handle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, result);
+  if (result.bad())
+  {
+    writeLogMessage(DVPSM_error, "DCMPSTAT", "Save fileformat to database failed: could not lock index file.");
+    return result;
+  }
+
+  if (handle.makeNewStoreFileName(classUID, instanceUID, imageFileName).good())
   {
      // save image file
      result = DVPSHelper::saveFileFormat(imageFileName, &fileformat, OFTrue);
      if (EC_Normal==result)
      {
-       if (DB_storeRequest(handle, classUID, instanceUID, imageFileName, &dbStatus).bad())
+       if (handle.storeRequest(classUID, instanceUID, imageFileName, &dbStatus).bad())
        {
          result = EC_IllegalCall;
          writeLogMessage(DVPSM_error, "DCMPSTAT", "Save fileformat to database failed: could not register in index file.");
@@ -2996,7 +2969,6 @@ OFCondition DVInterface::saveFileFormatToDB(DcmFileFormat &fileformat)
        }
      }
   }
-  DB_destroyHandle(&handle);
   return result;
 }
 
@@ -3152,25 +3124,23 @@ OFCondition DVInterface::saveStoredPrint(OFBool writeRequestedImageSize)
   char uid[100];
   dcmGenerateUniqueIdentifier(uid);
 
-  DB_Status dbStatus;
-  dbStatus.status = STATUS_Success;
-  dbStatus.statusDetail = NULL;
-  DB_Handle *handle = NULL;
+  DcmQueryRetrieveDatabaseStatus dbStatus(STATUS_Success);
   char imageFileName[MAXPATHLEN+1];
-  if (DB_createHandle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, &handle).bad())
+  OFCondition result=EC_Normal;
+  DcmQueryRetrieveIndexDatabaseHandle handle(getDatabaseFolder(), PSTAT_MAXSTUDYCOUNT, PSTAT_STUDYSIZE, result);
+  if (result.bad())
   {
     writeLogMessage(DVPSM_error, "DCMPSTAT", "Save stored print to database failed: could not lock index file.");
-    return EC_IllegalCall;
+    return result;
   }
 
-  OFCondition result=EC_Normal;
-  if (DB_makeNewStoreFileName(handle, UID_StoredPrintStorage, uid, imageFileName).good())
+  if (handle.makeNewStoreFileName(UID_StoredPrintStorage, uid, imageFileName).good())
   {
      // now store stored print object as filename
      result = saveStoredPrint(imageFileName, writeRequestedImageSize, OFTrue, uid);
      if (EC_Normal==result)
      {
-       if (DB_storeRequest(handle, UID_StoredPrintStorage, uid, imageFileName, &dbStatus).bad())
+       if (handle.storeRequest(UID_StoredPrintStorage, uid, imageFileName, &dbStatus).bad())
        {
          result = EC_IllegalCall;
          writeLogMessage(DVPSM_error, "DCMPSTAT", "Save stored print to database failed: could not register in index file.");
@@ -3183,7 +3153,6 @@ OFCondition DVInterface::saveStoredPrint(OFBool writeRequestedImageSize)
        }
      }
   }
-  DB_destroyHandle(&handle);
   return result;
 }
 
@@ -3797,7 +3766,7 @@ OFCondition DVInterface::terminatePrintServer()
     target = getTargetID(i, DVPSE_printLocal);
     useTLS = getTargetUseTLS(target);
 
-    OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, 1000, &net);
+    OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, 30, &net);
     if (cond.good())
     {
       cond = ASC_createAssociationParameters(&params, DEFAULT_MAXPDU);
@@ -3842,7 +3811,11 @@ OFCondition DVInterface::terminatePrintServer()
           if (tlsCACertificateFolder==NULL) tlsCACertificateFolder = ".";
 
           /* ciphersuites */
+#if OPENSSL_VERSION_NUMBER >= 0x0090700fL
+          OFString tlsCiphersuites(TLS1_TXT_RSA_WITH_AES_128_SHA ":" SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#else
           OFString tlsCiphersuites(SSL3_TXT_RSA_DES_192_CBC3_SHA);
+#endif
           Uint32 tlsNumberOfCiphersuites = getTargetNumberOfCipherSuites(target);
           if (tlsNumberOfCiphersuites > 0)
           {
@@ -4415,11 +4388,31 @@ void DVInterface::disableImageAndPState()
 /*
  *  CVS/RCS Log:
  *  $Log: dviface.cc,v $
- *  Revision 1.1  2005/08/23 19:31:59  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:44  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:00  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.154  2005/12/08 15:46:15  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.153  2005/11/23 16:10:34  meichel
+ *  Added support for AES ciphersuites in TLS module. All TLS-enabled
+ *    tools now support the "AES TLS Secure Transport Connection Profile".
+ *
+ *  Revision 1.152  2005/11/16 14:58:24  meichel
+ *  Set association timeout in ASC_initializeNetwork to 30 seconds. This improves
+ *    the responsiveness of the tools if the peer blocks during assoc negotiation.
+ *
+ *  Revision 1.151  2005/04/04 10:11:59  meichel
+ *  Module dcmpstat now uses the dcmqrdb API instead of imagectn for maintaining
+ *    the index database
+ *
+ *  Revision 1.150  2004/08/03 11:43:18  meichel
+ *  Headers libc.h and unistd.h are now included via ofstdinc.h
  *
  *  Revision 1.149  2004/02/13 11:49:36  joergr
  *  Adapted code for changed tag names (e.g. PresentationLabel -> ContentLabel).

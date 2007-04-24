@@ -43,6 +43,26 @@ dcmfile-out  DICOM output filename
          debug mode, print debug information
 \endverbatim
 
+\subsection input_options input options
+
+\verbatim
+input file format:
+
+  +f    --read-file
+          read file format or data set (default)
+
+  +fo   --read-file-only
+          read file format only
+
+  -f    --read-dataset
+          read data set without file meta information
+
+  # This option allows to decompress RLE compressed DICOM objects that have
+  # been stored as dataset without meta-header. Such a thing should not exist
+  # since the transfer syntax cannot be reliably determined without meta-header,
+  # but unfortunately it does.
+\endverbatim
+
 \subsection processing_options processing options
 \verbatim
 SOP Instance UID options:
@@ -52,6 +72,19 @@ SOP Instance UID options:
 
   +ua  --uid-always
          always assign new UID
+
+RLE byte segment order options:
+
+  +bd   --byte-order-default
+          most significant byte first (default)
+
+  +br   --byte-order-reverse
+          least significant byte first
+
+  # This option allows to decompress RLE compressed DICOM files in which the
+  # order of byte segments is encoded in incorrect order. This only affects
+  # images with more than one byte per sample.
+
 \endverbatim
 
 \subsection output_options output options
@@ -157,7 +190,7 @@ environment variable.  It is an error if no data dictionary can be loaded.
 
 \section copyright COPYRIGHT
 
-Copyright (C) 2002-2004 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
+Copyright (C) 2002-2005 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
 Germany
 
 */

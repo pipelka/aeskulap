@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2003, OFFIS
+ *  Copyright (C) 2003-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -19,12 +19,11 @@
  *
  *  Author:  Michael Onken
  *
- *  Purpose: Class for modifying DICOM-Files from comandline
+ *  Purpose: Class for modifying DICOM files from comandline
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
- *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/apps/mdfconen.h,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -34,13 +33,13 @@
 #ifndef MDFCONEN_H
 #define MDFCONEN_H
 
-#include "osconfig.h"   // make sure OS specific configuration is included first
+#include "dcmtk/config/osconfig.h"   // make sure OS specific configuration is included first
 #include "mdfdsman.h"
-#include "oftypes.h"
-#include "ofconapp.h"
-#include "oflist.h"
-#include "ofcond.h"
-#include "dctagkey.h"
+#include "dcmtk/ofstd/oftypes.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/ofstd/oflist.h"
+#include "dcmtk/ofstd/ofcond.h"
+#include "dcmtk/dcmdata/dctagkey.h"
 
 /** class reflecting a modify operation (called Job in this context)
  */
@@ -52,7 +51,7 @@ public :
     OFString path;
     OFString value;
 
-    /** Comparison-operator between Jobs
+    /** Comparison operator between Jobs
      */
     OFBool operator==(const MdfJob& j) const;
 
@@ -65,15 +64,15 @@ private :
 
 
 /** This class encapsulates data structures and operations for modifying
- *  Dicom-files from the commandline
+ *  Dicom files from the commandline
  */
 class MdfConsoleEngine
 {
 public:
 
     /** Constructor
-     *  @param argc Number of commandline-arguments
-     *  @param argv Array holding the Commandline-arguments
+     *  @param argc Number of commandline arguments
+     *  @param argv Array holding the commandline arguments
      *  @param appl_name Name of calling application, that instantiates
      *                   this class
      */
@@ -85,18 +84,18 @@ public:
     ~MdfConsoleEngine();
 
     /** This function looks at commandline options and decides what to do.
-     *  It evaluates option-values from commandline and prepares them for
+     *  It evaluates option values from commandline and prepares them for
      *  starting the corresponding private functions.
      *  @return Returns 0 if successful, another value if errors occurreds
      */
     int startProvidingService();
 
 protected:
-    ///helper class for console-applications
+    ///helper class for console applications
     OFConsoleApplication *app;
-    ///helper class for command-line-parsing
+    ///helper class for commandline parsing
     OFCommandLine *cmd;
-    ///ds_man holds DatasetManager, that is used for modify operations
+    ///ds_man holds dataset manager, that is used for modify operations
     MdfDatasetManager *ds_man;
     ///verbose mode
     OFBool verbose_option;
@@ -104,12 +103,44 @@ protected:
     OFBool debug_option;
     ///ignore errors option
     OFBool ignore_errors_option;
+    //if false, metaheader UIDs are not updated when related dataset UIDs change
+    OFBool update_metaheader_uids_option;
+    ///read file with or without metaheader
+    E_FileReadMode read_mode_option;
+    ///denotes the expected transfersyntax
+    E_TransferSyntax input_xfer_option;
+
+    ///decides whether to with/without metaheader
+    OFBool output_dataset_option;
+    ///denotes the transfer syntax that should be written
+    E_TransferSyntax output_xfer_option;
+    ///option for group length recalcing
+    E_GrpLenEncoding glenc_option;
+    ///write explicit or implicit length encoding
+    E_EncodingType enctype_option;
+    ///padding output
+    E_PaddingEncoding padenc_option;
+    ///internal padding variables
+    OFCmdUnsignedInt filepad_option;
+    OFCmdUnsignedInt itempad_option;
+
     ///list of jobs to be executed
     OFList<MdfJob> *jobs;
     ///list of files to be modified
     OFList<OFString> *files;
 
-    /** This function splits a modify-option (inclusive value) as
+    /** Checks for non-job commandline options like --debug etc. and
+     *  sets corresponding internal flags
+     */
+    void parseNonJobOptions();
+
+    /** Parses commandline options into corresponding file- and job lists and
+     *  enables debug/verbose mode. The joblist is built in order of modify
+     *  options on commandline
+     */
+    void parseCommandLine();
+
+    /** This function splits a modify option (inclusive value) as
      *  found on commandline into to parts (path and value)
      *  e.g. "(0010,0010)=value" into path "(0010,0010)" and "value"
      *  @param string to be splitted
@@ -120,17 +151,11 @@ protected:
                                  OFString &path,
                                  OFString &value);
 
-    /** Executes given modify-job
+    /** Executes given modify job
      *  @param job job to be executed
      *  @return returns 0 if no error occured, else the number of errors
      */
     int executeJob(const MdfJob &job);
-
-    /** Parses commandline options into corresponding file- and job-lists and
-     *  enables debug/verbose mode. The joblist is built in order of modify
-     *  options on commandline
-     */
-    void parseCommandLine();
 
     /** Backup and load file into internal MdfDatasetManager
      *  @param filename name of file to load
@@ -151,6 +176,18 @@ protected:
      */
     OFCondition restoreFile(const char *filename);
 
+    /** The function handles three strings, that are directly printed
+     *  after another. The whole message is then terminated by \n
+     *  @param condition message is printed, if condition is true
+     *  @param s1 first message string
+     *  @param s2 second message string
+     *  @param s2 third message string
+     */
+    void debugMsg(const OFBool &condition,
+                  const OFString &s1,
+                  const OFString &s2,
+                  const OFString &s3);
+
 private:
 
     /** private undefined assignment operator
@@ -168,11 +205,35 @@ private:
 /*
 ** CVS/RCS Log:
 ** $Log: mdfconen.h,v $
-** Revision 1.1  2005/08/23 19:32:00  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:38  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:57  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.12  2005/12/08 15:46:50  meichel
+** Updated Makefiles to correctly install header files
+**
+** Revision 1.11  2005/12/02 09:19:26  joergr
+** Added new command line option that checks whether a given file starts with a
+** valid DICOM meta header.
+**
+** Revision 1.10  2004/11/05 17:17:24  onken
+** Added input and output options for dcmodify. minor code enhancements.
+**
+** Revision 1.9  2004/10/22 16:53:26  onken
+** - fixed ignore-errors-option
+** - major enhancements for supporting private tags
+** - removed '0 Errors' output
+** - modifications to groups 0000,0001,0002,0003,0005 and 0007 are blocked,
+**   removing tags with group 0001,0003,0005 and 0007 is still possible
+** - UID options:
+**   - generate new study, series and instance UIDs
+**   - When changing UIDs in dataset, related metaheader tags are updated
+**     automatically
+** - minor code improvements
 **
 ** Revision 1.8  2004/04/19 14:45:07  onken
 ** Restructured code to avoid default parameter values for "complex types" like

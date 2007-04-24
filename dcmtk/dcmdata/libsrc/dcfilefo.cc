@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: class DcmFileFormat
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:58 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,43 +31,41 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CTIME
-#include "ofstdinc.h"
+#define INCLUDE_UNISTD
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcitem.h"
+#include "dcmtk/dcmdata/dcxfer.h"
+#include "dcmtk/dcmdata/dcvrobow.h"
+#include "dcmtk/dcmdata/dcvrui.h"
+#include "dcmtk/dcmdata/dcvrul.h"
+#include "dcmtk/dcmdata/dcvrus.h"
+#include "dcmtk/dcmdata/dcvrae.h"
+#include "dcmtk/dcmdata/dcvrsh.h"
+#include "dcmtk/dcmdata/dcmetinf.h"
+#include "dcmtk/dcmdata/dcdebug.h"
 
-#include "ofstream.h"
-#include "dcfilefo.h"
-#include "dcitem.h"
-#include "dcxfer.h"
-#include "dcvrobow.h"
-#include "dcvrui.h"
-#include "dcvrul.h"
-#include "dcvrus.h"
-#include "dcvrae.h"
-#include "dcvrsh.h"
-#include "dcmetinf.h"
-#include "dcdebug.h"
-
-#include "dcdeftag.h"
-#include "dcuid.h"
-#include "dcostrma.h"    /* for class DcmOutputStream */
-#include "dcostrmf.h"    /* for class DcmOutputFileStream */
-#include "dcistrma.h"    /* for class DcmInputStream */
-#include "dcistrmf.h"    /* for class DcmInputFileStream */
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcostrma.h"    /* for class DcmOutputStream */
+#include "dcmtk/dcmdata/dcostrmf.h"    /* for class DcmOutputFileStream */
+#include "dcmtk/dcmdata/dcistrma.h"    /* for class DcmInputStream */
+#include "dcmtk/dcmdata/dcistrmf.h"    /* for class DcmInputFileStream */
 
 
 // ********************************
 
 
 DcmFileFormat::DcmFileFormat()
-  : DcmSequenceOfItems(InternalUseTag)
+  : DcmSequenceOfItems(InternalUseTag),
+    FileReadMode(ERM_autoDetect)
 {
     DcmMetaInfo *MetaInfo = new DcmMetaInfo();
     DcmSequenceOfItems::itemList->insert(MetaInfo);
@@ -77,7 +75,8 @@ DcmFileFormat::DcmFileFormat()
 
 
 DcmFileFormat::DcmFileFormat(DcmDataset *dataset)
-    : DcmSequenceOfItems(InternalUseTag)
+    : DcmSequenceOfItems(InternalUseTag),
+      FileReadMode(ERM_autoDetect)
 {
     DcmMetaInfo *MetaInfo = new DcmMetaInfo();
     DcmSequenceOfItems::itemList->insert(MetaInfo);
@@ -92,7 +91,8 @@ DcmFileFormat::DcmFileFormat(DcmDataset *dataset)
 
 
 DcmFileFormat::DcmFileFormat(const DcmFileFormat &old)
-  : DcmSequenceOfItems(old)
+  : DcmSequenceOfItems(old),
+    FileReadMode(old.FileReadMode)
 {
 }
 
@@ -105,6 +105,7 @@ DcmFileFormat::~DcmFileFormat()
 DcmFileFormat &DcmFileFormat::operator=(const DcmFileFormat &obj)
 {
     DcmSequenceOfItems::operator=(obj);
+    FileReadMode = obj.FileReadMode;
     return *this;
 }
 
@@ -242,7 +243,7 @@ OFCondition DcmFileFormat::checkValue(DcmMetaInfo *metainfo,
             if (((currVers[0] & version[0] & 0xff) == version[0]) &&
                 ((currVers[1] & version[1] & 0xff) == version[1]))
             {
-                debug(2, ("DcmFileFormat::checkValue() Version of MetaHeader is ok: 0x%2.2x%2.2x",
+                DCM_dcmdataDebug(2, ("DcmFileFormat::checkValue() Version of MetaHeader is ok: 0x%2.2x%2.2x",
                         currVers[1], currVers[0]));
             } else {
                 currVers[0] = OFstatic_cast(Uint8, currVers[0] | version[0]); // direct manipulation
@@ -271,11 +272,11 @@ OFCondition DcmFileFormat::checkValue(DcmMetaInfo *metainfo,
                     char *uid = NULL;
                     l_error = OFstatic_cast(DcmUniqueIdentifier *, stack.top())->getString(uid);
                     OFstatic_cast(DcmUniqueIdentifier *, elem)->putString(uid);
-                    debug(2, ("DcmFileFormat::checkValue() use SOPClassUID [%s]", uid));
+                    DCM_dcmdataDebug(2, ("DcmFileFormat::checkValue() use SOPClassUID [%s]", uid));
 
                 } else {
                     OFstatic_cast(DcmUniqueIdentifier *, elem)->putString(UID_PrivateGenericFileSOPClass);
-                    debug(2, ("DcmFileFormat::checkValue() No SOP Class UID in Dataset, using PrivateGenericFileSOPClass"));
+                    DCM_dcmdataDebug(2, ("DcmFileFormat::checkValue() No SOP Class UID in Dataset, using PrivateGenericFileSOPClass"));
                 }
             }
         }
@@ -293,12 +294,12 @@ OFCondition DcmFileFormat::checkValue(DcmMetaInfo *metainfo,
                     char* uid = NULL;
                     l_error =OFstatic_cast(DcmUniqueIdentifier *, stack.top())->getString(uid);
                     OFstatic_cast(DcmUniqueIdentifier *, elem)->putString(uid);
-                    debug(2, ("DcmFileFormat::checkValue() use SOPInstanceUID [%s] from Dataset", uid));
+                    DCM_dcmdataDebug(2, ("DcmFileFormat::checkValue() use SOPInstanceUID [%s] from Dataset", uid));
                 } else {
                     char uid[128];
                     dcmGenerateUniqueIdentifier(uid);       // from dcuid.h
                     OFstatic_cast(DcmUniqueIdentifier *, elem)->putString(uid);
-                    debug(2, ("DcmFileFormat::checkValue() use new generated SOPInstanceUID [%s]", uid));
+                    DCM_dcmdataDebug(2, ("DcmFileFormat::checkValue() use new generated SOPInstanceUID [%s]", uid));
                 }
             }
         }
@@ -314,13 +315,13 @@ OFCondition DcmFileFormat::checkValue(DcmMetaInfo *metainfo,
 #ifdef DEBUG
 char * uidtmp = NULL;
 OFstatic_cast(DcmUniqueIdentifier *, elem)->getString(uidtmp);
-Cdebug(2,  uidtmp != NULL,
+DCM_dcmdataCDebug(2,  uidtmp != NULL,
        ("DcmFileFormat::checkValue() found old transfer-syntax: [%s]",uidtmp));
 #endif
                 DcmXfer dcXfer(oxfer);
                 const char *uid = dcXfer.getXferID();
                 elem->putString(uid);
-                debug(2,("DcmFileFormat::checkValue() use new transfer-syntax [%s] on writing following Dataset",
+                DCM_dcmdataDebug(2,("DcmFileFormat::checkValue() use new transfer-syntax [%s] on writing following Dataset",
                         dcXfer.getXferName()));
 
             }
@@ -454,7 +455,7 @@ OFCondition DcmFileFormat::validateMetaInfo(E_TransferSyntax oxfer)
         checkValue(metinf, datset, DCM_ImplementationVersionName, stack.top(), oxfer);
 
         /* dump some information if reuqired */
-        debug(2, ("DcmFileFormat: found %ld Elements in DcmMetaInfo metinf.",
+        DCM_dcmdataDebug(2, ("DcmFileFormat: found %ld Elements in DcmMetaInfo metinf.",
                 metinf->card()));
 
         /* calculate new GroupLength for meta header */
@@ -491,7 +492,7 @@ E_TransferSyntax DcmFileFormat::lookForXfer(DcmMetaInfo *metainfo)
             xferUI->getString(xferid);     // auslesen der ID
             DcmXfer localXfer(xferid);      // dekodieren in E_TransferSyntax
             newxfer = localXfer.getXfer();
-            debug(4, ("DcmFileFormat::lookForXfer() detected xfer=%d=[%s] in MetaInfo",
+            DCM_dcmdataDebug(4, ("DcmFileFormat::lookForXfer() detected xfer=%d=[%s] in MetaInfo",
                 newxfer, localXfer.getXferName()));
         }
     }
@@ -563,6 +564,12 @@ OFCondition DcmFileFormat::read(DcmInputStream &inStream,
 
             // read MetaInfo() from Tag(0002,0010) and determine xfer
             newxfer = lookForXfer(metaInfo);
+            if (FileReadMode == ERM_fileOnly)
+            {
+                // reject file if no meta header present
+                if (errorFlag.good() && (newxfer == EXS_Unknown))
+                    errorFlag = EC_InvalidStream;
+            }
             if (errorFlag.good() && (!metaInfo || metaInfo->transferState() == ERW_ready))
             {
                 dataset = getDataset();
@@ -700,9 +707,9 @@ OFCondition DcmFileFormat::loadFile(const char *fileName,
                                     const E_TransferSyntax readXfer,
                                     const E_GrpLenEncoding groupLength,
                                     const Uint32 maxReadLength,
-                                    OFBool isDataset)
+                                    const E_FileReadMode readMode)
 {
-    if (isDataset)
+    if (readMode == ERM_dataset)
         return getDataset()->loadFile(fileName, readXfer, groupLength, maxReadLength);
 
     OFCondition l_error = EC_IllegalParameter;
@@ -715,10 +722,20 @@ OFCondition DcmFileFormat::loadFile(const char *fileName,
         l_error = fileStream.status();
         if (l_error.good())
         {
-            /* read data from file */
-            transferInit();
-            l_error = read(fileStream, readXfer, groupLength, maxReadLength);
-            transferEnd();
+            /* clear this object */
+            l_error = clear();
+            if (l_error.good())
+            {
+                /* save old value */
+                const E_FileReadMode oldMode = FileReadMode;
+                FileReadMode = readMode;
+                /* read data from file */
+                transferInit();
+                l_error = read(fileStream, readXfer, groupLength, maxReadLength);
+                transferEnd();
+                /* restore old value */
+                FileReadMode = oldMode;
+            }
         }
     }
     return l_error;
@@ -732,7 +749,7 @@ OFCondition DcmFileFormat::saveFile(const char *fileName,
                                     const E_PaddingEncoding padEncoding,
                                     const Uint32 padLength,
                                     const Uint32 subPadLength,
-                                    OFBool isDataset)
+                                    const OFBool isDataset)
 {
     if (isDataset)
     {
@@ -802,10 +819,8 @@ DcmItem *DcmFileFormat::remove(DcmItem* /*item*/)
 
 OFCondition DcmFileFormat::clear()
 {
-    ofConsole.lockCerr() << "Warning: illegal call of DcmFileFormat::clear()" << endl;
-    ofConsole.unlockCerr();
-    errorFlag = EC_IllegalCall;
-    return errorFlag;
+  getMetaInfo()->clear();
+  return getDataset()->clear();
 }
 
 
@@ -861,11 +876,35 @@ DcmDataset *DcmFileFormat::getAndRemoveDataset()
 /*
 ** CVS/RCS Log:
 ** $Log: dcfilefo.cc,v $
-** Revision 1.1  2005/08/23 19:31:58  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:25  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.42  2005/12/08 15:41:10  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.41  2005/12/02 11:57:44  joergr
+** Fixed minor bug.
+**
+** Revision 1.40  2005/12/02 08:53:36  joergr
+** Added new file read mode that makes it possible to distinguish between DICOM
+** files, datasets and other non-DICOM files.  For this reason, the last
+** parameter of method loadFile() changed from OFBool to E_FileReadMode.
+**
+** Revision 1.39  2005/11/28 15:53:13  meichel
+** Renamed macros in dcdebug.h
+**
+** Revision 1.38  2005/11/07 17:22:33  meichel
+** Implemented DcmFileFormat::clear(). Now the loadFile methods in class
+**   DcmFileFormat and class DcmDataset both make sure that clear() is called
+**   before new data is read, allowing for a re-use of the object.
+**
+** Revision 1.37  2004/08/03 11:41:09  meichel
+** Headers libc.h and unistd.h are now included via ofstdinc.h
 **
 ** Revision 1.36  2004/02/04 16:32:01  joergr
 ** Adapted type casts to new-style typecast operators defined in ofcast.h.

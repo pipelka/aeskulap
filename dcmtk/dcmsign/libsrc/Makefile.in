@@ -22,19 +22,20 @@ LOCALDEFS =
 objs = dcsignat.o sicert.o sidsa.o simd5.o siprivat.o sirsa.o sisprof.o \
 	siautopr.o sicreapr.o simaccon.o sinullpr.o siripemd.o sisha1.o \
 	sitypes.o sicertvf.o sibrsapr.o
-library = libdcmdsig.$(LIBEXT)
-
+library = libdcmdsig$(LIBEXT)
+librarydev = libdcmdsig.so
 
 all: $(library)
 
 install: all
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
-
+	ln -sf $(library) $(librarydev)
 
 clean:
 	rm -f $(objs) $(library) $(TRASH)

@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,23 +22,23 @@
  *  Purpose: Implementation of class DcmDateTime
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:57 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dcvrdt.h"
-#include "dcvrda.h"
-#include "dcvrtm.h"
-#include "ofstring.h"
-#include "ofstd.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmdata/dcvrdt.h"
+#include "dcmtk/dcmdata/dcvrda.h"
+#include "dcmtk/dcmdata/dcvrtm.h"
+#include "dcmtk/ofstd/ofstring.h"
+#include "dcmtk/ofstd/ofstd.h"
 
 #define INCLUDE_CSTDIO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 // ********************************
@@ -329,11 +329,16 @@ OFCondition DcmDateTime::getISOFormattedDateTimeFromString(const OFString &dicom
 /*
 ** CVS/RCS Log:
 ** $Log: dcvrdt.cc,v $
-** Revision 1.1  2005/08/23 19:31:57  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:25  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.26  2005/12/08 15:41:51  meichel
+** Changed include path schema for all DCMTK header files
 **
 ** Revision 1.25  2004/04/16 12:50:45  joergr
 ** Restructured code to avoid default parameter values for "complex types" like

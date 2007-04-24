@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Implementation of class DcmDirectoryRecord
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,33 +31,26 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CERRNO
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#define INCLUDE_LIBC
+#define INCLUDE_UNISTD
+#include "dcmtk/ofstd/ofstdinc.h"
 
-BEGIN_EXTERN_C
-#ifdef HAVE_LIBC_H
-#include <libc.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-END_EXTERN_C
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/ofstd/ofcast.h"
 
-#include "ofstream.h"
-#include "ofcast.h"
-
-#include "dcdirrec.h"
-#include "dctk.h"
-#include "dcxfer.h"
-#include "dcvr.h"
-#include "dcvrus.h"
-#include "dcdebug.h"
+#include "dcmtk/dcmdata/dcdirrec.h"
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/dcxfer.h"
+#include "dcmtk/dcmdata/dcvr.h"
+#include "dcmtk/dcmdata/dcvrus.h"
+#include "dcmtk/dcmdata/dcdebug.h"
 
 #ifdef HAVE_UNIX_H
 #if defined(macintosh) && defined (HAVE_WINSOCK_H)
@@ -106,7 +99,10 @@ static const char *DRTypeNames[] =
     "REGISTRATION",
     "FIDUCIAL",
     "RAW DATA",
-    "SPECTROSCOPY"
+    "SPECTROSCOPY",
+    "ENCAP DOC",
+    "VALUE MAP",
+    "HANGING PROTOCOL",
 };
 
 static const short DIM_OF_DRTypeNames = (sizeof(DRTypeNames) / sizeof(DRTypeNames[0]));
@@ -118,14 +114,12 @@ static const short DIM_OF_DRTypeNames = (sizeof(DRTypeNames) / sizeof(DRTypeName
 DcmDirectoryRecord::DcmDirectoryRecord()
   : DcmItem(ItemTag),
     recordsOriginFile(NULL),
-    lowerLevelList(NULL),
+    lowerLevelList(new DcmSequenceOfItems(DCM_DirectoryRecordSequence)),
     DirRecordType(ERT_Private),
     referencedMRDR(NULL),
     numberOfReferences(0),
     offsetInFile(0)
 {
-    DcmTag sequTag(DCM_DirectoryRecordSequence);
-    lowerLevelList = new DcmSequenceOfItems(sequTag);
 }
 
 
@@ -136,14 +130,12 @@ DcmDirectoryRecord::DcmDirectoryRecord(const DcmTag &tag,
                                        const Uint32 len)
   : DcmItem(tag, len),
     recordsOriginFile(NULL),
-    lowerLevelList(NULL),
+    lowerLevelList(new DcmSequenceOfItems(DCM_DirectoryRecordSequence)),
     DirRecordType(ERT_Private),
     referencedMRDR(NULL),
     numberOfReferences(0),
     offsetInFile(0)
 {
-    DcmTag sequTag(DCM_DirectoryRecordSequence);
-    lowerLevelList = new DcmSequenceOfItems(sequTag);
 }
 
 
@@ -155,14 +147,12 @@ DcmDirectoryRecord::DcmDirectoryRecord(const E_DirRecType recordType,
                                        const char *sourceFilename)
   : DcmItem(ItemTag),
     recordsOriginFile(NULL),
-    lowerLevelList(NULL),
+    lowerLevelList(new DcmSequenceOfItems(DCM_DirectoryRecordSequence)),
     DirRecordType(recordType),
     referencedMRDR(NULL),
     numberOfReferences(0),
     offsetInFile(0)
 {
-    DcmTag sequTag(DCM_DirectoryRecordSequence);
-    lowerLevelList = new DcmSequenceOfItems(sequTag);
     setRecordsOriginFile(sourceFilename);
 
     if (DirRecordType != ERT_root)
@@ -178,14 +168,12 @@ DcmDirectoryRecord::DcmDirectoryRecord(const char *recordTypeName,
                                        const char *sourceFilename)
   : DcmItem(ItemTag),
     recordsOriginFile(NULL),
-    lowerLevelList(NULL),
+    lowerLevelList(new DcmSequenceOfItems(DCM_DirectoryRecordSequence)),
     DirRecordType(ERT_Private),
     referencedMRDR(NULL),
     numberOfReferences(0),
     offsetInFile(0)
 {
-    DcmTag sequTag(DCM_DirectoryRecordSequence);
-    lowerLevelList = new DcmSequenceOfItems(sequTag);
     DirRecordType = recordNameToType(recordTypeName);
     setRecordsOriginFile(sourceFilename);
 
@@ -199,38 +187,13 @@ DcmDirectoryRecord::DcmDirectoryRecord(const char *recordTypeName,
 
 DcmDirectoryRecord::DcmDirectoryRecord(const DcmDirectoryRecord &old)
   : DcmItem(old),
-    recordsOriginFile(NULL),
-    lowerLevelList(NULL),
-    DirRecordType(ERT_Private),
-    referencedMRDR(NULL),
-    numberOfReferences(0),
-    offsetInFile(0)
+    recordsOriginFile(old.recordsOriginFile),
+    lowerLevelList(new DcmSequenceOfItems(*old.lowerLevelList)),
+    DirRecordType(old.DirRecordType),
+    referencedMRDR(old.referencedMRDR),
+    numberOfReferences(old.numberOfReferences),
+    offsetInFile(old.offsetInFile)
 {
-    DcmTag sequTag(DCM_DirectoryRecordSequence);
-    if (old.ident() == EVR_dirRecord)
-    {
-        DcmSequenceOfItems const *ll = old.lowerLevelList;
-        lowerLevelList = new DcmSequenceOfItems(*ll); // copy constructor
-
-        DirRecordType = old.DirRecordType;
-        referencedMRDR = old.referencedMRDR;
-        numberOfReferences = old.numberOfReferences;
-        offsetInFile = old.offsetInFile;
-        setRecordsOriginFile(old.recordsOriginFile);
-    } else {
-        lowerLevelList = new DcmSequenceOfItems(sequTag);
-        if (old.ident() != EVR_item)
-        {
-          ofConsole.lockCerr() << "Warning: DcmDirectoryRecord: wrong use of Copy Constructor" << endl;
-          ofConsole.unlockCerr();
-        }
-    }
-    if (old.ident() == EVR_item)
-    {
-        // determine some internal variables
-        referencedMRDR = lookForReferencedMRDR();
-        DirRecordType = lookForRecordType();
-    }
 }
 
 
@@ -260,7 +223,7 @@ E_DirRecType DcmDirectoryRecord::recordNameToType(const char *recordTypeName)
             recType = OFstatic_cast(E_DirRecType, i);
         else if (strcmp(recordTypeName,"STRUCT REPORT") == 0)
             recType = ERT_StructReport; // we recognise the old name as well
-        debug(4, ("DcmDirectoryRecord::recordNameToType() input char*=\"%s\" output enum=%d", recordTypeName, recType));
+        DCM_dcmdataDebug(4, ("DcmDirectoryRecord::recordNameToType() input char*=\"%s\" output enum=%d", recordTypeName, recType));
     }
     return recType;
 }
@@ -329,6 +292,7 @@ OFCondition DcmDirectoryRecord::checkHierarchy(const E_DirRecType upperRecord,
                 case ERT_PrintQueue:
                 case ERT_Private:
                 case ERT_Topic:
+                case ERT_HangingProtocol:
                     l_error = EC_Normal;
                     break;
                 default:
@@ -418,6 +382,8 @@ OFCondition DcmDirectoryRecord::checkHierarchy(const E_DirRecType upperRecord,
                 case ERT_Fiducial:
                 case ERT_RawData:
                 case ERT_Spectroscopy:
+                case ERT_EncapDoc:
+                case ERT_ValueMap:
                     l_error = EC_Normal;
                     break;
                 default:
@@ -466,6 +432,8 @@ OFCondition DcmDirectoryRecord::checkHierarchy(const E_DirRecType upperRecord,
                 case ERT_Fiducial:
                 case ERT_RawData:
                 case ERT_Spectroscopy:
+                case ERT_EncapDoc:
+                case ERT_ValueMap:
                     l_error = EC_Normal;
                     break;
                 default:
@@ -499,6 +467,9 @@ OFCondition DcmDirectoryRecord::checkHierarchy(const E_DirRecType upperRecord,
         case ERT_Fiducial:
         case ERT_RawData:
         case ERT_Spectroscopy:
+        case ERT_EncapDoc:
+        case ERT_ValueMap:
+        case ERT_HangingProtocol:
             switch (lowerRecord)
             {
                 case ERT_Private:
@@ -536,6 +507,7 @@ OFCondition DcmDirectoryRecord::setRecordType(E_DirRecType newType)
 // ********************************
 
 
+
 E_DirRecType DcmDirectoryRecord::lookForRecordType()
 {
     E_DirRecType localType = ERT_Private;
@@ -552,7 +524,7 @@ E_DirRecType DcmDirectoryRecord::lookForRecordType()
               recType->getString(recName);
               localType = recordNameToType(recName);
 
-              debug(4, ("DcmDirectoryRecord::lookForRecordType() RecordType Element(0x%4.4hx,0x%4.4hx) Type=[%s]",
+              DCM_dcmdataDebug(4, ("DcmDirectoryRecord::lookForRecordType() RecordType Element(0x%4.4hx,0x%4.4hx) Type=[%s]",
                 recType->getGTag(), recType->getETag(), DRTypeNames[DirRecordType]));
             }
         }
@@ -629,7 +601,7 @@ const char *DcmDirectoryRecord::lookForReferencedFileID()
             }
         }
     }
-    debug(4, ("DcmDirectoryRecord::lookForReferencedFileID() ReferencedFileID = [%s]", ((localFile)?(localFile):(""))));
+    DCM_dcmdataDebug(4, ("DcmDirectoryRecord::lookForReferencedFileID() ReferencedFileID = [%s]", ((localFile)?(localFile):(""))));
 
     return localFile;
 }
@@ -654,13 +626,13 @@ DcmDirectoryRecord *DcmDirectoryRecord::lookForReferencedMRDR()
 #ifdef DEBUG
                 Uint32 l_uint = 0;
                 offElem->getUint32(l_uint);
-                debug(4, ("DcmDirectoryRecord::lookForReferencedMRDR() MRDR Offset Element(0x%4.4hx,0x%4.4hx) offs=0x%8.8lx p=%p n=%p",
+                DCM_dcmdataDebug(4, ("DcmDirectoryRecord::lookForReferencedMRDR() MRDR Offset Element(0x%4.4hx,0x%4.4hx) offs=0x%8.8lx p=%p n=%p",
                   offElem->getGTag(), offElem->getETag(), l_uint, offElem, localMRDR));
 #endif
             }
         }
     }
-    Cdebug(4, localMRDR==NULL, ("DcmDirectoryRecord::lookForReferencedMRDR() no ReferencedMRDR found"));
+    DCM_dcmdataCDebug(4, localMRDR==NULL, ("DcmDirectoryRecord::lookForReferencedMRDR() no ReferencedMRDR found"));
 
     return localMRDR;
 }
@@ -1035,7 +1007,7 @@ OFCondition DcmDirectoryRecord::purgeReferencedFile()
             setReferencedFileID(NULL);
         }
 
-        debug(2, ("DcmDirectoryRecord::purgeReferencedFile() trying to purge file %s from file system", localFileName));
+        DCM_dcmdataDebug(2, ("DcmDirectoryRecord::purgeReferencedFile() trying to purge file %s from file system", localFileName));
 
         if (localFileName != NULL)
         {                                 // filename exists
@@ -1235,8 +1207,8 @@ OFCondition DcmDirectoryRecord::assignToSOPFile(const char *referencedFileID,
 
     if (DirRecordType != ERT_root)
     {
-        debug(2, ("DcmDirectoryRecord::assignToSOPFile() old Referenced File ID was %s", getReferencedFileName()));
-        debug(2, ("new Referenced File ID is  %s", referencedFileID));
+        DCM_dcmdataDebug(2, ("DcmDirectoryRecord::assignToSOPFile() old Referenced File ID was %s", getReferencedFileName()));
+        DCM_dcmdataDebug(2, ("new Referenced File ID is  %s", referencedFileID));
 
         // update against the old reference counter
         if (referencedMRDR != NULL)
@@ -1261,8 +1233,8 @@ OFCondition DcmDirectoryRecord::assignToMRDR(DcmDirectoryRecord *mrdr)
         && mrdr != referencedMRDR              // old MRDR != new MRDR
       )
     {
-        debug(2, ("DcmDirectoryRecord::assignToMRDR() old Referenced File ID was %s", getReferencedFileName()));
-        debug(2, ("new Referenced File ID is  %s", mrdr->lookForReferencedFileID()));
+        DCM_dcmdataDebug(2, ("DcmDirectoryRecord::assignToMRDR() old Referenced File ID was %s", getReferencedFileName()));
+        DCM_dcmdataDebug(2, ("new Referenced File ID is  %s", mrdr->lookForReferencedFileID()));
 
         // set internal pointer to mrdr and update against the old value
         if (referencedMRDR != NULL)
@@ -1304,7 +1276,7 @@ OFCondition DcmDirectoryRecord::insertSub(DcmDirectoryRecord *dirRec,
         else
         {
             errorFlag = EC_IllegalCall;
-            debug(1, ("DcmDirectoryRecord::insertSub() dcdirrec: (%s -> %s) hierarchy not allowed.",
+            DCM_dcmdataDebug(1, ("DcmDirectoryRecord::insertSub() dcdirrec: (%s -> %s) hierarchy not allowed.",
                 DRTypeNames[getRecordType()], DRTypeNames[dirRec->getRecordType()]));
         }
     }
@@ -1324,7 +1296,7 @@ OFCondition DcmDirectoryRecord::insertSubAtCurrentPos(DcmDirectoryRecord *dirRec
             errorFlag = lowerLevelList->insertAtCurrentPos(dirRec, before);
         else {
             errorFlag = EC_IllegalCall;
-            debug(1, ("DcmDirectoryRecord::insertSubAtCurrentPos() dcdirrec: (%s -> %s) hierarchy not allowed.",
+            DCM_dcmdataDebug(1, ("DcmDirectoryRecord::insertSubAtCurrentPos() dcdirrec: (%s -> %s) hierarchy not allowed.",
                 DRTypeNames[getRecordType()], DRTypeNames[dirRec->getRecordType()]));
         }
     }
@@ -1393,7 +1365,7 @@ OFCondition DcmDirectoryRecord::deleteSubAndPurgeFile(const unsigned long num)
         } else                              // remove file directly
             errorFlag = subDirRec->purgeReferencedFile();
 
-        debug(2, ("DcmDirectoryRecord::deleteSubAndPurgeFile() now purging lower records:"));
+        DCM_dcmdataDebug(2, ("DcmDirectoryRecord::deleteSubAndPurgeFile() now purging lower records:"));
 
         while (subDirRec->cardSub() > 0)    // remove all sub sub records
             subDirRec->deleteSubAndPurgeFile(OFstatic_cast(unsigned long, 0));
@@ -1420,7 +1392,7 @@ OFCondition DcmDirectoryRecord::deleteSubAndPurgeFile(DcmDirectoryRecord *dirRec
         } else                              // remove file directly
             errorFlag = subDirRec->purgeReferencedFile();
 
-        debug(2, ("DcmDirectoryRecord::deleteSubAndPurgeFile() now purging lower records:"));
+        DCM_dcmdataDebug(2, ("DcmDirectoryRecord::deleteSubAndPurgeFile() now purging lower records:"));
 
         while (subDirRec->cardSub() > 0)    // remove all sub sub records
             subDirRec->deleteSubAndPurgeFile(OFstatic_cast(unsigned long, 0));
@@ -1458,11 +1430,29 @@ const char* DcmDirectoryRecord::getRecordsOriginFile()
 /*
  * CVS/RCS Log:
  * $Log: dcdirrec.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:25  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.54  2005/12/08 15:41:07  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.53  2005/11/28 15:53:13  meichel
+ * Renamed macros in dcdebug.h
+ *
+ * Revision 1.52  2005/11/07 16:59:26  meichel
+ * Cleaned up some copy constructors in the DcmObject hierarchy.
+ *
+ * Revision 1.51  2005/10/27 13:33:08  joergr
+ * Added support for Encapsulated Document, Real World Value Mapping and
+ * Hanging Protocol objects to DICOMDIR tools.
+ *
+ * Revision 1.50  2004/08/03 11:41:09  meichel
+ * Headers libc.h and unistd.h are now included via ofstdinc.h
  *
  * Revision 1.49  2004/02/13 17:36:54  joergr
  * Added support for new directory records RAW DATA and SPECTROSCOPY introduced

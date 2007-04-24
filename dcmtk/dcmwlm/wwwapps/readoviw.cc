@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2002, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -25,22 +25,22 @@
  *   Used to display an "overview" of available worklist files.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:03 $
+ *  Update Date:      $Date: 2007/04/24 09:53:50 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmwlm/wwwapps/readoviw.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDIO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "dctk.h"
-#include "dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/dcuid.h"    /* for dcmtk version name */
 
 static char rcsid[] = "$dcmtk: readoviw v"
   OFFIS_DCMTK_VERSION " " OFFIS_DCMTK_RELEASEDATE " $";
@@ -145,11 +145,16 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log
  *   $Log: readoviw.cc,v $
- *   Revision 1.1  2005/08/23 19:32:03  braindead
- *   - initial savannah import
+ *   Revision 1.2  2007/04/24 09:53:50  braindead
+ *   - updated DCMTK to version 3.5.4
+ *   - merged Gianluca's WIN32 changes
  *
- *   Revision 1.1  2005/06/26 19:26:15  pipelka
- *   - added dcmtk
+ *   Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
+ *   - imported dcmtk354 sources
+ *
+ *
+ *   Revision 1.2  2005/12/08 15:48:38  meichel
+ *   Changed include path schema for all DCMTK header files
  *
  *   Revision 1.1  2002/12/03 12:17:35  wilkens
  *   Added files und functionality from the dcmtk/wlisctn folder to dcmtk/dcmwlm

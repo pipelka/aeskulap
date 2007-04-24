@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2003-2004, OFFIS
+ *  Copyright (C) 2003-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Implements PNG interface for plugable image formats
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,15 +31,14 @@
  */
 
 
-#include "osconfig.h"
-#include "ofstring.h"
+#include "dcmtk/config/osconfig.h"
 
 #ifdef WITH_LIBPNG
 
-#include "dctypes.h"
-#include "diimage.h"
-#include "dipipng.h"
-#include "dcuid.h"      /* for dcmtk version */
+#include "dcmtk/dcmdata/dctypes.h"
+#include "dcmtk/dcmimgle/diimage.h"
+#include "dcmtk/dcmimage/dipipng.h"
+#include "dcmtk/dcmdata/dcuid.h"      /* for dcmtk version */
 
 BEGIN_EXTERN_C
 #ifdef HAVE_LIBPNG_PNG_H
@@ -233,14 +232,16 @@ int dipipng_cc_dummy_to_keep_linker_from_moaning = 0;
 /*
  * CVS/RCS Log:
  * $Log: dipipng.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:47  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.2  2005/06/26 21:15:18  pipelka
- * -build fixes
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
  *
- * Revision 1.1  2005/06/26 19:26:09  pipelka
- * - added dcmtk
+ *
+ * Revision 1.6  2005/12/08 15:42:26  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.5  2004/04/07 12:07:52  joergr
  * Additional modifications for new-style type casts.

@@ -20,18 +20,18 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/02/22 13:39:34 $
+    Update Date:      $Date: 2007/04/24 09:53:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.21 $
+    CVS/RCS Revision: $Revision: 1.22 $
     Status:           $State: Exp $
 */
 
 #include "imagepool.h"
-#include "dcdatset.h"
-#include "dcdeftag.h"
+#include "dcmtk/dcmdata/dcdatset.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
 #include "poolfindassociation.h"
 #include "netclient.h"
-#include "gettext.h"
+#include "../gettext.h"
 
 #include <iostream>
 
@@ -89,27 +89,37 @@ Glib::RefPtr< ImagePool::Study > create_query_study(DcmDataset* dset, const std:
 Glib::RefPtr< ImagePool::Series > create_query_series(DcmDataset* dset) {
 	Glib::RefPtr< ImagePool::Series > result = Glib::RefPtr< ImagePool::Series >(new Series);
 
-	dset->findAndGetOFString(DCM_SeriesInstanceUID, result->m_seriesinstanceuid);
-	dset->findAndGetOFString(DCM_SeriesDescription, result->m_description);
+	OFString seriesUID;
+	OFString desc;
+	OFString ofstr;
+
+	dset->findAndGetOFString(DCM_SeriesInstanceUID, seriesUID);
+	dset->findAndGetOFString(DCM_SeriesDescription, desc);
 	if(result->m_description.empty()) {
-		dset->findAndGetOFString(DCM_StudyDescription, result->m_description);
+		dset->findAndGetOFString(DCM_StudyDescription, desc);
 	}
+	result->m_seriesinstanceuid = seriesUID.c_str();
+    result->m_description = desc.c_str();
+
 	if(result->m_description.empty()) {
 		result->m_description = gettext("no description");
 	}
 
-	dset->findAndGetOFString(DCM_Modality, result->m_modality);
+	dset->findAndGetOFString(DCM_Modality, ofstr);
+	result->m_modality = ofstr.c_str();
 
-	dset->findAndGetOFString(DCM_SeriesTime, result->m_seriestime);
+	dset->findAndGetOFString(DCM_SeriesTime, ofstr);
+	result->m_seriestime = ofstr.c_str();
 	if(result->m_seriestime.empty()) {
-		dset->findAndGetOFString(DCM_StudyTime, result->m_seriestime);
+		dset->findAndGetOFString(DCM_StudyTime, ofstr);
+		result->m_seriestime = ofstr.c_str();
 	}
 
-	dset->findAndGetOFString(DCM_StationName, result->m_stationname);
+	dset->findAndGetOFString(DCM_StationName, ofstr);
+    result->m_stationname = ofstr.c_str();
 
-	std::string buffer;
-	dset->findAndGetOFString(DCM_NumberOfSeriesRelatedInstances, buffer);
-	int i = atoi(buffer.c_str());
+	dset->findAndGetOFString(DCM_NumberOfSeriesRelatedInstances, ofstr);
+	int i = atoi(ofstr.c_str());
 	if(i != 0) {
 		result->m_instancecount = i;
 	}
@@ -371,7 +381,7 @@ int query_study_instances(const std::string& studyinstanceuid, const std::string
 		if(stack->card() > 0) {
 			DcmDataset* dset = (DcmDataset*)stack->top();
 			dset->print(COUT);
-			std::string buffer;
+			OFString buffer;
 			dset->findAndGetOFString(DCM_NumberOfStudyRelatedInstances, buffer);
 			count = atoi(buffer.c_str());
 		}

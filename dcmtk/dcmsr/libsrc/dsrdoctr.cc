@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2003, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *    classes: DSRDocumentTree
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,13 +32,13 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrdoctr.h"
-#include "dsrcontn.h"
-#include "dsrreftn.h"
-#include "dsrxmld.h"
-#include "dsriodcc.h"
+#include "dcmtk/dcmsr/dsrdoctr.h"
+#include "dcmtk/dcmsr/dsrcontn.h"
+#include "dcmtk/dcmsr/dsrreftn.h"
+#include "dcmtk/dcmsr/dsrxmld.h"
+#include "dcmtk/dcmsr/dsriodcc.h"
 
 
 DSRDocumentTree::DSRDocumentTree(const E_DocumentType documentType)
@@ -128,7 +128,7 @@ OFCondition DSRDocumentTree::print(ostream &stream,
                         if (!templateIdentifier.empty() && !mappingResource.empty())
                             stream << "  # TID " << templateIdentifier << " (" << mappingResource << ")";
                     }
-                }                    
+                }
                 stream << endl;
             } else
                 result = SR_EC_InvalidDocumentTree;
@@ -203,14 +203,18 @@ OFCondition DSRDocumentTree::readXML(const DSRXMLDocument &doc,
     if (cursor.valid())
     {
         OFString templateIdentifier, mappingResource;
-        /* check for optional root template identification */
-        const DSRXMLCursor childCursor = doc.getNamedNode(cursor, "template", OFFalse /*required*/);
-        if (childCursor.valid())
+        /* template identification information expected "outside" content item */
+        if (flags & XF_templateElementEnclosesItems)
         {
-            doc.getStringFromAttribute(childCursor, templateIdentifier, "tid");
-            doc.getStringFromAttribute(childCursor, mappingResource, "resource");
-            /* get first child of the "template" element */
-            cursor = childCursor.getChild();
+            /* check for optional root template identification */
+            const DSRXMLCursor childCursor = doc.getNamedNode(cursor, "template", OFFalse /*required*/);
+            if (childCursor.valid())
+            {
+                doc.getStringFromAttribute(childCursor, mappingResource, "resource");
+                doc.getStringFromAttribute(childCursor, templateIdentifier, "tid");
+                /* get first child of the "template" element */
+                cursor = childCursor.getChild();
+            }
         }
         E_ValueType valueType = doc.getValueTypeFromNode(cursor);
         /* proceed to first valid container (if any) */
@@ -226,9 +230,12 @@ OFCondition DSRDocumentTree::readXML(const DSRXMLDocument &doc,
                 /* ... insert it into the (empty) tree - checking is not required here */
                 if (addNode(node))
                 {
-                    /* set template identification (if any) */
-                    if (node->setTemplateIdentification(templateIdentifier, mappingResource).bad())
-                        printWarningMessage(LogStream, "Root content item has invalid/incomplete template identification");
+                    if (flags & XF_templateElementEnclosesItems)
+                    {
+                        /* set template identification (if any) */
+                        if (node->setTemplateIdentification(templateIdentifier, mappingResource).bad())
+                            printWarningMessage(LogStream, "Root content item has invalid/incomplete template identification");
+                    }
                     /* ... and let the node read the rest of the document */
                     result = node->readXML(doc, cursor, DocumentType, flags);
                     /* check and update by-reference relationships (if applicable) */
@@ -447,6 +454,39 @@ DSRContentItem &DSRDocumentTree::getCurrentContentItem()
 }
 
 
+size_t DSRDocumentTree::gotoNamedNode(const DSRCodedEntryValue &conceptName,
+                                      const OFBool startFromRoot,
+                                      const OFBool searchIntoSub)
+{
+    size_t nodeID = 0;
+    if (conceptName.isValid())
+    {
+        if (startFromRoot)
+            gotoRoot();
+        DSRDocumentTreeNode *node = NULL;
+        clearNodeCursorStack();
+        /* iterate over all nodes */
+        do {
+            node = OFstatic_cast(DSRDocumentTreeNode *, getNode());
+            if ((node != NULL) && (node->getConceptName() == conceptName))
+                nodeID = node->getNodeID();
+        } while ((nodeID == 0) && iterate(searchIntoSub));
+    }
+    return nodeID;
+}
+
+
+size_t DSRDocumentTree::gotoNextNamedNode(const DSRCodedEntryValue &conceptName,
+                                          const OFBool searchIntoSub)
+{
+    /* first, goto "next" node */
+    size_t nodeID = iterate(searchIntoSub);
+    if (nodeID > 0)
+        nodeID = gotoNamedNode(conceptName, OFFalse /*startFromRoot*/, searchIntoSub);
+    return nodeID;
+}
+
+
 void DSRDocumentTree::unmarkAllContentItems()
 {
     DSRTreeNodeCursor cursor(getRoot());
@@ -573,7 +613,12 @@ OFCondition DSRDocumentTree::checkByReferenceRelationships(const OFBool updateSt
                                             if ((ConstraintChecker != NULL) && !ConstraintChecker->checkContentRelationship(parentNode->getValueType(),
                                                 refNode->getRelationshipType(), targetNode->getValueType(), OFTrue /*byReference*/))
                                             {
-                                                printWarningMessage(LogStream, "Invalid by-reference relationship between two content items");
+                                                OFString message = "Invalid by-reference relationship between item \"";
+                                                message += posString;
+                                                message += "\" and \"";
+                                                message += refNode->ReferencedContentItem;
+                                                message += "\"";
+                                                printWarningMessage(LogStream, message.c_str());
                                             }
                                         } else
                                             printWarningMessage(LogStream, "Corrupted data structures while checking by-reference relationships");
@@ -594,14 +639,52 @@ OFCondition DSRDocumentTree::checkByReferenceRelationships(const OFBool updateSt
 }
 
 
+OFBool DSRDocumentTree::containsExtendedCharacters()
+{
+  DSRTreeNodeCursor cursor(getRoot());
+  if (cursor.isValid())
+  {
+      const DSRDocumentTreeNode *node = NULL;
+      /* iterate over all nodes */
+      do
+      {
+          node = OFstatic_cast(DSRDocumentTreeNode *, cursor.getNode());
+          if (node && node->containsExtendedCharacters()) return OFTrue;
+      } while (cursor.iterate());
+  }
+  return OFFalse;
+}
+
+
 /*
  *  CVS/RCS Log:
  *  $Log: dsrdoctr.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.26  2005/12/08 15:47:50  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.25  2005/07/27 16:39:16  joergr
+ *  Added methods that allow to go to a named node, i.e. using a given concept
+ *  name.
+ *
+ *  Revision 1.24  2004/11/22 16:39:12  meichel
+ *  Added method that checks if the SR document contains non-ASCII characters
+ *    in any of the strings affected by SpecificCharacterSet.
+ *
+ *  Revision 1.23  2004/11/18 13:53:41  joergr
+ *  Enhanced warning message for invalid by-reference relationships by adding the
+ *  relevant item identifiers.
+ *
+ *  Revision 1.22  2004/09/09 14:03:19  joergr
+ *  Added flags to control the way the template identification is encoded in
+ *  writeXML() and expected in readXML().
  *
  *  Revision 1.21  2003/10/30 17:59:37  joergr
  *  Added full support for the ContentTemplateSequence (read/write, get/set

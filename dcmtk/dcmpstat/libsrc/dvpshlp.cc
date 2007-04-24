@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2002, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: DVPSHelper
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,16 +31,16 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dvpshlp.h"
-#include "dcompat.h"     /* compatability routines */
-#include "dcvrda.h"
-#include "dcvrtm.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmpstat/dvpshlp.h"
+#include "dcmtk/dcmnet/dcompat.h"     /* compatability routines */
+#include "dcmtk/dcmdata/dcvrda.h"
+#include "dcmtk/dcmdata/dcvrtm.h"
 
 #define INCLUDE_CSTDIO
 #define INCLUDE_CERRNO
 #define INCLUDE_CTIME
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 #ifdef HAVE_SYS_TYPES_H
@@ -237,11 +237,16 @@ OFCondition DVPSHelper::addReferencedUIDItem(DcmSequenceOfItems& seq, const char
 /*
  *  CVS/RCS Log:
  *  $Log: dvpshlp.cc,v $
- *  Revision 1.1  2005/08/23 19:31:59  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:44  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:00  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.14  2005/12/08 15:46:32  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.13  2002/11/27 15:48:11  meichel
  *  Adapted module dcmpstat to use of new header file ofstdinc.h

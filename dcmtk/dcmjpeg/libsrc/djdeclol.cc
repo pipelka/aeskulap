@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1997-2001, OFFIS
+ *  Copyright (C) 1997-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,22 +22,22 @@
  *  Purpose: Codec class for decoding JPEG Lossless (8/12/16-bit)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:53 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmjpeg/libsrc/djdeclol.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "djdeclol.h"
-#include "djcparam.h"
-#include "djrplol.h"
-#include "djdijg8.h"
-#include "djdijg12.h"
-#include "djdijg16.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmjpeg/djdeclol.h"
+#include "dcmtk/dcmjpeg/djcparam.h"
+#include "dcmtk/dcmjpeg/djrplol.h"
+#include "dcmtk/dcmjpeg/djdijg8.h"
+#include "dcmtk/dcmjpeg/djdijg12.h"
+#include "dcmtk/dcmjpeg/djdijg16.h"
 
 DJDecoderLossless::DJDecoderLossless()
 : DJCodecDecoder()
@@ -71,11 +71,16 @@ DJDecoder *DJDecoderLossless::createDecoderInstance(
 /*
  * CVS/RCS Log
  * $Log: djdeclol.cc,v $
- * Revision 1.1  2005/08/23 19:31:53  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:26  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:14  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:41  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.2  2005/12/08 15:43:31  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.1  2001/11/13 15:58:26  meichel
  * Initial release of module dcmjpeg

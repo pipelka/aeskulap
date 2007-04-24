@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2004, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,20 +22,20 @@
  *  Purpose: Define alias for cout, cerr and clog
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:48 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "ofconsol.h"
-#include "ofthread.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/ofstd/ofthread.h"
 
 #define INCLUDE_CASSERT
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 #ifdef DCMTK_GUI
@@ -152,11 +152,16 @@ OFConsoleInitializer ofConsoleInitializer;
  *
  * CVS/RCS Log:
  * $Log: ofconsol.cc,v $
- * Revision 1.1  2005/08/23 19:32:00  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:48  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:16  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.12  2005/12/08 15:48:53  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.11  2004/01/16 10:35:09  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2002-2003, OFFIS
+ *  Copyright (C) 2002-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -24,8 +24,8 @@
  *             - InstanceStruct, SeriesStruct, StudyStruct
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -33,12 +33,12 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrsoprf.h"
-#include "dsrxmld.h"
+#include "dcmtk/dcmsr/dsrsoprf.h"
+#include "dcmtk/dcmsr/dsrxmld.h"
 
-#include "dcdeftag.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
 
 
 // --- DSRSOPInstanceReferenceList::InstanceStruct ---
@@ -381,6 +381,12 @@ OFCondition DSRSOPInstanceReferenceList::SeriesStruct::removeItem()
         result = EC_Normal;
     }
     return result;
+}
+
+
+OFBool DSRSOPInstanceReferenceList::SeriesStruct::containsExtendedCharacters()
+{
+  return DSRTypes::stringContainsExtendedCharacters(StorageMediaFileSetID);
 }
 
 
@@ -751,6 +757,19 @@ void DSRSOPInstanceReferenceList::StudyStruct::removeIncompleteItems()
 }
 
 
+OFBool DSRSOPInstanceReferenceList::StudyStruct::containsExtendedCharacters()
+{
+    OFListIterator(SeriesStruct *) iter = SeriesList.begin();
+    OFListIterator(SeriesStruct *) last = SeriesList.end();
+    while (iter != last)
+    {
+      if (*iter && OFstatic_cast(SeriesStruct *, *iter)->containsExtendedCharacters()) return OFTrue;
+      ++iter;
+    }
+    return OFFalse;
+}
+
+
 // --- DSRSOPInstanceReferenceList ---
 
 DSRSOPInstanceReferenceList::DSRSOPInstanceReferenceList(const DcmTagKey &sequence)
@@ -1011,6 +1030,19 @@ OFCondition DSRSOPInstanceReferenceList::addItem(const OFString &studyUID,
             result = study->addItem(seriesUID, sopClassUID, instanceUID);
     }
     return result;
+}
+
+
+OFCondition DSRSOPInstanceReferenceList::addItem(DcmItem &dataset)
+{
+    OFString studyUID, seriesUID, sopClassUID, instanceUID;
+    /* retrieve element values from dataset */
+    dataset.findAndGetOFString(DCM_StudyInstanceUID, studyUID);
+    dataset.findAndGetOFString(DCM_SeriesInstanceUID, seriesUID);
+    dataset.findAndGetOFString(DCM_SOPClassUID, sopClassUID);
+    dataset.findAndGetOFString(DCM_SOPInstanceUID, instanceUID);
+    /* add new item to the list of references (if valid) */
+    return addItem(studyUID, seriesUID, sopClassUID, instanceUID);
 }
 
 
@@ -1370,14 +1402,42 @@ OFCondition DSRSOPInstanceReferenceList::setStorageMediaFileSetUID(const OFStrin
 }
 
 
+OFBool DSRSOPInstanceReferenceList::containsExtendedCharacters()
+{
+    OFListIterator(StudyStruct *) iter = StudyList.begin();
+    OFListIterator(StudyStruct *) last = StudyList.end();
+    while (iter != last)
+    {
+      if (*iter && OFstatic_cast(StudyStruct *, *iter)->containsExtendedCharacters()) return OFTrue;
+      ++iter;
+    }
+    return OFFalse;
+}
+
+
 /*
  *  CVS/RCS Log:
  *  $Log: dsrsoprf.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.10  2005/12/15 16:53:48  joergr
+ *  Added explicit type cast, required for Sun CC 2.0.1 on Solaris.
+ *
+ *  Revision 1.9  2005/12/08 15:48:07  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.8  2005/07/27 16:34:26  joergr
+ *  Added method that allows to add a DICOM dataset to the list of references.
+ *
+ *  Revision 1.7  2004/11/22 16:39:12  meichel
+ *  Added method that checks if the SR document contains non-ASCII characters
+ *    in any of the strings affected by SpecificCharacterSet.
  *
  *  Revision 1.6  2004/04/16 13:33:52  joergr
  *  Added explicit typecast to result of dereferencing operator to keep Sun CC

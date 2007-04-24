@@ -10,7 +10,7 @@
   <xsd:annotation>
     <xsd:documentation xml:lang="en">
       XML Schema for DCMTK tools dsr2xml and xml2dsr.
-      Copyright (C) 2003-2004 OFFIS. See COPYRIGHT file for details.
+      Copyright (C) 2003-2005 OFFIS. See COPYRIGHT file for details.
     </xsd:documentation>
   </xsd:annotation>
 
@@ -115,12 +115,12 @@
       <xsd:element name="scheme" minOccurs="0" maxOccurs="unbounded">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="registry" type="dsr:LongString"/>
-            <xsd:element name="uid" type="dsr:UniqueIdentifier"/>
-            <xsd:element name="id" type="dsr:ShortText"/>
-            <xsd:element name="name" type="dsr:ShortText"/>
-            <xsd:element name="version" type="dsr:ShortString"/>
-            <xsd:element name="organization" type="dsr:ShortText"/>
+            <xsd:element name="registry" type="dsr:LongString" minOccurs="0"/>
+            <xsd:element name="uid" type="dsr:UniqueIdentifier" minOccurs="0"/>
+            <xsd:element name="id" type="dsr:ShortText" minOccurs="0"/>
+            <xsd:element name="name" type="dsr:ShortText" minOccurs="0"/>
+            <xsd:element name="version" type="dsr:ShortString" minOccurs="0"/>
+            <xsd:element name="organization" type="dsr:ShortText" minOccurs="0"/>
           </xsd:sequence>
           <xsd:attribute name="designator" type="dsr:ShortString" use="required"/>
         </xsd:complexType>
@@ -179,11 +179,14 @@
         <!-- special handling for root content item -->
         <xsd:complexType>
           <xsd:sequence>
+            <!-- template identification currently only for container items -->
+            <xsd:element name="template" type="dsr:Template" minOccurs="0"/>
             <xsd:element name="concept" type="dsr:Code"/>
             <xsd:element name="observation" type="dsr:Observation" minOccurs="0"/>
             <!-- open question: is at least one child content item required? -->
             <xsd:group ref="dsr:ContentItem" minOccurs="0" maxOccurs="unbounded"/>
           </xsd:sequence>
+          <xsd:attribute name="id" type="xsd:nonNegativeInteger"/>
           <xsd:attribute name="flag" type="dsr:ContinuityFlag" use="required"/>
         </xsd:complexType>
       </xsd:element>
@@ -199,6 +202,13 @@
   </xsd:complexType>
 
   <!-- Complex Types (4th level) -->
+
+  <xsd:complexType name="Template">
+    <xsd:sequence>
+      <xsd:element name="resource" type="dsr:CodeString"/>
+      <xsd:element name="id" type="dsr:CodeString"/>
+    </xsd:sequence>
+  </xsd:complexType>
 
   <xsd:complexType name="Observation">
     <xsd:sequence>
@@ -231,6 +241,13 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="meaning" type="dsr:LongString"/>
+    </xsd:sequence>
+  </xsd:group>
+
+  <xsd:group name="NumericGroup">
+    <xsd:sequence>
+      <xsd:element name="value" type="dsr:DecimalString"/>
+      <xsd:element name="unit" type="dsr:Code"/>
     </xsd:sequence>
   </xsd:group>
 
@@ -327,8 +344,7 @@
             <xsd:element name="concept" type="dsr:Code"/>
             <xsd:element name="observation" type="dsr:Observation" minOccurs="0"/>
             <xsd:group ref="dsr:ContentItem" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="value" type="dsr:DecimalString"/>
-            <xsd:element name="unit" type="dsr:Code"/>
+            <xsd:group ref="dsr:NumericGroup" minOccurs="0"/>
             <xsd:element name="qualifier" type="dsr:Code" minOccurs="0"/>
           </xsd:sequence>
           <xsd:attribute name="id" type="xsd:nonNegativeInteger"/>
@@ -544,6 +560,8 @@
       <xsd:element name="container">
         <xsd:complexType>
           <xsd:sequence>
+            <!-- template identification currently only for container items -->
+            <xsd:element name="template" type="dsr:Template" minOccurs="0"/>
             <xsd:element name="relationship" type="dsr:RelationshipType"/>
             <xsd:element name="concept" type="dsr:Code" minOccurs="0"/>
             <xsd:element name="observation" type="dsr:Observation" minOccurs="0"/>
@@ -563,6 +581,7 @@
           <xsd:sequence>
             <xsd:element name="relationship" type="dsr:RelationshipType"/>
           </xsd:sequence>
+          <xsd:attribute name="id" type="xsd:nonNegativeInteger"/>
           <xsd:attribute name="ref" type="xsd:nonNegativeInteger" use="required"/>
         </xsd:complexType>
       </xsd:element>
@@ -579,6 +598,8 @@
       <xsd:enumeration value="Key Object Selection Document"/>
       <xsd:enumeration value="Mammography CAD SR"/>
       <xsd:enumeration value="Chest CAD SR"/>
+      <xsd:enumeration value="Procedure Log"/>
+      <xsd:enumeration value="X-Ray Radiation Dose SR Document"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -658,13 +679,14 @@
       <xsd:enumeration value="ISO_IR 101"/>
       <xsd:enumeration value="ISO_IR 109"/>
       <xsd:enumeration value="ISO_IR 110"/>
-      <xsd:enumeration value="ISO_IR 148"/>
       <xsd:enumeration value="ISO_IR 144"/>
       <xsd:enumeration value="ISO_IR 127"/>
       <xsd:enumeration value="ISO_IR 126"/>
       <xsd:enumeration value="ISO_IR 138"/>
-      <xsd:enumeration value="ISO_IR 166"/>
+      <xsd:enumeration value="ISO_IR 148"/>
       <xsd:enumeration value="ISO_IR 13"/>
+      <xsd:enumeration value="ISO_IR 166"/>
+      <xsd:enumeration value="ISO_IR 192"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -699,40 +721,47 @@
 
   <xsd:simpleType name="ShortString">
     <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
       <xsd:maxLength value="16"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="LongString">
     <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
       <xsd:maxLength value="64"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="ShortText">
     <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
       <xsd:maxLength value="1024"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="UnlimitedText">
-    <xsd:restriction base="xsd:string"/>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+    </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="CodeString">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="[A-Za-z0-9_ ]{0,16}"/>
+      <xsd:pattern value="[A-Za-z0-9_ ]{1,16}"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="ApplicationEntity">
     <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
       <xsd:maxLength value="16"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="UniqueIdentifier">
     <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
       <xsd:maxLength value="64"/>
       <xsd:pattern value="\d+(\.\d+)*"/>
     </xsd:restriction>
@@ -746,17 +775,18 @@
 
   <xsd:simpleType name="Time">
     <xsd:restriction base="xsd:time">
-      <xsd:pattern value="[0-9]{2}\:[0-9]{2}(\:[0-9]{2})*"/>
+      <xsd:pattern value="[0-9]{2}:[0-9]{2}(:[0-9]{2})*"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="DateTime">
     <xsd:restriction base="xsd:dateTime">
-      <xsd:pattern value="[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}(\:[0-9]{2})*"/>
+      <xsd:pattern value="[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2})*"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:complexType name="PersonName">
+    <!-- minLength? -->
     <xsd:sequence>
       <xsd:element name="prefix" type="xsd:string" minOccurs="0"/>
       <xsd:element name="first" type="xsd:string" minOccurs="0"/>
@@ -782,13 +812,13 @@
 
   <xsd:simpleType name="FloatList">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="[-+]?\d+(\.\d+)?(,[-+]?\d+(\.\d+)?)*"/>
+      <xsd:pattern value="[\-+]?\d+(\.\d+)?(,[\-+]?\d+(\.\d+)?)*"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="FloatPairList">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="[-+]?\d+(\.\d+)?/[-+]?\d+(\.\d+)?(,[-+]?\d+(\.\d+)?/[-+]?\d+(\.\d+)?)*"/>
+      <xsd:pattern value="[\-+]?\d+(\.\d+)?/[\-+]?\d+(\.\d+)?(,[\-+]?\d+(\.\d+)?/[\-+]?\d+(\.\d+)?)*"/>
     </xsd:restriction>
   </xsd:simpleType>
 

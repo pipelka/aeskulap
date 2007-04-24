@@ -20,20 +20,21 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/02/22 13:39:34 $
+    Update Date:      $Date: 2007/04/24 09:53:38 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
 #include "poolinstance.h"
 #include "imagepool.h"
 
-#include "dcdatset.h"
-#include "dcmimage.h"
-#include "diregist.h"
-#include "dcfilefo.h"
-#include "dcdeftag.h"
+#include "dcmtk/dcmdata/dcdatset.h"
+#include "dcmtk/dcmimgle/dcmimage.h"
+#include "dcmtk/dcmimage/diregist.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "../gettext.h"
 
 #include <iostream>
 
@@ -315,6 +316,7 @@ bool Instance::has_3d_information() {
 }
 
 Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
+    OFString ofstr;
 	if(dset == NULL) {
 		return Glib::RefPtr<ImagePool::Instance>();
 	}
@@ -322,27 +324,32 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 	// get SOPInstanceUID
 	
 	std::string sop;
-	dset->findAndGetOFString(DCM_SOPInstanceUID, sop).bad();
+	dset->findAndGetOFString(DCM_SOPInstanceUID, ofstr).bad();
+	sop = ofstr.c_str();
 	
 	// wrap in smartpointer
 	Glib::RefPtr<ImagePool::Instance> r = Glib::RefPtr<ImagePool::Instance>(new ImagePool::Instance(sop));
 
 	// set encoding
 	std::string enc[2];
-	dset->findAndGetOFString(DCM_SpecificCharacterSet, enc[0], 0);
-	dset->findAndGetOFString(DCM_SpecificCharacterSet, enc[1], 1);
+	dset->findAndGetOFString(DCM_SpecificCharacterSet, ofstr, 0);
+	enc[0] = ofstr.c_str();
+	dset->findAndGetOFString(DCM_SpecificCharacterSet, ofstr, 1);
+	enc[1] = ofstr.c_str();
 	r->set_encoding(enc[0], enc[1]);
 
 	// set dicom uid's
 	r->m_sopinstanceuid = sop;
 
 	std::string seriesuid;
-	if(dset->findAndGetOFString(DCM_SeriesInstanceUID, seriesuid).good()) {
-		r->m_seriesinstanceuid = seriesuid;
+	if(dset->findAndGetOFString(DCM_SeriesInstanceUID, ofstr).good()) {
+	    seriesuid = ofstr.c_str();
+		r->m_seriesinstanceuid = ofstr.c_str();
 	}
 
 	std::string studyuid;
-	if(dset->findAndGetOFString(DCM_StudyInstanceUID, studyuid).good()) {
+	if(dset->findAndGetOFString(DCM_StudyInstanceUID, ofstr).good()) {
+	    studyuid = ofstr.c_str();
 		r->m_studyinstanceuid = studyuid;
 	}
 
@@ -352,18 +359,18 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 	std::string value;
 
 	// get instancenumber
-	if(dset->findAndGetOFString(DCM_InstanceNumber, value).good()) {
-		r->m_instancenumber = atoi(value.c_str());
+	if(dset->findAndGetOFString(DCM_InstanceNumber, ofstr).good()) {
+		r->m_instancenumber = atoi(ofstr.c_str());
 	}
 
 	// get windowwidth
-	if(dset->findAndGetOFString(DCM_WindowWidth, value).good()) {
-		r->m_default_windowwidth = (int)strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_WindowWidth, ofstr).good()) {
+		r->m_default_windowwidth = (int)strtod(ofstr.c_str(), NULL);
 	}
 
 	// get windowcenter
-	if(dset->findAndGetOFString(DCM_WindowCenter, value).good()) {
-		r->m_default_windowcenter = (int)strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_WindowCenter, ofstr).good()) {
+		r->m_default_windowcenter = (int)strtod(ofstr.c_str(), NULL);
 	}
 
 	// get pixeldata
@@ -398,15 +405,15 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 		}
 	}
 
-	if(dset->findAndGetOFString(DCM_RescaleIntercept, value).good()) {
-		r->m_intercept += atoi(value.c_str());
+	if(dset->findAndGetOFString(DCM_RescaleIntercept, ofstr).good()) {
+		r->m_intercept += atoi(ofstr.c_str());
 		if(r->m_intercept < 0) {
 			r->m_is_signed = true;
 		}
 	}
 
-	if(dset->findAndGetOFString(DCM_RescaleSlope, value).good()) {
-		r->m_slope = atof(value.c_str());
+	if(dset->findAndGetOFString(DCM_RescaleSlope, ofstr).good()) {
+		r->m_slope = atof(ofstr.c_str());
 	}
 
 	if(dset->findAndGetUint16(DCM_HighBit, value1).good()) {
@@ -479,90 +486,92 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 	}
 
 	// set date
-	if(dset->findAndGetOFString(DCM_AcquisitionDate, value).good()) {
-		r->m_date = value;
+	if(dset->findAndGetOFString(DCM_AcquisitionDate, ofstr).good()) {
+		r->m_date = ofstr.c_str();
 	}
-	else if(dset->findAndGetOFString(DCM_SeriesDate, value).good()) {
-		r->m_date = value;
+	else if(dset->findAndGetOFString(DCM_SeriesDate, ofstr).good()) {
+		r->m_date = ofstr.c_str();
 	}
-	else if(dset->findAndGetOFString(DCM_StudyDate, value).good()) {
-		r->m_date = value;
+	else if(dset->findAndGetOFString(DCM_StudyDate, ofstr).good()) {
+		r->m_date = ofstr.c_str();
 	}
 
 	// set time
-	if(dset->findAndGetOFString(DCM_AcquisitionTime, value).good()) {
-		r->m_time = value;
+	if(dset->findAndGetOFString(DCM_AcquisitionTime, ofstr).good()) {
+		r->m_time = ofstr.c_str();
 	}
-	else if(dset->findAndGetOFString(DCM_SeriesTime, value).good()) {
-		r->m_time = value;
+	else if(dset->findAndGetOFString(DCM_SeriesTime, ofstr).good()) {
+		r->m_time = ofstr.c_str();
 	}
-	else if(dset->findAndGetOFString(DCM_StudyTime, value).good()) {
-		r->m_time = value;
+	else if(dset->findAndGetOFString(DCM_StudyTime, ofstr).good()) {
+		r->m_time = ofstr.c_str();
 	}
 
 	// set ManufacturersModelName
-	if(dset->findAndGetOFString(DCM_ManufacturersModelName, value).good()) {
-		r->m_model = value;
+	if(dset->findAndGetOFString(DCM_ManufacturersModelName, ofstr).good()) {
+		r->m_model = ofstr.c_str();
 	}
 	
 	// set pixelspacing
-	if(dset->findAndGetOFString(DCM_PixelSpacing, value, 0).good()) {
-		r->m_spacing_x = strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_PixelSpacing, ofstr, 0).good()) {
+		r->m_spacing_x = strtod(ofstr.c_str(), NULL);
 	}
 
-	if(dset->findAndGetOFString(DCM_PixelSpacing, value, 1).good()) {
-		r->m_spacing_y = strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_PixelSpacing, ofstr, 1).good()) {
+		r->m_spacing_y = strtod(ofstr.c_str(), NULL);
 	}
 
 	// get ImagePositionPatient
-	if(dset->findAndGetOFString(DCM_ImagePositionPatient, value, 0).good()) {
-		r->m_position.x = strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_ImagePositionPatient, ofstr, 0).good()) {
+		r->m_position.x = strtod(ofstr.c_str(), NULL);
 	}
-	if(dset->findAndGetOFString(DCM_ImagePositionPatient, value, 1).good()) {
-		r->m_position.y = strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_ImagePositionPatient, ofstr, 1).good()) {
+		r->m_position.y = strtod(ofstr.c_str(), NULL);
 	}
-	if(dset->findAndGetOFString(DCM_ImagePositionPatient, value, 2).good()) {
-		r->m_position.z = strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_ImagePositionPatient, ofstr, 2).good()) {
+		r->m_position.z = strtod(ofstr.c_str(), NULL);
 	}
 	
 	// get ImageOrientationPatient / Row - Vector
-	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 0).good()) {
-		r->m_orientation.x.x = strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, ofstr, 0).good()) {
+		r->m_orientation.x.x = strtod(ofstr.c_str(), NULL);
 	}
-	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 1).good()) {
-		r->m_orientation.x.y = strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, ofstr, 1).good()) {
+		r->m_orientation.x.y = strtod(ofstr.c_str(), NULL);
 	}
-	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 2).good()) {
+	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, ofstr, 2).good()) {
 		r->m_orientation.x.z = strtod(value.c_str(), NULL);
 	}
 
 	// get ImageOrientationPatient / Column - Vector
-	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 3).good()) {
-		r->m_orientation.y.x = strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, ofstr, 3).good()) {
+		r->m_orientation.y.x = strtod(ofstr.c_str(), NULL);
 	}
-	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 4).good()) {
-		r->m_orientation.y.y = strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, ofstr, 4).good()) {
+		r->m_orientation.y.y = strtod(ofstr.c_str(), NULL);
 	}
-	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, value, 5).good()) {
-		r->m_orientation.y.z = strtod(value.c_str(), NULL);
+	if(dset->findAndGetOFString(DCM_ImageOrientationPatient, ofstr, 5).good()) {
+		r->m_orientation.y.z = strtod(ofstr.c_str(), NULL);
 	}
 
 	//std::cout << "slope: " << r->m_slope << std::endl;
 	//std::cout << "intercept: " << r->m_intercept << std::endl;
 
 	// study params
-	if(dset->findAndGetOFString(DCM_PatientsName, value).good()) {
-		r->m_patientsname = r->convert_string(value.c_str());
+	if(dset->findAndGetOFString(DCM_PatientsName, ofstr).good()) {
+		r->m_patientsname = r->convert_string(ofstr.c_str());
 	}
-	dset->findAndGetOFString(DCM_PatientsBirthDate, r->m_patientsbirthdate);
-	dset->findAndGetOFString(DCM_PatientsSex, r->m_patientssex);
-	if(dset->findAndGetOFString(DCM_StudyDescription, value).good()) {
-		r->m_studydescription = r->convert_string(value.c_str());
+	dset->findAndGetOFString(DCM_PatientsBirthDate, ofstr);
+	r->m_patientsbirthdate = ofstr.c_str();
+	dset->findAndGetOFString(DCM_PatientsSex, ofstr);
+    r->m_patientssex = ofstr.c_str();
+	if(dset->findAndGetOFString(DCM_StudyDescription, ofstr).good()) {
+		r->m_studydescription = r->convert_string(ofstr.c_str());
 	}
 
 	if(r->m_studydescription.empty()) {
-		if(dset->findAndGetOFString(DCM_SeriesDescription, value).good()) {
-			r->m_studydescription = r->convert_string(value.c_str());
+		if(dset->findAndGetOFString(DCM_SeriesDescription, ofstr).good()) {
+			r->m_studydescription = r->convert_string(ofstr.c_str());
 		}
 	}
 
@@ -570,20 +579,22 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 		r->m_studydescription = gettext("no description");
 	}
 
-	dset->findAndGetOFString(DCM_StudyDate, r->m_studydate);
-	dset->findAndGetOFString(DCM_StudyTime, r->m_studytime);
+	dset->findAndGetOFString(DCM_StudyDate, ofstr);
+	r->m_studydate = ofstr.c_str();
+	dset->findAndGetOFString(DCM_StudyTime, ofstr);
+    r->m_studytime = ofstr.c_str();
 
 	// series params
-	if(dset->findAndGetOFString(DCM_InstitutionName, value).good()) {
-		r->m_seriesdescription = r->convert_string(value.c_str());
+	if(dset->findAndGetOFString(DCM_InstitutionName, ofstr).good()) {
+		r->m_seriesdescription = r->convert_string(ofstr.c_str());
 	}
-	if(dset->findAndGetOFString(DCM_SeriesDescription, value).good()) {
-		r->m_seriesdescription = r->convert_string(value.c_str());
+	if(dset->findAndGetOFString(DCM_SeriesDescription, ofstr).good()) {
+		r->m_seriesdescription = r->convert_string(ofstr.c_str());
 	}
 
 	if(r->m_seriesdescription.empty()) {
-		if(dset->findAndGetOFString(DCM_StudyDescription, value).good()) {
-			r->m_seriesdescription = r->convert_string(value.c_str());
+		if(dset->findAndGetOFString(DCM_StudyDescription, ofstr).good()) {
+			r->m_seriesdescription = r->convert_string(ofstr.c_str());
 		}
 	}
 
@@ -591,7 +602,8 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 		r->m_seriesdescription = gettext("no description");
 	}
 
-	dset->findAndGetOFString(DCM_Modality, r->m_modality);
+	dset->findAndGetOFString(DCM_Modality, ofstr);
+    r->m_modality = ofstr.c_str();
 
 	Glib::RefPtr<ImagePool::Study> new_study = get_study(r->m_studyinstanceuid);
 	if(new_study->size() == 0) {

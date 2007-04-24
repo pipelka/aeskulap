@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000-2003, OFFIS
+ *  Copyright (C) 2000-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,8 +23,8 @@
  *    classes: DSRCompositeReferenceValue
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:52 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,11 +32,11 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dsrtypes.h"
-#include "dsrcomvl.h"
-#include "dsrxmld.h"
+#include "dcmtk/dcmsr/dsrtypes.h"
+#include "dcmtk/dcmsr/dsrcomvl.h"
+#include "dcmtk/dcmsr/dsrxmld.h"
 
 
 DSRCompositeReferenceValue::DSRCompositeReferenceValue()
@@ -309,11 +309,16 @@ OFBool DSRCompositeReferenceValue::checkSOPInstanceUID(const OFString &sopInstan
 /*
  *  CVS/RCS Log:
  *  $Log: dsrcomvl.cc,v $
- *  Revision 1.1  2005/08/23 19:31:52  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:38  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:05  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.15  2005/12/08 15:47:44  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.14  2003/08/07 13:14:26  joergr
  *  Added readXML functionality.

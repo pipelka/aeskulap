@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: create a Dicom FileFormat or DataSet from an ASCII-dump
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -83,12 +83,12 @@
  *
  */
 
-#include "osconfig.h"
+#include "dcmtk/config/osconfig.h"
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -103,13 +103,13 @@
 #include <GUSI.h>
 #endif
 
-#include "ofstream.h"
-#include "dctk.h"
-#include "dcdebug.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "ofstd.h"
-#include "dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/dcmdata/dcuid.h"    /* for dcmtk version name */
 
 #ifdef WITH_ZLIB
 #include <zlib.h>     /* for zlibVersion() */
@@ -468,6 +468,7 @@ putFileContentsIntoElement(DcmElement* elem, const char* filename)
     }
 
     fclose(f);
+    delete[] buf;
     return ec;
 }
 
@@ -632,7 +633,7 @@ readDumpFile(DcmMetaInfo * metaheader, DcmDataset * dataset,
     OFBool errorOnThisLine = OFFalse;
     char * parse = NULL;
     char * value = NULL;
-    DcmEVR vr;
+    DcmEVR vr = EVR_UNKNOWN;
     int errorsEncountered = 0;
     DcmTagKey tagkey;
     DcmStack metaheaderStack;
@@ -726,7 +727,7 @@ readDumpFile(DcmMetaInfo * metaheader, DcmDataset * dataset,
 
     if (errorsEncountered)
     {
-        CERR << errorsEncountered << " Errors found in " <<  ifname << endl;        
+        CERR << errorsEncountered << " Errors found in " <<  ifname << endl;
         return !stopOnErrors;
     }
     else
@@ -954,11 +955,22 @@ int main(int argc, char *argv[])
 /*
 ** CVS/RCS Log:
 ** $Log: dump2dcm.cc,v $
-** Revision 1.1  2005/08/23 19:32:00  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:38  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:57  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.51  2005/12/16 09:07:03  onken
+** - Added variable initialization to avoid compiler warning
+**
+** Revision 1.50  2005/12/08 15:40:50  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.49  2004/07/13 09:43:10  meichel
+** Fixed memory leak occuring when raw data is read from file.
 **
 ** Revision 1.48  2004/03/05 09:59:00  joergr
 ** Avoid wrong warning for LUTData (0028,3006) having a VR of US or SS.

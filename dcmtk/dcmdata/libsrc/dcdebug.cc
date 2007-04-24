@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2002, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,29 +22,29 @@
  *  Purpose: Print debug information
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/dcdebug.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDARG
 #define INCLUDE_CSTDIO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#include "dcdebug.h"
-#include "ofconsol.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/ofstd/ofconsol.h"
 
 OFGlobal<int> DcmDebugLevel(0);
 
 #ifdef DEBUG
 
-void debug_print(const char* text, ... )
+void DCM_dcmdata_debug_print(const char* text, ... )
 {
 #ifdef HAVE_VPRINTF
     char buf[4096]; // we hope that debug messages are never larger than 4K.
@@ -65,11 +65,19 @@ void debug_print(const char* text, ... )
 /*
 ** CVS/RCS Log:
 ** $Log: dcdebug.cc,v $
-** Revision 1.1  2005/08/23 19:31:59  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:25  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.12  2005/12/08 15:41:01  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.11  2005/11/28 15:53:13  meichel
+** Renamed macros in dcdebug.h
 **
 ** Revision 1.10  2002/11/27 12:06:43  meichel
 ** Adapted module dcmdata to use of new header file ofstdinc.h

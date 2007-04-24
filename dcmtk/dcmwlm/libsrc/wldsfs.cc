@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2004, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,9 +22,9 @@
  *  Purpose: Class for connecting to a file-based data source.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:53 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmwlm/libsrc/wldsfs.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -33,26 +33,26 @@
 
 // ----------------------------------------------------------------------------
 
-#include "osconfig.h"  // specific configuration for operating system
+#include "dcmtk/config/osconfig.h"  // specific configuration for operating system
 BEGIN_EXTERN_C
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>     // for O_RDWR
 #endif
 END_EXTERN_C
-#include "dicom.h"
-#include "wltypdef.h"
-#include "oftypes.h"
-#include "dcdatset.h"
-#include "dcsequen.h"
-#include "dcvrat.h"
-#include "dcvrlo.h"
-#include "dcdeftag.h"
-#include "dcvrcs.h"
-#include "wlds.h"
-#include "wlfsim.h"
-#include "ofstd.h"
+#include "dcmtk/dcmnet/dicom.h"
+#include "dcmtk/dcmwlm/wltypdef.h"
+#include "dcmtk/ofstd/oftypes.h"
+#include "dcmtk/dcmdata/dcdatset.h"
+#include "dcmtk/dcmdata/dcsequen.h"
+#include "dcmtk/dcmdata/dcvrat.h"
+#include "dcmtk/dcmdata/dcvrlo.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/dcvrcs.h"
+#include "dcmtk/dcmwlm/wlds.h"
+#include "dcmtk/dcmwlm/wlfsim.h"
+#include "dcmtk/ofstd/ofstd.h"
 
-#include "wldsfs.h"
+#include "dcmtk/dcmwlm/wldsfs.h"
 
 // ----------------------------------------------------------------------------
 
@@ -62,7 +62,8 @@ WlmDataSourceFileSystem::WlmDataSourceFileSystem()
 // Task         : Constructor.
 // Parameters   : none.
 // Return Value : none.
-  : fileSystemInteractionManager( NULL ), dfPath( NULL ), handleToReadLockFile( 0 )
+  : fileSystemInteractionManager( NULL ), dfPath( NULL ), enableRejectionOfIncompleteWlFiles( OFTrue ),
+    handleToReadLockFile( 0 )
 {
   fileSystemInteractionManager = new WlmFileSystemInteractionManager();
 }
@@ -97,6 +98,7 @@ OFCondition WlmDataSourceFileSystem::ConnectToDataSource()
   fileSystemInteractionManager->SetLogStream( logStream );
   fileSystemInteractionManager->SetVerbose( verbose );
   fileSystemInteractionManager->SetDebug( debug );
+  fileSystemInteractionManager->SetEnableRejectionOfIncompleteWlFiles( enableRejectionOfIncompleteWlFiles );
 
   // connect to file system
   OFCondition cond = fileSystemInteractionManager->ConnectToFileSystem( dfPath );
@@ -140,6 +142,18 @@ void WlmDataSourceFileSystem::SetDfPath( const char *value )
 
 // ----------------------------------------------------------------------------
 
+void WlmDataSourceFileSystem::SetEnableRejectionOfIncompleteWlFiles( OFBool value )
+// Date         : May 3, 2005
+// Author       : Thomas Wilkens
+// Task         : Set member variable.
+// Parameters   : value - Value for member variable.
+// Return Value : none.
+{
+  enableRejectionOfIncompleteWlFiles = value;
+}
+
+// ----------------------------------------------------------------------------
+
 OFBool WlmDataSourceFileSystem::IsCalledApplicationEntityTitleSupported()
 // Date         : December 10, 2001
 // Author       : Thomas Wilkens
@@ -156,6 +170,94 @@ OFBool WlmDataSourceFileSystem::IsCalledApplicationEntityTitleSupported()
     return( OFFalse );
   else
     return( fileSystemInteractionManager->IsCalledApplicationEntityTitleSupported( calledApplicationEntityTitle ) );
+}
+
+// ----------------------------------------------------------------------------
+
+void WlmDataSourceFileSystem::HandleExistentButEmptyDescriptionAndCodeSequenceAttributes( DcmItem *dataset, const DcmTagKey &descriptionTagKey, const DcmTagKey &codeSequenceTagKey )
+// Date         : May 3, 2005
+// Author       : Thomas Wilkens
+// Task         : This function performs a check on two attributes in the given dataset. At two different places
+//                in the definition of the DICOM worklist management service, a description attribute and a code
+//                sequence attribute with a return type of 1C are mentioned, and the condition specifies that
+//                either the description attribute or the code sequence attribute or both shall be supported by
+//                an SCP. (I am talking about RequestedProcedureDescription vs. RequestedProcedureCodeSequence
+//                and ScheduledProcedureStepDescription vs. ScheduledProtocolCodeSequence.) In both cases, this
+//                implementation actually supports both, the description _and_ the code sequence attributes.
+//                In cases where the description attribute is actually empty or the code sequence attribute
+//                is actually empty or contains exactly one item with an empty CodeValue and an empty
+//                CodingSchemeDesignator, we want to remove the empty attribute from the dataset. This is what
+//                this function does. (Please note, that this function will always only delete one of the two,
+//                and this function will start checking the sequence attribute.
+// Parameters   : dataset            - [in] Dataset in which the consistency of the two attributes shall be checked.
+//                descriptionTagKey  - [in] DcmTagKey of the description attribute which shall be checked.
+//                codeSequenceTagKey - [in] DcmTagKey of the codeSequence attribute which shall be checked.
+// Return Value : none.
+{
+  DcmElement *codeSequenceAttribute = NULL, *descriptionAttribute = NULL;
+  DcmElement *elementToRemove = NULL, *codeValueAttribute = NULL, *codingSchemeDesignatorAttribute = NULL;
+  OFBool codeSequenceAttributeRemoved = OFFalse;
+
+  // only do something with the code sequence attribute if it is contained in the dataset
+  if( dataset->findAndGetElement( codeSequenceTagKey, codeSequenceAttribute ).good() )
+  {
+    // if the code sequence attribute is empty or contains exactly one item with an empty
+    // CodeValue and an empty CodingSchemeDesignator, remove the attribute from the dataset
+    if( ( ((DcmSequenceOfItems*)codeSequenceAttribute)->card() == 0 ) ||
+        ( ((DcmSequenceOfItems*)codeSequenceAttribute)->card() == 1 &&
+          ((DcmSequenceOfItems*)codeSequenceAttribute)->getItem(0)->findAndGetElement( DCM_CodeValue, codeValueAttribute ).good() &&
+          codeValueAttribute->getLength() == 0 &&
+          ((DcmSequenceOfItems*)codeSequenceAttribute)->getItem(0)->findAndGetElement( DCM_CodingSchemeDesignator, codingSchemeDesignatorAttribute ).good() &&
+          codingSchemeDesignatorAttribute->getLength() == 0 ) )
+    {
+      elementToRemove = dataset->remove( codeSequenceAttribute );
+      delete elementToRemove;
+      codeSequenceAttributeRemoved = OFTrue;
+    }
+  }
+
+  // if the code sequence attribute has not been removed and if the description
+  // attribute is empty, remove the description attribute from the dataset
+  if( !codeSequenceAttributeRemoved &&
+      dataset->findAndGetElement( descriptionTagKey, descriptionAttribute ).good() &&
+      descriptionAttribute->getLength() == 0 )
+  {
+    elementToRemove = dataset->remove( descriptionAttribute );
+    delete elementToRemove;
+  }
+}
+
+// ----------------------------------------------------------------------------
+
+void WlmDataSourceFileSystem::HandleExistentButEmptyReferencedStudyOrPatientSequenceAttributes( DcmDataset *dataset, const DcmTagKey &sequenceTagKey )
+// Date         : May 3, 2005
+// Author       : Thomas Wilkens
+// Task         : This function performs a check on a sequence attribute in the given dataset. At two different places
+//                in the definition of the DICOM worklist management service, a sequence attribute with a return type
+//                of 2 is mentioned containing two 1C attributes in its item; the condition of the two 1C attributes
+//                specifies that in case a sequence item is present, then these two attributes must be existent and
+//                must contain a value. (I am talking about ReferencedStudySequence and ReferencedPatientSequence.)
+//                In cases where the sequence attribute contains exactly one item with an empty ReferencedSOPClass
+//                and an empty ReferencedSOPInstance, we want to remove the item from the sequence. This is what
+//                this function does.
+// Parameters   : dataset         - [in] Dataset in which the consistency of the sequence attribute shall be checked.
+//                sequenceTagKey  - [in] DcmTagKey of the sequence attribute which shall be checked.
+// Return Value : none.
+{
+  DcmElement *sequenceAttribute = NULL, *referencedSOPClassUIDAttribute = NULL, *referencedSOPInstanceUIDAttribute = NULL;
+
+  // in case the sequence attribute contains exactly one item with an empty
+  // ReferencedSOPClassUID and an empty ReferencedSOPInstanceUID, remove the item
+  if( dataset->findAndGetElement( sequenceTagKey, sequenceAttribute ).good() &&
+      ( (DcmSequenceOfItems*)sequenceAttribute )->card() == 1 &&
+      ( (DcmSequenceOfItems*)sequenceAttribute )->getItem(0)->findAndGetElement( DCM_ReferencedSOPClassUID, referencedSOPClassUIDAttribute ).good() &&
+      referencedSOPClassUIDAttribute->getLength() == 0 &&
+      ( (DcmSequenceOfItems*)sequenceAttribute )->getItem(0)->findAndGetElement( DCM_ReferencedSOPInstanceUID, referencedSOPInstanceUIDAttribute, OFFalse ).good() &&
+      referencedSOPInstanceUIDAttribute->getLength() == 0 )
+  {
+    DcmItem *item = ((DcmSequenceOfItems*)sequenceAttribute)->remove( ((DcmSequenceOfItems*)sequenceAttribute)->getItem(0) );
+    delete item;
+  }
 }
 
 // ----------------------------------------------------------------------------
@@ -179,6 +281,7 @@ WlmDataSourceStatusType WlmDataSourceFileSystem::StartFindRequest( DcmDataset &f
 {
   unsigned long i, j;
   char msg[200];
+  DcmElement *scheduledProcedureStepSequenceAttribute = NULL;
 
   // Initialize offending elements, error elements and error comment.
   delete offendingElements;
@@ -203,7 +306,7 @@ WlmDataSourceStatusType WlmDataSourceFileSystem::StartFindRequest( DcmDataset &f
   {
     for( i=0 ; i<numOfMatchingDatasets ; i++ )
       delete matchingDatasets[i];
-    delete matchingDatasets;
+    delete[] matchingDatasets;
     matchingDatasets = NULL;
     numOfMatchingDatasets = 0;
   }
@@ -233,7 +336,8 @@ WlmDataSourceStatusType WlmDataSourceFileSystem::StartFindRequest( DcmDataset &f
   }
 
   // Set a read lock on the worklist files which shall be read from.
-  if (! SetReadlock()) return WLM_REFUSED_OUT_OF_RESOURCES;
+  if( !SetReadlock() )
+    return( WLM_REFUSED_OUT_OF_RESOURCES );
 
   // dump some information if required
   if( verbose )
@@ -333,6 +437,20 @@ WlmDataSourceStatusType WlmDataSourceFileSystem::StartFindRequest( DcmDataset &f
           }
         }
       }
+
+      // if the ScheduledProcedureStepSequence can be found in the current dataset, handle
+      // existent but empty ScheduledProcedureStepDescription and ScheduledProtocolCodeSequence
+      if( matchingDatasets[i]->findAndGetElement( DCM_ScheduledProcedureStepSequence, scheduledProcedureStepSequenceAttribute, OFFalse ).good() )
+        HandleExistentButEmptyDescriptionAndCodeSequenceAttributes( ((DcmDataset*)((DcmSequenceOfItems*)scheduledProcedureStepSequenceAttribute)->getItem(0)), DCM_ScheduledProcedureStepDescription, DCM_ScheduledProtocolCodeSequence );
+
+      // handle existent but empty RequestedProcedureDescription and RequestedProcedureCodeSequence
+      HandleExistentButEmptyDescriptionAndCodeSequenceAttributes( matchingDatasets[i], DCM_RequestedProcedureDescription, DCM_RequestedProcedureCodeSequence );
+
+      // handle existent but empty ReferencedStudySequence
+      HandleExistentButEmptyReferencedStudyOrPatientSequenceAttributes( matchingDatasets[i], DCM_ReferencedStudySequence );
+
+      // handle existent but empty ReferencedPatientSequence
+      HandleExistentButEmptyReferencedStudyOrPatientSequenceAttributes( matchingDatasets[i], DCM_ReferencedPatientSequence );
     }
 
     // Determine a corresponding return value: If matching records were found, WLM_PENDING or
@@ -393,7 +511,7 @@ DcmDataset *WlmDataSourceFileSystem::NextFindResponse( WlmDataSourceStatusType &
     // If there are no more elements to return, delete the array itself.
     if( numOfMatchingDatasets == 0 )
     {
-      delete matchingDatasets;
+      delete[] matchingDatasets;
       matchingDatasets = NULL;
     }
 
@@ -455,7 +573,7 @@ void WlmDataSourceFileSystem::HandleNonSequenceElementInResultDataset( DcmElemen
       DumpMessage( "WlmDataSourceFileSystem::HandleNonSequenceElementInResultDataset: Could not set value in result element.\n" );
 
     // free memory
-    delete value;
+    delete[] value;
   }
 }
 
@@ -513,7 +631,7 @@ void WlmDataSourceFileSystem::HandleSequenceElementInResultDataset( DcmElement *
     tmp[numOfSuperiorSequences].currentItem = 0;
 
     if( superiorSequenceArray != NULL )
-      delete superiorSequenceArray;
+      delete[] superiorSequenceArray;
 
     superiorSequenceArray = tmp;
 
@@ -557,7 +675,7 @@ void WlmDataSourceFileSystem::HandleSequenceElementInResultDataset( DcmElement *
     // delete information about current sequence from superiorSequenceArray
     if( numOfSuperiorSequences == 1 )
     {
-      delete superiorSequenceArray;
+      delete[] superiorSequenceArray;
       superiorSequenceArray = NULL;
       numOfSuperiorSequences = 0;
     }
@@ -571,7 +689,7 @@ void WlmDataSourceFileSystem::HandleSequenceElementInResultDataset( DcmElement *
         tmp[i].currentItem = superiorSequenceArray[i].currentItem;
       }
 
-      delete superiorSequenceArray;
+      delete[] superiorSequenceArray;
       superiorSequenceArray = tmp;
 
       numOfSuperiorSequences--;
@@ -731,11 +849,38 @@ OFBool WlmDataSourceFileSystem::ReleaseReadlock()
 /*
 ** CVS Log
 ** $Log: wldsfs.cc,v $
-** Revision 1.1  2005/08/23 19:31:53  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:47  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:15  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.19  2005/12/08 15:48:33  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.18  2005/11/08 12:59:25  wilkens
+** Updated class WlmDataSourceFileSystem: function StartFindRequest will return
+** an error in case SetReadlock returns an error.
+**
+** Revision 1.17  2005/07/01 10:01:31  wilkens
+** Modified a couple of "delete" statements to "delete[]" in order to get rid of
+** valgrind's "Mismatched free() / delete / delete []" error messages.
+**
+** Revision 1.16  2005/05/04 11:32:51  wilkens
+** Modified handling of the attributes ScheduledProcedureStepDescription/
+** ScheduledProtocolCodeSequence and RequestedProcedureDescription/
+** RequestedProcedureCodeSequence in wlmscpfs: in case one of the two attributes
+** does not contain any information in a C-Find RSP message which is about to be
+** sent to an SCU, the empty attribute will be removed from the C-Find RSP message
+** before the message is sent, in order not to send an invalid RSP message.
+** Added two command line options --enable-file-reject (default) and
+** --disable-file-reject to wlmscpfs: these options can be used to enable or
+** disable a file rejection mechanism which makes sure only complete worklist files
+** will be used during the matching process. A worklist file is considered to be
+** complete if it contains all necessary type 1 information which the SCP might
+** have to return to an SCU in a C-Find response message.
 **
 ** Revision 1.15  2004/05/26 10:36:55  meichel
 ** Fixed minor bug in worklist server regarding failed read locks.

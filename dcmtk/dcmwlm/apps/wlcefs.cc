@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2002, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,9 +23,9 @@
  *           management service class providers based on the file system.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
+ *  Update Date:      $Date: 2007/04/24 09:53:42 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmwlm/apps/wlcefs.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -34,22 +34,23 @@
 
 // ----------------------------------------------------------------------------
 
-#include "osconfig.h"
-#include "dicom.h"
-#include "ofcmdln.h"
-#include "wltypdef.h"
-#include "dcxfer.h"
-#include "ofconapp.h"
-#include "assoc.h"
-#include "cmdlnarg.h"
-#include "dimse.h"
-#include "dcdebug.h"
-#include "dcvrat.h"
-#include "dcvrlo.h"
-#include "wlds.h"
-#include "dcsequen.h"
-#include "wldsfs.h"
-#include "wlmactmg.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmnet/dicom.h"
+#include "dcmtk/ofstd/ofcmdln.h"
+#include "dcmtk/dcmwlm/wltypdef.h"
+#include "dcmtk/dcmdata/dcxfer.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmnet/assoc.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcvrat.h"
+#include "dcmtk/dcmdata/dcvrlo.h"
+#include "dcmtk/dcmwlm/wlds.h"
+#include "dcmtk/dcmdata/dcsequen.h"
+#include "dcmtk/dcmwlm/wldsfs.h"
+#include "dcmtk/dcmwlm/wlmactmg.h"
+#include "dcmtk/dcmnet/dimse.h"
 
 #include "wlcefs.h"
 
@@ -80,8 +81,9 @@ WlmConsoleEngineFileSystem::WlmConsoleEngineFileSystem( int argc, char *argv[], 
     opt_rejectWithoutImplementationUID( OFFalse ), opt_sleepAfterFind( 0 ), opt_sleepDuringFind( 0 ),
     opt_maxPDU( ASC_DEFAULTMAXPDU ), opt_networkTransferSyntax( EXS_Unknown ),
     opt_verbose( OFFalse ), opt_debug( OFFalse ), opt_failInvalidQuery( OFTrue ), opt_singleProcess( OFTrue ),
-    opt_maxAssociations( 50 ), opt_noSequenceExpansion( OFFalse ), app( NULL ), cmd( NULL ),
-    dataSource( dataSourcev )
+    opt_maxAssociations( 50 ), opt_noSequenceExpansion( OFFalse ), opt_enableRejectionOfIncompleteWlFiles( OFTrue ),
+    opt_blockMode(DIMSE_BLOCKING), opt_dimse_timeout(0), opt_acse_timeout(30),
+    app( NULL ), cmd( NULL ), dataSource( dataSourcev )
 {
   // Initialize application identification string.
   sprintf( rcsid, "$dcmtk: %s v%s %s $", applicationName, OFFIS_DCMTK_VERSION, OFFIS_DCMTK_RELEASEDATE );
@@ -113,12 +115,13 @@ WlmConsoleEngineFileSystem::WlmConsoleEngineFileSystem( int argc, char *argv[], 
 #ifdef HAVE_FORK
     cmd->addOption("--single-process",            "-s",        "single process mode");
 #endif
-  cmd->addOption("--no-sq-expansion",           "-nse",        "disable expansion of empty sequences\nin C-FIND request messages");
-
-  OFString opt5 = "path to worklist data files\n(default: ";
-  opt5 += opt_dfPath;
-  opt5 += ")";
-  cmd->addOption("--data-files-path",           "-dfp",    1, "[p]ath: string", opt5.c_str() );
+    cmd->addOption("--no-sq-expansion",           "-nse",        "disable expansion of empty sequences\nin C-FIND request messages");
+    OFString opt5 = "path to worklist data files\n(default: ";
+    opt5 += opt_dfPath;
+    opt5 += ")";
+    cmd->addOption("--data-files-path",           "-dfp",    1, "[p]ath: string", opt5.c_str() );
+    cmd->addOption("--enable-file-reject",        "-efr",       "enable rejection of incomplete worklist-files\n(default)");
+    cmd->addOption("--disable-file-reject",       "-dfr",       "disable rejection of incomplete worklist-files");
 
   cmd->addGroup("returned character set options:", LONGCOL, SHORTCOL+2);
     cmd->addOption("--return-no-char-set",        "-cs0",       "return no specific character set (default)");
@@ -138,6 +141,9 @@ WlmConsoleEngineFileSystem::WlmConsoleEngineFileSystem( int argc, char *argv[], 
 #endif
 
     cmd->addSubGroup("other network options:");
+      cmd->addOption("--acse-timeout",           "-ta", 1, "[s]econds: integer (default: 30)", "timeout for ACSE messages");
+      cmd->addOption("--dimse-timeout",          "-td", 1, "[s]econds: integer (default: unlimited)", "timeout for DIMSE messages");
+
       OFString opt6 = "[a]ssocs: integer (default: ";
       sprintf(tempstr, "%ld", (long)opt_maxAssociations);
       opt6 += tempstr;
@@ -209,6 +215,10 @@ WlmConsoleEngineFileSystem::WlmConsoleEngineFileSystem( int argc, char *argv[], 
     if( cmd->findOption("--no-sq-expansion") ) opt_noSequenceExpansion = OFTrue;
     if( cmd->findOption("--data-files-path") ) app->checkValue(cmd->getValue(opt_dfPath));
     cmd->beginOptionBlock();
+    if( cmd->findOption("--enable-file-reject") )  opt_enableRejectionOfIncompleteWlFiles = OFTrue;
+    if( cmd->findOption("--disable-file-reject") )  opt_enableRejectionOfIncompleteWlFiles = OFFalse;
+    cmd->endOptionBlock();
+    cmd->beginOptionBlock();
     if( cmd->findOption("--return-no-char-set") )  opt_returnedCharacterSet = RETURN_NO_CHARACTER_SET;
     if( cmd->findOption("--return-iso-ir-100") )  opt_returnedCharacterSet = RETURN_CHARACTER_SET_ISO_IR_100;
     cmd->endOptionBlock();
@@ -224,11 +234,27 @@ WlmConsoleEngineFileSystem::WlmConsoleEngineFileSystem( int argc, char *argv[], 
     if (cmd->findOption("--access-control")) dcmTCPWrapperDaemonName.set(applicationName);
     cmd->endOptionBlock();
 #endif
+
+    if (cmd->findOption("--acse-timeout"))
+    {
+      OFCmdSignedInt opt_timeout = 0;
+      app->checkValue(cmd->getValueAndCheckMin(opt_timeout, 1));
+      opt_acse_timeout = OFstatic_cast(int, opt_timeout);
+    }
+
+    if (cmd->findOption("--dimse-timeout"))
+    {
+      OFCmdSignedInt opt_timeout = 0;
+      app->checkValue(cmd->getValueAndCheckMin(opt_timeout, 1));
+      opt_dimse_timeout = OFstatic_cast(int, opt_timeout);
+      opt_blockMode = DIMSE_NONBLOCKING;
+    }
+
     if( cmd->findOption("--max-associations") ) 
     {
         OFCmdSignedInt maxAssoc = 1;
-    	app->checkValue(cmd->getValueAndCheckMin(maxAssoc, 1));
-    	opt_maxAssociations = OFstatic_cast(int, maxAssoc);
+        app->checkValue(cmd->getValueAndCheckMin(maxAssoc, 1));
+        opt_maxAssociations = OFstatic_cast(int, maxAssoc);
     }
     if( cmd->findOption("--refuse") ) opt_refuseAssociation = OFTrue;
     if( cmd->findOption("--reject") ) opt_rejectWithoutImplementationUID = OFTrue;
@@ -264,6 +290,7 @@ WlmConsoleEngineFileSystem::WlmConsoleEngineFileSystem( int argc, char *argv[], 
 
   // set specific parameters in data source object
   dataSource->SetDfPath( opt_dfPath );
+  dataSource->SetEnableRejectionOfIncompleteWlFiles( opt_enableRejectionOfIncompleteWlFiles );
 }
 
 // ----------------------------------------------------------------------------
@@ -304,14 +331,16 @@ int WlmConsoleEngineFileSystem::StartProvidingService()
   }
 
   // start providing the basic worklist management service
-  WlmActivityManager *activityManager = new WlmActivityManager( dataSource, opt_port,
-                                                                opt_refuseAssociation,
-                                                                opt_rejectWithoutImplementationUID,
-                                                                opt_sleepAfterFind, opt_sleepDuringFind,
-                                                                opt_maxPDU, opt_networkTransferSyntax,
-                                                                opt_verbose, opt_debug, opt_failInvalidQuery,
-                                                                opt_singleProcess, opt_maxAssociations,
-                                                                &ofConsole );
+  WlmActivityManager *activityManager = new WlmActivityManager( 
+      dataSource, opt_port,
+      opt_refuseAssociation,
+      opt_rejectWithoutImplementationUID,
+      opt_sleepAfterFind, opt_sleepDuringFind,
+      opt_maxPDU, opt_networkTransferSyntax,
+      opt_verbose, opt_debug, opt_failInvalidQuery,
+      opt_singleProcess, opt_maxAssociations,
+      opt_blockMode, opt_dimse_timeout, opt_acse_timeout,
+      &ofConsole );
   cond = activityManager->StartProvidingService();
   if( cond.bad() )
   {
@@ -369,11 +398,27 @@ void WlmConsoleEngineFileSystem::DumpMessage( const char *message )
 /*
 ** CVS Log
 ** $Log: wlcefs.cc,v $
-** Revision 1.1  2005/08/23 19:32:09  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:42  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:15  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.10  2005/12/08 15:48:30  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.9  2005/11/17 13:45:34  meichel
+** Added command line options for DIMSE and ACSE timeouts
+**
+** Revision 1.8  2005/05/04 11:33:47  wilkens
+** Added two command line options --enable-file-reject (default) and
+** --disable-file-reject to wlmscpfs: these options can be used to enable or
+** disable a file rejection mechanism which makes sure only complete worklist files
+** will be used during the matching process. A worklist file is considered to be
+** complete if it contains all necessary type 1 information which the SCP might
+** have to return to an SCU in a C-Find response message.
 **
 ** Revision 1.7  2004/02/24 14:45:47  meichel
 ** Added max-associations command line option, changed default to 50.

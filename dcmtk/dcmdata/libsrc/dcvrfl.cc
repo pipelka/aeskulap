@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Implementation of class DcmFloatingPointSingle
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:58 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,16 +31,16 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "ofstream.h"
-#include "ofstd.h"
-#include "dcvrfl.h"
-#include "dcvm.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/dcmdata/dcvrfl.h"
+#include "dcmtk/dcmdata/dcvm.h"
 
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 // ********************************
@@ -297,11 +297,16 @@ OFCondition DcmFloatingPointSingle::verify(const OFBool autocorrect)
 /*
 ** CVS/RCS Log:
 ** $Log: dcvrfl.cc,v $
-** Revision 1.1  2005/08/23 19:31:58  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:26  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.29  2005/12/08 15:41:53  meichel
+** Changed include path schema for all DCMTK header files
 **
 ** Revision 1.28  2004/02/04 16:17:03  joergr
 ** Adapted type casts to new-style typecast operators defined in ofcast.h.

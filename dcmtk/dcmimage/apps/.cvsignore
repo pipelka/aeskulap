@@ -1,4 +1,4 @@
 Makefile
-dcm2pnm
 dcmquant
 dcmscale
+dcm2pnm

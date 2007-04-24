@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2004, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -26,9 +26,9 @@
  *    ignored. If no presentation state is loaded, a default is created.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:06 $
+ *  Update Date:      $Date: 2007/04/24 09:53:40 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmpstat/apps/dcmp2pgm.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -36,22 +36,23 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
-#include "ofstream.h"
-#include "dviface.h"
-#include "dvpstx.h"  /* for DVPSTextObject */
-#include "dvpsgr.h"  /* for DVPSGraphicObject */
-#include "dvpscu.h"  /* for DVPSCurve */
-#include "dcmimage.h"
-#include "cmdlnarg.h"
-#include "ofcmdln.h"
-#include "ofconapp.h"
-#include "dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmpstat/dviface.h"
+#include "dcmtk/dcmpstat/dvpstx.h"  /* for DVPSTextObject */
+#include "dcmtk/dcmpstat/dvpsgr.h"  /* for DVPSGraphicObject */
+#include "dcmtk/dcmpstat/dvpscu.h"  /* for DVPSCurve */
+#include "dcmtk/dcmimgle/dcmimage.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofcmdln.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/dcmdata/dcdebug.h"
 
 #ifdef WITH_ZLIB
 #include <zlib.h>     /* for zlibVersion() */
@@ -585,11 +586,20 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dcmp2pgm.cc,v $
- * Revision 1.1  2005/08/23 19:32:06  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:40  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:08  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.36  2005/12/08 15:46:04  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.35  2005/11/28 15:29:05  meichel
+ * File dcdebug.h is not included by any other header file in the toolkit
+ *   anymore, to minimize the risk of name clashes of macro debug().
  *
  * Revision 1.34  2004/02/04 15:44:38  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

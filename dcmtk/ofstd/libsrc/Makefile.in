@@ -18,24 +18,24 @@ LOCALDEFS =
 
 objs = oflist.o ofstring.o ofcmdln.o ofconapp.o offname.o ofconsol.o ofthread.o \
 	oflogfil.o ofcond.o ofstd.o ofcrc32.o ofdate.o oftime.o ofdatime.o ofconfig.o
-library = libofstd.$(LIBEXT)
-
+library = libofstd$(LIBEXT)
+librarydev = libofstd.so
 
 all: $(library)
 
-install: all
+install: 
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
+	ln -sf $(library) $(librarydev)
 
-uninstall:
-	rm -f $(libdir)/$(library)
 
 clean:
-	rm -f $(objs) $(library) $(TRASH)
+	rm -f $(objs) $(library) $(librarydev) $(TRASH)
 
 distclean:
 	rm -f $(objs) $(library) $(DISTTRASH)

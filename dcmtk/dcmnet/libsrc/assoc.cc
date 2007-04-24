@@ -68,9 +68,9 @@
 **
 **
 ** Last Update:         $Author: braindead $
-** Update Date:         $Date: 2005/08/23 19:32:01 $
+** Update Date:         $Date: 2007/04/24 09:53:35 $
 ** Source File:         $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmnet/libsrc/assoc.cc,v $
-** CVS/RCS Revision:    $Revision: 1.1 $
+** CVS/RCS Revision:    $Revision: 1.2 $
 ** Status:              $State: Exp $
 **
 ** CVS/RCS Log at end of file
@@ -81,15 +81,15 @@
 ** Include Files
 */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "assoc.h"      /* always include the module header */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmnet/assoc.h"      /* always include the module header */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CSTDARG
 #define INCLUDE_CERRNO
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -101,12 +101,12 @@
 #include <sys/select.h>
 #endif
 
-#include "dicom.h"
-#include "cond.h"
-#include "dcuid.h"
-#include "ofconsol.h"
-#include "ofstd.h"
-#include "dcmtrans.h"
+#include "dcmtk/dcmnet/dicom.h"
+#include "dcmtk/dcmnet/cond.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/dcmnet/dcmtrans.h"
 
 /*
 ** Constant Definitions
@@ -1559,6 +1559,8 @@ ASC_receiveAssociation(T_ASC_Network * network,
     cond = DUL_ReceiveAssociationRQ(&network->network, block, timeout,
                                     &(params->DULparams), &DULassociation, retrieveRawPDU);
 
+    if (cond.code() == DULC_FORKEDCHILD) return cond;
+
     (*assoc)->DULassociation = DULassociation;
 
     if (retrieveRawPDU && DULassociation)
@@ -1911,14 +1913,15 @@ ASC_abortAssociation(T_ASC_Association * association)
 }
 
 
+
 OFCondition
-ASC_dropSCPAssociation(T_ASC_Association * association)
+ASC_dropSCPAssociation(T_ASC_Association * association, int timeout)
 {
     /* if already dead don't worry */
     if (association == NULL) return EC_Normal;
     if (association->DULassociation == NULL) return EC_Normal;
 
-    ASC_dataWaiting(association, DUL_TIMEOUT);
+    ASC_dataWaiting(association, timeout);
     OFCondition cond = DUL_DropAssociation(&association->DULassociation);
 
     return cond;
@@ -1977,11 +1980,23 @@ void ASC_activateCallback(T_ASC_Parameters *params, DUL_ModeCallback *cb)
 /*
 ** CVS Log
 ** $Log: assoc.cc,v $
-** Revision 1.1  2005/08/23 19:32:01  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:35  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:10  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.46  2005/12/08 15:44:24  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.45  2005/11/25 11:31:14  meichel
+** StoreSCP now supports multi-process mode both on Posix and Win32 platforms
+**   where a separate client process is forked for each incoming association.
+**
+** Revision 1.44  2004/07/15 08:10:46  meichel
+** Added optional timeout parameter to ASC_dropSCPAssociation().
 **
 ** Revision 1.43  2004/04/07 10:22:10  meichel
 ** Added optional parameter to ASC_initializeNetwork that allows to pass

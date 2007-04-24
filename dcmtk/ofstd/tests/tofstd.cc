@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2002-2004, OFFIS
+ *  Copyright (C) 2002-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: test program for class OFStandard
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:03 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,10 +31,10 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "ofstd.h"
-#include "ofconsol.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofconsol.h"
 
 
 #define pathname1 "/home/joergr/source/dcmtk/"
@@ -163,11 +163,16 @@ int main()
  *
  * CVS/RCS Log:
  * $Log: tofstd.cc,v $
- * Revision 1.1  2005/08/23 19:32:03  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:47  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:57  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.8  2005/12/08 15:49:06  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.7  2004/01/16 10:37:23  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

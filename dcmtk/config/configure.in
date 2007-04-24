@@ -1,7 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(DCMTK, 3.5.3, [dicom-bugs@offis.de], [dcmtk-3.5.3])
+AC_INIT(DCMTK, 3.5.4, [dicom-bugs@offis.de], [dcmtk-3.5.4])
+AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(Makefile.in)
-AC_CONFIG_HEADER(include/cfunix.h)
+AC_CONFIG_HEADER(include/dcmtk/config/cfunix.h)
 
 dnl -------------------------------------------------------
 dnl Identify the host platform we're compiling for,
@@ -29,10 +30,13 @@ dnl -------------------------------------------------------
 
 if test "x$prefix" = xNONE ; then
 AC_DEFINE_UNQUOTED(DCMTK_PREFIX, "${ac_default_prefix}", [Define the DCMTK default path])
+eval dcm_dict="${ac_default_prefix}/lib/dicom.dic"
 else
 AC_DEFINE_UNQUOTED(DCMTK_PREFIX, "${prefix}", [Define the DCMTK default path])
+eval dcm_dict="${datadir}/dcmtk/dicom.dic"
 fi
-AC_DEFINE_UNQUOTED(DCM_DICT_DEFAULT_PATH, DCMTK_PREFIX "/lib/dicom.dic", [Define the default data dictionary path for the dcmdata library package])
+
+AC_DEFINE_UNQUOTED(DCM_DICT_DEFAULT_PATH, "${dcm_dict}", [Define the default data dictionary path for the dcmdata library package])
 
 AH_VERBATIM([PATH_SEPARATOR], [/* Define path separator */
 #define PATH_SEPARATOR '/'])
@@ -154,6 +158,26 @@ AC_MY_C_CHAR_UNSIGNED
 AC_MY_C_RIGHTSHIFT_UNSIGNED
 
 dnl -------------------------------------------------------
+dnl Check some typedefs versus definitions in <sys/types.h>,
+dnl needed for JasPer support
+dnl -------------------------------------------------------
+
+AC_TYPEDEF(uchar, unsigned char)
+AC_TYPEDEF(ushort, unsigned short)
+AC_TYPEDEF(uint, unsigned int)
+AC_TYPEDEF(ulong, unsigned long)
+AC_CHECK_TYPES(longlong)
+AC_CHECK_TYPES(ulonglong)
+CHECK_VLA
+
+dnl stdbool.h and stdint.h are only defined in ANSI C, not in C++
+AC_CHECK_HEADERS(stdbool.h)
+AC_CHECK_HEADERS(stdint.h)
+
+AC_CHECK_TYPES(int64_t)
+AC_CHECK_TYPES(uint64_t)
+
+dnl -------------------------------------------------------
 dnl Checks for libc library functions.
 dnl -------------------------------------------------------
 
@@ -174,7 +198,7 @@ AC_CHECK_FUNCS(flock lockf)
 AC_CHECK_FUNCS(listen connect setsockopt getsockopt select gethostbyname)
 AC_CHECK_FUNCS(bind accept getsockname)
 AC_CHECK_FUNCS(waitpid)
-AC_CHECK_FUNCS(getuid geteuid setuid)
+AC_CHECK_FUNCS(getuid geteuid setuid getpwnam getgrnam)
 AC_CHECK_FUNCS(sleep fork)
 AC_CHECK_FUNCS(_findfirst)
 AC_CHECK_FUNCS(strlcpy strlcat)
@@ -213,13 +237,13 @@ AC_ARG_ENABLE(debug,
     ;;
   *)
     AC_MSG_RESULT(no)
-    DEBUGCXXFLAGS=""
-    DEBUGCFLAGS=""
+    DEBUGCXXFLAGS="-O"
+    DEBUGCFLAGS="-O"
     ;;
   esac ],
   AC_MSG_RESULT(no)
-  DEBUGCXXFLAGS=""
-  DEBUGCFLAGS=""
+  DEBUGCXXFLAGS="-O"
+  DEBUGCFLAGS="-O"
 )
 
 dnl -------------------------------------------------------
@@ -272,6 +296,20 @@ if test $ac_cv_lib_socket_main = no ; then
 AC_CHECK_LIB(socket, socket)
 fi
 
+dnl Some newer versions of OpenSSL must be linked against libdl.
+dnl We just check whether libdl exists and in this case always
+dnl add -ldl to OPENSSLLIBS.
+dnl
+OPENSSLLIBS=""
+AC_CHECK_LIB(dl, main,[
+OPENSSLLIBS="-ldl"
+])
+if test $ac_cv_lib_dl_main = no ; then
+AC_CHECK_LIB(dl, dlopen,[
+OPENSSLLIBS="-ldl"
+])
+fi
+
 MATHLIBS=""
 AC_CHECK_LIB(m, main,[
 MATHLIBS="-lm"
@@ -306,6 +344,7 @@ AC_CHECK_HEADERS(float.h)
 AC_CHECK_HEADERS(fnmatch.h)
 AC_CHECK_HEADERS(fstream)
 AC_CHECK_HEADERS(fstream.h)
+AC_CHECK_HEADERS(grp.h)
 AC_CHECK_HEADERS(ieeefp.h)
 AC_CHECK_HEADERS(io.h)
 AC_CHECK_HEADERS(iomanip)
@@ -321,6 +360,7 @@ AC_CHECK_HEADERS(math.h)
 AC_CHECK_HEADERS(new.h)
 AC_CHECK_HEADERS(netdb.h)
 AC_CHECK_HEADERS(pthread.h)
+AC_CHECK_HEADERS(pwd.h)
 AC_CHECK_HEADERS(semaphore.h)
 AC_CHECK_HEADERS(setjmp.h)
 AC_CHECK_HEADERS(signal.h)
@@ -330,6 +370,7 @@ AC_CHECK_HEADERS(stat.h)
 AC_CHECK_HEADERS(stdarg.h)
 AC_CHECK_HEADERS(stddef.h)
 AC_CHECK_HEADERS(stdio.h)
+AC_CHECK_HEADERS(stdint.h)
 AC_CHECK_HEADERS(stdlib.h)
 AC_CHECK_HEADERS(string.h)
 AC_CHECK_HEADERS(strings.h)
@@ -354,6 +395,16 @@ AC_CHECK_HEADERS(unistd.h)
 AC_CHECK_HEADERS(unix.h)
 AC_CHECK_HEADERS(utime.h)
 AC_CHECK_HEADERS(wctype.h)
+
+if test $ac_cv_header_libc_h = yes ; then
+  if test $ac_cv_header_math_h = yes ; then
+    AC_CXX_LIBC_H_EXTERN_C
+  fi
+fi
+
+if test $ac_cv_header_pthread_h = yes ; then
+  AC_CHECK_POINTER_TYPE(pthread_t, pthread.h)
+fi
 
 dnl -------------------------------------------------------
 dnl Check for thread support
@@ -435,6 +486,16 @@ if test $THREADSUPPORT = posix ; then
 	  CXXFLAGS="-D_POSIX_C_SOURCE=199506L $CXXFLAGS"
 	  CFLAGS="-D_POSIX_C_SOURCE=199506L $CFLAGS"
 	  ;;
+        *-*-freebsd5*)
+	  ;;
+        *-*-freebsd6*)
+	  ;;
+        *-*-netbsdelf2*)
+	  ;;
+	*-*-darwin8.*)
+	  CXXFLAGS="-D_XOPEN_SOURCE_EXTENDED -D_BSD_SOURCE -D_BSD_COMPAT -D_OSF_SOURCE $CXXFLAGS"
+	  CFLAGS="-D_XOPEN_SOURCE_EXTENDED -D_BSD_SOURCE -D_BSD_COMPAT -D_OSF_SOURCE $CFLAGS"
+	  ;; 
 	*)
 	  CXXFLAGS="-D_XOPEN_SOURCE_EXTENDED -D_XOPEN_SOURCE=500 -D_BSD_SOURCE -D_BSD_COMPAT -D_OSF_SOURCE -D_POSIX_C_SOURCE=199506L $CXXFLAGS"
 	  CFLAGS="-D_XOPEN_SOURCE_EXTENDED -D_XOPEN_SOURCE=500 -D_BSD_SOURCE -D_BSD_COMPAT -D_OSF_SOURCE -D_POSIX_C_SOURCE=199506L $CFLAGS"
@@ -467,6 +528,10 @@ if test $THREADSUPPORT = posix ; then
 	  CXXFLAGS="-D_POSIX_C_SOURCE=199506L $CXXFLAGS"
 	  CFLAGS="-D_POSIX_C_SOURCE=199506L $CFLAGS"
 	  ;;
+	*-*-darwin8.*)
+	  CXXFLAGS="-D_XOPEN_SOURCE_EXTENDED -D_BSD_SOURCE -D_BSD_COMPAT -D_OSF_SOURCE $CXXFLAGS"
+	  CFLAGS="-D_XOPEN_SOURCE_EXTENDED -D_BSD_SOURCE -D_BSD_COMPAT -D_OSF_SOURCE $CFLAGS"
+	  ;; 
 	*)
 	  CXXFLAGS="-D_XOPEN_SOURCE_EXTENDED -D_XOPEN_SOURCE=500 -D_BSD_SOURCE -D_BSD_COMPAT -D_OSF_SOURCE -D_POSIX_C_SOURCE=199506L $CXXFLAGS"
 	  CFLAGS="-D_XOPEN_SOURCE_EXTENDED -D_XOPEN_SOURCE=500 -D_BSD_SOURCE -D_BSD_COMPAT -D_OSF_SOURCE -D_POSIX_C_SOURCE=199506L $CFLAGS"
@@ -504,8 +569,9 @@ dnl -------------------------------------------------------
 dnl Checks for typedefs, structures, and compiler characteristics.
 dnl -------------------------------------------------------
 
-AC_TYPE_SIZE_T
-AC_TYPE_SSIZE_T
+AC_TYPEDEF(size_t, unsigned)
+AC_TYPEDEF(ssize_t, long)
+AC_TYPEDEF(pid_t, int)
 AC_C_CHAR_UNSIGNED
 AC_CHECK_SIZEOF(char)
 AC_CHECK_SIZEOF(short)
@@ -514,7 +580,6 @@ AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(float)
 AC_CHECK_SIZEOF(double)
 AC_CHECK_SIZEOF(void *)
-AC_TYPE_PID_T
 AC_STRUCT_TM
 AC_CXX_CONST_CAST
 AC_CXX_DYNAMIC_CAST
@@ -684,7 +749,6 @@ if test "${with_opensslinc+set}" = set; then
 
 fi
 
-OPENSSLLIBS=""
 AC_MSG_CHECKING([whether to include OpenSSL support])
 AC_ARG_WITH(openssl,
 [  --with-openssl          include OpenSSL support (default: auto)
@@ -694,7 +758,7 @@ AC_ARG_WITH(openssl,
   yes)
     AC_MSG_RESULT(yes)
     AC_DEFINE(WITH_OPENSSL, , [Define if we are compiling with OpenSSL support])
-    OPENSSLLIBS="-lssl -lcrypto"
+    OPENSSLLIBS="-lssl -lcrypto $OPENSSLLIBS"
     ;;
   *)
     AC_MSG_RESULT(no)
@@ -705,62 +769,23 @@ AC_ARG_WITH(openssl,
   AC_TRY_LINK([#include <openssl/ssl.h>], [(void) TLSv1_method()], 
     [ AC_MSG_RESULT(yes)
       AC_DEFINE(WITH_OPENSSL, , [Define if we are compiling with OpenSSL support])
-      OPENSSLLIBS="-lssl -lcrypto" ], 
+      OPENSSLLIBS="-lssl -lcrypto $OPENSSLLIBS" ], 
     [AC_MSG_RESULT(no)])
   LIBS="$SAVELIBS"] )
 
 dnl -------------------------------------------------------
-dnl Check for libtiff support
+dnl Check for libjpeg, which is needed by libtiff on some platforms
 dnl -------------------------------------------------------
 
-if test "${with_libtiffinc+set}" = set; then
-
-    case "$with_libtiffinc" in
-    yes|no)
-      echo "configure: warning: --with-libtiffinc called without argument - will use default" 1>&2
-    ;;
-    * )
-      if test ! -d ${with_libtiffinc}; then
-        echo "configure: warning: called with --with-libtiffinc, but libtiff base directory ${withval} does not exist or is not a directory." 1>&2
-        exit 1
-      fi
-      CPPFLAGS="-I${with_libtiffinc}/include $CPPFLAGS"
-      LDFLAGS="-L${with_libtiffinc}/lib $LDFLAGS"
-    ;;
-    esac
-
+JPEGLIBS=""
+AC_CHECK_LIB(jpeg, jpeg_set_defaults,[
+JPEGLIBS="-ljpeg"
+])
+if test $ac_cv_lib_jpeg_jpeg_set_defaults = no ; then
+AC_CHECK_LIB(jpeg, jSetDefaults,[
+JPEGLIBS="-ljpeg"
+])
 fi
-
-TIFFLIBS=""
-AC_MSG_CHECKING(whether to include libtiff support)
-AC_ARG_WITH(libtiff,
-[  --with-libtiff          include libtiff support (default: auto)
-  --without-libtiff       don't include libtiff support
-  --with-libtiffinc=DIR   location of libtiff includes and libraries],
-[ case "$withval" in
-  yes)
-    AC_MSG_RESULT(yes)
-    AC_DEFINE(WITH_LIBTIFF, , [Define if we are compiling with libtiff support])
-    TIFFLIBS="-ltiff"
-    SAVELIBS="$LIBS"
-    LIBS="$LIBS -ltiff"
-    AC_LIBTIFF_LZW_COMPRESSION
-    LIBS="$SAVELIBS"
-    ;;
-  *)
-    AC_MSG_RESULT(no)
-    ;;
-  esac ],
-[ SAVELIBS="$LIBS"
-  LIBS="$LIBS -ltiff"
-  AC_TRY_LINK([#include <tiffio.h>], [(void) TIFFGetVersion()], 
-    [ AC_MSG_RESULT(yes)
-      AC_DEFINE(WITH_LIBTIFF, , [Define if we are compiling with libtiff support])
-      TIFFLIBS="-ltiff" 
-      AC_LIBTIFF_LZW_COMPRESSION
-    ], 
-    [AC_MSG_RESULT(no)])
-  LIBS="$SAVELIBS"] )
 
 dnl -------------------------------------------------------
 dnl Check for zlib support
@@ -808,6 +833,60 @@ AC_ARG_WITH(zlib,
       ZLIBLIBS="-lz" ], 
     [AC_MSG_RESULT(no)])
   LIBS="$SAVELIBS"] )
+
+dnl -------------------------------------------------------
+dnl Check for libtiff support
+dnl -------------------------------------------------------
+
+if test "${with_libtiffinc+set}" = set; then
+
+    case "$with_libtiffinc" in
+    yes|no)
+      echo "configure: warning: --with-libtiffinc called without argument - will use default" 1>&2
+    ;;
+    * )
+      if test ! -d ${with_libtiffinc}; then
+        echo "configure: warning: called with --with-libtiffinc, but libtiff base directory ${withval} does not exist or is not a directory." 1>&2
+        exit 1
+      fi
+      CPPFLAGS="-I${with_libtiffinc}/include $CPPFLAGS"
+      LDFLAGS="-L${with_libtiffinc}/lib $LDFLAGS"
+    ;;
+    esac
+
+fi
+
+TIFFLIBS=""
+AC_MSG_CHECKING(whether to include libtiff support)
+AC_ARG_WITH(libtiff,
+[  --with-libtiff          include libtiff support (default: auto)
+  --without-libtiff       don't include libtiff support
+  --with-libtiffinc=DIR   location of libtiff includes and libraries],
+[ case "$withval" in
+  yes)
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(WITH_LIBTIFF, , [Define if we are compiling with libtiff support])
+    TIFFLIBS="-ltiff $JPEGLIBS $ZLIBLIBS"
+    SAVELIBS="$LIBS"
+    LIBS="$LIBS -ltiff $JPEGLIBS $ZLIBLIBS"
+    AC_LIBTIFF_LZW_COMPRESSION
+    LIBS="$SAVELIBS"
+    ;;
+  *)
+    AC_MSG_RESULT(no)
+    ;;
+  esac ],
+[ SAVELIBS="$LIBS"
+  LIBS="$LIBS -ltiff $JPEGLIBS $ZLIBLIBS"
+  AC_TRY_LINK([#include <tiffio.h>], [(void) TIFFGetVersion()], 
+    [ AC_MSG_RESULT(yes)
+      AC_DEFINE(WITH_LIBTIFF, , [Define if we are compiling with libtiff support])
+      TIFFLIBS="-ltiff $JPEGLIBS $ZLIBLIBS" 
+      AC_LIBTIFF_LZW_COMPRESSION
+    ], 
+    [AC_MSG_RESULT(no)])
+  LIBS="$SAVELIBS"] )
+
 
 dnl -------------------------------------------------------
 dnl Check for libpng support

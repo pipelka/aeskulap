@@ -1,6 +1,7 @@
-Makefile
-echoscu
-findscu
-movescu
+termscu
 storescp
 storescu
+movescu
+echoscu
+Makefile
+findscu

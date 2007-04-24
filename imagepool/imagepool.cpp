@@ -20,24 +20,24 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/20 07:14:57 $
+    Update Date:      $Date: 2007/04/24 09:53:37 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
 #include <stdlib.h>
 #include "imagepool.h"
 
-#include "dcdatset.h"
-#include "dcmimage.h"
-#include "diregist.h"
-#include "dcdeftag.h"
+#include "dcmtk/dcmdata/dcdatset.h"
+#include "dcmtk/dcmimgle/dcmimage.h"
+#include "dcmtk/dcmimage/diregist.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
 
-#include "djdecode.h"
-#include "djencode.h"
-#include "dcrledrg.h"
-#include "dcrleerg.h"
+#include "dcmtk/dcmjpeg/djdecode.h"
+#include "dcmtk/dcmjpeg/djencode.h"
+#include "dcmtk/dcmdata/dcrledrg.h"
+#include "dcmtk/dcmdata/dcrleerg.h"
 
 #include "poolnetwork.h"
 #include "aconfiguration.h"

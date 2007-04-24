@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2002, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,23 +23,23 @@
  *    classes: SiSecurityProfile
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:08 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:29 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
+#include "dcmtk/config/osconfig.h"
 
 #ifdef WITH_OPENSSL
 
-#include "sisprof.h"
-#include "dcitem.h"    /* for DcmItem */
-#include "dcvrat.h"    /* for DcmAttributeTag */
-#include "simac.h"     /* for SiMAC */
-#include "sialgo.h"    /* for SiAlgorithm */
+#include "dcmtk/dcmsign/sisprof.h"
+#include "dcmtk/dcmdata/dcitem.h"    /* for DcmItem */
+#include "dcmtk/dcmdata/dcvrat.h"    /* for DcmAttributeTag */
+#include "dcmtk/dcmsign/simac.h"     /* for SiMAC */
+#include "dcmtk/dcmsign/sialgo.h"    /* for SiAlgorithm */
 
 OFBool SiSecurityProfile::isAllowableMAC(const SiMAC& mac) const
 {
@@ -151,11 +151,16 @@ int sisprof_cc_dummy_to_keep_linker_from_moaning = 0;
 
 /*
  *  $Log: sisprof.cc,v $
- *  Revision 1.1  2005/08/23 19:32:08  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:29  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:25:59  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:42  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.7  2005/12/08 15:47:31  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.6  2002/12/16 12:57:53  meichel
  *  Minor modification to shut up linker on MacOS X when compiling

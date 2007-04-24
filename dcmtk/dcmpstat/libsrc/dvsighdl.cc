@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2001-2004, OFFIS
+ *  Copyright (C) 2001-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,29 +23,29 @@
  *    classes: DVSignatureHandler
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dvsighdl.h"
-#include "dcdeftag.h"
-#include "dcsignat.h"
-#include "dcobject.h"
-#include "dcsequen.h"
-#include "dcvrat.h"
-#include "dvpscf.h"
-#include "sicert.h"
-#include "sitypes.h"
-#include "sinullpr.h"
-#include "siprivat.h"
-#include "siripemd.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmpstat/dvsighdl.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmsign/dcsignat.h"
+#include "dcmtk/dcmdata/dcobject.h"
+#include "dcmtk/dcmdata/dcsequen.h"
+#include "dcmtk/dcmdata/dcvrat.h"
+#include "dcmtk/dcmpstat/dvpscf.h"
+#include "dcmtk/dcmsign/sicert.h"
+#include "dcmtk/dcmsign/sitypes.h"
+#include "dcmtk/dcmsign/sinullpr.h"
+#include "dcmtk/dcmsign/siprivat.h"
+#include "dcmtk/dcmsign/siripemd.h"
 
-#include "ofstream.h"
+#include "dcmtk/ofstd/ofstream.h"
 
 #ifdef WITH_OPENSSL
 BEGIN_EXTERN_C
@@ -877,11 +877,16 @@ OFCondition DVSignatureHandler::createSignature(
 
 /*
  *  $Log: dvsighdl.cc,v $
- *  Revision 1.1  2005/08/23 19:31:59  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:44  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:00  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.14  2005/12/08 15:46:59  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.13  2004/02/04 15:57:49  joergr
  *  Removed acknowledgements with e-mail addresses from CVS log.

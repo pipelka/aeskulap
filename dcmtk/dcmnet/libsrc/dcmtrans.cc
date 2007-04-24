@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2003, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,17 +23,17 @@
  *    classes: DcmTransportConnection, DcmTCPConnection
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:01 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:35 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dcmtrans.h"
-#include "dcompat.h"     /* compatibility code for certain Unix dialects such as SunOS */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmnet/dcmtrans.h"
+#include "dcmtk/dcmnet/dcompat.h"     /* compatibility code for certain Unix dialects such as SunOS */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
@@ -41,7 +41,7 @@
 #define INCLUDE_CTIME
 #define INCLUDE_CERRNO
 #define INCLUDE_CSIGNAL
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 BEGIN_EXTERN_C
 #ifdef HAVE_SYS_TIME_H
@@ -305,11 +305,16 @@ const char *DcmTCPConnection::errorString(DcmTransportLayerStatus code)
 
 /*
  *  $Log: dcmtrans.cc,v $
- *  Revision 1.1  2005/08/23 19:32:01  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:35  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:10  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.9  2005/12/08 15:44:35  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.8  2003/07/03 14:21:10  meichel
  *  Added special handling for FD_SET() on MinGW, which expects an

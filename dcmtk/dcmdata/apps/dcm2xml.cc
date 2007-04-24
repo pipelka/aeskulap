@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2002-2003, OFFIS
+ *  Copyright (C) 2002-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,9 +22,8 @@
  *  Purpose: Convert the contents of a DICOM file to XML format
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
- *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/apps/dcm2xml.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -32,13 +31,14 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dctk.h"
-#include "cmdlnarg.h"
-#include "ofstd.h"
-#include "ofstream.h"
-#include "ofconapp.h"
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcdebug.h"
 
 #ifdef WITH_ZLIB
 #include <zlib.h>        /* for zlibVersion() */
@@ -52,15 +52,43 @@
 static char rcsid[] = "$dcmtk: " OFFIS_CONSOLE_APPLICATION " v"
   OFFIS_DCMTK_VERSION " " OFFIS_DCMTK_RELEASEDATE " $";
 
-
 // ********************************************
 
+static OFBool checkForNonASCIICharacters(DcmElement& elem)
+{
+  char *c = NULL;
+  if (elem.getString(c).good() && c)
+  {
+    while (*c)
+    {
+      if (OFstatic_cast(unsigned char, *c) > 127) return OFTrue;
+      ++c;
+    }
+  }
+  return OFFalse;
+}
+
+static OFBool checkForNonASCIICharacters(DcmItem& dataset)
+{
+  DcmStack stack;
+  while (dataset.nextObject(stack, OFTrue).good())
+  {
+    if (stack.top()->isaString())
+    {
+      if (checkForNonASCIICharacters(* OFstatic_cast(DcmElement *, stack.top())))
+        return OFTrue;
+    }
+  }
+  return OFFalse;
+}
 
 static OFCondition writeFile(ostream &out,
                              const char *ifname,
-                             const OFBool isDataset,
+                             const E_FileReadMode readMode,
                              const E_TransferSyntax xfer,
                              const OFBool loadIntoMemory,
+                             const Uint32 maxReadLength,
+                             const char *defaultCharset,
                              const size_t writeFlags)
 {
     OFCondition result = EC_Normal;
@@ -73,15 +101,13 @@ static OFCondition writeFile(ostream &out,
 
     /* read DICOM file or data set */
     DcmFileFormat dfile;
-    result = dfile.loadFile(ifname, xfer, EGL_noChange, DCM_MaxReadLength, isDataset);
+    result = dfile.loadFile(ifname, xfer, EGL_noChange, maxReadLength, readMode);
 
     if (result.bad())
     {
         CERR << OFFIS_CONSOLE_APPLICATION << ": error (" << result.text()
              << ") reading file: "<< ifname << endl;
-    }
-    else
-    {
+    } else {
         /* write content to XML format */
         if (loadIntoMemory)
             dfile.getDataset()->loadAllDataIntoMemory();
@@ -91,6 +117,8 @@ static OFCondition writeFile(ostream &out,
         if (dfile.getDataset()->findAndGetOFString(DCM_SpecificCharacterSet, csetString).good())
         {
             if (csetString == "ISO_IR 6")
+                encString = "UTF-8";
+            else if (csetString == "ISO_IR 192")
                 encString = "UTF-8";
             else if (csetString == "ISO_IR 100")
                 encString = "ISO-8859-1";
@@ -110,7 +138,70 @@ static OFCondition writeFile(ostream &out,
                 encString = "ISO-8859-7";
             else if (csetString == "ISO_IR 138")
                 encString = "ISO-8859-8";
+            else if (!csetString.empty())
+                CERR << "Warning: (0008,0005) Specific Character Set '" << csetString << "' not supported" << endl;
+        } else {
+          /* SpecificCharacterSet is not present in the dataset */
+          if (checkForNonASCIICharacters(*dfile.getDataset()))
+          {
+            if (defaultCharset == NULL)
+            {
+              /* the dataset contains non-ASCII characters that really should not be there */
+              CERR << OFFIS_CONSOLE_APPLICATION << ": error: (0008,0005) Specific Character Set absent "
+                   << "but extended characters used in file: " << ifname << endl;
+              return EC_IllegalCall;
+            } else {
+              OFString charset(defaultCharset);
+              if (charset == "latin-1")
+              {
+                csetString = "ISO_IR 100";
+                encString = "ISO-8859-1";
+              }
+              else if (charset == "latin-2")
+              {
+                csetString = "ISO_IR 101";
+                encString = "ISO-8859-2";
+              }
+              else if (charset == "latin-3")
+              {
+                csetString = "ISO_IR 109";
+                encString = "ISO-8859-3";
+              }
+              else if (charset == "latin-4")
+              {
+                csetString = "ISO_IR 110";
+                encString = "ISO-8859-4";
+              }
+              else if (charset == "latin-5")
+              {
+                csetString = "ISO_IR 148";
+                encString = "ISO-8859-9";
+              }
+              else if (charset == "cyrillic")
+              {
+                csetString = "ISO_IR 144";
+                encString = "ISO-8859-5";
+              }
+              else if (charset == "arabic")
+              {
+                csetString = "ISO_IR 127";
+                encString = "ISO-8859-6";
+              }
+              else if (charset == "greek")
+              {
+                csetString = "ISO_IR 126";
+                encString = "ISO-8859-7";
+              }
+              else if (charset == "hebrew")
+              {
+                csetString = "ISO_IR 138";
+                encString = "ISO-8859-8";
+              }
+              dfile.getDataset()->putAndInsertString(DCM_SpecificCharacterSet, csetString.c_str());
+            }
+          }
         }
+
         /* write XML document header */
         out << "<?xml version=\"1.0\"";
         /* optional character set */
@@ -121,7 +212,7 @@ static OFCondition writeFile(ostream &out,
         if (writeFlags & DCMTypes::XF_addDocumentType)
         {
             out << "<!DOCTYPE ";
-            if (isDataset)
+            if (readMode == ERM_dataset)
                out << "data-set";
             else
                out << "file-format";
@@ -149,7 +240,7 @@ static OFCondition writeFile(ostream &out,
             out << ">" << endl;
         }
         /* write XML document content */
-        if (isDataset)
+        if (readMode == ERM_dataset)
             result = dfile.getDataset()->writeXML(out, writeFlags);
         else
             result = dfile.writeXML(out, writeFlags);
@@ -166,9 +257,11 @@ int main(int argc, char *argv[])
 {
     int opt_debugMode = 0;
     size_t opt_writeFlags = 0;
-    OFBool isDataset = OFFalse;
     OFBool loadIntoMemory = OFFalse;
-    E_TransferSyntax xfer = EXS_Unknown;
+    const char *opt_defaultCharset = NULL;
+    E_FileReadMode opt_readMode = ERM_autoDetect;
+    E_TransferSyntax opt_ixfer = EXS_Unknown;
+    OFCmdUnsignedInt maxReadLength = 4096; // default is 4 KB
 
     SetDebugLevel(( 0 ));
 
@@ -188,15 +281,25 @@ int main(int argc, char *argv[])
     cmd.addGroup("input options:");
       cmd.addSubGroup("input file format:");
         cmd.addOption("--read-file",           "+f",     "read file format or data set (default)");
+        cmd.addOption("--read-file-only",      "+fo",    "read file format only");
         cmd.addOption("--read-dataset",        "-f",     "read data set without file meta information");
-      cmd.addSubGroup("input transfer syntax (only with --read-dataset):");
+      cmd.addSubGroup("input transfer syntax:");
         cmd.addOption("--read-xfer-auto",      "-t=",    "use TS recognition (default)");
+        cmd.addOption("--read-xfer-detect",    "-td",    "ignore TS specified in the file meta header");
         cmd.addOption("--read-xfer-little",    "-te",    "read with explicit VR little endian TS");
         cmd.addOption("--read-xfer-big",       "-tb",    "read with explicit VR big endian TS");
         cmd.addOption("--read-xfer-implicit",  "-ti",    "read with implicit VR little endian TS");
       cmd.addSubGroup("long tag values:");
         cmd.addOption("--load-all",            "+M",     "load very long tag values (e.g. pixel data)");
         cmd.addOption("--load-short",          "-M",     "do not load very long values (default)");
+        cmd.addOption("--max-read-length",     "+R",  1, "[k]bytes: integer [4..4194302] (default: 4)",
+                                                         "set threshold for long values to k kbytes");
+    cmd.addGroup("processing options:");
+      cmd.addSubGroup("character set:");
+        cmd.addOption("--charset-require",     "+Cr",    "require declaration of extended charset (default)");
+        cmd.addOption("--charset-assume",      "+Ca", 1, "charset: string constant",
+                                                         "(latin-1 to -5, cyrillic, arabic, greek, hebrew)\n"
+                                                         "assume charset if undeclared ext. charset found");
     cmd.addGroup("output options:");
       cmd.addSubGroup("XML structure:");
         cmd.addOption("--add-dtd-reference",   "+Xd",    "add reference to document type definition (DTD)");
@@ -233,40 +336,61 @@ int main(int argc, char *argv[])
             opt_debugMode = 5;
 
         cmd.beginOptionBlock();
-        if (cmd.findOption("--read-file"))
-            isDataset = OFFalse;
-        if (cmd.findOption("--read-dataset"))
-            isDataset = OFTrue;
+        if (cmd.findOption("--read-file")) opt_readMode = ERM_autoDetect;
+        if (cmd.findOption("--read-file-only")) opt_readMode = ERM_fileOnly;
+        if (cmd.findOption("--read-dataset")) opt_readMode = ERM_dataset;
         cmd.endOptionBlock();
 
         cmd.beginOptionBlock();
         if (cmd.findOption("--read-xfer-auto"))
-        {
-            app.checkDependence("--read-xfer-auto", "--read-dataset", isDataset);
-            xfer = EXS_Unknown;
-        }
+            opt_ixfer = EXS_Unknown;
+        if (cmd.findOption("--read-xfer-detect"))
+            dcmAutoDetectDatasetXfer.set(OFTrue);
         if (cmd.findOption("--read-xfer-little"))
         {
-            app.checkDependence("--read-xfer-little", "--read-dataset", isDataset);
-            xfer = EXS_LittleEndianExplicit;
+            app.checkDependence("--read-xfer-little", "--read-dataset", opt_readMode == ERM_dataset);
+            opt_ixfer = EXS_LittleEndianExplicit;
         }
         if (cmd.findOption("--read-xfer-big"))
         {
-            app.checkDependence("--read-xfer-big", "--read-dataset", isDataset);
-            xfer = EXS_BigEndianExplicit;
+            app.checkDependence("--read-xfer-big", "--read-dataset", opt_readMode == ERM_dataset);
+            opt_ixfer = EXS_BigEndianExplicit;
         }
         if (cmd.findOption("--read-xfer-implicit"))
         {
-            app.checkDependence("--read-xfer-implicit", "--read-dataset", isDataset);
-            xfer = EXS_LittleEndianImplicit;
+            app.checkDependence("--read-xfer-implicit", "--read-dataset", opt_readMode == ERM_dataset);
+            opt_ixfer = EXS_LittleEndianImplicit;
         }
         cmd.endOptionBlock();
 
+        if (cmd.findOption("--max-read-length"))
+        {
+            app.checkValue(cmd.getValueAndCheckMinMax(maxReadLength, 4, 4194302));
+            maxReadLength *= 1024; // convert kbytes to bytes
+        }
         cmd.beginOptionBlock();
         if (cmd.findOption("--load-all"))
             loadIntoMemory = OFTrue;
         if (cmd.findOption("--load-short"))
             loadIntoMemory = OFFalse;
+        cmd.endOptionBlock();
+
+        cmd.beginOptionBlock();
+        if (cmd.findOption("--charset-require"))
+        {
+           opt_defaultCharset = NULL;
+        }
+        if (cmd.findOption("--charset-assume"))
+        {
+          app.checkValue(cmd.getValue(opt_defaultCharset));
+          OFString charset(opt_defaultCharset);
+          if (charset != "latin-1" && charset != "latin-2" && charset != "latin-3" &&
+              charset != "latin-4" && charset != "latin-5" && charset != "cyrillic" &&
+              charset != "arabic" && charset != "greek" && charset != "hebrew")
+          {
+            app.printError("unknown value for --charset-assume. known values are latin-1 to -5, cyrillic, arabic, greek, hebrew.");
+          }
+        }
         cmd.endOptionBlock();
 
         cmd.beginOptionBlock();
@@ -282,7 +406,10 @@ int main(int argc, char *argv[])
         if (cmd.findOption("--write-binary-data"))
             opt_writeFlags |= DCMTypes::XF_writeBinaryData;
         if (cmd.findOption("--encode-base64"))
+        {
+            app.checkDependence("--encode-base64", "--write-binary-data", (opt_writeFlags & DCMTypes::XF_writeBinaryData) > 0);
             opt_writeFlags |= DCMTypes::XF_encodeBase64;
+        }
     }
 
     SetDebugLevel((opt_debugMode));
@@ -316,12 +443,12 @@ int main(int argc, char *argv[])
         ofstream stream(ofname);
         if (stream.good())
         {
-            if (writeFile(stream, ifname, isDataset, xfer, loadIntoMemory, opt_writeFlags).bad())
+            if (writeFile(stream, ifname, opt_readMode, opt_ixfer, loadIntoMemory, maxReadLength, opt_defaultCharset, opt_writeFlags).bad())
                 result = 2;
         } else
             result = 1;
     } else {
-        if (writeFile(COUT, ifname, isDataset, xfer, loadIntoMemory, opt_writeFlags).bad())
+        if (writeFile(COUT, ifname, opt_readMode, opt_ixfer, loadIntoMemory, maxReadLength, opt_defaultCharset, opt_writeFlags).bad())
             result = 3;
     }
 
@@ -332,11 +459,59 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dcm2xml.cc,v $
- * Revision 1.1  2005/08/23 19:32:00  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:38  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:57  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.22  2005/12/08 15:40:42  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.21  2005/12/07 16:42:49  onken
+ * Changed default and minimum value of --max-read-length to 4 KB
+ *
+ * Revision 1.20  2005/12/02 08:58:44  joergr
+ * Added new command line option that ignores the transfer syntax specified in
+ * the meta header and tries to detect the transfer syntax automatically from
+ * the dataset.
+ * Added new command line option that checks whether a given file starts with a
+ * valid DICOM meta header.
+ * Removed superfluous local variable. Changed type of variable "maxReadLength".
+ * Made description of option --max-read-length more consistent with the other
+ * command line tools.
+ *
+ * Revision 1.19  2005/12/01 11:25:44  joergr
+ * Removed superfluous local variable. Changed type of variable "maxReadLength".
+ *
+ * Revision 1.18  2005/11/28 15:28:54  meichel
+ * File dcdebug.h is not included by any other header file in the toolkit
+ *   anymore, to minimize the risk of name clashes of macro debug().
+ *
+ * Revision 1.17  2005/11/17 11:26:11  onken
+ * Option --max-read-length now uses OFCommandLine to check, whether option
+ * value is in range
+ *
+ * Revision 1.16  2005/11/16 14:59:11  onken
+ * *** empty log message ***
+ *
+ * Revision 1.15  2005/11/16 14:55:56  onken
+ * Added "--max-read-length" option to dcmdump and dcm2xml to override
+ * DCMTK-internal threshold (4096K) for long attribute values.
+ *
+ * Revision 1.14  2005/06/24 10:06:46  joergr
+ * Check dependence between command line options --write-binary-data and
+ * --encode-base64.
+ *
+ * Revision 1.13  2004/11/29 17:02:17  joergr
+ * Added warning message when character set is unknown, unsupported  or cannot
+ * be mapped to the output format. Added support for UTF-8 character set.
+ *
+ * Revision 1.12  2004/11/22 16:30:19  meichel
+ * Now checking whether extended characters are present in a DICOM dataset,
+ *   preventing generation of incorrect XML if undeclared extended charset used.
  *
  * Revision 1.11  2003/04/22 08:23:33  joergr
  * Added new command line option which allows to embed the content of the DTD

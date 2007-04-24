@@ -17,5 +17,6 @@ INCLUDES = \
 	$(GCONFMM_CFLAGS)
 
 EXTRA_DIST = \
-	aconfiguration-gconf.cpp
+	aconfiguration-gconf.cpp \
+	aconfiguration-win32.cpp
 

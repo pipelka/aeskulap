@@ -67,6 +67,12 @@ other network options:
   -to   --timeout  [s]econds: integer (default: unlimited)
           timeout for connection requests
 
+  -ta   --acse-timeout  [s]econds: integer (default: 30)
+          timeout for ACSE messages
+
+  -td   --dimse-timeout  [s]econds: integer (default: unlimited)
+          timeout for DIMSE messages
+
   -pdu  --max-pdu  [n]umber of bytes: integer [4096..131072]
           set max receive pdu to n bytes (default: 16384)
 
@@ -156,9 +162,6 @@ The \b echoscu application supports the following SOP Classes as an SCU:
 \verbatim
 VerificationSOPClass                1.2.840.10008.1.1
 \endverbatim
-\if MANPAGES
-.fi
-\endif
 
 Unless the \e --propose-ts option is used, the echoscu application will only
 propose the transfer syntax
@@ -205,7 +208,7 @@ environment variable.  It is an error if no data dictionary can be loaded.
 
 \section copyright COPYRIGHT
 
-Copyright (C) 1994-2004 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
+Copyright (C) 1994-2005 by Kuratorium OFFIS e.V., Escherweg 2, 26121 Oldenburg,
 Germany.
 
 */

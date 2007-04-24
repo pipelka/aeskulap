@@ -1,5 +1,5 @@
 # !/bin/sh
 
-autoheader -f
-autoconf -f
+autoheader
+autoconf
 autoconf confmod.in > confmod

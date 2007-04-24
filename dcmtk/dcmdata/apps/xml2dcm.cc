@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2003-2004, OFFIS
+ *  Copyright (C) 2003-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Convert XML document to DICOM file or data set
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:38 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,16 +31,18 @@
  */
 
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
-#include "dctk.h"
-#include "dcpxitem.h"    /* for class DcmPixelItem */
-#include "cmdlnarg.h"
-#include "ofstd.h"
-#include "ofconapp.h"
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/dcpxitem.h"    /* for class DcmPixelItem */
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcdebug.h"
 
 #define INCLUDE_CSTDARG
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef WITH_ZLIB
 #include <zlib.h>        /* for zlibVersion() */
@@ -67,7 +69,7 @@ static xmlCharEncodingHandlerPtr EncodingHandler = NULL;
 
 #ifdef HAVE_VPRINTF
 // function required to avoid issue with 'std' namespace
-static void errorFunction(void *ctx, const char *msg, ...)
+extern "C" void errorFunction(void *ctx, const char *msg, ...)
 {
     va_list ap;
     va_start(ap, msg);
@@ -81,7 +83,7 @@ static void errorFunction(void *ctx, const char *msg, ...)
 #endif
 
 // libxml shall be quiet in non-debug mode
-static void noErrorFunction(void * /*ctx*/, const char * /*msg*/, ...)
+extern "C" void noErrorFunction(void * /*ctx*/, const char * /*msg*/, ...)
 {
     /* do nothing */
 }
@@ -258,6 +260,8 @@ static OFCondition parseElement(DcmItem *dataset,
                 /* check for known character set */
                 if (xmlStrcmp(elemVal, OFreinterpret_cast(const xmlChar *, "ISO_IR 6")) == 0)
                     encString = "UTF-8";
+                else if (xmlStrcmp(elemVal, OFreinterpret_cast(const xmlChar *, "ISO_IR 192")) == 0)
+                    encString = "UTF-8";
                 else if (xmlStrcmp(elemVal, OFreinterpret_cast(const xmlChar *, "ISO_IR 100")) == 0)
                     encString = "ISO-8859-1";
                 else if (xmlStrcmp(elemVal, OFreinterpret_cast(const xmlChar *, "ISO_IR 101")) == 0)
@@ -276,8 +280,8 @@ static OFCondition parseElement(DcmItem *dataset,
                     encString = "ISO-8859-7";
                 else if (xmlStrcmp(elemVal, OFreinterpret_cast(const xmlChar *, "ISO_IR 138")) == 0)
                     encString = "ISO-8859-8";
-                else
-                    CERR << "Warning: character set '" << elemVal <<"' not supported" << endl;
+                else if (xmlStrlen(elemVal) > 0)
+                    CERR << "Warning: character set '" << elemVal << "' not supported" << endl;
                 if (encString != NULL)
                 {
                     /* find appropriate encoding handler */
@@ -376,11 +380,12 @@ static OFCondition parsePixelSequence(DcmPixelSequence *sequence,
 
 
 static OFCondition parseMetaHeader(DcmMetaInfo *metainfo,
-                                   xmlNodePtr current)
+                                   xmlNodePtr current,
+                                   const OFBool parse)
 {
     /* check for valid node and correct name */
     OFCondition result = checkNode(current, "meta-header");
-    if (result.good())
+    if (result.good() && parse)
     {
         /* get child nodes */
         current = current->xmlChildrenNode;
@@ -491,6 +496,7 @@ static OFCondition validateXmlDocument(xmlDocPtr doc,
 static OFCondition readXmlFile(const char *ifname,
                                DcmFileFormat &fileformat,
                                E_TransferSyntax &xfer,
+                               const OFBool metaInfo,
                                const OFBool checkNamespace,
                                const OFBool validateDocument,
                                const OFBool verbose,
@@ -516,19 +522,23 @@ static OFCondition readXmlFile(const char *ifname,
                 /* check namespace declaration (if required) */
                 if (!checkNamespace || (xmlSearchNsByHref(doc, current, OFreinterpret_cast(const xmlChar *, DCMTK_XML_NAMESPACE_URI)) != NULL))
                 {
-                    if (verbose)
-                        COUT << "parsing file-format ..." << endl;
                     /* check whether to parse a "file-format" or "data-set" */
                     if (xmlStrcmp(current->name, OFreinterpret_cast(const xmlChar *, "file-format")) == 0)
                     {
                         if (verbose)
-                            COUT << "parsing meta-header ..." << endl;
+                        {
+                            COUT << "parsing file-format ..." << endl;
+                            if (metaInfo)
+                                COUT << "parsing meta-header ..." << endl;
+                            else
+                                COUT << "skipping meta-header ..." << endl;
+                        }
                         current = current->xmlChildrenNode;
                         /* ignore blank (empty or whitespace only) nodes */
                         while ((current != NULL) && xmlIsBlankNode(current))
                             current = current->next;
-                        /* parse "meta-header" */
-                        result = parseMetaHeader(fileformat.getMetaInfo(), current);
+                        /* parse/skip "meta-header" */
+                        result = parseMetaHeader(fileformat.getMetaInfo(), current, metaInfo /*parse*/);
                         if (result.good())
                         {
                             current = current->next;
@@ -589,6 +599,7 @@ int main(int argc, char *argv[])
 {
     int opt_debug = 0;
     OFBool opt_verbose = OFFalse;
+    OFBool opt_metaInfo = OFTrue;
     OFBool opt_dataset = OFFalse;
     OFBool opt_namespace = OFFalse;
     OFBool opt_validate = OFFalse;
@@ -615,6 +626,11 @@ int main(int argc, char *argv[])
       cmd.addOption("--version",                        "print version information and exit", OFTrue /* exclusive */);
       cmd.addOption("--verbose",               "-v",    "verbose mode, print processing details");
       cmd.addOption("--debug",                 "-d",    "debug mode, print debug information");
+
+    cmd.addGroup("input options:");
+      cmd.addSubGroup("input file format:");
+        cmd.addOption("--read-meta-info",      "+f",    "read meta information if present (default)");
+        cmd.addOption("--ignore-meta-info",    "-f",    "ignore file meta information");
 
     cmd.addGroup("processing options:");
       cmd.addSubGroup("validation:");
@@ -672,6 +688,15 @@ int main(int argc, char *argv[])
             opt_verbose = OFTrue;
         if (cmd.findOption("--debug"))
             opt_debug = 5;
+
+        /* input options */
+
+        cmd.beginOptionBlock();
+        if (cmd.findOption("--read-meta-info"))
+            opt_metaInfo = OFTrue;
+        if (cmd.findOption("--ignore-meta-info"))
+            opt_metaInfo = OFFalse;
+        cmd.endOptionBlock();
 
         /* processing options */
 
@@ -756,7 +781,9 @@ int main(int argc, char *argv[])
              << "check environment variable: "
              << DCM_DICT_ENVIRONMENT_VARIABLE << endl;
     }
-
+    
+    /* check for compatible libxml version */
+    LIBXML_TEST_VERSION
     /* initialize the XML library (only required for MT-safety) */
     xmlInitParser();
     /* substitute default entities (XML mnenonics) */
@@ -797,7 +824,8 @@ int main(int argc, char *argv[])
         if (opt_verbose)
             COUT << "reading XML input file: " << opt_ifname << endl;
         /* read XML file and feed data into DICOM fileformat */
-        result = readXmlFile(opt_ifname, fileformat, xfer, opt_namespace, opt_validate, opt_verbose, opt_debug != 0);
+        result = readXmlFile(opt_ifname, fileformat, xfer, opt_metaInfo, opt_namespace,
+                             opt_validate, opt_verbose, opt_debug != 0);
         if (result.good())
         {
             if (opt_verbose)
@@ -850,11 +878,34 @@ int main(int, char *[])
 /*
  * CVS/RCS Log:
  * $Log: xml2dcm.cc,v $
- * Revision 1.1  2005/08/23 19:32:00  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:38  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:57  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.16  2005/12/16 15:46:41  meichel
+ * Declared libxml2 callback functions as extern "C"
+ *
+ * Revision 1.15  2005/12/09 12:38:51  meichel
+ * Added missing include for dcdebug.h
+ *
+ * Revision 1.14  2005/12/08 15:40:54  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.13  2005/11/30 12:51:45  joergr
+ * Added missing header file "dcdebug.h".
+ *
+ * Revision 1.12  2005/03/22 13:55:50  joergr
+ * Added call of macro LIBXML_TEST_VERSION.
+ *
+ * Revision 1.11  2004/11/29 17:04:08  joergr
+ * Added support for UTF-8 character set.
+ *
+ * Revision 1.10  2004/08/03 10:06:18  joergr
+ * Added new option that allows to ignore the file meta information.
  *
  * Revision 1.9  2004/03/25 17:27:36  joergr
  * Solved issue with function pointer to std::fprintf or fprintf, respectively.

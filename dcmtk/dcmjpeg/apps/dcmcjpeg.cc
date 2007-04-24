@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2001-2004, OFFIS
+ *  Copyright (C) 2001-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,36 +22,36 @@
  *  Purpose: Compress DICOM file
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:42 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 #ifdef HAVE_GUSI_H
 #include <GUSI.h>
 #endif
 
-#include "dctk.h"
-#include "dcdebug.h"
-#include "cmdlnarg.h"
-#include "ofconapp.h"
-#include "dcuid.h"     /* for dcmtk version name */
-#include "djdecode.h"  /* for dcmjpeg decoders */
-#include "djencode.h"  /* for dcmjpeg encoders */
-#include "djrplol.h"   /* for DJ_RPLossless */
-#include "djrploss.h"  /* for DJ_RPLossy */
-#include "dipijpeg.h"  /* for dcmimage JPEG plugin */
-#include "diregist.h"  /* include to support color images */
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/dcmdata/dcuid.h"     /* for dcmtk version name */
+#include "dcmtk/dcmjpeg/djdecode.h"  /* for dcmjpeg decoders */
+#include "dcmtk/dcmjpeg/djencode.h"  /* for dcmjpeg encoders */
+#include "dcmtk/dcmjpeg/djrplol.h"   /* for DJ_RPLossless */
+#include "dcmtk/dcmjpeg/djrploss.h"  /* for DJ_RPLossy */
+#include "dcmtk/dcmjpeg/dipijpeg.h"  /* for dcmimage JPEG plugin */
+#include "dcmtk/dcmimage/diregist.h"  /* include to support color images */
 
 #ifdef WITH_ZLIB
 #include <zlib.h>      /* for zlibVersion() */
@@ -83,13 +83,16 @@ int main(int argc, char *argv[])
 
   int opt_debugMode = 0;
   OFBool opt_verbose = OFFalse;
-  OFBool opt_iDataset = OFFalse;
+  E_FileReadMode opt_readMode = ERM_autoDetect;
   E_TransferSyntax opt_ixfer = EXS_Unknown;
   E_GrpLenEncoding opt_oglenc = EGL_recalcGL;
   E_EncodingType opt_oenctype = EET_ExplicitLength;
   E_PaddingEncoding opt_opadenc = EPD_noChange;
   OFCmdUnsignedInt opt_filepad = 0;
   OFCmdUnsignedInt opt_itempad = 0;
+  OFBool opt_acceptWrongPaletteTags = OFFalse;
+  OFBool opt_acrNemaCompatibility = OFFalse;
+
 
   // JPEG options
   E_TransferSyntax opt_oxfer = EXS_JPEGProcess14SV1TransferSyntax;
@@ -113,7 +116,7 @@ int main(int argc, char *argv[])
   OFCmdUnsignedInt opt_roiLeft = 0, opt_roiTop = 0, opt_roiWidth = 0, opt_roiHeight = 0;
   OFBool           opt_usePixelValues = OFTrue;
   OFBool           opt_useModalityRescale = OFFalse;
-
+  OFBool           opt_trueLossless = OFTrue;
 
   OFConsoleApplication app(OFFIS_CONSOLE_APPLICATION , "Encode DICOM file to JPEG transfer syntax", rcsid);
   OFCommandLine cmd;
@@ -132,12 +135,17 @@ int main(int argc, char *argv[])
   cmd.addGroup("input options:");
     cmd.addSubGroup("input file format:");
       cmd.addOption("--read-file",              "+f",        "read file format or data set (default)");
+      cmd.addOption("--read-file-only",         "+fo",       "read file format only");
       cmd.addOption("--read-dataset",           "-f",        "read data set without file meta information");
-    cmd.addSubGroup("input transfer syntax (only with --read-dataset):", LONGCOL, SHORTCOL);
+    cmd.addSubGroup("input transfer syntax:", LONGCOL, SHORTCOL);
      cmd.addOption("--read-xfer-auto",          "-t=",       "use TS recognition (default)");
+     cmd.addOption("--read-xfer-detect",        "-td",       "ignore TS specified in the file meta header");
      cmd.addOption("--read-xfer-little",        "-te",       "read with explicit VR little endian TS");
      cmd.addOption("--read-xfer-big",           "-tb",       "read with explicit VR big endian TS");
      cmd.addOption("--read-xfer-implicit",      "-ti",       "read with implicit VR little endian TS");
+    cmd.addSubGroup("compatibility options (ignored by +tl):");
+      cmd.addOption("--accept-acr-nema",    "+Ma",     "accept ACR-NEMA images without photometric\ninterpretation");
+      cmd.addOption("--accept-palettes",    "+Mp",     "accept incorrect palette attribute tags\n(0028,111x) and (0028,121x)");
 
   cmd.addGroup("JPEG encoding options:");
     cmd.addSubGroup("JPEG process options:");
@@ -148,6 +156,10 @@ int main(int argc, char *argv[])
      cmd.addOption("--encode-spectral",         "+es",       "encode spectral selection");
      cmd.addOption("--encode-progressive",      "+ep",       "encode progressive");
 
+    cmd.addSubGroup("lossless JPEG codec selection:");
+     cmd.addOption("--true-lossless",           "+tl",       "true lossless codec (default)");
+     cmd.addOption("--pseudo-lossless",         "+pl",       "old pseudo-lossless codec");
+
     cmd.addSubGroup("lossless JPEG representation options:");
      cmd.addOption("--selection-value",         "+sv",    1, "[sv]: integer (1..7, default: 6)",
                                                              "use selection value sv\nonly with --encode-lossless");
@@ -157,35 +169,34 @@ int main(int argc, char *argv[])
     cmd.addSubGroup("lossy JPEG representation options:");
      cmd.addOption("--quality",                 "+q",     1, "[q]: integer (0..100, default: 90)",
                                                              "use quality factor q");
-
+     cmd.addOption("--smooth",                  "+sm",    1, "[s]: integer (0..100, default: 0)",
+                                                             "use smoothing factor s");
     cmd.addSubGroup("other JPEG options:");
      cmd.addOption("--huffman-optimize",        "+ho",       "optimize huffman tables (default)");
      cmd.addOption("--huffman-standard",        "-ho",       "use standard huffman tables if 8 bits/sample");
-     cmd.addOption("--smooth",                  "+sm",     1, "[s]: integer (0..100, default: 0)",
-                                                             "use smoothing factor s");
 
-    cmd.addSubGroup("compressed bits per sample options:");
+    cmd.addSubGroup("compressed bits per sample options (always +ba with +tl):");
      cmd.addOption("--bits-auto",               "+ba",       "choose bits/sample automatically (default)");
      cmd.addOption("--bits-force-8",            "+be",       "force 8 bits/sample");
      cmd.addOption("--bits-force-12",           "+bt",       "force 12 bits/sample (not with baseline)");
      cmd.addOption("--bits-force-16",           "+bs",       "force 16 bits/sample (lossless only)");
 
-    cmd.addSubGroup("compression color space conversion options:");
+    cmd.addSubGroup("compression color space conversion options (overriden by +tl):");
       cmd.addOption("--color-ybr",              "+cy",       "use YCbCr for color images if lossy (default)");
       cmd.addOption("--color-rgb",              "+cr",       "use RGB for color images if lossy");
       cmd.addOption("--monochrome",             "+cm",       "convert color images to monochrome");
 
-    cmd.addSubGroup("decompression color space conversion (if input is compressed):");
+    cmd.addSubGroup("decompr. color space conversion (if input is compressed; always +cn with +tl):");
       cmd.addOption("--conv-photometric",       "+cp",       "convert if YCbCr photom. interpr. (default)");
       cmd.addOption("--conv-lossy",             "+cl",       "convert YCbCr to RGB if lossy JPEG");
       cmd.addOption("--conv-always",            "+ca",       "always convert YCbCr to RGB");
       cmd.addOption("--conv-never",             "+cn",       "never convert color space");
 
-    cmd.addSubGroup("standard YCbCr component subsampling options:");
+    cmd.addSubGroup("standard YCbCr component subsampling options (not with +tl):");
       cmd.addOption("--sample-444",             "+s4",       "4:4:4 sampling with YBR_FULL (default)");
       cmd.addOption("--sample-422",             "+s2",       "4:2:2 subsampling with YBR_FULL_422");
 
-    cmd.addSubGroup("non-standard YCbCr component subsampling options:");
+    cmd.addSubGroup("non-standard YCbCr component subsampling options (not with +tl):");
       cmd.addOption("--nonstd-422-full",        "+n2",       "4:2:2 subsampling with YBR_FULL");
       cmd.addOption("--nonstd-411-full",        "+n1",       "4:1:1 subsampling with YBR_FULL");
       cmd.addOption("--nonstd-411",             "+np",       "4:1:1 subsampling with YBR_FULL_422");
@@ -199,7 +210,7 @@ int main(int argc, char *argv[])
      cmd.addOption("--offset-table-create",     "+ot",       "create offset table (default)");
      cmd.addOption("--offset-table-empty",      "-ot",       "leave offset table empty");
 
-    cmd.addSubGroup("VOI windowing options for monochrome images:");
+    cmd.addSubGroup("VOI windowing options for monochrome images (not with +tl):");
      cmd.addOption("--no-windowing",       "-W",      "no VOI windowing (default)");
      cmd.addOption("--use-window",         "+Wi",  1, "[n]umber : integer",
                                                       "use the n-th VOI window from image file");
@@ -214,11 +225,11 @@ int main(int argc, char *argv[])
      cmd.addOption("--set-window",         "+Ww",  2, "[c]enter [w]idth : float",
                                                       "compute VOI window using center c and width w");
 
-    cmd.addSubGroup("pixel scaling for monochrome images (--no-windowing):");
+    cmd.addSubGroup("pixel scaling for monochrome images (-W; ignored by +tl):");
      cmd.addOption("--scaling-pixel",      "+sp",     "scale using min/max pixel value (default)");
      cmd.addOption("--scaling-range",      "+sr",     "scale using min/max range");
 
-    cmd.addSubGroup("rescale slope/intercept encoding for monochrome (--no-windowing):");
+    cmd.addSubGroup("rescale slope/intercept encoding for monochrome (-W; ignored by +tl):");
      cmd.addOption("--rescale-identity",   "+ri",     "encode identity modality rescale (default)\nNever used for CT images");
      cmd.addOption("--rescale-map",        "+rm",     "use modality rescale to scale pixel range\nNever used for XA/RF/XA Biplane images");
 
@@ -279,32 +290,37 @@ int main(int argc, char *argv[])
       if (cmd.findOption("--debug")) opt_debugMode = 5;
 
       cmd.beginOptionBlock();
-      if (cmd.findOption("--read-file")) opt_iDataset = OFFalse;
-      if (cmd.findOption("--read-dataset")) opt_iDataset = OFTrue;
+      if (cmd.findOption("--read-file")) opt_readMode = ERM_autoDetect;
+      if (cmd.findOption("--read-file-only")) opt_readMode = ERM_fileOnly;
+      if (cmd.findOption("--read-dataset")) opt_readMode = ERM_dataset;
       cmd.endOptionBlock();
 
       cmd.beginOptionBlock();
       if (cmd.findOption("--read-xfer-auto"))
-      {
-        if (! opt_iDataset) app.printError("--read-xfer-auto only allowed with --read-dataset");
-        opt_ixfer = EXS_Unknown;
-      }
+          opt_ixfer = EXS_Unknown;
+      if (cmd.findOption("--read-xfer-detect"))
+          dcmAutoDetectDatasetXfer.set(OFTrue);
       if (cmd.findOption("--read-xfer-little"))
       {
-        if (! opt_iDataset) app.printError("--read-xfer-little only allowed with --read-dataset");
-        opt_ixfer = EXS_LittleEndianExplicit;
+          app.checkDependence("--read-xfer-little", "--read-dataset", opt_readMode == ERM_dataset);
+          opt_ixfer = EXS_LittleEndianExplicit;
       }
       if (cmd.findOption("--read-xfer-big"))
       {
-        if (! opt_iDataset) app.printError("--read-xfer-big only allowed with --read-dataset");
-        opt_ixfer = EXS_BigEndianExplicit;
+          app.checkDependence("--read-xfer-big", "--read-dataset", opt_readMode == ERM_dataset);
+          opt_ixfer = EXS_BigEndianExplicit;
       }
       if (cmd.findOption("--read-xfer-implicit"))
       {
-        if (! opt_iDataset) app.printError("--read-xfer-implicit only allowed with --read-dataset");
-        opt_ixfer = EXS_LittleEndianImplicit;
+          app.checkDependence("--read-xfer-implicit", "--read-dataset", opt_readMode == ERM_dataset);
+          opt_ixfer = EXS_LittleEndianImplicit;
       }
       cmd.endOptionBlock();
+
+      if (cmd.findOption("--accept-acr-nema"))
+        opt_acrNemaCompatibility = OFTrue;
+      if (cmd.findOption("--accept-palettes"))
+        opt_acceptWrongPaletteTags = OFTrue;
 
       // JPEG options
 
@@ -315,6 +331,11 @@ int main(int argc, char *argv[])
       if (cmd.findOption("--encode-extended")) opt_oxfer = EXS_JPEGProcess2_4TransferSyntax;
       if (cmd.findOption("--encode-spectral")) opt_oxfer = EXS_JPEGProcess6_8TransferSyntax;
       if (cmd.findOption("--encode-progressive")) opt_oxfer = EXS_JPEGProcess10_12TransferSyntax;
+      cmd.endOptionBlock();
+
+      cmd.beginOptionBlock();
+      if (cmd.findOption("--true-lossless")) opt_trueLossless = OFTrue;
+      if (cmd.findOption("--pseudo-lossless")) opt_trueLossless = OFFalse;
       cmd.endOptionBlock();
 
       if (cmd.findOption("--selection-value"))
@@ -345,14 +366,23 @@ int main(int argc, char *argv[])
 
       if (cmd.findOption("--smooth"))
       {
+          app.checkConflict("--smooth", "--true-lossless", opt_trueLossless);
           app.checkValue(cmd.getValueAndCheckMinMax(opt_smoothing, (OFCmdUnsignedInt)0, (OFCmdUnsignedInt)100));
       }
 
       cmd.beginOptionBlock();
-      if (cmd.findOption("--bits-auto"))     opt_compressedBits = 0;
-      if (cmd.findOption("--bits-force-8"))  opt_compressedBits = 8;
+      if (cmd.findOption("--bits-auto"))
+      {
+        opt_compressedBits = 0;
+      }
+      if (cmd.findOption("--bits-force-8"))
+      {
+        app.checkConflict("--bits-force-8", "--true-lossless",  opt_trueLossless);
+        opt_compressedBits = 8;
+      }
       if (cmd.findOption("--bits-force-12"))
       {
+        app.checkConflict("--bits-force-12", "--true-lossless",  opt_trueLossless);
         opt_compressedBits = 12;
         if (opt_oxfer == EXS_JPEGProcess1TransferSyntax)
         {
@@ -361,6 +391,7 @@ int main(int argc, char *argv[])
       }
       if (cmd.findOption("--bits-force-16"))
       {
+        app.checkConflict("--bits-force-16", "--true-lossless",  opt_trueLossless);
         opt_compressedBits = 16;
         switch (opt_oxfer)
         {
@@ -388,6 +419,8 @@ int main(int argc, char *argv[])
       if (cmd.findOption("--color-rgb"))  opt_compCSconversion = ECC_lossyRGB;
       if (cmd.findOption("--monochrome")) opt_compCSconversion = ECC_monochrome;
       cmd.endOptionBlock();
+      app.checkConflict("--color-rgb",  "--true-lossless",  opt_trueLossless && (opt_compCSconversion == ECC_lossyRGB));
+      app.checkConflict("--monochrome", "--true-lossless",  opt_trueLossless && (opt_compCSconversion == ECC_monochrome));
 
       cmd.beginOptionBlock();
       if (cmd.findOption("--conv-photometric"))  opt_decompCSconversion = EDC_photometricInterpretation;
@@ -395,32 +428,40 @@ int main(int argc, char *argv[])
       if (cmd.findOption("--conv-always"))       opt_decompCSconversion = EDC_always;
       if (cmd.findOption("--conv-never"))        opt_decompCSconversion = EDC_never;
       cmd.endOptionBlock();
+      app.checkConflict("--conv-lossy",       "--true-lossless",  opt_trueLossless && (opt_decompCSconversion == EDC_lossyOnly));
+      app.checkConflict("--conv-always",      "--true-lossless",  opt_trueLossless && (opt_decompCSconversion == EDC_always));
+      if (opt_trueLossless) opt_decompCSconversion = EDC_never;
 
       cmd.beginOptionBlock();
       if (cmd.findOption("--sample-444"))
       {
         opt_sampleFactors = ESS_444;
         opt_useYBR422 = OFFalse;
+        app.checkConflict("--sample-444", "--true-lossless", opt_trueLossless);
       }
       if (cmd.findOption("--sample-422"))
       {
         opt_sampleFactors = ESS_422;
         opt_useYBR422 = OFTrue;
+        app.checkConflict("--sample-422", "--true-lossless", opt_trueLossless);
       }
       if (cmd.findOption("--nonstd-422-full"))
       {
         opt_sampleFactors = ESS_422;
         opt_useYBR422 = OFFalse;
+        app.checkConflict("--nonstd-422-full", "--true-lossless", opt_trueLossless);
       }
       if (cmd.findOption("--nonstd-411-full"))
       {
         opt_sampleFactors = ESS_411;
         opt_useYBR422 = OFFalse;
+        app.checkConflict("--nonstd-411-full", "--true-lossless", opt_trueLossless);
       }
       if (cmd.findOption("--nonstd-411"))
       {
         opt_sampleFactors = ESS_411;
         opt_useYBR422 = OFTrue;
+        app.checkConflict("--nonstd-411", "--true-lossless", opt_trueLossless);
       }
       cmd.endOptionBlock();
 
@@ -441,18 +482,29 @@ int main(int argc, char *argv[])
       if (cmd.findOption("--no-windowing")) opt_windowType = 0;
       if (cmd.findOption("--use-window"))
       {
+          app.checkConflict("--use-window", "--true-lossless", opt_trueLossless);
           opt_windowType = 1;
           app.checkValue(cmd.getValueAndCheckMin(opt_windowParameter, 1));
       }
       if (cmd.findOption("--use-voi-lut"))
       {
+          app.checkConflict("--use-voi-lut", "--true-lossless", opt_trueLossless);
           opt_windowType = 2;
           app.checkValue(cmd.getValueAndCheckMin(opt_windowParameter, 1));
       }
-      if (cmd.findOption("--min-max-window")) opt_windowType = 3;
-      if (cmd.findOption("--min-max-window-n")) opt_windowType = 6;
+      if (cmd.findOption("--min-max-window"))
+      {
+        app.checkConflict("--min-max-window", "--true-lossless", opt_trueLossless);
+        opt_windowType = 3;
+      }
+      if (cmd.findOption("--min-max-window-n"))
+      {
+        app.checkConflict("--min-max-window-n", "--true-lossless", opt_trueLossless);
+        opt_windowType = 6;
+      }
       if (cmd.findOption("--roi-min-max-window"))
       {
+          app.checkConflict("--roi-min-max-window", "--true-lossless", opt_trueLossless);
           opt_windowType = 7;
           app.checkValue(cmd.getValue(opt_roiLeft));
           app.checkValue(cmd.getValue(opt_roiTop));
@@ -461,11 +513,13 @@ int main(int argc, char *argv[])
       }
       if (cmd.findOption("--histogram-window"))
       {
+          app.checkConflict("--histogram-window", "--true-lossless", opt_trueLossless);
           opt_windowType = 4;
           app.checkValue(cmd.getValueAndCheckMinMax(opt_windowParameter, 0, 100));
       }
       if (cmd.findOption("--set-window"))
       {
+          app.checkConflict("--set-window", "--true-lossless", opt_trueLossless);
           opt_windowType = 5;
           app.checkValue(cmd.getValue(opt_windowCenter));
           app.checkValue(cmd.getValueAndCheckMin(opt_windowWidth, 1.0));
@@ -561,7 +615,10 @@ int main(int argc, char *argv[])
       opt_roiWidth,
       opt_roiHeight,
       opt_usePixelValues,
-      opt_useModalityRescale);
+      opt_useModalityRescale,
+      opt_acceptWrongPaletteTags,
+      opt_acrNemaCompatibility,
+      opt_trueLossless);
 
     /* make sure data dictionary is loaded */
     if (!dcmDataDict.isDictionaryLoaded())
@@ -582,8 +639,7 @@ int main(int argc, char *argv[])
         COUT << "reading input file " << opt_ifname << endl;
 
     DcmFileFormat fileformat;
-    OFCondition error = fileformat.loadFile(opt_ifname, opt_ixfer,
-        EGL_noChange, DCM_MaxReadLength, opt_iDataset);
+    OFCondition error = fileformat.loadFile(opt_ifname, opt_ixfer, EGL_noChange, DCM_MaxReadLength, opt_readMode);
     if (error.bad())
     {
         CERR << "Error: "
@@ -642,6 +698,7 @@ int main(int argc, char *argv[])
     if (opt_verbose)
         COUT << "creating output file " << opt_ofname << endl;
 
+    fileformat.loadAllDataIntoMemory();
     error = fileformat.saveFile(opt_ofname, opt_oxfer, opt_oenctype, opt_oglenc,
               opt_opadenc, (Uint32) opt_filepad, (Uint32) opt_itempad);
 
@@ -666,11 +723,39 @@ int main(int argc, char *argv[])
 /*
  * CVS/RCS Log:
  * $Log: dcmcjpeg.cc,v $
- * Revision 1.1  2005/08/23 19:32:09  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:42  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:12  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:41  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.15  2005/12/08 15:43:20  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.14  2005/12/02 09:40:59  joergr
+ * Added new command line option that ignores the transfer syntax specified in
+ * the meta header and tries to detect the transfer syntax automatically from
+ * the dataset.
+ * Added new command line option that checks whether a given file starts with a
+ * valid DICOM meta header.
+ *
+ * Revision 1.13  2005/11/29 15:57:15  onken
+ * Added commandline options --accept-acr-nema and --accept-palettes
+ * (same as in dcm2pnm) to dcmcjpeg and extended dcmjpeg to support
+ * these options. Thanks to Gilles Mevel for suggestion.
+ *
+ * Revision 1.11  2005/11/29 08:48:38  onken
+ * Added support for "true" lossless compression in dcmjpeg, that doesn't
+ *   use dcmimage classes, but compresses raw pixel data (8 and 16 bit) to
+ *   avoid losses in quality caused by color space conversions or modality
+ *   transformations etc.
+ * Corresponding commandline option in dcmcjpeg (new default)
+ *
+ * Revision 1.10  2005/11/07 17:10:21  meichel
+ * All tools that both read and write a DICOM file now call loadAllDataIntoMemory()
+ *   to make sure they do not destroy a file when output = input.
  *
  * Revision 1.9  2004/01/16 14:28:01  joergr
  * Updated copyright header.
@@ -707,4 +792,7 @@ int main(int argc, char *argv[])
  *
  *
  */
+
+
+
 

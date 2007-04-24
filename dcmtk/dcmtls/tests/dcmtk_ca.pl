@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 #
 #  Copyright (C) 1998-2001, OFFIS
 #
@@ -25,8 +25,8 @@
 #    DCMTK DICOM Tools.
 #
 #  Last Update:      $Author: braindead $
-#  Update Date:      $Date: 2005/08/23 19:32:00 $
-#  CVS/RCS Revision: $Revision: 1.1 $
+#  Update Date:      $Date: 2007/04/24 09:53:42 $
+#  CVS/RCS Revision: $Revision: 1.2 $
 #  Status:           $State: Exp $
 #
 #  CVS/RCS Log at end of file
@@ -474,8 +474,16 @@ END_OF_CONFIGURATION_FILE
 
 #
 #  $Log: dcmtk_ca.pl,v $
-#  Revision 1.1  2005/08/23 19:32:00  braindead
-#  - initial savannah import
+#  Revision 1.2  2007/04/24 09:53:42  braindead
+#  - updated DCMTK to version 3.5.4
+#  - merged Gianluca's WIN32 changes
+#
+#  Revision 1.2  2006/07/20 10:29:02  pipelka
+#  - debianized the package
+#
+#  Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+#  - imported dcmtk354 sources
+#
 #
 #  Revision 1.3  2001/06/01 16:51:53  meichel
 #  Fixed bug in CA perl script. mkcert -days option now works.

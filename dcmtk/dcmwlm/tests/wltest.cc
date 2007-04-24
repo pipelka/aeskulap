@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2004, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,40 +22,36 @@
  *  Purpose: Worklist Database Test Program
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:09 $
+ *  Update Date:      $Date: 2007/04/24 09:53:49 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmwlm/tests/wltest.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTRING
 #define INCLUDE_CSTDARG
 #define INCLUDE_CERRNO
-#include "ofstdinc.h"
+#define INCLUDE_UNISTD
+#include "dcmtk/ofstd/ofstdinc.h"
 
-BEGIN_EXTERN_C
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-END_EXTERN_C
-
-#include "dicom.h"
-#include "wltypdef.h"
-#include "dcvrlo.h"
-#include "dcvrat.h"
-#include "wldsfs.h"
-#include "dcfilefo.h"
-#include "dcdebug.h"
-#include "dcdict.h"
-#include "cmdlnarg.h"
-#include "ofstd.h"
-#include "dcuid.h"    /* for dcmtk version name */
+#include "dcmtk/dcmnet/dicom.h"
+#include "dcmtk/dcmnet/dul.h"
+#include "dcmtk/dcmwlm/wltypdef.h"
+#include "dcmtk/dcmdata/dcvrlo.h"
+#include "dcmtk/dcmdata/dcvrat.h"
+#include "dcmtk/dcmwlm/wldsfs.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcdebug.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/dcmdata/dcuid.h"    /* for dcmtk version name */
 
 static char rcsid[] = "$dcmtk: wltest v"
   OFFIS_DCMTK_VERSION " " OFFIS_DCMTK_RELEASEDATE " $";
@@ -162,6 +158,13 @@ int main(int argc, char* argv[])
     /* needed for Macintosh */
     GUSISetup(GUSIwithSIOUXSockets);
     GUSISetup(GUSIwithInternetSockets);
+#endif
+
+#ifdef WITH_TCPWRAPPER
+    // this code makes sure that the linker cannot optimize away
+    // the DUL part of the network module where the external flags
+    // for libwrap are defined. Needed on OpenBSD.
+    dcmTCPWrapperDaemonName.set(NULL);
 #endif
 
     prepareCmdLineArgs(argc, argv, "wltest");
@@ -379,11 +382,25 @@ queryWorklistDB(WlmDataSourceFileSystem& wdb,
 /*
 ** CVS Log
 ** $Log: wltest.cc,v $
-** Revision 1.1  2005/08/23 19:32:09  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:49  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:04  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.6  2005/12/14 17:43:42  meichel
+** Adapted code for compilation with TCP wrappers to NetBSD
+**
+** Revision 1.5  2005/12/12 15:14:34  meichel
+** Added code needed for compilation with TCP wrappers on OpenBSD
+**
+** Revision 1.4  2005/12/08 15:48:36  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.3  2004/08/03 11:43:39  meichel
+** Headers libc.h and unistd.h are now included via ofstdinc.h
 **
 ** Revision 1.2  2004/02/11 09:49:06  joergr
 ** Fixed usage output formatting.

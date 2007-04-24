@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2002, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,26 +23,26 @@
  *    classes: SiCertificate
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:08 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:29 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
+#include "dcmtk/config/osconfig.h"
 
 #ifdef WITH_OPENSSL
 
-#include "sicert.h"
-#include "sirsa.h"   /* for class SiRSA */
-#include "sidsa.h"   /* for class SiDSA */
-#include "dcstack.h"
-#include "dcitem.h"
-#include "dcvrcs.h"
-#include "dcvrobow.h"
-#include "dcdeftag.h"
+#include "dcmtk/dcmsign/sicert.h"
+#include "dcmtk/dcmsign/sirsa.h"   /* for class SiRSA */
+#include "dcmtk/dcmsign/sidsa.h"   /* for class SiDSA */
+#include "dcmtk/dcmdata/dcstack.h"
+#include "dcmtk/dcmdata/dcitem.h"
+#include "dcmtk/dcmdata/dcvrcs.h"
+#include "dcmtk/dcmdata/dcvrobow.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
 
 BEGIN_EXTERN_C
 #include <openssl/evp.h>
@@ -167,7 +167,13 @@ OFCondition SiCertificate::read(DcmItem& item)
           {
             if (data)
             {
+#if OPENSSL_VERSION_NUMBER >= 0x00908000L
+              // incompatible API change in OpenSSL 0.9.8
+              const Uint8 *cdata = data;
+              x509 = d2i_X509(NULL, &cdata, cert->getLength());
+#else
               x509 = d2i_X509(NULL, &data, cert->getLength());
+#endif
               if (x509 == NULL) result = EC_IllegalCall;              
             } else result = EC_IllegalCall;            
           }      
@@ -310,11 +316,23 @@ int sicert_cc_dummy_to_keep_linker_from_moaning = 0;
 
 /*
  *  $Log: sicert.cc,v $
- *  Revision 1.1  2005/08/23 19:32:08  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:29  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:25:59  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:42  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.10  2005/12/08 15:47:20  meichel
+ *  Changed include path schema for all DCMTK header files
+ *
+ *  Revision 1.9  2005/11/14 16:42:21  meichel
+ *  Now checking OpenSSL version number to allow compilation both with
+ *    old and new versions due to incompatible API change in OpenSSL 0.9.8.
+ *
+ *  Revision 1.8  2005/11/11 17:50:04  meichel
+ *  Changed parameter to const to allow compilation with OpenSSL 0.9.8
  *
  *  Revision 1.7  2002/12/16 12:57:49  meichel
  *  Minor modification to shut up linker on MacOS X when compiling

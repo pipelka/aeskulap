@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2003, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Template class for command line arguments (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:00 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:48 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,11 +31,11 @@
  */
 
 
-#include "osconfig.h"
+#include "dcmtk/config/osconfig.h"
 
-#include "ofcmdln.h"
-#include "ofstd.h"
-#include "ofcast.h"
+#include "dcmtk/ofstd/ofcmdln.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofcast.h"
 
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
@@ -1462,11 +1462,16 @@ void OFCommandLine::getStatusString(const E_ValueStatus status,
  *
  * CVS/RCS Log:
  * $Log: ofcmdln.cc,v $
- * Revision 1.1  2005/08/23 19:32:00  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:48  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:26:16  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:43  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.36  2005/12/08 15:48:49  meichel
+ * Changed include path schema for all DCMTK header files
  *
  * Revision 1.35  2003/12/05 13:58:28  joergr
  * Fixed problem with retrieving option values using the new iteration feature.

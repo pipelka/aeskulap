@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2001, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,9 +23,9 @@
  *           class providers.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:53 $
+ *  Update Date:      $Date: 2007/04/24 09:53:47 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmwlm/libsrc/wlmactmg.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -34,25 +34,25 @@
 
 // ----------------------------------------------------------------------------
 
-#include "osconfig.h"
+#include "dcmtk/config/osconfig.h"
 
-#include "ofcond.h"
-#include "dicom.h"
-#include "wltypdef.h"
-#include "oftypes.h"
-#include "dcdatset.h"
-#include "dcvrat.h"
-#include "dcvrlo.h"
-#include "dcdict.h"
-#include "dcdeftag.h"
-#include "wlds.h"
-#include "ofcmdln.h"
-#include "assoc.h"
-#include "dimse.h"
-#include "diutil.h"
-#include "ofstd.h"
-#include "dcdicent.h"  // needed by MSVC5 with STL
-#include "wlmactmg.h"
+#include "dcmtk/ofstd/ofcond.h"
+#include "dcmtk/dcmnet/dicom.h"
+#include "dcmtk/dcmwlm/wltypdef.h"
+#include "dcmtk/ofstd/oftypes.h"
+#include "dcmtk/dcmdata/dcdatset.h"
+#include "dcmtk/dcmdata/dcvrat.h"
+#include "dcmtk/dcmdata/dcvrlo.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmwlm/wlds.h"
+#include "dcmtk/ofstd/ofcmdln.h"
+#include "dcmtk/dcmnet/assoc.h"
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/dcmdata/dcdicent.h"  // needed by MSVC5 with STL
+#include "dcmtk/dcmwlm/wlmactmg.h"
 
 // ----------------------------------------------------------------------------
 
@@ -93,7 +93,24 @@ static void AddStatusDetail( DcmDataset **statusDetail, const DcmElement *elem, 
 
 // ----------------------------------------------------------------------------
 
-WlmActivityManager::WlmActivityManager( WlmDataSource *dataSourcev, OFCmdUnsignedInt opt_portv, OFBool opt_refuseAssociationv, OFBool opt_rejectWithoutImplementationUIDv, OFCmdUnsignedInt opt_sleepAfterFindv, OFCmdUnsignedInt opt_sleepDuringFindv, OFCmdUnsignedInt opt_maxPDUv, E_TransferSyntax opt_networkTransferSyntaxv, OFBool opt_verbosev, OFBool opt_debugv, OFBool opt_failInvalidQueryv, OFBool opt_singleProcessv, int opt_maxAssociationsv, OFConsole *logStreamv )
+WlmActivityManager::WlmActivityManager( 
+    WlmDataSource *dataSourcev, 
+    OFCmdUnsignedInt opt_portv, 
+    OFBool opt_refuseAssociationv, 
+    OFBool opt_rejectWithoutImplementationUIDv, 
+    OFCmdUnsignedInt opt_sleepAfterFindv, 
+    OFCmdUnsignedInt opt_sleepDuringFindv, 
+    OFCmdUnsignedInt opt_maxPDUv, 
+    E_TransferSyntax opt_networkTransferSyntaxv, 
+    OFBool opt_verbosev, 
+    OFBool opt_debugv, 
+    OFBool opt_failInvalidQueryv, 
+    OFBool opt_singleProcessv, 
+    int opt_maxAssociationsv, 
+    T_DIMSE_BlockingMode opt_blockModev,
+    int opt_dimse_timeoutv,
+    int opt_acse_timeoutv,
+    OFConsole *logStreamv )
 // Date         : December 10, 2001
 // Author       : Thomas Wilkens
 // Task         : Constructor.
@@ -118,6 +135,7 @@ WlmActivityManager::WlmActivityManager( WlmDataSource *dataSourcev, OFCmdUnsigne
     opt_maxPDU( opt_maxPDUv ), opt_networkTransferSyntax( opt_networkTransferSyntaxv ),
     opt_verbose( opt_verbosev ), opt_debug( opt_debugv ), opt_failInvalidQuery( opt_failInvalidQueryv ),
     opt_singleProcess( opt_singleProcessv ), opt_maxAssociations( opt_maxAssociationsv ),
+    opt_blockMode(opt_blockModev), opt_dimse_timeout(opt_dimse_timeoutv), opt_acse_timeout(opt_acse_timeoutv),
     supportedAbstractSyntaxes( NULL ), numberOfSupportedAbstractSyntaxes( 0 ),
     logStream( logStreamv ), processTable( processTable )
 {
@@ -200,7 +218,7 @@ OFCondition WlmActivityManager::StartProvidingService()
 #endif
 
   // Initialize network, i.e. create an instance of T_ASC_Network*.
-  cond = ASC_initializeNetwork( NET_ACCEPTOR, (int)opt_port, 1000, &net );
+  cond = ASC_initializeNetwork( NET_ACCEPTOR, (int)opt_port, opt_acse_timeout, &net );
   if( cond.bad() ) return( WLM_EC_InitializationOfNetworkConnectionFailed );
 
 #if defined(HAVE_SETUID) && defined(HAVE_GETUID)
@@ -440,6 +458,18 @@ OFCondition WlmActivityManager::WaitForAssociation( T_ASC_Network * net )
     cond = NegotiateAssociation( assoc );
     if( cond.bad() )
     {
+      if( !opt_singleProcess )
+      {
+        ASC_dropAssociation( assoc );
+        ASC_destroyAssociation( &assoc );
+      }
+      return( EC_Normal );
+    }
+
+    // Reject association if no presentation context was negotiated
+    if( ASC_countAcceptedPresentationContexts( assoc->params ) == 0 )
+    {
+      RefuseAssociation( &assoc, WLM_FORCED );
       if( !opt_singleProcess )
       {
         ASC_dropAssociation( assoc );
@@ -771,7 +801,7 @@ OFCondition WlmActivityManager::HandleFindSCP( T_ASC_Association *assoc, T_DIMSE
   // (this is done whithin the callback function FindCallback() that will be passed) and send corresponding
   // C-FIND-RSP messages to the other DICOM application this application is connected with. In the end,
   // also send the C-FIND-RSP message that indicates that there are no more search results.
-  OFCondition cond = DIMSE_findProvider( assoc, presID, request, FindCallback, &context, DIMSE_BLOCKING, 0 );
+  OFCondition cond = DIMSE_findProvider( assoc, presID, request, FindCallback, &context, opt_blockMode, opt_dimse_timeout );
   if( cond.bad() ) DumpMessage( "Find SCP Failed." );
 
   // If option "--sleep-after" is set we need to sleep opt_sleepAfterFind
@@ -1249,11 +1279,28 @@ static void FindCallback( void *callbackData, OFBool cancelled, T_DIMSE_C_FindRQ
 /*
 ** CVS Log
 ** $Log: wlmactmg.cc,v $
-** Revision 1.1  2005/08/23 19:31:53  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:47  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:26:15  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.20  2005/12/08 15:48:35  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.19  2005/11/17 13:45:41  meichel
+** Added command line options for DIMSE and ACSE timeouts
+**
+** Revision 1.18  2005/11/16 14:59:09  meichel
+** Set association timeout in ASC_initializeNetwork to 30 seconds. This improves
+**   the responsiveness of the tools if the peer blocks during assoc negotiation.
+**
+** Revision 1.17  2005/08/30 08:39:20  meichel
+** The worklist SCP now rejects an association when no presentation context
+**   was accepted while processing the association request. Needed for some SCUs
+**   which become confused otherwise.
 **
 ** Revision 1.16  2004/02/24 14:45:34  meichel
 ** Fixed resource leak due to sockets remaining in CLOSE_WAIT state.

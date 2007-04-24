@@ -35,15 +35,20 @@
 #   This perl script allows to delete a worklist entry from a storage area.
 #
 # Last Update:      $Author: braindead $
-# Update Date:      $Date: 2005/08/23 19:32:06 $
+# Update Date:      $Date: 2007/04/24 09:53:40 $
 # Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmwlm/perl/workdel.pl,v $
-# CVS/RCS Revision: $Revision: 1.1 $
+# CVS/RCS Revision: $Revision: 1.2 $
 # Status:           $State: Exp $
 #
 # CVS/RCS Log
 #   $Log: workdel.pl,v $
-#   Revision 1.1  2005/08/23 19:32:06  braindead
-#   - initial savannah import
+#   Revision 1.2  2007/04/24 09:53:40  braindead
+#   - updated DCMTK to version 3.5.4
+#   - merged Gianluca's WIN32 changes
+#
+#   Revision 1.1.1.1  2006/07/19 09:16:47  pipelka
+#   - imported dcmtk354 sources
+#
 #
 #   Revision 1.1  2002/12/03 12:16:18  wilkens
 #   Added files und functionality from the dcmtk/wlisctn folder to dcmtk/dcmwlm

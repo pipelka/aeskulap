@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,27 +22,27 @@
  *  Purpose: loadable DICOM data dictionary
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:55 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dcdict.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmdata/dcdict.h"
 
-#include "ofconsol.h"
-#include "ofstd.h"
-#include "dcdefine.h"
-#include "dcdicent.h"
+#include "dcmtk/ofstd/ofconsol.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/dcmdata/dcdefine.h"
+#include "dcmtk/dcmdata/dcdicent.h"
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 /*
 ** The separator character between fields in the data dictionary file(s)
@@ -244,12 +244,17 @@ parseVMField(char* vmField, int& vmMin, int& vmMax)
 static int
 splitFields(const char* line, char* fields[], int maxFields, char splitChar)
 {
-    char* p;
+    const char *p;
     int foundFields = 0;
     int len;
 
     do {
+#ifdef __BORLANDC__
+        // Borland Builder expects a non-const argument
+        p = strchr(OFconst_cast(char *, line), splitChar);
+#else
         p = strchr(line, splitChar);
+#endif
         if (p == NULL) {
             len = strlen(line);
         } else {
@@ -740,6 +745,7 @@ const DcmDictEntry*
 DcmDataDictionary::findEntry(const char *name) const
 {
     const DcmDictEntry* e = NULL;
+    const DcmDictEntry* ePrivate = NULL;
 
     /* search first in the normal tags dictionary and if not found
      * then search in the repeating tags list.
@@ -748,8 +754,15 @@ DcmDataDictionary::findEntry(const char *name) const
     for (iter=hashDict.begin(); (e==NULL) && (iter!=hashDict.end()); ++iter) {
         if ((*iter)->contains(name)) {
             e = *iter;
+            if (e->getGroup() % 2) 
+            {
+                /* tag is a private tag - continue search to be sure to find non-private keys first */
+                if (!ePrivate) ePrivate = e;
+                e = NULL;
+            }
         }
     }
+
     if (e == NULL) {
         /* search in the repeating tags dictionary */
         OFBool found = OFFalse;
@@ -762,6 +775,12 @@ DcmDataDictionary::findEntry(const char *name) const
             }
         }
     }
+
+    if (e == NULL && ePrivate != NULL) {
+        /* no standard key found - use the first private key found */
+        e = ePrivate;
+    }
+
     return e;
 }
 
@@ -820,11 +839,26 @@ void GlobalDcmDataDictionary::clear()
 /*
 ** CVS/RCS Log:
 ** $Log: dcdict.cc,v $
-** Revision 1.1  2005/08/23 19:31:55  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:25  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.36  2005/12/08 15:41:04  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.35  2005/11/28 16:13:57  meichel
+** Minor adaptations needed for Borland Builder 6
+**
+** Revision 1.34  2005/11/17 13:33:11  meichel
+** When locating DICOM tags by name in DcmDataDictionary::findEntry,
+**   public tags are now preferred over private tags of the same name.
+**
+** Revision 1.33  2004/08/03 16:45:58  meichel
+** Minor changes for platforms on which strchr/strrchr return a const pointer.
 **
 ** Revision 1.32  2004/02/04 16:27:12  joergr
 ** Adapted type casts to new-style typecast operators defined in ofcast.h.

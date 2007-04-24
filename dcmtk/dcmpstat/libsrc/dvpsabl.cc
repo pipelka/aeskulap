@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1999-2004, OFFIS
+ *  Copyright (C) 1999-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,18 +23,18 @@
  *    classes: DVPSAnnotationContent_PList
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dvpsabl.h"
-#include "dvpsab.h"      /* for DVPSAnnotationContent */
-#include "dvpshlp.h"     /* for class DVPSHelper */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmpstat/dvpsabl.h"
+#include "dcmtk/dcmpstat/dvpsab.h"      /* for DVPSAnnotationContent */
+#include "dcmtk/dcmpstat/dvpshlp.h"     /* for class DVPSHelper */
 
 /* --------------- class DVPSAnnotationContent_PList --------------- */
 
@@ -244,11 +244,16 @@ void DVPSAnnotationContent_PList::clearAnnotationSOPInstanceUIDs()
 
 /*
  *  $Log: dvpsabl.cc,v $
- *  Revision 1.1  2005/08/23 19:31:59  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:44  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:00  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:46  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.11  2005/12/08 15:46:17  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.10  2004/02/04 15:57:49  joergr
  *  Removed acknowledgements with e-mail addresses from CVS log.

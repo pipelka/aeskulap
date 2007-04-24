@@ -17,13 +17,13 @@ dcmdatadir = $(top_srcdir)/../dcmdata
 ofstddir = $(top_srcdir)/../ofstd
 dcmimgledir = $(top_srcdir)/../dcmimgle
 dcmsrdir = $(top_srcdir)/../dcmsr
-imagectndir = $(top_srcdir)/../imagectn
+dcmqrdbdir = $(top_srcdir)/../dcmqrdb
 dcmnetdir = $(top_srcdir)/../dcmnet
 dcmsigndir = $(top_srcdir)/../dcmsign
 dcmtlsdir = $(top_srcdir)/../dcmtls
 
 LOCALINCLUDES = -I$(ofstddir)/include -I$(dcmdatadir)/include -I$(dcmimgledir)/include \
-	-I$(dcmsrdir)/include -I$(imagectndir)/include -I$(dcmnetdir)/include \
+	-I$(dcmsrdir)/include -I$(dcmqrdbdir)/include -I$(dcmnetdir)/include \
 	-I$(dcmsigndir)/include	-I$(dcmtlsdir)/include
 LOCALDEFS =
 
@@ -35,22 +35,23 @@ objs = dvpsal.o dvpsgal.o dvpsgr.o dvpsovl.o dvpsrs.o dvpstx.o \
 	dvpsib.o dvpsibl.o dvpssp.o dvpspr.o dvpscf.o dvpshlp.o \
 	dvpspll.o dvpsab.o dvpsabl.o dvpsspl.o dvpsprt.o dvpsfs.o \
 	dvpsmsg.o dvsighdl.o dcmpstat.o dvpspl2.o
-library = libdcmpstat.$(LIBEXT)
-
+library = libdcmpstat$(LIBEXT)
+librarydev = libdcmpstat.so
 
 all: $(library)
 
 $(library): $(objs)
 	$(AR) $(ARFLAGS) $@ $(objs)
 	$(RANLIB) $@
+	ln -sf $(library) $(librarydev)
 
 install: all
 	$(configdir)/mkinstalldirs $(libdir)
 	$(INSTALL_DATA) $(library) $(libdir)/$(library)
-
+	ln -sf $(library) $(libdir)/$(librarydev)
 
 clean:
-	rm -f $(objs) $(library) $(TRASH)
+	rm -f $(objs) $(library) $(librarydev) $(TRASH)
 
 distclean:
 	rm -f $(objs) $(library) $(DISTTRASH)

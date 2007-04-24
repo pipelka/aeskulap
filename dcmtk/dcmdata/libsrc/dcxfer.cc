@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2004, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,21 +22,21 @@
  *  Purpose: handling of transfer syntaxes
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:58 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "dcxfer.h"
-#include "dcuid.h"
-#include "dcdebug.h"
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/dcmdata/dcxfer.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcdebug.h"
 
 #define INCLUDE_CSTRING
-#include "ofstdinc.h"
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 typedef struct
@@ -294,6 +294,22 @@ const S_XferNames XferNames[] =
       EVT_Explicit,
       EJE_Encapsulated,
       0L, 0L,
+      ESC_none },
+   { UID_JPEG2000Part2MulticomponentImageCompressionLosslessOnlyTransferSyntax,
+      "JPEG 2000 Part 2 Multicomponent Image Compression (Lossless only)",
+      EXS_JPEG2000MulticomponentLosslessOnly,
+      EBO_LittleEndian,
+      EVT_Explicit,
+      EJE_Encapsulated,
+      0L, 0L,
+      ESC_none },
+   { UID_JPEG2000Part2MulticomponentImageCompressionTransferSyntax,
+      "JPEG 2000 Part 2 Multicomponent Image Compression (Lossless or Lossy)",
+      EXS_JPEG2000Multicomponent,
+      EBO_LittleEndian,
+      EVT_Explicit,
+      EJE_Encapsulated,
+      0L, 0L,
       ESC_none }
 
     // enter further transfer syntaxes here ...
@@ -526,11 +542,20 @@ const E_ByteOrder gLocalByteOrder = FindMachineTransferSyntax();
 /*
  * CVS/RCS Log:
  * $Log: dcxfer.cc,v $
- * Revision 1.1  2005/08/23 19:31:58  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:25  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.25  2005/12/08 15:42:11  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.24  2005/10/25 08:55:34  meichel
+ * Updated list of UIDs and added support for new transfer syntaxes
+ *   and storage SOP classes.
  *
  * Revision 1.23  2004/04/06 18:09:14  joergr
  * Updated data dictionary, UIDs and transfer syntaxes for the latest Final Text

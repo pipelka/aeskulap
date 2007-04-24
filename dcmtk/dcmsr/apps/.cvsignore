@@ -1,5 +1,5 @@
-Makefile
+xml2dsr
 dsr2html
 dsr2xml
 dsrdump
-xml2dsr
+Makefile

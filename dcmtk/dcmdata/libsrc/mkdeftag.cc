@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2002, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,26 +22,24 @@
  *  Purpose: Generate a C++ header defining symbolic names for DICOM Tags.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
+ *  Update Date:      $Date: 2007/04/24 09:53:25 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/mkdeftag.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
 #define INCLUDE_CSTRING
 #define INCLUDE_CCTYPE
-#include "ofstdinc.h"
+#define INCLUDE_LIBC
+#include "dcmtk/ofstd/ofstdinc.h"
 
-#ifdef HAVE_LIBC_H
-#include <libc.h>
-#endif
 #ifdef HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif
@@ -58,11 +56,11 @@
 #include <GUSI.h>
 #endif
 
-#include "dcdict.h"
-#include "cmdlnarg.h"
-#include "ofstring.h"
-#include "ofdatime.h"
-#include "dcdicent.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/ofstd/ofstring.h"
+#include "dcmtk/ofstd/ofdatime.h"
+#include "dcmtk/dcmdata/dcdicent.h"
 
 static char*
 convertToIdentifier(char* s)
@@ -287,7 +285,7 @@ int main(int argc, char* argv[])
     fputs("*/\n\n", fout);
     fputs("#ifndef DCDEFTAG_H\n", fout);
     fputs("#define DCDEFTAG_H\n\n", fout);
-    fputs("#include \"dctagkey.h\"\n\n", fout);
+    fputs("#include \"dcmtk/dcmdata/dctagkey.h\"\n\n", fout);
 #ifndef SUPRESS_CREATE_STAMP
     fprintf(fout, "#define DCM_DICT_DEFTAG_BUILD_DATE \"%s\"\n", dateString.c_str());
     fputs("\n", fout);
@@ -357,11 +355,22 @@ int main(int argc, char* argv[])
 /*
 ** CVS/RCS Log:
 ** $Log: mkdeftag.cc,v $
-** Revision 1.1  2005/08/23 19:31:54  braindead
-** - initial savannah import
+** Revision 1.2  2007/04/24 09:53:25  braindead
+** - updated DCMTK to version 3.5.4
+** - merged Gianluca's WIN32 changes
 **
-** Revision 1.1  2005/06/26 19:25:55  pipelka
-** - added dcmtk
+** Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+** - imported dcmtk354 sources
+**
+**
+** Revision 1.24  2005/12/09 15:04:37  meichel
+** Updated build system for dcdeftag/dcdictzz to reflect new directory structure
+**
+** Revision 1.23  2005/12/08 15:42:12  meichel
+** Changed include path schema for all DCMTK header files
+**
+** Revision 1.22  2004/08/03 11:41:10  meichel
+** Headers libc.h and unistd.h are now included via ofstdinc.h
 **
 ** Revision 1.21  2002/11/27 12:07:01  meichel
 ** Adapted module dcmdata to use of new header file ofstdinc.h

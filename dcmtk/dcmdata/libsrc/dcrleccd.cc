@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1994-2003, OFFIS
+ *  Copyright (C) 1994-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,28 +22,28 @@
  *  Purpose: decoder codec class for RLE
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:55 $
+ *  Update Date:      $Date: 2007/04/24 09:53:26 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmdata/libsrc/dcrleccd.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"
-#include "dcrleccd.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dcrleccd.h"
 
 // dcmdata includes
-#include "dcrlecp.h"   /* for class DcmRLECodecParameter */
-#include "dcrledec.h"  /* for class DcmRLEDecoder */
-#include "dcdatset.h"  /* for class DcmDataset */
-#include "dcdeftag.h"  /* for tag constants */
-#include "dcpixseq.h"  /* for class DcmPixelSequence */
-#include "dcpxitem.h"  /* for class DcmPixelItem */
-#include "dcvrpobw.h"  /* for class DcmPolymorphOBOW */
-#include "dcswap.h"    /* for swapIfNecessary() */
-#include "dcuid.h"     /* for dcmGenerateUniqueIdentifer()*/
+#include "dcmtk/dcmdata/dcrlecp.h"   /* for class DcmRLECodecParameter */
+#include "dcmtk/dcmdata/dcrledec.h"  /* for class DcmRLEDecoder */
+#include "dcmtk/dcmdata/dcdatset.h"  /* for class DcmDataset */
+#include "dcmtk/dcmdata/dcdeftag.h"  /* for tag constants */
+#include "dcmtk/dcmdata/dcpixseq.h"  /* for class DcmPixelSequence */
+#include "dcmtk/dcmdata/dcpxitem.h"  /* for class DcmPixelItem */
+#include "dcmtk/dcmdata/dcvrpobw.h"  /* for class DcmPolymorphOBOW */
+#include "dcmtk/dcmdata/dcswap.h"    /* for swapIfNecessary() */
+#include "dcmtk/dcmdata/dcuid.h"     /* for dcmGenerateUniqueIdentifer()*/
 
 
 DcmRLECodecDecoder::DcmRLECodecDecoder()
@@ -81,6 +81,8 @@ OFCondition DcmRLECodecDecoder::decode(
 
   // assume we can cast the codec parameter to what we need
   const DcmRLECodecParameter *djcp = OFstatic_cast(const DcmRLECodecParameter *, cp);
+
+  OFBool enableReverseByteOrder = djcp->getReverseDecompressionByteOrder();
 
   DcmStack localStack(objStack);
   (void)localStack.pop();             // pop pixel data element from stack
@@ -333,7 +335,15 @@ OFCondition DcmRLECodecDecoder::decode(
                   }
 
                   // initialize pointer to output data
-                  pixelPointer = imageData8 + sampleOffset + imageBytesAllocated - byte - 1;
+                  if (enableReverseByteOrder)
+                  {
+                    // assume incorrect LSB to MSB order of RLE segments as produced by some tools
+                    pixelPointer = imageData8 + sampleOffset + byte;
+                  }
+                  else
+                  {
+                    pixelPointer = imageData8 + sampleOffset + imageBytesAllocated - byte - 1;
+                  }
 
                   // loop through all pixels of the frame
                   for (pixel = 0; pixel < bytesPerStripe; ++pixel)
@@ -367,7 +377,8 @@ OFCondition DcmRLECodecDecoder::decode(
     if (dataset->ident() == EVR_dataset)
     {
         // create new SOP instance UID if codec parameters require so
-        if (result.good() && djcp->getUIDCreation()) result = DcmCodec::newInstance(OFstatic_cast(DcmItem *, dataset));
+        if (result.good() && djcp->getUIDCreation()) result = 
+          DcmCodec::newInstance(OFstatic_cast(DcmItem *, dataset), NULL, NULL, NULL);
     }
   }
   return result;
@@ -404,11 +415,24 @@ OFCondition DcmRLECodecDecoder::encode(
 /*
  * CVS/RCS Log
  * $Log: dcrleccd.cc,v $
- * Revision 1.1  2005/08/23 19:31:55  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:26  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:55  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:40  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.7  2005/12/08 15:41:29  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.6  2005/07/26 17:08:35  meichel
+ * Added option to RLE decoder that allows to correctly decode images with
+ *   incorrect byte order of byte segments (LSB instead of MSB).
+ *
+ * Revision 1.5  2004/08/24 14:54:20  meichel
+ *  Updated compression helper methods. Image type is not set to SECONDARY
+ *   any more, support for the purpose of reference code sequence added.
  *
  * Revision 1.4  2003/08/14 09:01:06  meichel
  * Adapted type casts to new-style typecast operators defined in ofcast.h

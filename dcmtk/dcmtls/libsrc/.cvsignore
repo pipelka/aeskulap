@@ -1,2 +1,4 @@
 Makefile
-*.a
+libdcmtls.so
+libdcmtls.-3.5.so.4
+libdcmtls-3.5.so.4

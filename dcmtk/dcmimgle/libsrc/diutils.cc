@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1996-2004, OFFIS
+ *  Copyright (C) 1996-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -22,8 +22,8 @@
  *  Purpose: Utilities (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:54 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -31,13 +31,16 @@
  */
 
 
-#include "osconfig.h"
-#include "dctypes.h"
-#include "ofconsol.h"
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dctypes.h"
+#include "dcmtk/ofstd/ofconsol.h"
 
-#include "diutils.h"
+#include "dcmtk/dcmimgle/diutils.h"
 
-#include "ofstream.h"
+#include "dcmtk/ofstd/ofstream.h"
+
+#define INCLUDE_CMATH
+#include "dcmtk/ofstd/ofstdinc.h"
 
 
 /*-------------------*
@@ -60,6 +63,28 @@ const int DicomImageClass::DL_DebugMessages  = 0x8;
 /*------------------------*
  *  function definitions  *
  *------------------------*/
+
+unsigned int DicomImageClass::rangeToBits(double minvalue,
+                                          double maxvalue)
+{
+    /* assertion: min < max ! */
+    if (minvalue > maxvalue)
+    {
+        const double temp = minvalue;
+        minvalue = maxvalue;
+        maxvalue = temp;
+    }
+    /* signed data? */
+    if (minvalue < 0)
+    {
+        if (fabs(minvalue) > fabs(maxvalue))
+            return tobits(OFstatic_cast(unsigned long, fabs(minvalue)), 0) + 1;
+        else
+            return tobits(OFstatic_cast(unsigned long, fabs(maxvalue)), 0) + 1;
+    }
+    return tobits(OFstatic_cast(unsigned long, maxvalue), 0);
+}
+
 
 EP_Representation DicomImageClass::determineRepresentation(double minvalue,
                                                            double maxvalue)
@@ -121,11 +146,19 @@ EP_Representation DicomImageClass::determineRepresentation(double minvalue,
  *
  * CVS/RCS Log:
  * $Log: diutils.cc,v $
- * Revision 1.1  2005/08/23 19:31:54  braindead
- * - initial savannah import
+ * Revision 1.2  2007/04/24 09:53:44  braindead
+ * - updated DCMTK to version 3.5.4
+ * - merged Gianluca's WIN32 changes
  *
- * Revision 1.1  2005/06/26 19:25:57  pipelka
- * - added dcmtk
+ * Revision 1.1.1.1  2006/07/19 09:16:44  pipelka
+ * - imported dcmtk354 sources
+ *
+ *
+ * Revision 1.14  2005/12/08 15:43:07  meichel
+ * Changed include path schema for all DCMTK header files
+ *
+ * Revision 1.13  2005/03/09 17:30:13  joergr
+ * Added new helper function rangeToBits().
  *
  * Revision 1.12  2004/01/05 14:58:42  joergr
  * Removed acknowledgements with e-mail addresses from CVS log.

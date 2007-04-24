@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 1998-2003, OFFIS
+ *  Copyright (C) 1998-2005, OFFIS
  *
  *  This software and supporting documentation were developed by
  *
@@ -23,22 +23,22 @@
  *    classes: DVPSImageBoxContent
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:31:59 $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  Update Date:      $Date: 2007/04/24 09:53:44 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
  *
  */
 
-#include "osconfig.h"    /* make sure OS specific configuration is included first */
-#include "ofstring.h"
-#include "dvpsib.h"
-#include "dvpsdef.h"     /* for constants and macros */
-#include "dvpspll.h"
-#include "dvpscf.h"
-#include "dvpshlp.h"
-#include "dvpspl.h"      /* for DVPSPresentationLUT, needed by MSVC5 with STL */
+#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtk/ofstd/ofstring.h"
+#include "dcmtk/dcmpstat/dvpsib.h"
+#include "dcmtk/dcmpstat/dvpsdef.h"     /* for constants and macros */
+#include "dcmtk/dcmpstat/dvpspll.h"
+#include "dcmtk/dcmpstat/dvpscf.h"
+#include "dcmtk/dcmpstat/dvpshlp.h"
+#include "dcmtk/dcmpstat/dvpspl.h"      /* for DVPSPresentationLUT, needed by MSVC5 with STL */
 
 
 /* --------------- class DVPSImageBoxContent --------------- */
@@ -1551,11 +1551,16 @@ void DVPSImageBoxContent::setLog(OFConsole *stream, OFBool verbMode, OFBool dbgM
 
 /*
  *  $Log: dvpsib.cc,v $
- *  Revision 1.1  2005/08/23 19:31:59  braindead
- *  - initial savannah import
+ *  Revision 1.2  2007/04/24 09:53:44  braindead
+ *  - updated DCMTK to version 3.5.4
+ *  - merged Gianluca's WIN32 changes
  *
- *  Revision 1.1  2005/06/26 19:26:00  pipelka
- *  - added dcmtk
+ *  Revision 1.1.1.1  2006/07/19 09:16:45  pipelka
+ *  - imported dcmtk354 sources
+ *
+ *
+ *  Revision 1.33  2005/12/08 15:46:33  meichel
+ *  Changed include path schema for all DCMTK header files
  *
  *  Revision 1.32  2003/06/04 12:30:28  meichel
  *  Added various includes needed by MSVC5 with STL

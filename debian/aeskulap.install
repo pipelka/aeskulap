@@ -1,4 +1,6 @@
 etc/
 usr/bin/aeskulap
-usr/lib/aeskulap/*.so
+usr/lib/aeskulap/libconfiguration.so
+usr/lib/aeskulap/libimagepool.so
+usr/lib/aeskulap/*.so.*
 usr/share/
