@@ -2,3 +2,4 @@ config.status
 Makefile
 configure
 CMakeLists.txt
+confmod.lineno
