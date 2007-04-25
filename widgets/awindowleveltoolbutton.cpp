@@ -2,6 +2,8 @@
 #include "aiconfactory.h"
 #include <iostream>
 
+#include "gettext.h"
+
 namespace Aeskulap {
 
 std::set<WindowLevelToolButton*> WindowLevelToolButton::m_widgetlist;

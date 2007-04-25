@@ -500,6 +500,10 @@ br_find_data_dir (const char *default_data_dir)
 {
 	char *prefix, *dir;
 
+#ifdef WIN32
+	dir = (char*)malloc(10);
+	strcpy(dir, "../share");
+#else
 	prefix = br_find_prefix ((const char *) NULL);
 	if (prefix == (char *) NULL) {
 		/* BinReloc not initialized. */
@@ -511,6 +515,8 @@ br_find_data_dir (const char *default_data_dir)
 
 	dir = br_build_path (prefix, "share");
 	free (prefix);
+#endif
+
 	return dir;
 }
 

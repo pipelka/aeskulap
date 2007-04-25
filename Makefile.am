@@ -1,6 +1,6 @@
 SUBDIRS = \
 	po \
-	dcmtk \
+	$(DCMTK_SUBDIR) \
 	configuration \
 	imagepool \
 	widgets \
@@ -44,7 +44,7 @@ dist-hook:
 	list=`find $(distdir)/dcmtk -name "*.so"` && rm -f $$list
 
 distclean: distclean-recursive
-	cd $(top_builddir)/dcmtk && make distclean
+	if test x"" != "x" ; then cd ./dcmtk && make distclean ; fi
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
 

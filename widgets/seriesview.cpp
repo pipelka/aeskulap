@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/02/22 13:39:34 $
+    Update Date:      $Date: 2007/04/25 14:32:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/seriesview.cpp,v $
-    CVS/RCS Revision: $Revision: 1.28 $
+    CVS/RCS Revision: $Revision: 1.29 $
     Status:           $State: Exp $
 */
 
@@ -36,6 +36,7 @@
 #include "afloatwidget.h"
 
 #include <iostream>
+#include "gettext.h"
 
 SeriesView::SeriesView(const Glib::RefPtr<ImagePool::Series>& series) : 
 Aeskulap::Tiler<Aeskulap::Display>(1, 1),
