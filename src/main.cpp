@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/04/10 12:57:58 $
+    Update Date:      $Date: 2007/04/25 14:32:02 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/main.cpp,v $
-    CVS/RCS Revision: $Revision: 1.10 $
+    CVS/RCS Revision: $Revision: 1.11 $
     Status:           $State: Exp $
 */
 
@@ -42,12 +42,14 @@
 #include <libglademm/xml.h>
 
 #include <iostream>
+#include "gettext.h"
 
 int main(int argc, char* argv[]) {
 
 	br_init(NULL);
 
 	std::string datadir = br_find_data_dir(AESKULAP_DATADIR);
+
 	std::cout << "datadir: " << datadir << std::endl;
 
 	std::string localedir = datadir + "/locale";

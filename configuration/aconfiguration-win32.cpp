@@ -404,6 +404,6 @@ bool Configuration::unset_windowlevels(const Glib::ustring& modality) {
     RegCloseKey(hKey);
 	return ret == ERROR_SUCCESS;
 }
-
+		
 } // namespace Aeskulap
 

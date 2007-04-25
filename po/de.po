@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-08 09:22+0100\n"
+"POT-Creation-Date: 2007-04-25 15:22+0200\n"
 "PO-Revision-Date: 2006-03-08 07:54+0100\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
 "Language-Team: German\n"
@@ -18,16 +18,15 @@ msgstr ""
 "X-Generator: KBabel 1.11.1\n"
 
 #. DEFAULT CT WINDOWLEVELS
-#. *
-#. * (Thanks Dr. Grover Ronald Pardo Holzwarth)
-#. *
-#. * Abdomen     W:  250  C:  50
-#. * Head        W:  150  C:  50
-#. * Lung        W:  2000 C: -550
-#. * Mediastinum W:  450  C:  50
-#. * Spine       W:  300  C:  40
-#. * Vertebrae   W:  2300 C:  530
 #.
+#. (Thanks Dr. Grover Ronald Pardo Holzwarth)
+#.
+#. Abdomen     W:  250  C:  50
+#. Head        W:  150  C:  50
+#. Lung        W:  2000 C: -550
+#. Mediastinum W:  450  C:  50
+#. Spine       W:  300  C:  40
+#. Vertebrae   W:  2300 C:  530
 #: ../configuration/aconfiguration.cpp:52
 msgid "Abdomen"
 msgstr ""
@@ -52,33 +51,33 @@ msgstr "Wirbelsäule"
 msgid "Vertebrae"
 msgstr ""
 
-#: ../imagepool/netquery.cpp:98 ../imagepool/poolinstance.cpp:528
-#: ../imagepool/poolinstance.cpp:549
+#: ../imagepool/netquery.cpp:105 ../imagepool/poolinstance.cpp:579
+#: ../imagepool/poolinstance.cpp:602
 msgid "no description"
 msgstr "Keine Beschreibung"
 
 #: ../widgets/aseriesmenu.cpp:45
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"Series %i (%s)\n"
+"Series %li (%s)\n"
 "%s"
 msgstr ""
 "Serie %i (%s)\n"
 "%s"
 
 #: ../widgets/aseriesmenu.cpp:48
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"Series %i (%s)\n"
+"Series %li (%s)\n"
 "No description"
 msgstr ""
 "Serie %i (%s)\n"
 "Keine Beschreibung"
 
-#: ../widgets/seriesview.cpp:313 ../widgets/awindowleveltoolbutton.cpp:87
-#: ../widgets/awindowleveltoolbutton.cpp:94
-#: ../widgets/awindowleveltoolbutton.cpp:130
-#: ../widgets/awindowleveltoolbutton.cpp:131
+#: ../widgets/seriesview.cpp:321 ../widgets/awindowleveltoolbutton.cpp:98
+#: ../widgets/awindowleveltoolbutton.cpp:105
+#: ../widgets/awindowleveltoolbutton.cpp:141
+#: ../widgets/awindowleveltoolbutton.cpp:142
 msgid "Custom"
 msgstr "Benutzerdef."
 
@@ -95,48 +94,52 @@ msgstr "Aufn. Zeit:"
 msgid "Image: %i / %i"
 msgstr "Bild: %i / %i"
 
-#: ../widgets/adisplay.cpp:498 ../widgets/adisplay.cpp:550
+#: ../widgets/adisplay.cpp:513 ../widgets/adisplay.cpp:565
 #, c-format
 msgid "%i mm"
 msgstr "%i mm"
 
-#: ../widgets/studyview.cpp:108
+#: ../widgets/studyview.cpp:110
 msgid "Rearrange the series of the current study"
 msgstr "Serien der Studie umordnen"
 
-#: ../widgets/studyview.cpp:109
+#: ../widgets/studyview.cpp:111
 msgid "Display the series tiling menu"
 msgstr "Layout der Series ändern"
 
-#: ../widgets/studyview.cpp:118
+#: ../widgets/studyview.cpp:120
 msgid "Toggle single series mode"
 msgstr "Nur aktuelle Serie anzeigen"
 
-#: ../widgets/studyview.cpp:119
+#: ../widgets/studyview.cpp:121
 msgid "Display the series selection menu"
 msgstr "Zeigt das Auswahlmenü für Serien an"
 
-#: ../widgets/studyview.cpp:127
+#: ../widgets/studyview.cpp:129
 msgid "Rearrange the images of the selected series"
 msgstr "Bilder der Serie umordnen"
 
-#: ../widgets/studyview.cpp:128
+#: ../widgets/studyview.cpp:130
 msgid "Display the the image tiling menu"
 msgstr "Layout der Serie ändern"
 
-#: ../widgets/studyview.cpp:136
+#: ../widgets/studyview.cpp:139
 msgid "Display references of the selected series"
 msgstr "Referenzbilder anzeigen"
 
-#: ../widgets/studyview.cpp:140
+#: ../widgets/studyview.cpp:143
 msgid "Navigate through 3D views"
 msgstr "3D Ansicht navigieren"
 
-#: ../widgets/studyview.cpp:148
+#: ../widgets/studyview.cpp:147
+msgid "Display image values under the cursor"
+msgstr ""
+
+#: ../widgets/studyview.cpp:156
 msgid "Measurement tools"
 msgstr "Messwerkzeuge"
 
-#: ../widgets/studyview.cpp:711
+#: ../widgets/studyview.cpp:784
 msgid "new windowlevel"
 msgstr "Neuer Fensterwert"
 
@@ -169,102 +172,111 @@ msgstr "Datum auswählen"
 msgid "Select Enddate"
 msgstr "Enddatum auswählen"
 
-#: ../widgets/awindowleveltoolbutton.cpp:42
+#: ../widgets/awindowleveltoolbutton.cpp:22
+#, fuzzy
+msgid "Invert windowlevel"
+msgstr "Neuer Fensterwert"
+
+#: ../widgets/awindowleveltoolbutton.cpp:53
 msgid "Add new windowlevel preset"
 msgstr "Neuen Fensterwert hinzufügen"
 
-#: ../widgets/awindowleveltoolbutton.cpp:86
-#: ../widgets/awindowleveltoolbutton.cpp:90
-#: ../widgets/awindowleveltoolbutton.cpp:138
-#: ../widgets/awindowleveltoolbutton.cpp:144
+#: ../widgets/awindowleveltoolbutton.cpp:97
+#: ../widgets/awindowleveltoolbutton.cpp:101
+#: ../widgets/awindowleveltoolbutton.cpp:149
+#: ../widgets/awindowleveltoolbutton.cpp:155
 msgid "Default"
 msgstr "Voreinstellung"
 
-#: ../src/astockids.cpp:71
+#: ../src/astockids.cpp:73
 msgid "1 Image"
 msgstr "1 Bild"
 
-#: ../src/astockids.cpp:72
+#: ../src/astockids.cpp:74
 msgid "1x2 Images"
 msgstr "1x2 Bilder"
 
-#: ../src/astockids.cpp:73
+#: ../src/astockids.cpp:75
 msgid "2x1 Images"
 msgstr "2x1 Bilder"
 
-#: ../src/astockids.cpp:74
+#: ../src/astockids.cpp:76
 msgid "2x2 Images"
 msgstr "2x2 Bilder"
 
-#: ../src/astockids.cpp:75
+#: ../src/astockids.cpp:77
 msgid "4x4 Images"
 msgstr "4x4 Bilder"
 
-#: ../src/astockids.cpp:76
+#: ../src/astockids.cpp:78
 msgid "Single"
 msgstr "Einzeln"
 
-#: ../src/astockids.cpp:77
+#: ../src/astockids.cpp:79
 msgid "All"
 msgstr "Alle"
 
-#: ../src/astockids.cpp:78
+#: ../src/astockids.cpp:80
 msgid "1 Series"
 msgstr "1 Serie"
 
-#: ../src/astockids.cpp:79
+#: ../src/astockids.cpp:81
 msgid "2x1 Series"
 msgstr "2x1 Serien"
 
-#: ../src/astockids.cpp:80
+#: ../src/astockids.cpp:82
 msgid "2x2 Series"
 msgstr "2x2 Serien"
 
-#: ../src/astockids.cpp:81
+#: ../src/astockids.cpp:83
 msgid "3x2 Series"
 msgstr "3x2 Serien"
 
-#: ../src/astockids.cpp:82
+#: ../src/astockids.cpp:84
 msgid "3x3 Series"
 msgstr "3x3 Serien"
 
-#: ../src/astockids.cpp:83
+#: ../src/astockids.cpp:85
 msgid "4x4 Series"
 msgstr "4x4 Serien"
 
-#: ../src/astockids.cpp:84
+#: ../src/astockids.cpp:86
 msgid "Reference"
 msgstr "Referenz"
 
-#: ../src/astockids.cpp:85
+#: ../src/astockids.cpp:87
 msgid "Delete item"
 msgstr "Objekt löschen"
 
-#: ../src/astockids.cpp:86
+#: ../src/astockids.cpp:88
 msgid "3D Cursor"
 msgstr "3D Zeiger"
 
-#: ../src/astockids.cpp:87
+#: ../src/astockids.cpp:89
+msgid "Value Picker"
+msgstr ""
+
+#: ../src/astockids.cpp:90
 msgid "Measure"
 msgstr "Messen"
 
-#: ../src/mainwindow.cpp:55
+#: ../src/mainwindow.cpp:57
 msgid "Open DICOM Image files"
 msgstr "DICOM Bilder öffnen"
 
-#: ../src/mainwindow.cpp:111
+#: ../src/mainwindow.cpp:114
 msgid "Bring opened files to front"
 msgstr "Geöffnete Dateien anzeigen"
 
-#: ../src/mainwindow.cpp:120
+#: ../src/mainwindow.cpp:123
 msgid "DICOM files"
 msgstr "DICOM Dateien"
 
-#: ../src/mainwindow.cpp:125
+#: ../src/mainwindow.cpp:129
 msgid "Any files"
 msgstr "Alle Dateien"
 
-#: ../src/mainwindow.cpp:201
+#: ../src/mainwindow.cpp:199
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
 "requested images</span>\n"
