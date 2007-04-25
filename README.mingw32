@@ -1,0 +1,71 @@
+Compilation instructions for Aeskulap on MINGW32
+------------------------------------------------
+
+This document describes the cross-compilation process
+from Linux for Windows using the MINGW32 cross-compiler.
+
+First you have to install the MINGW32 cross-compiler:
+-----------------------------------------------------
+
+I did this under Debian and Ubuntu where the mingw32 package is available.
+TODO - instructions for other distributions
+
+
+Get the DCMTK binaries for MINGW32:
+-----------------------------------
+
+Download the binary package from:
+http://www.bms-austria.com/~pipelka/aeskulap/dcmtk-mingw32/dcmtk-mingw32-bin.zip
+
+Unzip the package into the /usr/mingw32 directory (has to be created first).
+
+
+Get the GKTMM development environment for MINGW32:
+--------------------------------------------------
+
+Download the package from:
+http://www.bms-austria.com/~pipelka/aeskulap/gtkmm-mingw32/gtkmm-mingw32.zip
+
+Unzip contents of the GTK dir (inside the package) into the /usr/mingw32 directory.
+
+
+Create the pkg-config environment:
+----------------------------------
+
+Paste the following script into /usr/bin/i586-mingw32msvc-pkg-config
+and make it executable:
+
+#!/bin/sh
+
+oldprefix=/target
+prefix=/usr/mingw32
+
+output=`PKG_CONFIG_LIBDIR=${prefix}/lib/pkgconfig /usr/bin/pkg-config "$@"`
+result=$?
+
+echo -n ${output} | sed -e "s|-\([IL]\)${oldprefix}|\-\1${prefix}|g"
+exit $result 
+
+
+Get the Aeskulap sources from CVS:
+----------------------------------
+
+cvs -z3 -d:pserver:anonymous@cvs.sv.gnu.org:/sources/aeskulap co aeskulap
+
+
+Compile the sources:
+--------------------
+
+cd aeskulap
+sh autogen.sh
+./configure.mingw32
+make
+
+After that you may install the binary with:
+
+make install (as root)
+
+or
+
+make install-strip (as root)
+This will strip all debugging information and dramatically reduce the size of the binary.
