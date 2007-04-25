@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/04/25 11:11:43 $
+    Update Date:      $Date: 2007/04/25 20:08:49 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.18 $
+    CVS/RCS Revision: $Revision: 1.19 $
     Status:           $State: Exp $
 */
 
@@ -69,7 +69,10 @@ void init() {
 
 #ifdef WIN32
 	if(!dcmDataDict.isDictionaryLoaded()) {
-		dcmDataDict.wrlock().loadDictionary("./dicom.dic");
+		if(!dcmDataDict.wrlock().loadDictionary("./dicom.dic")) {
+			dcmDataDict.unlock();
+			dcmDataDict.wrlock().loadDictionary("../lib/dicom.dic");
+		} 
 		dcmDataDict.unlock();
 	}
 #endif
