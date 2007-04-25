@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/04/24 09:53:37 $
+    Update Date:      $Date: 2007/04/25 11:11:43 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.cpp,v $
-    CVS/RCS Revision: $Revision: 1.17 $
+    CVS/RCS Revision: $Revision: 1.18 $
     Status:           $State: Exp $
 */
 
@@ -33,6 +33,7 @@
 #include "dcmtk/dcmimgle/dcmimage.h"
 #include "dcmtk/dcmimage/diregist.h"
 #include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/dcdict.h"
 
 #include "dcmtk/dcmjpeg/djdecode.h"
 #include "dcmtk/dcmjpeg/djencode.h"
@@ -65,6 +66,14 @@ static std::string m_encoding;
 Aeskulap::Configuration& m_configuration = Aeskulap::Configuration::get_instance();
 
 void init() {
+
+#ifdef WIN32
+	if(!dcmDataDict.isDictionaryLoaded()) {
+		dcmDataDict.wrlock().loadDictionary("./dicom.dic");
+		dcmDataDict.unlock();
+	}
+#endif
+
 	DJEncoderRegistration::registerCodecs();
 	DJDecoderRegistration::registerCodecs();
 

@@ -1,3 +1,10 @@
+aeskulap (0.2.2-2) feisty; urgency=low
+
+  * removed obsolete DCMTK header files
+  * load the DCMTK dictionary manually on Windows
+
+ -- Alexander Pipelka <pipelka@celeborn.bms-austria.com>  Wed, 25 Apr 2007 13:10:52 +0200
+
 aeskulap (0.2.2-1) feisty; urgency=low
 
   * updated DCMTK to version 3.5.4
