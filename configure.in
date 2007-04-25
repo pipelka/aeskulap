@@ -96,8 +96,8 @@ dnl AC_CONFIG_SUBDIRS(dcmtk)
 
 if test x"$MINGW32" = xyes ; then
 
-DCMTK_CFLAGS="-DHAVE_CONFIG_H -I/usr/mingw32/include"
-DCMTK_LIBS="-L/usr/mingw32/lib -ldcmjpeg -lijg8 -lijg12 -lijg16 -ldcmimage -ldcmimgle -ldcmnet -ldcmdata -lofstd -lwsock32"
+DCMTK_CFLAGS="-DHAVE_CONFIG_H -I\$(prefix)/include"
+DCMTK_LIBS="-L\$(prefix)/lib -ldcmjpeg -lijg8 -lijg12 -lijg16 -ldcmimage -ldcmimgle -ldcmnet -ldcmdata -lofstd -lwsock32"
 
 else
 
@@ -130,6 +130,8 @@ if test x"$MINGW32" = xno ; then
 DCMTK_SUBDIR="dcmtk"
 fi
 AC_SUBST(DCMTK_SUBDIR)
+
+AM_CONDITIONAL(BUILD_NOT_MINGW32, test x$MINGW32 = xno)
 
 AC_OUTPUT([
 autopackage/default.apspec

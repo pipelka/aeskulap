@@ -24,7 +24,8 @@ EXTRA_DIST = \
 	gettext.h \
 	intltool-extract.in \
 	intltool-merge.in \
-	intltool-update.in
+	intltool-update.in \
+	configure.mingw32
 
 DISTCLEANFILES = \
 	intltool-extract \

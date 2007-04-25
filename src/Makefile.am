@@ -37,6 +37,8 @@ aeskulap_LDADD = \
 aeskulap_LDFLAGS = \
 	-Wl,-rpath,${prefix}/lib/aeskulap
 
+if BUILD_NOT_MINGW32
+
 schemadir = @GCONF_SCHEMA_FILE_DIR@
 schema_DATA = aeskulap.schemas
 
@@ -45,6 +47,7 @@ schema_DATA = aeskulap.schemas
 if GCONF_SCHEMAS_INSTALL
 install-data-local:
 	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(srcdir)/$(schema_DATA)
+endif
 endif
 
 INCLUDES = \
