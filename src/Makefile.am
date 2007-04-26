@@ -35,7 +35,7 @@ aeskulap_LDADD = \
 	$(DCMTK_LIBS)
 
 aeskulap_LDFLAGS = \
-	-Wl,-rpath,${prefix}/lib/aeskulap
+	-Wl,-rpath,${prefix}/lib/aeskulap $(LDFLAGS_MINGW32)
 
 if BUILD_NOT_MINGW32
 
