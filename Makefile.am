@@ -57,7 +57,11 @@ rpm: dist
 dist-win32:
 	-rm -Rf $(PACKAGE)-$(VERSION)
 	make prefix=/tmp/$(PACKAGE)-$(VERSION) install-strip
+	for i in ofstd ijg8 ijg16 dcmdata dcmnet dcmimgle dcmimage dcmtlc do ; \
+	done
 	cd /tmp && zip -r -9 $(PACKAGE)-$(VERSION).zip $(PACKAGE)-$(VERSION)
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)
 	mv /tmp/$(PACKAGE)-$(VERSION).zip .
 
+push-dist-win32: dist-win32
+	scp $(PACKAGE)-$(VERSION).zip pipelka@www.bms-austria.com:/home/pipelka/public_html/aeskulap/win32
