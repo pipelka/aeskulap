@@ -3,4 +3,7 @@ usr/bin/aeskulap
 usr/lib/aeskulap/libconfiguration.so
 usr/lib/aeskulap/libimagepool.so
 usr/lib/aeskulap/*.so.*
-usr/share/
+usr/share/aeskulap/
+usr/share/applications/aeskulap.desktop
+usr/share/icons/
+usr/share/locale/
