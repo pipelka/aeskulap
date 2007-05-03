@@ -2,13 +2,14 @@ AC_PREREQ(2.52)
 
 AC_INIT(aeskulap, 0.2.2, pipelka@teleweb.at, aeskulap)
 
+AC_CANONICAL_TARGET
+
 AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE(aeskulap, 0.2.2)
 
 AC_SUBST(ACLOCAL_AMFLAGS, "$ACLOCAL_FLAGS")
 AM_MAINTAINER_MODE
-
 
 case "$target" in
     *cygwin* | *mingw32*)
