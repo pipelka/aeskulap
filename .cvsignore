@@ -42,3 +42,5 @@ stamp-h*
 aeskulap.spec
 .settings
 conftest.foo
+aeskulap-0.2.2
+aeskulap-*.zip

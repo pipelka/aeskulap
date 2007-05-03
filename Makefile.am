@@ -53,3 +53,11 @@ rpm: dist
 	mkdir -p rpmbuild
 	cp $(PACKAGE)-$(VERSION).tar.gz rpmbuild
 	rpmbuild --buildroot rpmbuild -ba $(PACKAGE).spec
+
+dist-win32:
+	-rm -Rf $(PACKAGE)-$(VERSION)
+	make prefix=/tmp/$(PACKAGE)-$(VERSION) install-strip
+	cd /tmp && zip -r -9 $(PACKAGE)-$(VERSION).zip $(PACKAGE)-$(VERSION)
+	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)
+	mv /tmp/$(PACKAGE)-$(VERSION).zip .
+
