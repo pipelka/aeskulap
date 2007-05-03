@@ -1,3 +1,9 @@
+aeskulap (0.2.2-3) feisty; urgency=low
+
+  * packaging fix (include only needed files)
+
+ -- Alexander Pipelka <pipelka@celeborn>  Thu,  3 May 2007 09:40:44 +0200
+
 aeskulap (0.2.2-2) feisty; urgency=low
 
   * removed obsolete DCMTK header files
