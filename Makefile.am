@@ -67,10 +67,12 @@ dist-win32:
 	for i in ofstd ijg8 ijg12 ijg16 dcmjpeg dcmdata dcmnet dcmimgle dcmimage dcmtls ; do \
 	    cp $(prefix)/bin/lib$$i.dll /tmp/$(PACKAGE)-$(VERSION)/bin ; \
 	done
+	-cp -f $(prefix)/lib/dicom.dic /tmp/$(PACKAGE)-$(VERSION)
 	$(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/*.exe
 	$(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/*.dll
 	-mv /tmp/$(PACKAGE)-$(VERSION)/bin/* /tmp/$(PACKAGE)-$(VERSION)
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/bin
+	-cp -R -f /tmp/$(PACKAGE)-$(VERSION)/lib/locale /tmp/$(PACKAGE)-$(VERSION)/share
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/lib
 	-rm -f /tmp/$(PACKAGE)-$(VERSION)/share/icons/hicolor/icon-theme.cache
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/share/applications
