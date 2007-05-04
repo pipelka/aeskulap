@@ -1,5 +1,5 @@
 icondir = $(datadir)/icons/hicolor/48x48/apps
-icon_DATA = aeskulap.png
+icon_DATA = aeskulap.png aeskulap.ico
 svgicondir = $(datadir)/icons/hicolor/scalable/apps
 svgicon_DATA = aeskulap.svg
 
