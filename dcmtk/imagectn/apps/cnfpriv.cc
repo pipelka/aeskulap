@@ -25,9 +25,9 @@
  *    parameters.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2005/08/23 19:32:03 $
+ *  Update Date:      $Date: 2007/05/04 14:47:07 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/imagectn/apps/cnfpriv.cc,v $
- *  CVS/RCS Revision: $Revision: 1.1 $
+ *  CVS/RCS Revision: $Revision: 1.2 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -728,6 +728,12 @@ static long quota (const char *value)
 /*
 ** CVS Log
 ** $Log: cnfpriv.cc,v $
+** Revision 1.2  2007/05/04 14:47:07  braindead
+** patches from Gianluca Ghelli:
+**
+** - DICOMDIR support
+** - CodeBlocks IDE workspace
+**
 ** Revision 1.1  2005/08/23 19:32:03  braindead
 ** - initial savannah import
 **

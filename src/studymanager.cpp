@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 16:01:23 $
+    Update Date:      $Date: 2007/05/04 14:47:07 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -38,7 +38,7 @@
 #include <iostream>
 #include <list>
 
-StudyManager::StudyManager(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade) : 
+StudyManager::StudyManager(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade) :
 Gtk::VBox(cobject),
 m_refGlade(refGlade),
 m_new_query(false)
@@ -95,7 +95,7 @@ m_new_query(false)
 	m_treeview_studylist->append_column("", m_tree_icon);
 	Gtk::TreeViewColumn* c = m_treeview_studylist->get_column(0);
 	c->add_attribute(m_tree_icon.property_stock_id(), m_ColumnsStudy.m_icon);
-	
+
 	m_treeview_studylist->append_column(gettext("Patientsname"), m_ColumnsStudy.m_patientsname);
 	m_treeview_studylist->append_column(gettext("Birthdate"), m_ColumnsStudy.m_patientsbirthdate);
 	m_treeview_studylist->append_column(gettext("Description"), m_ColumnsStudy.m_studydescription);
@@ -103,7 +103,7 @@ m_new_query(false)
 	m_treeview_studylist->append_column(gettext("Date/Time"), m_ColumnsStudy.m_studydate);
 	m_treeview_studylist->append_column(gettext("Station"), m_ColumnsStudy.m_station);
 	m_treeview_studylist->append_column(gettext("Server"), m_ColumnsStudy.m_server);
-	
+
 	m_treeview_studylist->get_column(1)->set_sort_column(m_ColumnsStudy.m_patientsname);
 	m_treeview_studylist->get_column(1)->property_sort_indicator().set_value(true);
 	m_treeview_studylist->get_column(1)->set_sort_order(Gtk::SORT_ASCENDING);
@@ -114,7 +114,7 @@ m_new_query(false)
 	m_treeview_studylist->get_column(5)->set_sort_column(m_ColumnsStudy.m_studydate);
 	m_treeview_studylist->get_column(6)->set_sort_column(m_ColumnsStudy.m_station);
 	m_treeview_studylist->get_column(6)->set_sort_column(m_ColumnsStudy.m_server);
-	
+
 	// grouplist
 
 	m_treeview_grouplist = NULL;
@@ -125,7 +125,7 @@ m_new_query(false)
 
 	m_treeview_grouplist->set_model(m_refTreeModelGroup);
 	m_treeview_grouplist->append_column(gettext("Group"), m_ColumnsGroup.m_group);
-	
+
 	m_treeview_grouplist->get_column(0)->set_sort_column(m_ColumnsGroup.m_group);
 	m_treeview_grouplist->get_column(0)->property_sort_indicator().set_value(true);
 	m_treeview_grouplist->get_column(0)->set_sort_order(Gtk::SORT_ASCENDING);
@@ -142,7 +142,7 @@ StudyManager::~StudyManager() {
 
 void StudyManager::on_filter_search() {
 	std::cout << "StudyManager::on_filter_search()" << std::endl;
-	
+
 	Aeskulap::set_busy_cursor();
 	while(Gtk::Main::events_pending()) Gtk::Main::iteration(false);
 
@@ -164,7 +164,7 @@ void StudyManager::on_filter_search() {
 					m_selected_groups,
 					sigc::mem_fun(*this, &StudyManager::on_queryresult_study)
 					);
-	
+
 	if(m_new_query) {
 		Aeskulap::set_busy_cursor(false);
 		std::cout << "no results !!!" << std::endl;
@@ -174,7 +174,31 @@ void StudyManager::on_filter_search() {
 					Gtk::MESSAGE_INFO,
 					Gtk::BUTTONS_OK,
 					true);
-					
+
+		error.show();
+		error.run();
+		error.hide();
+	}
+}
+
+void StudyManager::open_dicomdir( const Glib::ustring &dicomdir) {
+	std::cout << "StudyManager::load_dicomdir(" << dicomdir << ")" << std::endl;
+
+	Aeskulap::set_busy_cursor();
+   	while(Gtk::Main::events_pending()) Gtk::Main::iteration(false);
+
+	m_new_query = true;
+   	ImagePool::open_dicomdir(dicomdir, sigc::mem_fun(*this, &StudyManager::on_queryresult_study));
+	if(m_new_query) {
+		Aeskulap::set_busy_cursor(false);
+		std::cout << "no results !!!" << std::endl;
+		Gtk::MessageDialog error(
+					gettext("<span weight=\"bold\" size=\"larger\">No study or bad DICOMDIR</span>"),
+					true,
+					Gtk::MESSAGE_INFO,
+					Gtk::BUTTONS_OK,
+					true);
+
 		error.show();
 		error.run();
 		error.hide();
@@ -213,9 +237,9 @@ void StudyManager::on_queryresult_study(const Glib::RefPtr< ImagePool::Study >& 
 	row[m_ColumnsStudy.m_studydate] = study->studydate();
 	row[m_ColumnsStudy.m_studyinstanceuid] = study->studyinstanceuid();
 	row[m_ColumnsStudy.m_server] = study->server();
-	
+
 	// add child
-	Gtk::TreeModel::Row child = *(m_refTreeModelStudy->append(row.children()));	
+	Gtk::TreeModel::Row child = *(m_refTreeModelStudy->append(row.children()));
 
 	Aeskulap::set_busy_cursor(false);
 }
@@ -229,7 +253,7 @@ void StudyManager::on_study_activated(const Gtk::TreeModel::Path& path, Gtk::Tre
 	Gtk::TreeModel::Row row = *iter;
 	std::string studyinstanceuid = row[m_ColumnsStudy.m_studyinstanceuid];
 	std::string server = row[m_ColumnsStudy.m_server];
-	
+
 	if(studyinstanceuid.empty()) {
 		return;
 	}
@@ -255,7 +279,7 @@ void StudyManager::on_queryresult_series(const Glib::RefPtr< ImagePool::Series >
 	else {
 		g_snprintf(buffer, sizeof(buffer), gettext("Series %02i"), count);
 	}
-	
+
 	child[m_ColumnsStudy.m_icon] = Gtk::Stock::DND_MULTIPLE.id;
 	child[m_ColumnsStudy.m_iconsize] = 16;
 	child[m_ColumnsStudy.m_patientsname] = buffer;
@@ -277,12 +301,21 @@ bool StudyManager::on_test_study_expand(const Gtk::TreeModel::iterator& iter, co
 
 	remove_rows(row.children());
 
-	query_series_from_net(
-				studyinstanceuid,
-				server,
-				m_configuration.get_local_aet(),
-				sigc::bind(sigc::mem_fun(*this, &StudyManager::on_queryresult_series), row)
-				);
+	if( server.substr(0, 9)=="DICOMDIR:" )
+	{
+	    ImagePool::open_dicomdir_series(
+                    studyinstanceuid,
+                    server.substr(9),
+                    sigc::bind(sigc::mem_fun(*this, &StudyManager::on_queryresult_series), row)
+                    );
+	}
+	else
+        query_series_from_net(
+                    studyinstanceuid,
+                    server,
+                    m_configuration.get_local_aet(),
+                    sigc::bind(sigc::mem_fun(*this, &StudyManager::on_queryresult_series), row)
+                    );
 
 	return false;
 }
@@ -298,11 +331,11 @@ void StudyManager::update_grouplist() {
 	for(; i != list.end();) {
 		i = m_refTreeModelGroup->erase(i);
 	}
-	
+
 	std::set< std::string > groups = ImagePool::ServerList::get_groups();
 	std::set< std::string >::iterator g = groups.begin();
 	for( ; g != groups.end(); g++) {
-		Gtk::TreeModel::Row row = *(m_refTreeModelGroup->append());	
+		Gtk::TreeModel::Row row = *(m_refTreeModelGroup->append());
 		row[m_ColumnsGroup.m_group] = (*g);
 	}
 

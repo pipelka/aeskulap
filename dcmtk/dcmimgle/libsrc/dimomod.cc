@@ -22,8 +22,8 @@
  *  Purpose: DicomMonochromeModality (Source)
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2007/04/24 09:53:44 $
- *  CVS/RCS Revision: $Revision: 1.2 $
+ *  Update Date:      $Date: 2007/05/04 14:47:07 $
+ *  CVS/RCS Revision: $Revision: 1.3 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -265,6 +265,12 @@ void DiMonoModality::checkRescaling(const DiInputPixel *pixel)
  *
  * CVS/RCS Log:
  * $Log: dimomod.cc,v $
+ * Revision 1.3  2007/05/04 14:47:07  braindead
+ * patches from Gianluca Ghelli:
+ *
+ * - DICOMDIR support
+ * - CodeBlocks IDE workspace
+ *
  * Revision 1.2  2007/04/24 09:53:44  braindead
  * - updated DCMTK to version 3.5.4
  * - merged Gianluca's WIN32 changes

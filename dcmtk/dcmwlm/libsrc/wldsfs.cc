@@ -22,9 +22,9 @@
  *  Purpose: Class for connecting to a file-based data source.
  *
  *  Last Update:      $Author: braindead $
- *  Update Date:      $Date: 2007/04/24 09:53:47 $
+ *  Update Date:      $Date: 2007/05/04 14:47:07 $
  *  Source File:      $Source: /cvsroot/aeskulap/aeskulap/dcmtk/dcmwlm/libsrc/wldsfs.cc,v $
- *  CVS/RCS Revision: $Revision: 1.2 $
+ *  CVS/RCS Revision: $Revision: 1.3 $
  *  Status:           $State: Exp $
  *
  *  CVS/RCS Log at end of file
@@ -849,6 +849,12 @@ OFBool WlmDataSourceFileSystem::ReleaseReadlock()
 /*
 ** CVS Log
 ** $Log: wldsfs.cc,v $
+** Revision 1.3  2007/05/04 14:47:07  braindead
+** patches from Gianluca Ghelli:
+**
+** - DICOMDIR support
+** - CodeBlocks IDE workspace
+**
 ** Revision 1.2  2007/04/24 09:53:47  braindead
 ** - updated DCMTK to version 3.5.4
 ** - merged Gianluca's WIN32 changes

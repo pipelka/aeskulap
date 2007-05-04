@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="imagepool" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="..\bin\Debug\imagepool.dll" prefix_auto="1" extension_auto="1" />
+				<Option object_output="..\obj\Debug\" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option host_application="..\bin\debug\aeskulap.exe" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add library="..\bin\Debug\libconfiguration.a" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="..\bin\Release\imagepool.dll" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="..\bin\Debug\libconfiguration.a" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add option="-DHAVE_CONFIG_H" />
+			<Add option="-DWIN32" />
+			<Add option='-DAESKULAP_DATADIR=\&quot;.\&quot;' />
+			<Add directory="$(#gtk.include)\glib-2.0" />
+			<Add directory="$(#gtk.lib)\glib-2.0\include" />
+			<Add directory="$(#gtk.include)\gtk-2.0" />
+			<Add directory="$(#gtk.include)\glibmm-2.4" />
+			<Add directory="$(#gtk.lib)\glibmm-2.4\include" />
+			<Add directory="$(#gtk.include)\sigc++-2.0" />
+			<Add directory="$(#gtk.lib)\sigc++-2.0\include" />
+			<Add directory="$(#gtk.include)\gconfmm-2.6" />
+			<Add directory="$(#gtk.lib)\gconfmm-2.6\include" />
+			<Add directory="$(#gtk.include)\gconf\2" />
+			<Add directory="$(#gtk.include)\gtkmm-2.4" />
+			<Add directory="$(#gtk.lib)\gtkmm-2.4\include" />
+			<Add directory="$(#gtk.include)\gdkmm-2.4" />
+			<Add directory="$(#gtk.lib)\gdkmm-2.4\include" />
+			<Add directory="$(#gtk.include)\cairomm-1.0" />
+			<Add directory="$(#gtk.include)\pango-1.0" />
+			<Add directory="$(#gtk.include)\cairo" />
+			<Add directory="$(#gtk.include)\freetype2" />
+			<Add directory="$(#gtk.include)\atk-1.0" />
+			<Add directory="$(#gtk.lib)\gtk-2.0\include" />
+			<Add directory="$(#gtk.include)\pangomm-1.4" />
+			<Add directory="$(#gtk.include)\atkmm-1.6" />
+			<Add directory="$(#dcmtk.include)" />
+			<Add directory="$(#gtk.include)\libglademm-2.4" />
+			<Add directory="$(#gtk.lib)\libglademm-2.4\nclude" />
+			<Add directory="..\..\aeskulap" />
+			<Add directory="..\configuration" />
+		</Compiler>
+		<Linker>
+			<Add library="user32" />
+			<Add library="uuid" />
+			<Add library="gconfmm-2.6" />
+			<Add library="gtkmm-2.4" />
+			<Add library="gdkmm-2.4" />
+			<Add library="atkmm-1.6" />
+			<Add library="gtk-win32-2.0" />
+			<Add library="glibmm-2.4" />
+			<Add library="pangomm-1.4" />
+			<Add library="cairomm-1.0" />
+			<Add library="sigc-2.0" />
+			<Add library="gdk-win32-2.0" />
+			<Add library="imm32" />
+			<Add library="shell32" />
+			<Add library="ole32" />
+			<Add library="atk-1.0" />
+			<Add library="gdk_pixbuf-2.0" />
+			<Add library="pangowin32-1.0" />
+			<Add library="gdi32" />
+			<Add library="pangocairo-1.0" />
+			<Add library="cairo" />
+			<Add library="pangoft2-1.0" />
+			<Add library="fontconfig" />
+			<Add library="freetype" />
+			<Add library="z" />
+			<Add library="gconf-2" />
+			<Add library="glade-2.0" />
+			<Add library="pango-1.0" />
+			<Add library="m" />
+			<Add library="gobject-2.0" />
+			<Add library="gmodule-2.0" />
+			<Add library="glib-2.0" />
+			<Add library="intl" />
+			<Add library="iconv" />
+			<Add library="ORBit-2" />
+			<Add library="gthread-2.0" />
+			<Add library="dcmnet" />
+			<Add library="dcmdata" />
+			<Add library="dcmimgle" />
+			<Add library="dcmimage" />
+			<Add library="ofstd" />
+			<Add library="glademm-2.4" />
+			<Add library="xml2" />
+			<Add library="ws2_32" />
+			<Add library="dcmjpeg" />
+			<Add library="ijg12" />
+			<Add library="ijg16" />
+			<Add library="ijg8" />
+			<Add directory="$(#gtk.lib)" />
+			<Add directory="$(#dcmtk.lib)" />
+		</Linker>
+		<Unit filename="dicomdir.cpp" />
+		<Unit filename="dicomdirloader.cpp" />
+		<Unit filename="dicomdirloader.h" />
+		<Unit filename="fileloader.cpp" />
+		<Unit filename="fileloader.h" />
+		<Unit filename="imagepool.cpp" />
+		<Unit filename="imagepool.h" />
+		<Unit filename="loader.cpp" />
+		<Unit filename="loader.h" />
+		<Unit filename="netclient.h" />
+		<Unit filename="netloader.cpp" />
+		<Unit filename="netloader.h" />
+		<Unit filename="netquery.cpp" />
+		<Unit filename="poolassociation.cpp" />
+		<Unit filename="poolassociation.h" />
+		<Unit filename="poolfindassociation.cpp" />
+		<Unit filename="poolfindassociation.h" />
+		<Unit filename="poolinstance.cpp" />
+		<Unit filename="poolinstance.h" />
+		<Unit filename="poolmoveassociation.cpp" />
+		<Unit filename="poolmoveassociation.h" />
+		<Unit filename="poolnetwork.cpp" />
+		<Unit filename="poolnetwork.h" />
+		<Unit filename="poolseries.cpp" />
+		<Unit filename="poolseries.h" />
+		<Unit filename="poolservers.cpp" />
+		<Unit filename="poolservers.h" />
+		<Unit filename="poolstudy.cpp" />
+		<Unit filename="poolstudy.h" />
+		<Extensions>
+			<code_completion />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

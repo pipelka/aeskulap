@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="aeskulap.cbp" active="1">
+			<Depends filename="imagepool\imagepool.cbp" />
+			<Depends filename="configuration\configuration.cbp" />
+		</Project>
+		<Project filename="imagepool\imagepool.cbp">
+			<Depends filename="configuration\configuration.cbp" />
+		</Project>
+		<Project filename="configuration\configuration.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>

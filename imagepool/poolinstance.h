@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/04/24 10:49:38 $
+    Update Date:      $Date: 2007/05/04 14:47:06 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -35,6 +35,7 @@
 #include <string>
 #include <vector>
 
+class DcmItem;
 class DcmDataset;
 class DicomImage;
 
@@ -72,34 +73,34 @@ public:
 		double y;
 		double z;
 	} Point;
-	
+
 	typedef Point Vector;
 
 	typedef struct _Orientation {
 		Vector x;
 		Vector y;
 	} Orientation;
-	
+
 	~Instance();
 
 	void* pixels(unsigned int frame=0);
-	
+
 	double pixel_value(int x, int y, int frame=0);
 
 	int depth();
-	
+
 	int bpp();
 
 	int highbit();
-	
+
 	int width();
-	
+
 	int height();
-	
+
 	bool iscolor();
-	
+
 	const std::string& sopinstanceuid();
-	
+
 	const std::string& patientsname();
 
 	const std::string& patientsbirthdate();
@@ -107,7 +108,7 @@ public:
 	const std::string& patientssex();
 
 	const std::string& seriesinstanceuid();
-	
+
 	const std::string& studyinstanceuid();
 
 	const std::string& studydescription();
@@ -121,7 +122,7 @@ public:
 	double slope();
 
 	int intercept();
-	
+
 	bool is_signed();
 
 	int default_windowcenter();
@@ -137,19 +138,19 @@ public:
 	const std::string& date();
 
 	const std::string& time();
-	
+
 	const std::string& model();
 
 	double spacing_x();
 
 	double spacing_y();
-	
+
 	void set_index(int index);
-	
+
 	int get_index();
 
 	const Point& get_position();
-	
+
 	const Orientation& get_orientation();
 
 	/**
@@ -164,13 +165,13 @@ public:
 	bool transform_to_world(const Point& a, Point& b);
 
 	void clear();
-	
+
 	Type get_type();
 
 	int get_framecount();
 
 	int min_value();
-	
+
 	int max_value();
 
 	bool has_3d_information();
@@ -196,7 +197,7 @@ private:
 	int m_bpp;
 
 	int m_highbit;
-	
+
 	int m_width;
 
 	int m_height;
@@ -204,13 +205,13 @@ private:
 	bool m_iscolor;
 
 	double m_slope;
-	
+
 	int m_intercept;
-	
+
 	bool m_is_signed;
 
 	int m_default_windowcenter;
-	
+
 	int m_default_windowwidth;
 
 	int m_instancenumber;
@@ -244,7 +245,7 @@ private:
 	Glib::RefPtr<ImagePool::Study> m_study;
 
 	std::string m_date;
-	
+
 	std::string m_time;
 
 	std::string m_model;
@@ -254,14 +255,14 @@ private:
 	double m_spacing_y;
 
 	int m_index;
-	
+
 	Point m_position;
 
 	Orientation m_orientation;
 
 	int m_min;
-	
-	int m_max;	
+
+	int m_max;
 };
 
 }

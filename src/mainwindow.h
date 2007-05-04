@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/16 16:05:42 $
+    Update Date:      $Date: 2007/05/04 14:47:07 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.h,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -36,6 +36,7 @@
 
 #include "fileloader.h"
 #include "netloader.h"
+#include "dicomdirloader.h"
 #include "awindowlevel.h"
 #include "aconfigclient.h"
 
@@ -54,23 +55,27 @@ class MainWindow : public Gtk::Window, public Aeskulap::ConfigClient {
 public:
 
 	MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade);
-	
+
 	~MainWindow();
 
 	void load_files(std::list< Glib::ustring > list);
+
+    void open_dicomdir(const Glib::ustring &dicomdir);
 
 protected:
 
 	void on_file_open();
 
-	void on_net_open(const std::string& studyinstanceuid, const std::string& server);
+    void on_dicomdir_open();
 
-	void on_net_progress(const std::string& studyinstanceuid, unsigned int progress);
+	void on_study_open(const std::string& studyinstanceuid, const std::string& server);
 
-	void on_network_error();
+	void on_study_progress(const std::string& studyinstanceuid, unsigned int progress);
+
+	void on_study_error();
 
 	void on_file_exit();
-	
+
 	void on_edit_settings();
 
 	void on_edit_settings_apply();
@@ -92,11 +97,14 @@ private:
 	const std::string& find_pageuid(Gtk::Widget* page);
 
 	Glib::RefPtr<Gnome::Glade::Xml> m_refGlade;
-	
+
 	Gtk::Notebook* m_mainNotebook;
 
 	Gtk::CheckMenuItem* m_itemViewFullscreen;
-	
+
+    Gtk::FileFilter m_filter_dicom;
+    Gtk::FileFilter m_filter_any;
+    Gtk::FileFilter m_filter_dicomdir;
 	Gtk::FileChooserDialog m_dialogFile;
 
 	Gtk::CheckButton* m_dialog_check;
@@ -113,10 +121,12 @@ private:
 
 	Gtk::Tooltips m_tooltips;
 
+    ImagePool::DicomdirLoader m_dicomdirloader;
+
 	ImagePool::NetLoader m_netloader;
 
 	ImagePool::FileLoader m_fileloader;
-	
+
 	AboutDialog* m_about;
 
 	WindowLevelDialog* m_windowlevel;

@@ -20,10 +20,8 @@ protected:
 
 	void prescan_files(std::list< Glib::ustring >* filelist);
 
-private:
-
 	std::list< Glib::ustring >* m_filelist;
-	
+
 };
 
 } // namespace ImagePool
