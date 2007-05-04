@@ -502,7 +502,7 @@ br_find_data_dir (const char *default_data_dir)
 
 #ifdef WIN32
 	dir = (char*)malloc(10);
-	strcpy(dir, "../share");
+	strcpy(dir, "./share");
 #else
 	prefix = br_find_prefix ((const char *) NULL);
 	if (prefix == (char *) NULL) {

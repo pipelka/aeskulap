@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="aeskulap" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\aeskulap.exe" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option parameters="-d d:\temp\jdicom1\DICOMDIR" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\aeskulap.exe" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-mwindows" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-mwindows" />
+					<Add library="bin\Release\libimagepool.a" />
+					<Add library="bin\Debug\libconfiguration.a" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add option="-DHAVE_CONFIG_H" />
+			<Add option="-DWIN32" />
+			<Add option='-DAESKULAP_DATADIR=\&quot;.\&quot;' />
+			<Add directory="$(#gtk.include)\glib-2.0" />
+			<Add directory="$(#gtk.lib)\glib-2.0\include" />
+			<Add directory="$(#gtk.include)\gtk-2.0" />
+			<Add directory="$(#gtk.include)\glibmm-2.4" />
+			<Add directory="$(#gtk.lib)\glibmm-2.4\include" />
+			<Add directory="$(#gtk.include)\sigc++-2.0" />
+			<Add directory="$(#gtk.lib)\sigc++-2.0\include" />
+			<Add directory="$(#gtk.include)\gconfmm-2.6" />
+			<Add directory="$(#gtk.lib)\gconfmm-2.6\include" />
+			<Add directory="$(#gtk.include)\gconf\2" />
+			<Add directory="$(#gtk.include)\gtkmm-2.4" />
+			<Add directory="$(#gtk.lib)\gtkmm-2.4\include" />
+			<Add directory="$(#gtk.include)\gdkmm-2.4" />
+			<Add directory="$(#gtk.lib)\gdkmm-2.4\include" />
+			<Add directory="$(#gtk.include)\cairomm-1.0" />
+			<Add directory="$(#gtk.include)\pango-1.0" />
+			<Add directory="$(#gtk.include)\cairo" />
+			<Add directory="$(#gtk.include)\freetype2" />
+			<Add directory="$(#gtk.include)\atk-1.0" />
+			<Add directory="$(#gtk.lib)\gtk-2.0\include" />
+			<Add directory="$(#gtk.include)\pangomm-1.4" />
+			<Add directory="$(#gtk.include)\atkmm-1.6" />
+			<Add directory="$(#dcmtk.include)" />
+			<Add directory="$(#gtk.include)\libglademm-2.4" />
+			<Add directory="$(#gtk.lib)\libglademm-2.4\nclude" />
+			<Add directory="configuration" />
+			<Add directory="imagepool" />
+			<Add directory="widgets" />
+			<Add directory="src" />
+			<Add directory="..\aeskulap" />
+		</Compiler>
+		<Linker>
+			<Add library="user32" />
+			<Add library="uuid" />
+			<Add library="gconfmm-2.6" />
+			<Add library="gtkmm-2.4" />
+			<Add library="gdkmm-2.4" />
+			<Add library="atkmm-1.6" />
+			<Add library="gtk-win32-2.0" />
+			<Add library="glibmm-2.4" />
+			<Add library="pangomm-1.4" />
+			<Add library="cairomm-1.0" />
+			<Add library="sigc-2.0" />
+			<Add library="gdk-win32-2.0" />
+			<Add library="imm32" />
+			<Add library="shell32" />
+			<Add library="ole32" />
+			<Add library="atk-1.0" />
+			<Add library="gdk_pixbuf-2.0" />
+			<Add library="pangowin32-1.0" />
+			<Add library="gdi32" />
+			<Add library="pangocairo-1.0" />
+			<Add library="cairo" />
+			<Add library="pangoft2-1.0" />
+			<Add library="fontconfig" />
+			<Add library="freetype" />
+			<Add library="z" />
+			<Add library="gconf-2" />
+			<Add library="glade-2.0" />
+			<Add library="pango-1.0" />
+			<Add library="m" />
+			<Add library="gobject-2.0" />
+			<Add library="gmodule-2.0" />
+			<Add library="glib-2.0" />
+			<Add library="intl" />
+			<Add library="iconv" />
+			<Add library="ORBit-2" />
+			<Add library="gthread-2.0" />
+			<Add library="dcmnet" />
+			<Add library="dcmdata" />
+			<Add library="dcmimgle" />
+			<Add library="dcmimage" />
+			<Add library="ofstd" />
+			<Add library="glademm-2.4" />
+			<Add library="xml2" />
+			<Add library="ws2_32" />
+			<Add library="dcmjpeg" />
+			<Add library="ijg12" />
+			<Add library="ijg16" />
+			<Add library="ijg8" />
+			<Add directory="$(#gtk.lib)" />
+			<Add directory="$(#dcmtk.lib)" />
+		</Linker>
+		<Unit filename="confdefs.h" />
+		<Unit filename="config.h" />
+		<Unit filename="configuration\aconfigclient.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="configuration\aconfigclient.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="configuration\aconfiguration.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="configuration\aconfiguration.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="configuration\awindowlevel.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="gettext.h" />
+		<Unit filename="imagepool\dicomdir.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\dicomdirloader.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\dicomdirloader.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\fileloader.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\fileloader.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\imagepool.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\imagepool.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\loader.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\loader.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\netclient.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\netloader.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\netloader.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\netquery.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolassociation.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolassociation.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolfindassociation.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolfindassociation.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolinstance.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolinstance.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolmoveassociation.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolmoveassociation.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolnetwork.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolnetwork.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolseries.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolseries.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolservers.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolservers.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolstudy.cpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="imagepool\poolstudy.h">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="src\aboutdialog.cpp" />
+		<Unit filename="src\aboutdialog.h" />
+		<Unit filename="src\abusycursor.cpp" />
+		<Unit filename="src\abusycursor.h" />
+		<Unit filename="src\aiconfactory.cpp" />
+		<Unit filename="src\aiconfactory.h" />
+		<Unit filename="src\astockids.cpp" />
+		<Unit filename="src\astockids.h" />
+		<Unit filename="src\binreloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\binreloc.h" />
+		<Unit filename="src\main.cpp" />
+		<Unit filename="src\mainwindow.cpp" />
+		<Unit filename="src\mainwindow.h" />
+		<Unit filename="src\prescandialog.cpp" />
+		<Unit filename="src\prescandialog.h" />
+		<Unit filename="src\settings.cpp" />
+		<Unit filename="src\settings.h" />
+		<Unit filename="src\studymanager.cpp" />
+		<Unit filename="src\studymanager.h" />
+		<Unit filename="src\windowleveldialog.cpp" />
+		<Unit filename="src\windowleveldialog.h" />
+		<Unit filename="widgets\adatefilter.cpp" />
+		<Unit filename="widgets\adatefilter.h" />
+		<Unit filename="widgets\adisplay.cpp" />
+		<Unit filename="widgets\adisplay.h" />
+		<Unit filename="widgets\afloatwidget.cpp" />
+		<Unit filename="widgets\afloatwidget.h" />
+		<Unit filename="widgets\aframectrl.h" />
+		<Unit filename="widgets\amultiframectrl.cpp" />
+		<Unit filename="widgets\amultiframectrl.h" />
+		<Unit filename="widgets\aseriesmenu.cpp" />
+		<Unit filename="widgets\aseriesmenu.h" />
+		<Unit filename="widgets\asimpledisplay.cpp" />
+		<Unit filename="widgets\asimpledisplay.h" />
+		<Unit filename="widgets\astudytab.cpp" />
+		<Unit filename="widgets\astudytab.h" />
+		<Unit filename="widgets\atiler.cpp" />
+		<Unit filename="widgets\atiler.h" />
+		<Unit filename="widgets\avaluetool.cpp" />
+		<Unit filename="widgets\avaluetool.h" />
+		<Unit filename="widgets\awindowleveltoolbutton.cpp" />
+		<Unit filename="widgets\awindowleveltoolbutton.h" />
+		<Unit filename="widgets\displayparameters.cpp" />
+		<Unit filename="widgets\displayparameters.h" />
+		<Unit filename="widgets\imagelayouttoolbutton.cpp" />
+		<Unit filename="widgets\imagelayouttoolbutton.h" />
+		<Unit filename="widgets\serieslayouttoolbutton.cpp" />
+		<Unit filename="widgets\serieslayouttoolbutton.h" />
+		<Unit filename="widgets\seriesview.cpp" />
+		<Unit filename="widgets\seriesview.h" />
+		<Unit filename="widgets\studyview.cpp" />
+		<Unit filename="widgets\studyview.h" />
+		<Extensions>
+			<code_completion />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

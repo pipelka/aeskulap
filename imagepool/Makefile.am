@@ -1,6 +1,9 @@
 pkglib_LTLIBRARIES = libimagepool.la
 
 libimagepool_la_SOURCES = \
+	dicomdir.cpp \
+	dicomdirloader.h \
+	dicomdirloader.cpp \
 	poolservers.h \
 	poolservers.cpp \
 	netclient.h \

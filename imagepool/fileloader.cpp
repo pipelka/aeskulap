@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/04/24 09:53:38 $
+    Update Date:      $Date: 2007/05/04 14:47:06 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/fileloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -42,16 +42,16 @@ bool FileLoader::load(const std::list< Glib::ustring >& filelist) {
 	}
 
 	m_filelist = new std::list< Glib::ustring >(filelist);
-	
+
 	m_cache.clear();
 	prescan_files(m_filelist);
 
 	if(m_cache.size() == 0) {
 		return false;
 	}
-	
+
 	start();
-	
+
 	return true;
 }
 
@@ -71,7 +71,7 @@ void FileLoader::prescan_files(std::list< Glib::ustring >* filelist) {
 							EXS_Unknown,
 							EGL_noChange,
 							DCM_MaxReadLength);
-	
+
 /*
     OFCondition findAndGetOFString(const DcmTagKey &tagKey,
                                    OFString &value,
@@ -103,30 +103,30 @@ bool FileLoader::run() {
 
 	for(; i != filelist->end(); i++) {
 		DcmFileFormat dfile;
-	
+
 		OFCondition cond = dfile.loadFile(
 							(*i).c_str(),
 							EXS_Unknown,
 							EGL_noChange,
 							DCM_MaxReadLength);
-		
+
 		if(!cond.good()) {
-			std::cout << "unable to open file !!!" << std::endl;
+			std::cout << "unable to open file[" << *i << "]: " << cond.text() << std::endl;
 		}
 		else {
 			dfile.loadAllDataIntoMemory();
 			std::cout << "opened file:" << (*i) << std::endl;
-		
+
 			DcmDataset* dset = dfile.getDataset();
 			if(dset->findAndGetOFString(DCM_StudyInstanceUID, studyinstanceuid).good()) {
 				add_image(dset);
 			}
 		}
 	}
-	
+
 	delete filelist;
 	m_filelist = NULL;
-	
+
 	return true;
 }
 

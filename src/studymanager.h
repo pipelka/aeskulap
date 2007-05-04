@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2007/05/04 14:47:07 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.11 $
+    CVS/RCS Revision: $Revision: 1.12 $
     Status:           $State: Exp $
 */
 
@@ -45,12 +45,14 @@ class StudyManager : public Gtk::VBox, public Aeskulap::ConfigClient {
 public:
 
 	StudyManager(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade);
-	
+
 	~StudyManager();
 
 	void update_grouplist();
 
 	void update_selected_groups();
+
+	void open_dicomdir( const Glib::ustring &dicomdir);
 
 	sigc::signal<void, const std::string&, const std::string&> signal_open_study;
 
@@ -78,7 +80,7 @@ protected:
 	Aeskulap::DateFilter* m_datefilter;
 
 	Gtk::Button* m_button_filter_search;
-	
+
 	Gtk::Button* m_button_filter_clearfilter;
 
 	Gtk::Entry* m_entry_filter_patientid;
@@ -95,7 +97,7 @@ protected:
 
 	class ModelColumnsStudy : public Gtk::TreeModel::ColumnRecord {
 	public:
-	
+
 		ModelColumnsStudy() {
 			add(m_icon);
 			add(m_iconsize);
@@ -108,7 +110,7 @@ protected:
 			add(m_station);
 			add(m_server);
 		}
-		
+
 		Gtk::TreeModelColumn<std::string> m_studyinstanceuid;
 		Gtk::TreeModelColumn<Glib::ustring> m_studydate;
 		Gtk::TreeModelColumn<Glib::ustring> m_studydescription;
@@ -120,7 +122,7 @@ protected:
 		Gtk::TreeModelColumn<Glib::ustring> m_station;
 		Gtk::TreeModelColumn<std::string> m_server;
 	};
-	
+
 	ModelColumnsStudy m_ColumnsStudy;
 
 	Glib::RefPtr< Gtk::TreeStore > m_refTreeModelStudy;
@@ -133,14 +135,14 @@ protected:
 
 	class ModelColumnsGroup : public Gtk::TreeModel::ColumnRecord {
 	public:
-	
+
 		ModelColumnsGroup() {
 			add(m_group);
 		}
-		
+
 		Gtk::TreeModelColumn<std::string> m_group;
 	};
-	
+
 	ModelColumnsGroup m_ColumnsGroup;
 
 	Glib::RefPtr< Gtk::ListStore > m_refTreeModelGroup;
@@ -156,7 +158,7 @@ private:
 	Glib::RefPtr<Gnome::Glade::Xml> m_refGlade;
 
 	std::set< std::string > m_selected_groups;
-	
+
 	bool m_new_query;
 };
 

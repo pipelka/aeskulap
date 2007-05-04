@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/05 19:37:28 $
+    Update Date:      $Date: 2007/05/04 14:47:06 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -41,9 +41,9 @@
 class DcmDataset;
 
 namespace ImagePool {
-	
+
 	void init();
-	
+
 	void close();
 
 	bool register_instance(const Glib::RefPtr<ImagePool::Instance>& image);
@@ -92,6 +92,17 @@ namespace ImagePool {
 				const std::string& studyinstanceuid,
 				const std::string& server,
 				const std::string& local_aet
+				);
+
+    void open_dicomdir(
+                const Glib::ustring &dicomdir,
+                const sigc::slot< void, const Glib::RefPtr< ImagePool::Study >& >& resultslot
+                );
+
+	void open_dicomdir_series(
+				const std::string& studyinstanceuid,
+				const Glib::ustring& dicomdir,
+				const sigc::slot< void, const Glib::RefPtr< ImagePool::Series >& >& resultslot
 				);
 
 	std::string convert_string_from(const char* dicom_string, const std::string& system_encoding);
