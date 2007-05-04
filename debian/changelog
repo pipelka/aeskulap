@@ -1,3 +1,9 @@
+aeskulap (0.2.2-4) feisty; urgency=low
+
+  * added DICOMDIR support (patches from Gianluca Ghelli)
+
+ -- Alexander Pipelka <pipelka@shuttle.chello.at>  Fri,  4 May 2007 22:20:51 +0200
+
 aeskulap (0.2.2-3) feisty; urgency=low
 
   * packaging fix (include only needed files)

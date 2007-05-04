@@ -15,8 +15,6 @@ compile
 confdefs.h
 config.guess
 config.sub
-libtool
-ltmain.sh
 build-stamp
 aeskulap-0.0.1
 bin

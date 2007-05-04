@@ -74,12 +74,8 @@ autoheader || {
     exit 1
 }
 
-#echo "Running autopoint ..."
-#autopoint -f || ( echo "***ERROR*** autopoint failed." ; exit 1 )
-
-
 echo "Running libtoolize ..."
-libtoolize -f -c || {
+libtoolize --automake -c || {
     echo
     echo "**ERROR**: intltoolize failed. This may mean that you have not"
     echo "installed all of the packages you need. Please install the"

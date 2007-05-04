@@ -1,4 +1,8 @@
+if BUILD_NOT_MINGW32
 pkglib_LTLIBRARIES = libconfiguration.la
+else
+lib_LTLIBRARIES = libconfiguration.la
+endif
 
 libconfiguration_la_SOURCES = \
 	awindowlevel.h \
@@ -12,7 +16,7 @@ libconfiguration_la_LIBADD = \
 	$(GTKMM_LIBS)
 
 libconfiguration_la_LDFLAGS = \
-	-Wl,-rpath,${prefix}/lib/aeskulap -avoid-version
+	$(LDFLAGS_AESKULAP_LIBS)
 
 INCLUDES = \
 	$(GCONFMM_CFLAGS) \
