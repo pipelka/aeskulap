@@ -1,4 +1,8 @@
+if BUILD_NOT_MINGW32
 pkglib_LTLIBRARIES = libimagepool.la
+else
+lib_LTLIBRARIES = libimagepool.la
+endif
 
 libimagepool_la_SOURCES = \
 	dicomdir.cpp \
@@ -33,12 +37,13 @@ libimagepool_la_SOURCES = \
 
 libimagepool_la_LIBADD = \
 	$(DCMTK_LIBS) \
-	../configuration/libconfiguration.la
+	$(GTKMM_LIBS) \
+	../configuration/libconfiguration.la \
 	-lpng \
 	-ltiff
 
 libimagepool_la_LDFLAGS = \
-	-Wl,-rpath,${prefix}/lib/aeskulap -avoid-version
+	$(LDFLAGS_AESKULAP_LIBS)
 
 INCLUDES = \
 	-I$(top_srcdir)/configuration \

@@ -57,15 +57,18 @@ rpm: dist
 
 dist-win32:
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)
-	make prefix=/tmp/$(PACKAGE)-$(VERSION) install-strip
+	make prefix=/tmp/$(PACKAGE)-$(VERSION)$(prefix) install-strip
+	-cp -R -f /tmp/$(PACKAGE)-$(VERSION)$(prefix)/* /tmp/$(PACKAGE)-$(VERSION)
+	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)$(prefix)
+	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/usr
 	if [ -f /tmp/$(PACKAGE)-$(VERSION)/bin/$(target_alias)-aeskulap.exe ] ; then \
 	    mv /tmp/$(PACKAGE)-$(VERSION)/bin/$(target_alias)-aeskulap.exe /tmp/$(PACKAGE)-$(VERSION)/bin/aeskulap.exe ; \
 	fi
 	for i in ofstd ijg8 ijg12 ijg16 dcmjpeg dcmdata dcmnet dcmimgle dcmimage dcmtls ; do \
 	    cp $(prefix)/bin/lib$$i.dll /tmp/$(PACKAGE)-$(VERSION)/bin ; \
-	    $(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/lib$$i.dll ; \
 	done
-	$(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/aeskulap.exe
+	$(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/*.exe
+	$(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/*.dll
 	-mv /tmp/$(PACKAGE)-$(VERSION)/bin/* /tmp/$(PACKAGE)-$(VERSION)
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/bin
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/lib
