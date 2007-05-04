@@ -74,7 +74,6 @@ dist-win32:
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/lib
 	-rm -f /tmp/$(PACKAGE)-$(VERSION)/share/icons/hicolor/icon-theme.cache
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/share/applications
-	-mv /tmp/$(PACKAGE)-$(VERSION)/share/icons/hicolor/48x48/apps/aeskulap.ico /tmp/$(PACKAGE)-$(VERSION)
 	cd /tmp && zip -r -9 $(PACKAGE)-$(VERSION).zip $(PACKAGE)-$(VERSION)
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)
 	mv /tmp/$(PACKAGE)-$(VERSION).zip .

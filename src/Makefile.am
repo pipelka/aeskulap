@@ -23,8 +23,20 @@ aeskulap_SOURCES = \
 	windowleveldialog.cpp \
 	main.cpp
 
+if BUILD_NOT_MINGW32
+ICONOBJ =
+else
+ICONOBJ = icon.o
+endif
+
+icon.rc:
+	echo "IDI_ICON1 ICON DISCARDABLE \"$(top_srcdir)/pixmaps/aeskulap.ico\"" > icon.rc
+
+icon.o: icon.rc
+	$(target_alias)-windres -J rc -i icon.rc -o icon.o
 
 aeskulap_LDADD = \
+	$(ICONOBJ) \
 	$(GTKMM_LIBS) \
 	$(GLADEMM_LIBS) \
 	$(GTHREAD_LIBS) \

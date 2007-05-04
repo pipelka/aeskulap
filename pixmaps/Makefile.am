@@ -1,5 +1,5 @@
 icondir = $(datadir)/icons/hicolor/48x48/apps
-icon_DATA = aeskulap.png aeskulap.ico
+icon_DATA = aeskulap.png
 svgicondir = $(datadir)/icons/hicolor/scalable/apps
 svgicon_DATA = aeskulap.svg
 
@@ -41,6 +41,7 @@ images_DATA = \
 
 EXTRA_DIST = \
 	README \
+	aeskulap.ico \
 	$(icon_DATA) \
 	$(svgicon_DATA) \
 	$(images_DATA)
