@@ -66,9 +66,12 @@ dist-win32:
 	    $(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/lib$$i.dll ; \
 	done
 	$(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/aeskulap.exe
+	-mv /tmp/$(PACKAGE)-$(VERSION)/bin/* /tmp/$(PACKAGE)-$(VERSION)
+	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/bin
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/lib
 	-rm -f /tmp/$(PACKAGE)-$(VERSION)/share/icons/hicolor/icon-theme.cache
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)/share/applications
+	-mv /tmp/$(PACKAGE)-$(VERSION)/share/icons/hicolor/48x48/apps/aeskulap.ico /tmp/$(PACKAGE)-$(VERSION)
 	cd /tmp && zip -r -9 $(PACKAGE)-$(VERSION).zip $(PACKAGE)-$(VERSION)
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)
 	mv /tmp/$(PACKAGE)-$(VERSION).zip .
