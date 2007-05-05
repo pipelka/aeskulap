@@ -111,7 +111,7 @@ DCMTK_LIBS="-L../dcmtk/ofstd/libsrc \
 -L../dcmtk/dcmjpeg/libsrc \
 -L../dcmtk/dcmimage/libsrc \
 -L../dcmtk/dcmimgle/libsrc \
--ldcmjpeg \$(DCMJPEG_LIBS) -ldcmimage -ldcmimgle -ldcmnet -ldcmdata -lofstd -lrt -lpthread"
+\$(DCMJPEG_LIBS) -ldcmjpeg -ldcmimage -ldcmimgle -ldcmnet -ldcmdata -lofstd -lrt -lpthread"
 
 fi
 

@@ -1,3 +1,4 @@
 Makefile
 config.status
 confmod.lineno
+conf*.sh

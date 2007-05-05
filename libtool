@@ -56,39 +56,39 @@ build_libtool_libs=yes
 build_old_libs=yes
 
 # Whether or not to add -lc for building shared libraries.
-build_libtool_need_lc=yes
+build_libtool_need_lc=no
 
 # Whether or not to disallow shared libs when runtime libs are static
-allow_libtool_libs_with_static_runtimes=yes
+allow_libtool_libs_with_static_runtimes=no
 
 # Whether or not to optimize for fast installation.
-fast_install=needless
+fast_install=yes
 
 # The host system.
-host_alias=i586-mingw32msvc
-host=i586-pc-mingw32msvc
-host_os=mingw32msvc
+host_alias=
+host=i686-pc-linux-gnu
+host_os=linux-gnu
 
 # The build system.
 build_alias=
-build=i686-pc-linux-gnuaout
-build_os=linux-gnuaout
+build=i686-pc-linux-gnu
+build_os=linux-gnu
 
 # An echo program that does not interpret backslashes.
 echo="echo"
 
 # The archiver.
-AR="i586-mingw32msvc-ar"
+AR="ar"
 AR_FLAGS="cru"
 
 # A C compiler.
-LTCC="i586-mingw32msvc-gcc"
+LTCC="apgcc"
 
 # LTCC compiler flags.
-LTCFLAGS="-g -O2"
+LTCFLAGS=" -O2 -march=i586 -pipe"
 
 # A language-specific compiler.
-CC="i586-mingw32msvc-gcc"
+CC="apgcc"
 
 # Is the compiler the GNU C compiler?
 with_gcc=yes
@@ -97,16 +97,16 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/i586-mingw32msvc/bin/ld"
+LD="/usr/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
 
 # A BSD-compatible nm program.
-NM="/usr/bin/i586-mingw32msvc-nm -B"
+NM="/usr/bin/nm -B"
 
 # A symbol stripping program
-STRIP="i586-mingw32msvc-strip"
+STRIP="strip"
 
 # Used to examine libraries when file_magic_cmd begins "file"
 MAGIC_CMD=file
@@ -137,13 +137,13 @@ objext="o"
 libext="a"
 
 # Shared library suffix (normally ".so").
-shrext_cmds='.dll'
+shrext_cmds='.so'
 
 # Executable file suffix (normally "").
 exeext=""
 
 # Additional compiler flags for building library objects.
-pic_flag=" -DDLL_EXPORT -DPIC"
+pic_flag=" -fPIC -DPIC"
 pic_mode=default
 
 # What is the maximum length of a command?
@@ -186,20 +186,20 @@ whole_archive_flag_spec="\${wl}--whole-archive\$convenience \${wl}--no-whole-arc
 thread_safe_flag_spec=""
 
 # Library versioning type.
-version_type=windows
+version_type=linux
 
 # Format of library name prefix.
 libname_spec="lib\$name"
 
 # List of archive names.  First name is the real one, the rest are links.
 # The last name is the one that the linker finds with -lNAME.
-library_names_spec="\$libname.dll.a"
+library_names_spec="\${libname}\${release}\${shared_ext}\$versuffix \${libname}\${release}\${shared_ext}\$major \$libname\${shared_ext}"
 
 # The coded name of the library, if different from the real name.
-soname_spec="\${libname}\`echo \${release} | \$SED -e s/[.]/-/g\`\${versuffix}\${shared_ext}"
+soname_spec="\${libname}\${release}\${shared_ext}\$major"
 
 # Commands used to build and install an old-style archive.
-RANLIB="i586-mingw32msvc-ranlib"
+RANLIB="ranlib"
 old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs\$old_deplibs~\$RANLIB \$oldlib"
 old_postinstall_cmds="chmod 644 \$oldlib~\$RANLIB \$oldlib"
 old_postuninstall_cmds=""
@@ -211,31 +211,21 @@ old_archive_from_new_cmds=""
 old_archive_from_expsyms_cmds=""
 
 # Commands used to build and install a shared archive.
-archive_cmds="\$CC -shared \$libobjs \$deplibs \$compiler_flags -o \$output_objdir/\$soname \${wl}--enable-auto-image-base -Xlinker --out-implib -Xlinker \$lib"
-archive_expsym_cmds="if test \\\"x\\\`\$SED 1q \$export_symbols\\\`\\\" = xEXPORTS; then
-	  cp \$export_symbols \$output_objdir/\$soname.def;
-	else
-	  echo EXPORTS > \$output_objdir/\$soname.def;
-	  cat \$export_symbols >> \$output_objdir/\$soname.def;
-	fi~
-	\$CC -shared \$output_objdir/\$soname.def \$libobjs \$deplibs \$compiler_flags -o \$output_objdir/\$soname \${wl}--enable-auto-image-base -Xlinker --out-implib -Xlinker \$lib"
-postinstall_cmds="base_file=\\\`basename \\\${file}\\\`~
-      dlpath=\\\`\$SHELL 2>&1 -c '. \$dir/'\\\${base_file}'i;echo \\\$dlname'\\\`~
-      dldir=\$destdir/\\\`dirname \\\$dlpath\\\`~
-      test -d \\\$dldir || mkdir -p \\\$dldir~
-      \$install_prog \$dir/\$dlname \\\$dldir/\$dlname~
-      chmod a+x \\\$dldir/\$dlname"
-postuninstall_cmds="dldll=\\\`\$SHELL 2>&1 -c '. \$file; echo \\\$dlname'\\\`~
-      dlpath=\$dir/\\\$dldll~
-       \$rm \\\$dlpath"
+archive_cmds="\$CC -shared \$libobjs \$deplibs \$compiler_flags \${wl}-soname \$wl\$soname -o \$lib"
+archive_expsym_cmds="\$echo \\\"{ global:\\\" > \$output_objdir/\$libname.ver~
+  cat \$export_symbols | sed -e \\\"s/\\\\(.*\\\\)/\\\\1;/\\\" >> \$output_objdir/\$libname.ver~
+  \$echo \\\"local: *; };\\\" >> \$output_objdir/\$libname.ver~
+	  \$CC -shared \$libobjs \$deplibs \$compiler_flags \${wl}-soname \$wl\$soname \${wl}-version-script \${wl}\$output_objdir/\$libname.ver -o \$lib"
+postinstall_cmds=""
+postuninstall_cmds=""
 
 # Commands used to build a loadable module (assumed same as above if empty)
 module_cmds=""
 module_expsym_cmds=""
 
 # Commands to strip libraries.
-old_striplib="i586-mingw32msvc-strip --strip-debug"
-striplib="i586-mingw32msvc-strip --strip-unneeded"
+old_striplib="strip --strip-debug"
+striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -258,25 +248,25 @@ postdeps=""
 compiler_lib_search_path=""
 
 # Method to check whether dependent libraries are shared objects.
-deplibs_check_method="file_magic ^x86 archive import|^x86 DLL"
+deplibs_check_method="pass_all"
 
 # Command to use when deplibs_check_method == file_magic.
-file_magic_cmd="func_win32_libid"
+file_magic_cmd="\$MAGIC_CMD"
 
 # Flag that allows shared libraries with undefined symbols to be built.
-allow_undefined_flag="unsupported"
+allow_undefined_flag=""
 
 # Flag that forces no undefined symbols.
 no_undefined_flag=""
 
 # Commands used to finish a libtool library installation in a directory.
-finish_cmds=""
+finish_cmds="PATH=\\\"\\\$PATH:/sbin\\\" ldconfig -n \$libdir"
 
 # Same as above, but a single script fragment to be evaled but not shown.
 finish_eval=""
 
 # Take the output of nm and produce a listing of raw symbols and C names.
-global_symbol_pipe="sed -n -e 's/^.*[ 	]\\([ABCDGIRSTW][ABCDGIRSTW]*\\)[ 	][ 	]*_\\([_A-Za-z][_A-Za-z0-9]*\\)\$/\\1 _\\2 \\2/p'"
+global_symbol_pipe="sed -n -e 's/^.*[ 	]\\([ABCDGIRSTW][ABCDGIRSTW]*\\)[ 	][ 	]*\\([_A-Za-z][_A-Za-z0-9]*\\)\$/\\1 \\2 \\2/p'"
 
 # Transform the output of nm in a proper C declaration
 global_symbol_to_cdecl="sed -n -e 's/^. .* \\(.*\\)\$/extern int \\1;/p'"
@@ -288,20 +278,20 @@ global_symbol_to_c_name_address="sed -n -e 's/^: \\([^ ]*\\) \$/  {\\\"\\1\\\", 
 runpath_var=LD_RUN_PATH
 
 # This is the shared library path variable.
-shlibpath_var=PATH
+shlibpath_var=LD_LIBRARY_PATH
 
 # Is shlibpath searched before the hard-coded library search path?
-shlibpath_overrides_runpath=yes
+shlibpath_overrides_runpath=no
 
 # How to hardcode a shared library path into an executable.
 hardcode_action=immediate
 
 # Whether we should hardcode library paths into libraries.
-hardcode_into_libs=no
+hardcode_into_libs=yes
 
 # Flag to hardcode $libdir into a binary during linking.
 # This must work even if $libdir does not exist.
-hardcode_libdir_flag_spec="-L\$libdir"
+hardcode_libdir_flag_spec="\${wl}--rpath \${wl}\$libdir"
 
 # If ld is used when linking, flag to hardcode $libdir into
 # a binary during linking. This must work even if $libdir does
@@ -329,16 +319,16 @@ hardcode_automatic=no
 
 # Variables whose values should be saved in libtool wrapper scripts and
 # restored at relink time.
-variables_saved_for_relink="PATH PATH LD_RUN_PATH GCC_EXEC_PREFIX COMPILER_PATH LIBRARY_PATH"
+variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COMPILER_PATH LIBRARY_PATH"
 
 # Whether libtool must link a program against all its dependency libraries.
 link_all_deplibs=unknown
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /usr/lib/gcc/i586-mingw32msvc/3.4.5/ /usr/lib/gcc/i586-mingw32msvc/3.4.5/ /usr/lib/gcc/i586-mingw32msvc/3.4.5/../../../../i586-mingw32msvc/lib/i586-mingw32msvc/3.4.5/ /usr/lib/gcc/i586-mingw32msvc/3.4.5/../../../../i586-mingw32msvc/lib/"
+sys_lib_search_path_spec="/usr/lib/gcc/i486-linux-gnu/4.1.2 /usr/lib /lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib"
+sys_lib_dlsearch_path_spec="/lib /usr/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -347,7 +337,7 @@ fix_srcfile_path=""
 always_export_symbols=no
 
 # The commands to list exported symbols.
-export_symbols_cmds="\$NM \$libobjs \$convenience | \$global_symbol_pipe | \$SED -e '/^[BCDGRS][ ]/s/.*[ ]\\\\([^ ]*\\\\)/\\\\1 DATA/' -e '/^[AITW][ ]/s/.*[ ]//' | sort | uniq > \$export_symbols"
+export_symbols_cmds="\$NM \$libobjs \$convenience | \$global_symbol_pipe | \$SED 's/.* //' | sort | uniq > \$export_symbols"
 
 # The commands to extract the exported symbol list from a shared archive.
 extract_expsyms_cmds=""
@@ -7304,36 +7294,36 @@ build_old_libs=yes
 build_libtool_need_lc=no
 
 # Whether or not to disallow shared libs when runtime libs are static
-allow_libtool_libs_with_static_runtimes=yes
+allow_libtool_libs_with_static_runtimes=no
 
 # Whether or not to optimize for fast installation.
-fast_install=needless
+fast_install=yes
 
 # The host system.
-host_alias=i586-mingw32msvc
-host=i586-pc-mingw32msvc
-host_os=mingw32msvc
+host_alias=
+host=i686-pc-linux-gnu
+host_os=linux-gnu
 
 # The build system.
 build_alias=
-build=i686-pc-linux-gnuaout
-build_os=linux-gnuaout
+build=i686-pc-linux-gnu
+build_os=linux-gnu
 
 # An echo program that does not interpret backslashes.
 echo="echo"
 
 # The archiver.
-AR="i586-mingw32msvc-ar"
+AR="ar"
 AR_FLAGS="cru"
 
 # A C compiler.
-LTCC="i586-mingw32msvc-gcc"
+LTCC="apgcc"
 
 # LTCC compiler flags.
-LTCFLAGS="-g -O2"
+LTCFLAGS=" -O2 -march=i586 -pipe"
 
 # A language-specific compiler.
-CC="i586-mingw32msvc-g++"
+CC="apg++"
 
 # Is the compiler the GNU C compiler?
 with_gcc=yes
@@ -7342,16 +7332,16 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/i586-mingw32msvc/bin/ld"
+LD="/usr/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
 
 # A BSD-compatible nm program.
-NM="/usr/bin/i586-mingw32msvc-nm -B"
+NM="/usr/bin/nm -B"
 
 # A symbol stripping program
-STRIP="i586-mingw32msvc-strip"
+STRIP="strip"
 
 # Used to examine libraries when file_magic_cmd begins "file"
 MAGIC_CMD=file
@@ -7382,13 +7372,13 @@ objext="o"
 libext="a"
 
 # Shared library suffix (normally ".so").
-shrext_cmds='.dll'
+shrext_cmds='.so'
 
 # Executable file suffix (normally "").
 exeext=""
 
 # Additional compiler flags for building library objects.
-pic_flag=" -DDLL_EXPORT -DPIC"
+pic_flag=" -fPIC -DPIC"
 pic_mode=default
 
 # What is the maximum length of a command?
@@ -7431,20 +7421,20 @@ whole_archive_flag_spec="\${wl}--whole-archive\$convenience \${wl}--no-whole-arc
 thread_safe_flag_spec=""
 
 # Library versioning type.
-version_type=windows
+version_type=linux
 
 # Format of library name prefix.
 libname_spec="lib\$name"
 
 # List of archive names.  First name is the real one, the rest are links.
 # The last name is the one that the linker finds with -lNAME.
-library_names_spec="\$libname.dll.a"
+library_names_spec="\${libname}\${release}\${shared_ext}\$versuffix \${libname}\${release}\${shared_ext}\$major \$libname\${shared_ext}"
 
 # The coded name of the library, if different from the real name.
-soname_spec="\${libname}\`echo \${release} | \$SED -e s/[.]/-/g\`\${versuffix}\${shared_ext}"
+soname_spec="\${libname}\${release}\${shared_ext}\$major"
 
 # Commands used to build and install an old-style archive.
-RANLIB="i586-mingw32msvc-ranlib"
+RANLIB="ranlib"
 old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs\$old_deplibs~\$RANLIB \$oldlib"
 old_postinstall_cmds="chmod 644 \$oldlib~\$RANLIB \$oldlib"
 old_postuninstall_cmds=""
@@ -7456,39 +7446,26 @@ old_archive_from_new_cmds=""
 old_archive_from_expsyms_cmds=""
 
 # Commands used to build and install a shared archive.
-archive_cmds="\$CC -shared -nostdlib \$predep_objects \$libobjs \$deplibs \$postdep_objects \$compiler_flags -o \$output_objdir/\$soname \${wl}--enable-auto-image-base -Xlinker --out-implib -Xlinker \$lib"
-archive_expsym_cmds="if test \\\"x\\\`\$SED 1q \$export_symbols\\\`\\\" = xEXPORTS; then
-	cp \$export_symbols \$output_objdir/\$soname.def;
-      else
-	echo EXPORTS > \$output_objdir/\$soname.def;
-	cat \$export_symbols >> \$output_objdir/\$soname.def;
-      fi~
-      \$CC -shared -nostdlib \$output_objdir/\$soname.def \$predep_objects \$libobjs \$deplibs \$postdep_objects \$compiler_flags -o \$output_objdir/\$soname \${wl}--enable-auto-image-base -Xlinker --out-implib -Xlinker \$lib"
-postinstall_cmds="base_file=\\\`basename \\\${file}\\\`~
-      dlpath=\\\`\$SHELL 2>&1 -c '. \$dir/'\\\${base_file}'i;echo \\\$dlname'\\\`~
-      dldir=\$destdir/\\\`dirname \\\$dlpath\\\`~
-      test -d \\\$dldir || mkdir -p \\\$dldir~
-      \$install_prog \$dir/\$dlname \\\$dldir/\$dlname~
-      chmod a+x \\\$dldir/\$dlname"
-postuninstall_cmds="dldll=\\\`\$SHELL 2>&1 -c '. \$file; echo \\\$dlname'\\\`~
-      dlpath=\$dir/\\\$dldll~
-       \$rm \\\$dlpath"
+archive_cmds="\$CC -shared -nostdlib \$predep_objects \$libobjs \$deplibs \$postdep_objects \$compiler_flags \${wl}-soname \$wl\$soname -o \$lib"
+archive_expsym_cmds="\$CC -shared -nostdlib \$predep_objects \$libobjs \$deplibs \$postdep_objects \$compiler_flags \${wl}-soname \$wl\$soname \${wl}-retain-symbols-file \$wl\$export_symbols -o \$lib"
+postinstall_cmds=""
+postuninstall_cmds=""
 
 # Commands used to build a loadable module (assumed same as above if empty)
 module_cmds=""
 module_expsym_cmds=""
 
 # Commands to strip libraries.
-old_striplib="i586-mingw32msvc-strip --strip-debug"
-striplib="i586-mingw32msvc-strip --strip-unneeded"
+old_striplib="strip --strip-debug"
+striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/usr/lib/gcc/i586-mingw32msvc/3.4.5/../../../../i586-mingw32msvc/lib/dllcrt2.o /usr/lib/gcc/i586-mingw32msvc/3.4.5/crtbegin.o"
+predep_objects="/usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/usr/lib/gcc/i586-mingw32msvc/3.4.5/crtend.o"
+postdep_objects="/usr/lib/gcc/i486-linux-gnu/4.1.2/crtendS.o /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -7496,32 +7473,32 @@ predeps=""
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdeps="-lstdc++ -lmingw32 -lgcc -lmoldname -lmingwex -lmsvcrt -luser32 -lkernel32 -ladvapi32 -lshell32 -lmingw32 -lgcc -lmoldname -lmingwex -lmsvcrt"
+postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc/i586-mingw32msvc/3.4.5 -L/usr/lib/gcc/i586-mingw32msvc/3.4.5 -L/usr/lib/gcc/i586-mingw32msvc/3.4.5/../../../../i586-mingw32msvc/lib"
+compiler_lib_search_path="-L/usr/lib/gcc/i486-linux-gnu/4.1.2 -L/usr/lib/gcc/i486-linux-gnu/4.1.2 -L/usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib -L/lib/../lib -L/usr/lib/../lib"
 
 # Method to check whether dependent libraries are shared objects.
-deplibs_check_method="file_magic ^x86 archive import|^x86 DLL"
+deplibs_check_method="pass_all"
 
 # Command to use when deplibs_check_method == file_magic.
-file_magic_cmd="func_win32_libid"
+file_magic_cmd="\$MAGIC_CMD"
 
 # Flag that allows shared libraries with undefined symbols to be built.
-allow_undefined_flag="unsupported"
+allow_undefined_flag=""
 
 # Flag that forces no undefined symbols.
 no_undefined_flag=""
 
 # Commands used to finish a libtool library installation in a directory.
-finish_cmds=""
+finish_cmds="PATH=\\\"\\\$PATH:/sbin\\\" ldconfig -n \$libdir"
 
 # Same as above, but a single script fragment to be evaled but not shown.
 finish_eval=""
 
 # Take the output of nm and produce a listing of raw symbols and C names.
-global_symbol_pipe="sed -n -e 's/^.*[ 	]\\([ABCDGIRSTW][ABCDGIRSTW]*\\)[ 	][ 	]*_\\([_A-Za-z][_A-Za-z0-9]*\\)\$/\\1 _\\2 \\2/p'"
+global_symbol_pipe="sed -n -e 's/^.*[ 	]\\([ABCDGIRSTW][ABCDGIRSTW]*\\)[ 	][ 	]*\\([_A-Za-z][_A-Za-z0-9]*\\)\$/\\1 \\2 \\2/p'"
 
 # Transform the output of nm in a proper C declaration
 global_symbol_to_cdecl="sed -n -e 's/^. .* \\(.*\\)\$/extern int \\1;/p'"
@@ -7533,20 +7510,20 @@ global_symbol_to_c_name_address="sed -n -e 's/^: \\([^ ]*\\) \$/  {\\\"\\1\\\", 
 runpath_var=LD_RUN_PATH
 
 # This is the shared library path variable.
-shlibpath_var=PATH
+shlibpath_var=LD_LIBRARY_PATH
 
 # Is shlibpath searched before the hard-coded library search path?
-shlibpath_overrides_runpath=yes
+shlibpath_overrides_runpath=no
 
 # How to hardcode a shared library path into an executable.
 hardcode_action=immediate
 
 # Whether we should hardcode library paths into libraries.
-hardcode_into_libs=no
+hardcode_into_libs=yes
 
 # Flag to hardcode $libdir into a binary during linking.
 # This must work even if $libdir does not exist.
-hardcode_libdir_flag_spec="-L\$libdir"
+hardcode_libdir_flag_spec="\${wl}--rpath \${wl}\$libdir"
 
 # If ld is used when linking, flag to hardcode $libdir into
 # a binary during linking. This must work even if $libdir does
@@ -7574,16 +7551,16 @@ hardcode_automatic=no
 
 # Variables whose values should be saved in libtool wrapper scripts and
 # restored at relink time.
-variables_saved_for_relink="PATH PATH LD_RUN_PATH GCC_EXEC_PREFIX COMPILER_PATH LIBRARY_PATH"
+variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COMPILER_PATH LIBRARY_PATH"
 
 # Whether libtool must link a program against all its dependency libraries.
 link_all_deplibs=unknown
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /usr/lib/gcc/i586-mingw32msvc/3.4.5/ /usr/lib/gcc/i586-mingw32msvc/3.4.5/ /usr/lib/gcc/i586-mingw32msvc/3.4.5/../../../../i586-mingw32msvc/lib/i586-mingw32msvc/3.4.5/ /usr/lib/gcc/i586-mingw32msvc/3.4.5/../../../../i586-mingw32msvc/lib/"
+sys_lib_search_path_spec="/usr/lib/gcc/i486-linux-gnu/4.1.2 /usr/lib /lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib"
+sys_lib_dlsearch_path_spec="/lib /usr/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7592,7 +7569,7 @@ fix_srcfile_path=""
 always_export_symbols=no
 
 # The commands to list exported symbols.
-export_symbols_cmds="\$NM \$libobjs \$convenience | \$global_symbol_pipe | \$SED -e '/^[BCDGRS][ ]/s/.*[ ]\\\\([^ ]*\\\\)/\\\\1 DATA/;/^.*[ ]__nm__/s/^.*[ ]__nm__\\\\([^ ]*\\\\)[ ][^ ]*/\\\\1 DATA/;/^I[ ]/d;/^[AITW][ ]/s/.*[ ]//' | sort | uniq > \$export_symbols"
+export_symbols_cmds="\$NM \$libobjs \$convenience | \$global_symbol_pipe | \$SED 's/.* //' | sort | uniq > \$export_symbols"
 
 # The commands to extract the exported symbol list from a shared archive.
 extract_expsyms_cmds=""
