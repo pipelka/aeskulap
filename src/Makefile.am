@@ -30,7 +30,7 @@ ICONOBJ = icon.o
 endif
 
 icon.rc:
-	echo "IDI_ICON1 ICON DISCARDABLE \"$(top_srcdir)/pixmaps/aeskulap.ico\"" > icon.rc
+	echo "IDI_ICON1 ICON DISCARDABLE \"$(top_srcdir)/packaging/win32/aeskulap.ico\"" > icon.rc
 
 icon.o: icon.rc
 	$(target_alias)-windres -J rc -i icon.rc -o icon.o

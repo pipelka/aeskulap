@@ -141,7 +141,6 @@ AC_SUBST(LDFLAGS_AESKULAP_LIBS)
 AM_CONDITIONAL(BUILD_NOT_MINGW32, test x$MINGW32 = xno)
 
 AC_OUTPUT([
-autopackage/default.apspec
 po/Makefile.in
 Makefile
 configuration/Makefile
@@ -149,8 +148,13 @@ imagepool/Makefile
 src/Makefile
 widgets/Makefile
 pixmaps/Makefile
-aeskulap.spec
-aeskulap.iss
+packaging/Makefile
+packaging/autopackage/Makefile
+packaging/autopackage/default.apspec
+packaging/rpm/Makefile
+packaging/rpm/aeskulap.spec
+packaging/win32/Makefile
+packaging/win32/aeskulap.iss
 ])
 
 
