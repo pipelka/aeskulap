@@ -42,6 +42,8 @@ images_DATA = \
 EXTRA_DIST = \
 	README \
 	aeskulap.ico \
+	aeskulap-setup-large.bmp \
+	aeskulap-setup-small.bmp \
 	$(icon_DATA) \
 	$(svgicon_DATA) \
 	$(images_DATA)
