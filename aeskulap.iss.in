@@ -1,0 +1,69 @@
+; -- aeskulap.iss --
+; Installation script for the Aeskulap DICOM image viewer and network client.
+
+[Setup]
+AppName=Aeskulap
+AppVerName=Aeskulap @VERSION@
+AppPublisher=Alexander Pipelka
+AppPublisherURL=http://aeskulap.nongnu.org
+DefaultDirName={pf}\aeskulap
+DefaultGroupName=Aeskulap
+UninstallDisplayIcon={app}\aeskulap.exe
+Compression=lzma
+SolidCompression=yes
+DirExistsWarning=no
+LicenseFile=license.txt
+WizardImageFile=aeskulap-setup-large.bmp
+WizardSmallImageFile=aeskulap-setup-small.bmp
+OutputBasefilename=aeskulap-@VERSION@-setup
+
+[Files]
+Source: "aeskulap.exe"; DestDir: "{app}"
+Source: "libconfiguration.dll"; DestDir: "{app}"
+Source: "libimagepool.dll"; DestDir: "{app}"
+
+Source: "dicom.dic"; DestDir: "{app}"
+Source: "libofstd.dll"; DestDir: "{app}"
+Source: "libdcmdata.dll"; DestDir: "{app}"
+Source: "libdcmnet.dll"; DestDir: "{app}"
+Source: "libdcmtls.dll"; DestDir: "{app}"
+Source: "libdcmimgle.dll"; DestDir: "{app}"
+Source: "libdcmimage.dll"; DestDir: "{app}"
+Source: "libijg8.dll"; DestDir: "{app}"
+Source: "libijg12.dll"; DestDir: "{app}"
+Source: "libijg16.dll"; DestDir: "{app}"
+Source: "libdcmjpeg.dll"; DestDir: "{app}"
+
+Source: "share\aeskulap\glade\aeskulap.glade"; DestDir: "{app}\share\aeskulap\glade"
+
+Source: "share\aeskulap\images\cursor_pan.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\cursor_windowlevel.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\cursor_zoom.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\filmholes-big-left.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\filmholes-big-right.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\grid-1.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\grid-2h.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\grid-2v.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\grid-4.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\grid-16.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\series-1x1.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\series-2x1.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\series-2x2.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\series-3x2.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\series-3x3.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\series-4x4.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\start-here.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\stock-layers-24.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\stock-tool-color-picker-22.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\stock-tool-eraser-22.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\stock-tool-measure-22.png"; DestDir: "{app}\share\aeskulap\images"
+Source: "share\aeskulap\images\stock-tool-scale-22.png"; DestDir: "{app}\share\aeskulap\images"
+
+Source: "share\icons\hicolor\48x48\apps\aeskulap.png"; DestDir: "{app}\share\icons\hicolor\48x48\apps"
+Source: "share\icons\hicolor\scalable\apps\aeskulap.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"
+
+[Icons]
+Name: "{group}\Aeskulap"; Filename: "{app}\aeskulap.exe"
+Name: "{group}\Uninstall Aeskulap"; Filename: "{app}\unins000.exe"
+
+

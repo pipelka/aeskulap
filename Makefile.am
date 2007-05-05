@@ -22,6 +22,7 @@ EXTRA_DIST = \
 	COPYING.DCMTK \
 	INSTALL \
 	README \
+	aeskulap.iss.in \
 	gettext.h \
 	intltool-extract.in \
 	intltool-merge.in \
@@ -68,6 +69,10 @@ dist-win32:
 	    cp $(prefix)/bin/lib$$i.dll /tmp/$(PACKAGE)-$(VERSION)/bin ; \
 	done
 	-cp -f $(prefix)/lib/dicom.dic /tmp/$(PACKAGE)-$(VERSION)
+	-cp -f $(top_srcdir)/aeskulap.iss /tmp/$(PACKAGE)-$(VERSION)
+	-cp -f $(top_srcdir)/COPYING /tmp/$(PACKAGE)-$(VERSION)/license.txt
+	-cp -f $(top_srcdir)/pixmaps/aeskulap-setup-small.bmp /tmp/$(PACKAGE)-$(VERSION)
+	-cp -f $(top_srcdir)/pixmaps/aeskulap-setup-large.bmp /tmp/$(PACKAGE)-$(VERSION)
 	$(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/*.exe
 	$(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/*.dll
 	-mv /tmp/$(PACKAGE)-$(VERSION)/bin/* /tmp/$(PACKAGE)-$(VERSION)

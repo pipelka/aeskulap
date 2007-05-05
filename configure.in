@@ -150,6 +150,7 @@ src/Makefile
 widgets/Makefile
 pixmaps/Makefile
 aeskulap.spec
+aeskulap.iss
 ])
 
 
