@@ -62,7 +62,7 @@ require @glade.gnome.org/libglade 2.4
 require @gnome.org/gconf2 2.10
 require @libpng.org/libpng 3
 require @zlib.org/zlib 1
-require @gtkmm.org/gtkmm 2.10
+require @gtkmm.org/gtkmm2 2.4
 #require autopackage.tar.bz2
 #require autopackage-gtk-1.0.8.x86.package
 #require autopackage-qt-1.0.x86.package
