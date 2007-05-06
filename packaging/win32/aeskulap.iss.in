@@ -63,7 +63,7 @@ Source: "share\icons\hicolor\48x48\apps\aeskulap.png"; DestDir: "{app}\share\ico
 Source: "share\icons\hicolor\scalable\apps\aeskulap.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"
 
 [Icons]
-Name: "{group}\Aeskulap"; Filename: "{app}\aeskulap.exe"
+Name: "{group}\Aeskulap"; Filename: "{app}\aeskulap.exe"; WorkingDir: "{app}"
 Name: "{group}\Uninstall Aeskulap"; Filename: "{app}\unins000.exe"
 
 
