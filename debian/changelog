@@ -1,3 +1,9 @@
+aeskulap (0.2.2-5) feisty; urgency=low
+
+  * rebuild
+
+ -- Alexander Pipelka <pipelka@celeborn>  Mon,  7 May 2007 11:12:48 +0200
+
 aeskulap (0.2.2-4) feisty; urgency=low
 
   * added DICOMDIR support (patches from Gianluca Ghelli)

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/04 14:47:07 $
+    Update Date:      $Date: 2007/05/07 09:12:51 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.31 $
+    CVS/RCS Revision: $Revision: 1.32 $
     Status:           $State: Exp $
 */
 
@@ -130,6 +130,7 @@ m_netloader(Aeskulap::Configuration::get_instance().get_local_aet())
 
 	m_filter_dicomdir.set_name(gettext("DICOMDIR files"));
 	m_filter_dicomdir.add_pattern("DICOMDIR");
+	m_filter_dicomdir.add_pattern("dicomdir");
 
 	m_netloader.signal_study_added.connect(sigc::mem_fun(*this, &MainWindow::on_study_added));
 	m_netloader.signal_error.connect(sigc::mem_fun(*this, &MainWindow::on_study_error));
