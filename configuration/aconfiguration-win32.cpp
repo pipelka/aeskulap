@@ -205,6 +205,7 @@ Configuration::ServerList* Configuration::get_serverlist() {
     DWORD port;
     std::string group;
     DWORD lossy;
+	DWORD relational;
 
     ret = RegOpenKeyEx(HKEY_CURRENT_USER, serverKey.c_str(), 0, KEY_READ | KEY_ENUMERATE_SUB_KEYS, &hServersKey);
     if( ret != ERROR_SUCCESS )
@@ -243,12 +244,19 @@ Configuration::ServerList* Configuration::get_serverlist() {
             if( ret != ERROR_SUCCESS || type != REG_DWORD )
                 continue;
 
+            buflen = sizeof(relational);
+            ret = RegQueryValueEx(hKey, "Relational", 0, &type, (BYTE*)&relational, &buflen);
+            if( ret != ERROR_SUCCESS || type != REG_DWORD ) {
+                relational = 0;
+            }
+
             ServerData& s = (*list)[std::string(servername)];
             s.m_aet = aet;
             s.m_hostname = hostname;
             s.m_group = group;
             s.m_name = servername;
             s.m_lossy = lossy;
+            s.m_relational = relational;
             s.m_port = port;
         }
         if( hKey )
@@ -302,6 +310,8 @@ void Configuration::set_serverlist(std::vector<ServerData>& list) {
             RegSetValueEx(hKey, "Port", 0, REG_DWORD, (BYTE*)&tmp, sizeof(tmp));
             tmp = i->m_lossy;
             RegSetValueEx(hKey, "Lossy", 0,REG_DWORD, (BYTE*)&tmp, sizeof(tmp));
+            tmp = i->m_relational;
+            RegSetValueEx(hKey, "Relational", 0,REG_DWORD, (BYTE*)&tmp, sizeof(tmp));
         }
         RegCloseKey(hKey);
 	}
