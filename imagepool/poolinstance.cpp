@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/04/24 10:49:38 $
+    Update Date:      $Date: 2007/05/10 10:24:45 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -389,7 +389,11 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 	}
 	else {
 		r->m_depth = m_image->getDepth();
+		if( r->m_depth > 16 ) {
+			r->m_depth = 16;
+		}
 	}
+		
 	//std::cout << "depth: " << r->m_depth << std::endl;
 
 	//std::cout << "m_default_windowcenter = " << r->m_default_windowcenter << std::endl;
