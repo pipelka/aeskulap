@@ -1,3 +1,9 @@
+aeskulap (0.2.2-8) feisty; urgency=low
+
+  * date filter fix
+
+ -- Alexander Pipelka <pipelka@shuttle.chello.at>  Thu, 10 May 2007 22:24:22 +0200
+
 aeskulap (0.2.2-7) feisty; urgency=low
 
   * hopefully DICOM compliant C-Move operations
