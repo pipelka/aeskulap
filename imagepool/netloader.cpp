@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 17:37:57 $
+    Update Date:      $Date: 2007/05/10 17:41:23 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.17 $
+    CVS/RCS Revision: $Revision: 1.18 $
     Status:           $State: Exp $
 */
 
@@ -78,19 +78,19 @@ bool NetLoader::run() {
 	Aeskulap::Configuration& conf = Aeskulap::Configuration::get_instance();
 	std::string studyinstanceuid = m_study->studyinstanceuid();
 	 
-	//if(m_study->studyrelatedinstances() > 0) {
-	//	m_cache[studyinstanceuid].m_instancecount = m_study->studyrelatedinstances(); 
-	//}
-	//else {
+	if(m_study->studyrelatedinstances() > 0) {
+		m_cache[studyinstanceuid].m_instancecount = m_study->studyrelatedinstances(); 
+	}
+	else {
 		m_cache[studyinstanceuid].m_instancecount = query_study_instances(studyinstanceuid, m_server, conf.get_local_aet());
-	//}
+	}
 
-	//if(m_study->seriescount() > 0) {
-	//	m_cache[studyinstanceuid].m_seriescount = m_study->seriescount();
-	//}
-	//else {
+	if(m_study->seriescount() > 0) {
+		m_cache[studyinstanceuid].m_seriescount = m_study->seriescount();
+	}
+	else {
 		m_cache[studyinstanceuid].m_seriescount = query_study_series(studyinstanceuid, m_server, conf.get_local_aet());
-	//}
+	}
 
 	NetClient<DicomMover> mover;
 

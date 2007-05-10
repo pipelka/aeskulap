@@ -10,7 +10,6 @@ Source0: %{name}-%{version}.tar.gz
 URL: http://aeskulap.nongnu.org
 License: GPL
 Group: Graphics
-BuildRoot: /var/tmp/%{name}-buildroot
 Prefix: %{_prefix}
 Packager: Alexander Pipelka <pipelkateleweb.at>
 

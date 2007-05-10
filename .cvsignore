@@ -46,3 +46,4 @@ aeskulap.iss
 libtool-fixed
 libtool
 ltmain.sh
+rpmbuild

@@ -14,6 +14,7 @@ DIST_SUBDIRS = \
 	imagepool \
 	widgets \
 	src \
+	packaging \
 	pixmaps
 
 EXTRA_DIST = \
@@ -54,7 +55,7 @@ distclean: distclean-recursive
 rpm: dist
 	mkdir -p rpmbuild
 	cp $(PACKAGE)-$(VERSION).tar.gz rpmbuild
-	rpmbuild --buildroot rpmbuild -ba $(PACKAGE).spec
+	rpmbuild --buildroot rpmbuild -ba packaging/rpm/$(PACKAGE).spec
 
 dist-win32:
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)

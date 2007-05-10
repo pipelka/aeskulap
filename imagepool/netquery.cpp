@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 17:37:57 $
+    Update Date:      $Date: 2007/05/10 17:39:37 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.24 $
+    CVS/RCS Revision: $Revision: 1.25 $
     Status:           $State: Exp $
 */
 
@@ -372,6 +372,9 @@ int query_series_instances(const std::string& studyinstanceuid, const std::strin
 	query.insert(e);
 
 	e = newDicomElement(DCM_SOPInstanceUID);
+	query.insert(e);
+
+	e = newDicomElement(DCM_InstanceNumber);
 	query.insert(e);
 
 	std::cout << "NEW QUERY:" << std::endl;

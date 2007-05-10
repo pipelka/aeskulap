@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/04 14:47:06 $
+    Update Date:      $Date: 2007/05/10 17:37:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/imagepool.h,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -91,6 +91,20 @@ namespace ImagePool {
 	int query_study_series(
 				const std::string& studyinstanceuid,
 				const std::string& server,
+				const std::string& local_aet
+				);
+
+	int query_study_series(
+				const std::string& studyinstanceuid, 
+				const std::string& server, 
+				const std::string& local_aet, 
+				std::list<std::string>& seriesinstanceuids
+				);
+
+	int query_series_instances(
+				const std::string& studyinstanceuid, 
+				const std::string& seriesinstanceuid, 
+				const std::string& server, 
 				const std::string& local_aet
 				);
 
