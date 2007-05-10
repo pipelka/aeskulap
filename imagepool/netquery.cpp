@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 14:29:59 $
+    Update Date:      $Date: 2007/05/10 17:37:57 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.23 $
+    CVS/RCS Revision: $Revision: 1.24 $
     Status:           $State: Exp $
 */
 
@@ -312,12 +312,6 @@ void query_series_from_net(const std::string& studyinstanceuid, const std::strin
 	e = newDicomElement(DCM_SeriesTime);
 	query.insert(e);
 
-	/*e = newDicomElement(DCM_StudyDescription);
-	query.insert(e);*/
-
-	/*e = newDicomElement(DCM_StudyTime);
-	query.insert(e);*/
-
 	e = newDicomElement(DCM_StationName);
 	query.insert(e);
 
@@ -339,72 +333,29 @@ void query_series_from_net(const std::string& studyinstanceuid, const std::strin
 	}
 }
 
+/*
+ * query the number instances of a study
+ */
 int query_study_instances(const std::string& studyinstanceuid, const std::string& server, const std::string& local_aet) {
-	int count = 0;
+	std::list<std::string> seriesinstanceuids;
+	int sum = 0;
 
-	{
-		DcmDataset query;
-		DcmElement* e = NULL;
-		
-		e = newDicomElement(DCM_QueryRetrieveLevel);
-		e->putString("STUDY");
-		query.insert(e);
-	
-		e = newDicomElement(DCM_SpecificCharacterSet);
-		e->putString(ImagePool::get_encoding().c_str());
-		query.insert(e);
-	
-		e = newDicomElement(DCM_PatientsName);
-		query.insert(e);
-	
-		e = newDicomElement(DCM_PatientID);
-		query.insert(e);
-	
-		e = newDicomElement(DCM_NumberOfStudyRelatedInstances);
-		query.insert(e);
-	
-		e = newDicomElement(DCM_PatientsBirthDate);
-		query.insert(e);
-	
-		e = newDicomElement(DCM_PatientsSex);
-		query.insert(e);
-	
-		e = newDicomElement(DCM_StudyDate);
-		query.insert(e);
-	
-		e = newDicomElement(DCM_StudyID);
-		query.insert(e);
-	
-		e = newDicomElement(DCM_StudyInstanceUID);
-		e->putString(studyinstanceuid.c_str());
-		query.insert(e);
-	
-		e = newDicomElement(DCM_StudyDescription);
-		query.insert(e);
-	
-		std::cout << "NEW QUERY:" << std::endl;
-		query.print(COUT);
-
-		NetClient<FindAssociation> a;
-		a.SetMaxResults(1);
-		a.QueryServer(&query, server, local_aet, UID_FINDStudyRootQueryRetrieveInformationModel);
-	
-		DcmStack* stack = a.GetResultStack();
-	
-		std::cout << stack->card() << " Responses" << std::endl;
-		if(stack->card() > 0) {
-			DcmDataset* dset = (DcmDataset*)stack->top();
-			dset->print(COUT);
-			OFString buffer;
-			dset->findAndGetOFString(DCM_NumberOfStudyRelatedInstances, buffer);
-			count = atoi(buffer.c_str());
-		}
+	if(query_study_series(studyinstanceuid, server, local_aet, seriesinstanceuids) == 0) {
+		return 0;
 	}
 	
-	if(count > 0) {
-		return count;
-	}
+	for(std::list<std::string>::iterator i = seriesinstanceuids.begin(); i != seriesinstanceuids.end(); i++) {
+		sum += query_series_instances(studyinstanceuid, *i, server, local_aet);
+	} 
+	
+	std::cout << "query_study_instances = " << sum << std::endl;
+	return sum;
+}
 
+/*
+ * query the number instances of a series
+ */
+int query_series_instances(const std::string& studyinstanceuid, const std::string& seriesinstanceuid, const std::string& server, const std::string& local_aet) {
 	DcmDataset query;
 	DcmElement* e = NULL;
 	
@@ -417,31 +368,28 @@ int query_study_instances(const std::string& studyinstanceuid, const std::string
 	query.insert(e);
 
 	e = newDicomElement(DCM_SeriesInstanceUID);
+	e->putString(seriesinstanceuid.c_str());
 	query.insert(e);
 
 	e = newDicomElement(DCM_SOPInstanceUID);
-	query.insert(e);
-
-	e = newDicomElement(DCM_InstanceNumber);
 	query.insert(e);
 
 	std::cout << "NEW QUERY:" << std::endl;
 	query.print(COUT);
 
 	NetClient<FindAssociation> a;
-	a.SetMaxResults(5000);
 	a.QueryServer(&query, server, local_aet, UID_FINDStudyRootQueryRetrieveInformationModel);
-	//a.QueryServers(&query, UID_FINDStudyRootQueryRetrieveInformationModel);
 
 	DcmStack* result = a.GetResultStack();
-
-	std::cout << result->card() << " Responses" << std::endl;
-	count = result->card();
-	
-	return count;
+	std::cout << "query_series_instances = " << result->card() << std::endl;
+ 
+	return result->card();
 }
 
-int query_study_series(const std::string& studyinstanceuid, const std::string& server, const std::string& local_aet) {
+/*
+ * query all seriesinstanceuid's and the number series of a study
+ */
+int query_study_series(const std::string& studyinstanceuid, const std::string& server, const std::string& local_aet, std::list<std::string>& seriesinstanceuids) {
 	DcmDataset query;
 	DcmElement* e = NULL;
 	
@@ -466,11 +414,29 @@ int query_study_series(const std::string& studyinstanceuid, const std::string& s
 	a.QueryServer(&query, server, local_aet, UID_FINDStudyRootQueryRetrieveInformationModel);
 
 	DcmStack* result = a.GetResultStack();
+	DcmDataset* dset;
+	OFString ofstr;
+
+	seriesinstanceuids.clear();
+	for(int i = 0; i < result->card(); i++) {
+		dset = (DcmDataset*)result->elem(i);
+		if(dset->findAndGetOFString(DCM_SeriesInstanceUID, ofstr).good()) {
+			seriesinstanceuids.push_back(ofstr.c_str());
+		}
+	}
 
 	std::cout << result->card() << " Responses" << std::endl;
 	int count = result->card();
 
 	return count;
+}
+
+/*
+ * query the number series of a study
+ */
+int query_study_series(const std::string& studyinstanceuid, const std::string& server, const std::string& local_aet) {
+	std::list<std::string> dummy;
+	return query_study_series(studyinstanceuid, server, local_aet, dummy);
 }
 
 } // namespace ImagePool
