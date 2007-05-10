@@ -52,7 +52,7 @@
 
 Association::Association() :
 m_abstractSyntax(NULL),
-m_timeout(0),
+m_timeout(10),
 m_accept_lossy(false),
 assoc(NULL),
 presId(0),
