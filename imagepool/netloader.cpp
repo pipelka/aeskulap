@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 18:13:35 $
+    Update Date:      $Date: 2007/05/10 20:08:11 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.19 $
+    CVS/RCS Revision: $Revision: 1.20 $
     Status:           $State: Exp $
 */
 
@@ -163,6 +163,9 @@ bool NetLoader::run() {
 			e = newDicomElement(DCM_SeriesInstanceUID);
 			e->putString(i->c_str());
 			query.insert(e);
+
+			std::cout << "C-Move request:" << std::endl;
+			query.print(COUT);
 		
 			if(!mover.QueryServer(&query, m_server, local_aet)) {
 				std::cerr << "C-MOVE failed !" << std::endl;
