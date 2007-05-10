@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 17:41:23 $
+    Update Date:      $Date: 2007/05/10 18:13:35 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.18 $
+    CVS/RCS Revision: $Revision: 1.19 $
     Status:           $State: Exp $
 */
 
@@ -74,22 +74,25 @@ bool NetLoader::load(const Glib::RefPtr< ImagePool::Study >& study, const std::s
 }
 
 bool NetLoader::run() {
-
 	Aeskulap::Configuration& conf = Aeskulap::Configuration::get_instance();
+	Glib::RefPtr<ImagePool::ServerList> serverlist = ImagePool::ServerList::get();
+
 	std::string studyinstanceuid = m_study->studyinstanceuid();
-	 
+	std::string local_aet = conf.get_local_aet();
+	bool relational_move = serverlist->find(m_server)->second.m_relational;
+
 	if(m_study->studyrelatedinstances() > 0) {
 		m_cache[studyinstanceuid].m_instancecount = m_study->studyrelatedinstances(); 
 	}
 	else {
-		m_cache[studyinstanceuid].m_instancecount = query_study_instances(studyinstanceuid, m_server, conf.get_local_aet());
+		m_cache[studyinstanceuid].m_instancecount = query_study_instances(studyinstanceuid, m_server, local_aet);
 	}
 
 	if(m_study->seriescount() > 0) {
 		m_cache[studyinstanceuid].m_seriescount = m_study->seriescount();
 	}
 	else {
-		m_cache[studyinstanceuid].m_seriescount = query_study_series(studyinstanceuid, m_server, conf.get_local_aet());
+		m_cache[studyinstanceuid].m_seriescount = query_study_series(studyinstanceuid, m_server, local_aet);
 	}
 
 	NetClient<DicomMover> mover;
@@ -97,33 +100,84 @@ bool NetLoader::run() {
 	mover.signal_response_received.connect(sigc::mem_fun(*this, &NetLoader::add_image));
 	mover.SetMaxResults(5000);
 
-	DcmDataset query;
-	DcmElement* e = NULL;
+	/*
+	 * relational move - this isn't DICOM compliant, but supported by many SCP's
+	 */
+	if(relational_move) {
+		DcmDataset query;
+		DcmElement* e = NULL;
+		
+		e = newDicomElement(DCM_QueryRetrieveLevel);
+		e->putString("STUDY");
+		query.insert(e);
 	
-	e = newDicomElement(DCM_QueryRetrieveLevel);
-	e->putString("STUDY");
-	query.insert(e);
+		e = newDicomElement(DCM_SOPInstanceUID);
+		query.insert(e);
+	
+		e = newDicomElement(DCM_InstanceNumber);
+		query.insert(e);
+	
+		e = newDicomElement(DCM_StudyInstanceUID);
+		e->putString(studyinstanceuid.c_str());
+		query.insert(e);
+	
+		e = newDicomElement(DCM_SeriesInstanceUID);
+		query.insert(e);
+	
+		if(!mover.QueryServer(&query, m_server, local_aet)) {
+			std::cerr << "C-MOVE failed !" << std::endl;
+			return false;
+		}
+	
+		std::cout << "C-MOVE: " << mover.responsecount << " responses" << std::endl;
+		return (mover.responsecount != 0);
+	}
+	/*
+	 * traditional DICOM compliant move (SLOW!)
+	 */
+	else {
+		std::list<std::string> seriesinstanceuids;
 
-	e = newDicomElement(DCM_SOPInstanceUID);
-	query.insert(e);
+		if(query_study_series(studyinstanceuid, m_server, local_aet, seriesinstanceuids) == 0) {
+			return false;
+		}
 
-	e = newDicomElement(DCM_InstanceNumber);
-	query.insert(e);
-
-	e = newDicomElement(DCM_StudyInstanceUID);
-	e->putString(studyinstanceuid.c_str());
-	query.insert(e);
-
-	e = newDicomElement(DCM_SeriesInstanceUID);
-	query.insert(e);
-
-	if(!mover.QueryServer(&query, m_server, conf.get_local_aet())) {
-		std::cerr << "C-MOVE failed !" << std::endl;
-		return false;
+		for(std::list<std::string>::iterator i = seriesinstanceuids.begin(); i != seriesinstanceuids.end(); i++) {
+			DcmDataset query;
+			DcmElement* e = NULL;
+			
+			e = newDicomElement(DCM_QueryRetrieveLevel);
+			e->putString("IMAGE");
+			query.insert(e);
+		
+			e = newDicomElement(DCM_SOPInstanceUID);
+			query.insert(e);
+		
+			e = newDicomElement(DCM_InstanceNumber);
+			query.insert(e);
+		
+			e = newDicomElement(DCM_StudyInstanceUID);
+			e->putString(studyinstanceuid.c_str());
+			query.insert(e);
+		
+			e = newDicomElement(DCM_SeriesInstanceUID);
+			e->putString(i->c_str());
+			query.insert(e);
+		
+			if(!mover.QueryServer(&query, m_server, local_aet)) {
+				std::cerr << "C-MOVE failed !" << std::endl;
+				return false;
+			}
+		
+			std::cout << "C-MOVE: " << mover.responsecount << " responses (seriesinstanceuid: " << *i <<")" << std::endl;
+			if(mover.responsecount == 0) {
+				return false;
+			}
+		}
+		
 	}
 
-	std::cout << "C-MOVE: " << mover.responsecount << " responses" << std::endl;
-	return (mover.responsecount != 0);
+	return true;
 }
 
 } // namespace ImagePool

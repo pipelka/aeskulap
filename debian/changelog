@@ -1,3 +1,9 @@
+aeskulap (0.2.2-7) feisty; urgency=low
+
+  * hopefully DICOM compliant C-Move operations
+
+ -- Alexander Pipelka <pipelka@shuttle.chello.at>  Thu, 10 May 2007 20:13:41 +0200
+
 aeskulap (0.2.2-6) feisty; urgency=low
 
   * try to speed up queries (use image count information if available from SCP)
