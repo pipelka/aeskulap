@@ -1,3 +1,10 @@
+aeskulap (0.2.2-6) feisty; urgency=low
+
+  * try to speed up queries (use image count information if available from SCP)
+  * try to make the C-Find queries standard compliant
+
+ -- Alexander Pipelka <pipelka@celeborn>  Thu, 10 May 2007 16:29:17 +0200
+
 aeskulap (0.2.2-5) feisty; urgency=low
 
   * rebuild

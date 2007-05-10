@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/04/24 09:53:38 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.15 $
+    CVS/RCS Revision: $Revision: 1.16 $
     Status:           $State: Exp $
 */
 
@@ -61,12 +61,12 @@ NetLoader::NetLoader(const std::string& local_aet) :
 m_local_aet(local_aet) {
 }
 
-bool NetLoader::load(const std::string& studyinstanceuid, const std::string& server) {
+bool NetLoader::load(const Glib::RefPtr< ImagePool::Study >& study, const std::string& server) {
 	if(busy()) {
 		return false;
 	}
 
-	m_studyinstanceuid = studyinstanceuid;
+	m_study = study;
 	m_server = server;
 	start();
 	
@@ -76,9 +76,21 @@ bool NetLoader::load(const std::string& studyinstanceuid, const std::string& ser
 bool NetLoader::run() {
 
 	Aeskulap::Configuration& conf = Aeskulap::Configuration::get_instance();
+	std::string studyinstanceuid = m_study->studyinstanceuid();
+	 
+	if(m_study->studyrelatedinstances() > 0) {
+		m_cache[studyinstanceuid].m_instancecount = m_study->studyrelatedinstances(); 
+	}
+	else {
+		m_cache[studyinstanceuid].m_instancecount = query_study_instances(studyinstanceuid, m_server, conf.get_local_aet());
+	}
 
-	m_cache[m_studyinstanceuid].m_instancecount = query_study_instances(m_studyinstanceuid, m_server, conf.get_local_aet());
-	m_cache[m_studyinstanceuid].m_seriescount = query_study_series(m_studyinstanceuid, m_server, conf.get_local_aet());
+	if(m_study->seriescount() > 0) {
+		m_cache[studyinstanceuid].m_seriescount = m_study->seriescount();
+	}
+	else {
+		m_cache[studyinstanceuid].m_seriescount = query_study_series(studyinstanceuid, m_server, conf.get_local_aet());
+	}
 
 	NetClient<DicomMover> mover;
 
@@ -99,7 +111,7 @@ bool NetLoader::run() {
 	query.insert(e);
 
 	e = newDicomElement(DCM_StudyInstanceUID);
-	e->putString(m_studyinstanceuid.c_str());
+	e->putString(studyinstanceuid.c_str());
 	query.insert(e);
 
 	e = newDicomElement(DCM_SeriesInstanceUID);

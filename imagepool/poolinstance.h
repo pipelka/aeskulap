@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/04 14:47:06 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -178,6 +178,12 @@ public:
 
 	static Glib::RefPtr<ImagePool::Instance> create(DcmDataset* dset);
 
+	int studyrelatedinstances();
+
+	int seriesrelatedinstances();
+
+	int studyrelatedseries();
+
 protected:
 
 	bool set_encoding(const std::string& single, const std::string& ideographic="");
@@ -263,6 +269,12 @@ private:
 	int m_min;
 
 	int m_max;
+	
+	int m_studyrelatedinstances;
+
+	int m_seriesrelatedinstances;
+
+	int m_studyrelatedseries;
 };
 
 }

@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/04 14:47:07 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.17 $
+    CVS/RCS Revision: $Revision: 1.18 $
     Status:           $State: Exp $
 */
 
@@ -152,6 +152,8 @@ void StudyManager::on_filter_search() {
 
 	std::string local_aet = m_configuration.get_local_aet();
 
+	m_result_list.clear();
+
 	ImagePool::query_from_net(
 					m_entry_filter_patientid->get_text(),
 					m_entry_filter_name->get_text(),
@@ -237,6 +239,7 @@ void StudyManager::on_queryresult_study(const Glib::RefPtr< ImagePool::Study >& 
 	row[m_ColumnsStudy.m_studydate] = study->studydate();
 	row[m_ColumnsStudy.m_studyinstanceuid] = study->studyinstanceuid();
 	row[m_ColumnsStudy.m_server] = study->server();
+	m_result_list[study->studyinstanceuid()] = study;
 
 	// add child
 	Gtk::TreeModel::Row child = *(m_refTreeModelStudy->append(row.children()));
@@ -257,7 +260,7 @@ void StudyManager::on_study_activated(const Gtk::TreeModel::Path& path, Gtk::Tre
 	if(studyinstanceuid.empty()) {
 		return;
 	}
-	signal_open_study(studyinstanceuid, server);
+	signal_open_study(m_result_list[studyinstanceuid], server);
 }
 
 void StudyManager::on_queryresult_series(const Glib::RefPtr< ImagePool::Series >& series, Gtk::TreeModel::Row& row) {

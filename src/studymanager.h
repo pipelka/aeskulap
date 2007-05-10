@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/04 14:47:07 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.12 $
+    CVS/RCS Revision: $Revision: 1.13 $
     Status:           $State: Exp $
 */
 
@@ -35,6 +35,7 @@
 #include <libglademm/xml.h>
 
 #include "aconfigclient.h"
+#include <map>
 
 namespace Aeskulap {
 	class SimpleDisplay;
@@ -54,7 +55,7 @@ public:
 
 	void open_dicomdir( const Glib::ustring &dicomdir);
 
-	sigc::signal<void, const std::string&, const std::string&> signal_open_study;
+	sigc::signal<void, const Glib::RefPtr< ImagePool::Study >&, const std::string&> signal_open_study;
 
 protected:
 
@@ -121,10 +122,13 @@ protected:
 		Gtk::TreeModelColumn<guint> m_iconsize;
 		Gtk::TreeModelColumn<Glib::ustring> m_station;
 		Gtk::TreeModelColumn<std::string> m_server;
+		Glib::RefPtr< ImagePool::Study > m_study;
 	};
 
 	ModelColumnsStudy m_ColumnsStudy;
 
+	std::map< std::string, Glib::RefPtr< ImagePool::Study > > m_result_list;
+  
 	Glib::RefPtr< Gtk::TreeStore > m_refTreeModelStudy;
 
 	Gtk::TreeView* m_treeview_studylist;

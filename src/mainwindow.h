@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/04 14:47:07 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.h,v $
-    CVS/RCS Revision: $Revision: 1.17 $
+    CVS/RCS Revision: $Revision: 1.18 $
     Status:           $State: Exp $
 */
 
@@ -68,7 +68,7 @@ protected:
 
     void on_dicomdir_open();
 
-	void on_study_open(const std::string& studyinstanceuid, const std::string& server);
+	void on_study_open(const Glib::RefPtr< ImagePool::Study >&, const std::string& server);
 
 	void on_study_progress(const std::string& studyinstanceuid, unsigned int progress);
 

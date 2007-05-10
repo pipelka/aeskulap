@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/07 09:12:51 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/mainwindow.cpp,v $
-    CVS/RCS Revision: $Revision: 1.32 $
+    CVS/RCS Revision: $Revision: 1.33 $
     Status:           $State: Exp $
 */
 
@@ -224,16 +224,16 @@ void MainWindow::open_dicomdir(const Glib::ustring &dicomdir) {
 	m_studymanager->open_dicomdir(dicomdir);
 }
 
-void MainWindow::on_study_open(const std::string& studyinstanceuid, const std::string& server) {
+void MainWindow::on_study_open(const Glib::RefPtr< ImagePool::Study >& study, const std::string& server) {
 	m_raise_opened = true;
 
 	Aeskulap::set_busy_cursor();
 
     if( server.substr(0, 9) == "DICOMDIR:" ) {
-        if( !m_dicomdirloader.load(studyinstanceuid, server.substr(9)) )
+        if( !m_dicomdirloader.load(study->studyinstanceuid(), server.substr(9)) )
        		Aeskulap::set_busy_cursor(false);
     }
-    else if(!m_netloader.load(studyinstanceuid, server)) {
+    else if(!m_netloader.load(study, server)) {
 		Aeskulap::set_busy_cursor(false);
 	}
 }
