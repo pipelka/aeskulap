@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-04-25 15:22+0200\n"
+"POT-Creation-Date: 2007-05-10 22:33+0200\n"
 "PO-Revision-Date: 2006-03-08 09:41+0100\n"
 "Last-Translator: Alexander Pipelka <pipelka@teleweb.at>\n"
 "Language-Team:  <de@li.org>\n"
@@ -50,8 +50,8 @@ msgstr ""
 msgid "Vertebrae"
 msgstr ""
 
-#: ../imagepool/netquery.cpp:105 ../imagepool/poolinstance.cpp:579
-#: ../imagepool/poolinstance.cpp:602
+#: ../imagepool/netquery.cpp:112 ../imagepool/poolinstance.cpp:586
+#: ../imagepool/poolinstance.cpp:609
 msgid "no description"
 msgstr ""
 
@@ -69,10 +69,10 @@ msgid ""
 "No description"
 msgstr ""
 
-#: ../widgets/seriesview.cpp:321 ../widgets/awindowleveltoolbutton.cpp:98
-#: ../widgets/awindowleveltoolbutton.cpp:105
-#: ../widgets/awindowleveltoolbutton.cpp:141
-#: ../widgets/awindowleveltoolbutton.cpp:142
+#: ../widgets/seriesview.cpp:322 ../widgets/awindowleveltoolbutton.cpp:100
+#: ../widgets/awindowleveltoolbutton.cpp:107
+#: ../widgets/awindowleveltoolbutton.cpp:143
+#: ../widgets/awindowleveltoolbutton.cpp:144
 msgid "Custom"
 msgstr ""
 
@@ -167,18 +167,18 @@ msgstr ""
 msgid "Select Enddate"
 msgstr ""
 
-#: ../widgets/awindowleveltoolbutton.cpp:22
+#: ../widgets/awindowleveltoolbutton.cpp:24
 msgid "Invert windowlevel"
 msgstr ""
 
-#: ../widgets/awindowleveltoolbutton.cpp:53
+#: ../widgets/awindowleveltoolbutton.cpp:55
 msgid "Add new windowlevel preset"
 msgstr ""
 
-#: ../widgets/awindowleveltoolbutton.cpp:97
-#: ../widgets/awindowleveltoolbutton.cpp:101
-#: ../widgets/awindowleveltoolbutton.cpp:149
-#: ../widgets/awindowleveltoolbutton.cpp:155
+#: ../widgets/awindowleveltoolbutton.cpp:99
+#: ../widgets/awindowleveltoolbutton.cpp:103
+#: ../widgets/awindowleveltoolbutton.cpp:151
+#: ../widgets/awindowleveltoolbutton.cpp:157
 msgid "Default"
 msgstr ""
 
@@ -254,23 +254,33 @@ msgstr ""
 msgid "Measure"
 msgstr "méret"
 
-#: ../src/mainwindow.cpp:57
+#: ../src/mainwindow.cpp:57 ../src/mainwindow.cpp:183
 msgid "Open DICOM Image files"
 msgstr "DICOM filok nyitása"
 
-#: ../src/mainwindow.cpp:114
+#: ../src/mainwindow.cpp:117
 msgid "Bring opened files to front"
 msgstr ""
 
-#: ../src/mainwindow.cpp:123
+#: ../src/mainwindow.cpp:125
 msgid "DICOM files"
 msgstr "DICOM filok"
 
-#: ../src/mainwindow.cpp:129
+#: ../src/mainwindow.cpp:128
 msgid "Any files"
 msgstr "bármelyik filok"
 
-#: ../src/mainwindow.cpp:199
+#: ../src/mainwindow.cpp:131
+#, fuzzy
+msgid "DICOMDIR files"
+msgstr "DICOM filok"
+
+#: ../src/mainwindow.cpp:155 ../src/aeskulap.glade.h:37
+#, fuzzy
+msgid "Open DICOMDIR"
+msgstr "DICOM filok nyitása"
+
+#: ../src/mainwindow.cpp:247
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Unable to receive the\n"
 "requested images</span>\n"
@@ -286,11 +296,11 @@ msgstr "Név"
 msgid "Birthdate"
 msgstr "születési idö"
 
-#: ../src/studymanager.cpp:101 ../src/settings.cpp:148 ../src/settings.cpp:491
+#: ../src/studymanager.cpp:101 ../src/settings.cpp:151 ../src/settings.cpp:502
 msgid "Description"
 msgstr "fajta"
 
-#: ../src/studymanager.cpp:102 ../src/aeskulap.glade.h:35
+#: ../src/studymanager.cpp:102 ../src/aeskulap.glade.h:34
 msgid "Modality"
 msgstr "módbeliség"
 
@@ -306,55 +316,60 @@ msgstr "osztály"
 msgid "Server"
 msgstr "szerver"
 
-#: ../src/studymanager.cpp:127 ../src/settings.cpp:123
-#: ../src/aeskulap.glade.h:30
+#: ../src/studymanager.cpp:127 ../src/settings.cpp:126
+#: ../src/aeskulap.glade.h:29
 msgid "Group"
 msgstr "csoport"
 
-#: ../src/studymanager.cpp:172
+#: ../src/studymanager.cpp:174
 msgid "<span weight=\"bold\" size=\"larger\">No results for this query</span>"
 msgstr ""
 
-#: ../src/studymanager.cpp:250
+#: ../src/studymanager.cpp:198
+#, fuzzy
+msgid "<span weight=\"bold\" size=\"larger\">No study or bad DICOMDIR</span>"
+msgstr "<span weight=\"bold\" size=\"larger\">Echo sikkerült</span>"
+
+#: ../src/studymanager.cpp:277
 #, c-format
 msgid "Series %02i (1 Image)"
 msgstr ""
 
-#: ../src/studymanager.cpp:253
+#: ../src/studymanager.cpp:280
 #, c-format
 msgid "Series %02i (%i Images)"
 msgstr ""
 
-#: ../src/studymanager.cpp:256
+#: ../src/studymanager.cpp:283
 #, c-format
 msgid "Series %02i"
 msgstr ""
 
-#: ../src/settings.cpp:119 ../src/aeskulap.glade.h:37
+#: ../src/settings.cpp:122 ../src/aeskulap.glade.h:36
 msgid "Name"
 msgstr ""
 
-#: ../src/settings.cpp:120 ../src/aeskulap.glade.h:16
+#: ../src/settings.cpp:123 ../src/aeskulap.glade.h:16
 msgid "AET"
 msgstr ""
 
-#: ../src/settings.cpp:121 ../src/aeskulap.glade.h:38
+#: ../src/settings.cpp:124 ../src/aeskulap.glade.h:38
 msgid "Port"
 msgstr ""
 
-#: ../src/settings.cpp:122
+#: ../src/settings.cpp:125
 msgid "Hostname"
 msgstr ""
 
-#: ../src/settings.cpp:149
+#: ../src/settings.cpp:152
 msgid "Center"
 msgstr ""
 
-#: ../src/settings.cpp:150
+#: ../src/settings.cpp:153
 msgid "Width"
 msgstr ""
 
-#: ../src/settings.cpp:399
+#: ../src/settings.cpp:410
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
@@ -362,7 +377,7 @@ msgstr ""
 "<span weight=\"bold\" size=\"larger\">Echo test nem sikkerült!</span>\n"
 "\n"
 
-#: ../src/settings.cpp:415
+#: ../src/settings.cpp:426
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
 msgstr "<span weight=\"bold\" size=\"larger\">Echo sikkerült</span>"
 
@@ -435,60 +450,56 @@ msgid "Advanced query options"
 msgstr ""
 
 #: ../src/aeskulap.glade.h:19
-msgid "Aeskulap"
-msgstr ""
-
-#: ../src/aeskulap.glade.h:20
 msgid "Aeskulap Viewer"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:21
+#: ../src/aeskulap.glade.h:20
 msgid ""
 "CT\n"
 "CR"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:23
+#: ../src/aeskulap.glade.h:22
 msgid "Center:"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:24
+#: ../src/aeskulap.glade.h:23
 msgid "Clear"
 msgstr "Törlés"
 
-#: ../src/aeskulap.glade.h:25
+#: ../src/aeskulap.glade.h:24
 msgid "Clear Filter"
 msgstr "Filter törlés"
 
-#: ../src/aeskulap.glade.h:26
+#: ../src/aeskulap.glade.h:25
 msgid "DICOM Settings"
 msgstr "DICOM beállítások"
 
-#: ../src/aeskulap.glade.h:27
+#: ../src/aeskulap.glade.h:26
 msgid "Description:"
 msgstr "Fajta:"
 
-#: ../src/aeskulap.glade.h:28
+#: ../src/aeskulap.glade.h:27
 msgid "Echotest"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:29
+#: ../src/aeskulap.glade.h:28
 msgid "Fullscreen"
 msgstr "teljes képernyös megjelenítés"
 
-#: ../src/aeskulap.glade.h:31
+#: ../src/aeskulap.glade.h:30
 msgid "IP / Hostname"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:32
+#: ../src/aeskulap.glade.h:31
 msgid "Local AET"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:33
+#: ../src/aeskulap.glade.h:32
 msgid "Medical image viewer and DICOM network client\n"
 msgstr ""
 
-#: ../src/aeskulap.glade.h:36
+#: ../src/aeskulap.glade.h:35
 msgid "Modality:"
 msgstr "Módbeliség:"
 
@@ -553,26 +564,34 @@ msgid ""
 msgstr ""
 
 #: ../src/aeskulap.glade.h:66
+msgid "_DicomDir"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:67
 msgid "_Edit"
 msgstr "S_zerkesztés"
 
-#: ../src/aeskulap.glade.h:67
+#: ../src/aeskulap.glade.h:68
 msgid "_File"
 msgstr "_Fájl"
 
-#: ../src/aeskulap.glade.h:68
+#: ../src/aeskulap.glade.h:69
 msgid "_Help"
 msgstr "_Súgó"
 
-#: ../src/aeskulap.glade.h:69
+#: ../src/aeskulap.glade.h:70
 msgid "_View"
 msgstr "_Nézet"
 
-#: ../src/aeskulap.glade.h:70
+#: ../src/aeskulap.glade.h:71
+msgid "non-standard relational queries"
+msgstr ""
+
+#: ../src/aeskulap.glade.h:72
 msgid "prefer lossy JPEG compression"
 msgstr ""
 
 #. TRANSLATORS: Replace this string with your names, one name per line.
-#: ../src/aeskulap.glade.h:72
+#: ../src/aeskulap.glade.h:74
 msgid "translator-credits"
 msgstr ""
