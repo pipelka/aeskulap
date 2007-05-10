@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 16:01:23 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/settings.cpp,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -84,6 +84,9 @@ m_refGlade(refGlade) {
 
 	m_refGlade->get_widget("server_detail_lossy", m_server_detail_lossy);
 	m_server_detail_lossy->signal_toggled().connect(sigc::mem_fun(*this, &Settings::on_server_apply));
+
+	m_refGlade->get_widget("server_detail_relational", m_server_detail_relational);
+	m_server_detail_relational->signal_toggled().connect(sigc::mem_fun(*this, &Settings::on_server_apply));
 
 	m_refGlade->get_widget("server_detail_echo", m_server_detail_echo);
 	m_server_detail_echo->signal_clicked().connect(sigc::mem_fun(*this, &Settings::on_echotest));
@@ -215,6 +218,7 @@ void Settings::save_settings() {
 		s.m_name = (*i)[m_Columns.m_name];
 		s.m_group = (*i)[m_Columns.m_group];
 		s.m_lossy = (*i)[m_Columns.m_lossy];
+		s.m_relational = (*i)[m_Columns.m_relational];
 		
 		list.push_back(s);
 	}
@@ -255,6 +259,7 @@ void Settings::restore_settings() {
 		row[m_Columns.m_name] = i->second.m_name;
 		row[m_Columns.m_group] = i->second.m_group;
 		row[m_Columns.m_lossy] = i->second.m_lossy;
+		row[m_Columns.m_relational] = i->second.m_relational;
 	}
 
 	reload_windowlevel_preset(m_windowlevels_modality);
@@ -292,6 +297,7 @@ void Settings::set_server_detail_sensitive(bool sensitive) {
 	m_server_detail_group->set_sensitive(sensitive);
 	m_server_detail_description->set_sensitive(sensitive);
 	m_server_detail_lossy->set_sensitive(sensitive);
+	m_server_detail_relational->set_sensitive(sensitive);
 	m_server_detail_echo->set_sensitive(sensitive);
 
 	if(!sensitive) {
@@ -301,6 +307,7 @@ void Settings::set_server_detail_sensitive(bool sensitive) {
 		m_server_detail_group->get_entry()->set_text("");
 		m_server_detail_description->set_text("");
 		m_server_detail_lossy->set_active(false);
+		m_server_detail_relational->set_active(false);
 	}
 }
 
@@ -325,6 +332,7 @@ void Settings::on_server_activated() {
 	m_server_detail_group->get_entry()->set_text(row[m_Columns.m_group]);
 	m_server_detail_description->set_text(row[m_Columns.m_name]);
 	m_server_detail_lossy->set_active(row[m_Columns.m_lossy]);
+	m_server_detail_relational->set_active(row[m_Columns.m_relational]);
 
 	set_server_detail_sensitive(true);
 }
@@ -363,6 +371,9 @@ void Settings::on_server_apply() {
 	}
 	if(m_server_detail_lossy->is_sensitive()) {
 		row[m_Columns.m_lossy] = m_server_detail_lossy->get_active();
+	}
+	if(m_server_detail_relational->is_sensitive()) {
+		row[m_Columns.m_relational] = m_server_detail_relational->get_active();
 	}
 
 	// enable echo button

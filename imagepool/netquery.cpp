@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/04/24 09:53:38 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.22 $
+    CVS/RCS Revision: $Revision: 1.23 $
     Status:           $State: Exp $
 */
 
@@ -78,7 +78,14 @@ Glib::RefPtr< ImagePool::Study > create_query_study(DcmDataset* dset, const std:
 	result->m_studydescription = item->studydescription();
 	result->m_studydate = item->studydate();
 	result->m_studytime = item->studytime();
-	
+
+	if(item->studyrelatedinstances() != -1) {
+		result->set_instancecount(-1, item->studyrelatedinstances());
+	}
+	if(item->studyrelatedseries() != -1) {
+		result->set_seriescount(item->studyrelatedseries());
+	}
+
 	fix_date(result->m_patientsbirthdate);
 	fix_date(result->m_studydate);
 	fix_time(result->m_studytime);
@@ -228,6 +235,12 @@ void query_from_net(
 	e = newDicomElement(DCM_StudyTime);
 	query.insert(e);
 
+	e = newDicomElement(DCM_NumberOfStudyRelatedSeries);
+	query.insert(e);
+
+	e = newDicomElement(DCM_NumberOfStudyRelatedInstances);
+	query.insert(e);
+
 	//e = newDicomElement(DCM_AccessionNumber);
 	//query.insert(e);
 
@@ -241,9 +254,10 @@ void query_from_net(
 	e->putString(description.c_str());
 	query.insert(e);
 
-	e = newDicomElement(DCM_StationName);
+	// StationName not allowed in StudyRoot
+	/*e = newDicomElement(DCM_StationName);
 	e->putString(station.c_str());
-	query.insert(e);
+	query.insert(e);*/
 
 	std::cout << "NEW QUERY:" << std::endl;
 	query.print(COUT);
@@ -257,14 +271,14 @@ void query_from_net(
 	// do we have groups defined ?
 	if(groups.size() > 0) {
 		while(i != groups.end()) {
-			a.QueryServerGroup(&query, *i, local_aet);
+			a.QueryServerGroup(&query, *i, local_aet, UID_FINDStudyRootQueryRetrieveInformationModel);
 			i++;
 		}
 	}
 	
 	// no query all servers
 	else {
-		a.QueryServerGroup(&query, "", local_aet);
+		a.QueryServerGroup(&query, "", local_aet, UID_FINDStudyRootQueryRetrieveInformationModel);
 	}
 }
 
@@ -298,11 +312,11 @@ void query_series_from_net(const std::string& studyinstanceuid, const std::strin
 	e = newDicomElement(DCM_SeriesTime);
 	query.insert(e);
 
-	e = newDicomElement(DCM_StudyDescription);
-	query.insert(e);
+	/*e = newDicomElement(DCM_StudyDescription);
+	query.insert(e);*/
 
-	e = newDicomElement(DCM_StudyTime);
-	query.insert(e);
+	/*e = newDicomElement(DCM_StudyTime);
+	query.insert(e);*/
 
 	e = newDicomElement(DCM_StationName);
 	query.insert(e);

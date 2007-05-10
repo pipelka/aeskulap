@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/04/24 10:49:37 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/aconfiguration-gconf.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -107,6 +107,7 @@ Configuration::ServerList* Configuration::get_serverlist() {
 	Gnome::Conf::SListHandle_ValueString description_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_description");
 	Gnome::Conf::SListHandle_ValueString group_list = m_conf_client->get_string_list("/apps/aeskulap/preferences/server_group");
 	Gnome::Conf::SListHandle_ValueBool lossy_list = m_conf_client->get_bool_list("/apps/aeskulap/preferences/server_lossy");
+	Gnome::Conf::SListHandle_ValueBool relational_list = m_conf_client->get_bool_list("/apps/aeskulap/preferences/server_relational");
 	
 	Gnome::Conf::SListHandle_ValueString::iterator a = aet_list.begin();
 	Gnome::Conf::SListHandle_ValueInt::iterator p = port_list.begin();
@@ -114,6 +115,7 @@ Configuration::ServerList* Configuration::get_serverlist() {
 	Gnome::Conf::SListHandle_ValueString::iterator d = description_list.begin();
 	Gnome::Conf::SListHandle_ValueString::iterator g = group_list.begin();
 	Gnome::Conf::SListHandle_ValueBool::iterator l = lossy_list.begin();
+	Gnome::Conf::SListHandle_ValueBool::iterator r = relational_list.begin();
 	
 	for(; h != hostname_list.end() && a != aet_list.end() && p != port_list.end(); a++, p++, h++) {
 
@@ -133,7 +135,9 @@ Configuration::ServerList* Configuration::get_serverlist() {
 		s.m_port = *p;
 		s.m_hostname = *h;
 		s.m_name = servername;
-		
+		s.m_lossy = false;
+		s.m_relational = false;
+	
 		if(l != lossy_list.end()) {
 			s.m_lossy = *l;
 			l++;
@@ -143,6 +147,12 @@ Configuration::ServerList* Configuration::get_serverlist() {
 			s.m_group = *g;
 			g++;
 		}
+
+		if(r != relational_list.end()) {
+			s.m_relational = *r;
+			r++;
+		}
+
 	}
 	
 	return list;
@@ -155,6 +165,7 @@ void Configuration::set_serverlist(std::vector<ServerData>& list) {
 	std::vector< Glib::ustring > description_list;
 	std::vector< Glib::ustring > group_list;
 	std::vector< gboolean > lossy_list;
+	std::vector< gboolean > relational_list;
 
 	std::vector<ServerData>::iterator i;
 	for(i = list.begin(); i != list.end(); i++) {
@@ -164,6 +175,7 @@ void Configuration::set_serverlist(std::vector<ServerData>& list) {
 		description_list.push_back(i->m_name);
 		group_list.push_back(i->m_group);
 		lossy_list.push_back(i->m_lossy);
+		relational_list.push_back(i->m_relational);
 	}
 
 	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_aet", aet_list);
@@ -172,6 +184,7 @@ void Configuration::set_serverlist(std::vector<ServerData>& list) {
 	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_description", description_list);
 	m_conf_client->set_string_list("/apps/aeskulap/preferences/server_group", group_list);
 	m_conf_client->set_bool_list("/apps/aeskulap/preferences/server_lossy", lossy_list);
+	m_conf_client->set_bool_list("/apps/aeskulap/preferences/server_relational", relational_list);
 }
 
 bool Configuration::get_windowlevel(const Glib::ustring& modality, const Glib::ustring& desc, WindowLevel& w) {

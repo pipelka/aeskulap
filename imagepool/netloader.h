@@ -2,6 +2,7 @@
 #define IMAGEPOOL_NETLOADER_H
 
 #include "loader.h"
+#include "poolstudy.h"
 
 namespace ImagePool {
 
@@ -10,7 +11,7 @@ public:
 
 	NetLoader(const std::string& local_aet);
 
-	bool load(const std::string& studyinstanceuid, const std::string& server);
+	bool load(const Glib::RefPtr< ImagePool::Study >& study, const std::string& server);
 	
 protected:
 
@@ -18,7 +19,7 @@ protected:
 
 private:
 
-	std::string m_studyinstanceuid;
+	Glib::RefPtr< ImagePool::Study > m_study;
 
 	std::string m_server;
 

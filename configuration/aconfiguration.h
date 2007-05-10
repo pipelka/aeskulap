@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 11:07:25 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/configuration/aconfiguration.h,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
@@ -51,6 +51,7 @@ public:
 		unsigned int m_port;
 		Glib::ustring m_group;
 		bool m_lossy;
+		bool m_relational;
 	};
 
 	typedef std::map< Glib::ustring, ServerData > ServerList;

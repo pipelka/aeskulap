@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/04/24 09:53:38 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolservers.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -119,6 +119,7 @@ void ServerList::update() {
 		s.m_name = i->second.m_name;
 		s.m_group = i->second.m_group;
 		s.m_lossy = i->second.m_lossy;
+		s.m_relational = i->second.m_relational;
 	}
 	
 	delete list;

@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolstudy.cpp,v $
-    CVS/RCS Revision: $Revision: 1.6 $
+    CVS/RCS Revision: $Revision: 1.7 $
     Status:           $State: Exp $
 */
 
@@ -36,6 +36,13 @@ Study::Study() :
 m_max_series(0),
 m_max_instances(0),
 m_cur_instances(0) {
+}
+
+Study::Study(const std::string& studyinstanceuid) :
+m_max_series(0),
+m_max_instances(0),
+m_cur_instances(0),
+m_studyinstanceuid(studyinstanceuid) {
 }
 
 Study::~Study() {
@@ -104,6 +111,10 @@ const std::string& Study::server() {
 
 int Study::seriescount() {
 	return m_max_series;
+}
+
+int Study::studyrelatedinstances() {
+	return m_max_instances;
 }
 
 void Study::set_seriescount(int series) {

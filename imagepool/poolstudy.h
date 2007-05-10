@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2005/10/04 06:45:52 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolstudy.h,v $
-    CVS/RCS Revision: $Revision: 1.7 $
+    CVS/RCS Revision: $Revision: 1.8 $
     Status:           $State: Exp $
 */
 
@@ -45,6 +45,8 @@ public:
 	typedef std::map< std::string, Glib::RefPtr<ImagePool::Series> >::iterator iterator;
 	
 	Study();
+
+	Study(const std::string& studyinstanceuid);
 
 	~Study();
 
@@ -90,13 +92,15 @@ public:
 
 	sigc::signal< void, double > signal_progress;
 
-	void set_instancecount(int cur, int max);
-
 	void emit_progress();
+
+	void set_instancecount(int cur, int max);
 
 	int get_instancecount();
 
 	int seriescount();
+
+	int studyrelatedinstances();
 
 	void set_seriescount(int series);
 

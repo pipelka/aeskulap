@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 10:24:45 $
+    Update Date:      $Date: 2007/05/10 14:29:59 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -59,7 +59,10 @@ m_spacing_x(0),
 m_spacing_y(0),
 m_index(1),
 m_min(0),
-m_max(0)
+m_max(0),
+m_studyrelatedinstances(-1),
+m_seriesrelatedinstances(-1),
+m_studyrelatedseries(-1)
 {
 	m_encoding[0] = "UTF-8";
 	m_encoding[1] = "UTF-8";
@@ -609,6 +612,21 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 	dset->findAndGetOFString(DCM_Modality, ofstr);
     r->m_modality = ofstr.c_str();
 
+	// number of study related instances
+	if(dset->findAndGetOFString(DCM_NumberOfStudyRelatedInstances, ofstr).good()) {
+		r->m_studyrelatedinstances = atoi(ofstr.c_str());
+	}
+
+	// number of study related series
+	if(dset->findAndGetOFString(DCM_NumberOfStudyRelatedSeries, ofstr).good()) {
+		r->m_studyrelatedseries = atoi(ofstr.c_str());
+	}
+
+	// number of series related instances
+	if(dset->findAndGetOFString(DCM_NumberOfSeriesRelatedInstances, ofstr).good()) {
+		r->m_seriesrelatedinstances = atoi(ofstr.c_str());
+	}
+
 	Glib::RefPtr<ImagePool::Study> new_study = get_study(r->m_studyinstanceuid);
 	if(new_study->size() == 0) {
 		new_study->m_studyinstanceuid = r->studyinstanceuid();
@@ -683,6 +701,18 @@ std::string Instance::convert_string(const char* dicom_string) {
 
 const std::string& Instance::modality() {
 	return m_modality;
+}
+
+int Instance::studyrelatedinstances() {
+	return m_studyrelatedinstances;
+}
+
+int Instance::studyrelatedseries() {
+	return m_studyrelatedseries;
+}
+
+int Instance::seriesrelatedinstances() {
+	return m_seriesrelatedinstances;
 }
 
 }
