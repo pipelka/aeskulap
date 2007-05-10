@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2006/03/06 16:01:23 $
+    Update Date:      $Date: 2007/05/10 20:25:05 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/adatefilter.cpp,v $
-    CVS/RCS Revision: $Revision: 1.2 $
+    CVS/RCS Revision: $Revision: 1.3 $
     Status:           $State: Exp $
 */
 
@@ -116,10 +116,10 @@ void DateFilter::on_filtertype_changed() {
 	if(text == gettext("Date")) {
 		m_filter_date->show();
 		m_filter_range->hide();
-		m_enddate.clear();
 		if(m_startdate.empty()) {
 			set_today();
 		}
+		m_enddate.clear();
 	}
 
 	if(text == gettext("Range")) {
