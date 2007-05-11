@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 20:08:11 $
+    Update Date:      $Date: 2007/05/11 08:10:29 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.20 $
+    CVS/RCS Revision: $Revision: 1.21 $
     Status:           $State: Exp $
 */
 
@@ -68,6 +68,7 @@ bool NetLoader::load(const Glib::RefPtr< ImagePool::Study >& study, const std::s
 
 	m_study = study;
 	m_server = server;
+
 	start();
 	
 	return true;
@@ -167,6 +168,7 @@ bool NetLoader::run() {
 			std::cout << "C-Move request:" << std::endl;
 			query.print(COUT);
 		
+			mover.responsecount = 0;
 			if(!mover.QueryServer(&query, m_server, local_aet)) {
 				std::cerr << "C-MOVE failed !" << std::endl;
 				return false;
