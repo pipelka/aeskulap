@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 14:29:59 $
+    Update Date:      $Date: 2007/05/12 10:07:25 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.h,v $
-    CVS/RCS Revision: $Revision: 1.13 $
+    CVS/RCS Revision: $Revision: 1.14 $
     Status:           $State: Exp $
 */
 
@@ -92,7 +92,7 @@ protected:
 
 	Gtk::Entry* m_entry_filter_studydescription;
 
-	Gtk::Entry* m_entry_filter_stationname;
+	Gtk::Entry* m_entry_filter_accessionnumber;
 
 	// studylist
 

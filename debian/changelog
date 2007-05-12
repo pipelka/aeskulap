@@ -1,3 +1,10 @@
+aeskulap (0.2.2-9) feisty; urgency=low
+
+  * using accessionnumber instead of stationname as query option
+    (stationname isn't supported at STUDY level)
+
+ -- Alexander Pipelka <pipelka@shuttle.chello.at>  Sat, 12 May 2007 12:06:16 +0200
+
 aeskulap (0.2.2-8) feisty; urgency=low
 
   * date filter fix
