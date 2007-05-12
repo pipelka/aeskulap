@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 14:29:59 $
+    Update Date:      $Date: 2007/05/12 10:07:25 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/studymanager.cpp,v $
-    CVS/RCS Revision: $Revision: 1.18 $
+    CVS/RCS Revision: $Revision: 1.19 $
     Status:           $State: Exp $
 */
 
@@ -66,9 +66,9 @@ m_new_query(false)
 	m_refGlade->get_widget("entry_filter_name", m_entry_filter_name);
 	m_entry_filter_name->signal_activate().connect(sigc::mem_fun(*this, &StudyManager::on_filter_search));
 
-	m_entry_filter_stationname = NULL;
-	m_refGlade->get_widget("entry_filter_stationname", m_entry_filter_stationname);
-	m_entry_filter_stationname->signal_activate().connect(sigc::mem_fun(*this, &StudyManager::on_filter_search));
+	m_entry_filter_accessionnumber = NULL;
+	m_refGlade->get_widget("entry_filter_accessionnumber", m_entry_filter_accessionnumber);
+	m_entry_filter_accessionnumber->signal_activate().connect(sigc::mem_fun(*this, &StudyManager::on_filter_search));
 
 	m_entry_filter_modality = NULL;
 	m_refGlade->get_widget("entry_filter_modality", m_entry_filter_modality);
@@ -161,7 +161,7 @@ void StudyManager::on_filter_search() {
 					m_datefilter->get_startdate(),
 					m_datefilter->get_enddate(),
 					m_entry_filter_studydescription->get_text(),
-					m_entry_filter_stationname->get_text(),
+					m_entry_filter_accessionnumber->get_text(),
 					local_aet,
 					m_selected_groups,
 					sigc::mem_fun(*this, &StudyManager::on_queryresult_study)
@@ -220,7 +220,7 @@ void StudyManager::on_filter_clearfilter() {
 	m_entry_filter_name->set_text("");
 	m_entry_filter_modality->get_entry()->set_text("");
 	m_entry_filter_studydescription->set_text("");
-	m_entry_filter_stationname->set_text("");
+	m_entry_filter_accessionnumber->set_text("");
 }
 
 void StudyManager::on_queryresult_study(const Glib::RefPtr< ImagePool::Study >& study) {

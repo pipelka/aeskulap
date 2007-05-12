@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/11 09:45:34 $
+    Update Date:      $Date: 2007/05/12 10:07:25 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.26 $
+    CVS/RCS Revision: $Revision: 1.27 $
     Status:           $State: Exp $
 */
 
@@ -150,7 +150,7 @@ void query_from_net(
 			const std::string& date_from,
 			const std::string& date_to,
 			const std::string& studydescription,
-			const std::string& stationname,
+			const std::string& accessionnumber,
 			const std::string& local_aet,
 			const std::set<std::string>& groups,
 			const sigc::slot< void, const Glib::RefPtr< ImagePool::Study >& >& resultslot
@@ -194,10 +194,10 @@ void query_from_net(
 		date = date_from;
 	}
 
-	std::string station;
+	/*std::string station;
 	if(!stationname.empty()) {
 		station = "*" + convert_string_to(stationname.c_str(), system_enc) + "*";
-	}
+	}*/
 
 	DcmDataset query;
 	DcmElement* e = NULL;
@@ -242,6 +242,7 @@ void query_from_net(
 	query.insert(e);
 
 	e = newDicomElement(DCM_AccessionNumber);
+	e->putString(accessionnumber.c_str());
 	query.insert(e);
 
 	e = newDicomElement(DCM_StudyID);
