@@ -74,6 +74,7 @@ dist-win32:
 	-cp -f $(top_srcdir)/packaging/win32/aeskulap.iss /tmp/$(PACKAGE)-$(VERSION)
 	-cp -f $(top_srcdir)/packaging/win32/aeskulap-setup-small.bmp /tmp/$(PACKAGE)-$(VERSION)
 	-cp -f $(top_srcdir)/packaging/win32/aeskulap-setup-large.bmp /tmp/$(PACKAGE)-$(VERSION)
+	-cp -f /tmp/$(PACKAGE)-$(VERSION)/share/icons/hicolor/48x48/apps/aeskulap.png  /tmp/$(PACKAGE)-$(VERSION)/share/aeskulap/images
 	$(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/*.exe
 	$(shell) $(STRIP) -g -S -d --strip-debug --strip-unneeded -x -X --remove-section=.comment --remove-section=.note /tmp/$(PACKAGE)-$(VERSION)/bin/*.dll
 	-mv /tmp/$(PACKAGE)-$(VERSION)/bin/* /tmp/$(PACKAGE)-$(VERSION)
