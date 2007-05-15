@@ -1,3 +1,9 @@
+aeskulap (0.2.2-10) feisty; urgency=low
+
+  * added missing tags (AccessionNumber / Modality)
+
+ -- Alexander Pipelka <pipelka@celeborn>  Tue, 15 May 2007 15:35:41 +0200
+
 aeskulap (0.2.2-9) feisty; urgency=low
 
   * using accessionnumber instead of stationname as query option
