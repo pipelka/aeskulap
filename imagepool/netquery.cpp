@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/14 07:37:13 $
+    Update Date:      $Date: 2007/05/15 13:34:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netquery.cpp,v $
-    CVS/RCS Revision: $Revision: 1.29 $
+    CVS/RCS Revision: $Revision: 1.30 $
     Status:           $State: Exp $
 */
 
@@ -244,11 +244,9 @@ void query_from_net(
 	e = newDicomElement(DCM_NumberOfStudyRelatedInstances);
 	query.insert(e);
 
-	if(!accessionnumber.empty()) {
-	    e = newDicomElement(DCM_AccessionNumber);
-	    e->putString(accessionnumber.c_str());
-	    query.insert(e);
-	}
+	e = newDicomElement(DCM_AccessionNumber);
+	e->putString(accessionnumber.c_str());
+	query.insert(e);
 
 	e = newDicomElement(DCM_StudyID);
 	query.insert(e);
@@ -414,6 +412,9 @@ int query_study_series(const std::string& studyinstanceuid, const std::string& s
 	query.insert(e);
 
 	e = newDicomElement(DCM_SeriesNumber);
+	query.insert(e);
+
+	e = newDicomElement(DCM_Modality);
 	query.insert(e);
 
 	std::cout << "NEW QUERY:" << std::endl;
