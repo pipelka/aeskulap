@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/11 08:10:29 $
+    Update Date:      $Date: 2007/05/15 13:57:08 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.21 $
+    CVS/RCS Revision: $Revision: 1.22 $
     Status:           $State: Exp $
 */
 
@@ -109,7 +109,7 @@ bool NetLoader::run() {
 		DcmElement* e = NULL;
 		
 		e = newDicomElement(DCM_QueryRetrieveLevel);
-		e->putString("STUDY");
+		e->putString("IMAGE");
 		query.insert(e);
 	
 		e = newDicomElement(DCM_SOPInstanceUID);
@@ -123,6 +123,7 @@ bool NetLoader::run() {
 		query.insert(e);
 	
 		e = newDicomElement(DCM_SeriesInstanceUID);
+		e->putString("*");
 		query.insert(e);
 	
 		if(!mover.QueryServer(&query, m_server, local_aet)) {
