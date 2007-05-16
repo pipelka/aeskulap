@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/15 13:57:08 $
+    Update Date:      $Date: 2007/05/16 14:49:13 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/netloader.cpp,v $
-    CVS/RCS Revision: $Revision: 1.22 $
+    CVS/RCS Revision: $Revision: 1.23 $
     Status:           $State: Exp $
 */
 
@@ -102,28 +102,36 @@ bool NetLoader::run() {
 	mover.SetMaxResults(5000);
 
 	/*
-	 * relational move - this isn't DICOM compliant, but supported by many SCP's
+	 * single study move (has to be verified)
 	 */
 	if(relational_move) {
 		DcmDataset query;
 		DcmElement* e = NULL;
 		
 		e = newDicomElement(DCM_QueryRetrieveLevel);
-		e->putString("IMAGE");
+		e->putString("STUDY");
 		query.insert(e);
-	
-		e = newDicomElement(DCM_SOPInstanceUID);
+
+		e = newDicomElement(DCM_PatientsName);
 		query.insert(e);
-	
-		e = newDicomElement(DCM_InstanceNumber);
+
+		e = newDicomElement(DCM_PatientID);
+		query.insert(e);
+
+		e = newDicomElement(DCM_StudyDate);
+		query.insert(e);
+
+		e = newDicomElement(DCM_StudyTime);
+		query.insert(e);
+
+		e = newDicomElement(DCM_AccessionNumber);
+		query.insert(e);
+
+		e = newDicomElement(DCM_StudyID);
 		query.insert(e);
 	
 		e = newDicomElement(DCM_StudyInstanceUID);
 		e->putString(studyinstanceuid.c_str());
-		query.insert(e);
-	
-		e = newDicomElement(DCM_SeriesInstanceUID);
-		e->putString("*");
 		query.insert(e);
 	
 		if(!mover.QueryServer(&query, m_server, local_aet)) {
@@ -135,7 +143,7 @@ bool NetLoader::run() {
 		return (mover.responsecount != 0);
 	}
 	/*
-	 * traditional DICOM compliant move (SLOW!)
+	 * multiple series of study move
 	 */
 	else {
 		std::list<std::string> seriesinstanceuids;
@@ -149,13 +157,7 @@ bool NetLoader::run() {
 			DcmElement* e = NULL;
 			
 			e = newDicomElement(DCM_QueryRetrieveLevel);
-			e->putString("IMAGE");
-			query.insert(e);
-		
-			e = newDicomElement(DCM_SOPInstanceUID);
-			query.insert(e);
-		
-			e = newDicomElement(DCM_InstanceNumber);
+			e->putString("SERIES");
 			query.insert(e);
 		
 			e = newDicomElement(DCM_StudyInstanceUID);
@@ -164,6 +166,12 @@ bool NetLoader::run() {
 		
 			e = newDicomElement(DCM_SeriesInstanceUID);
 			e->putString(i->c_str());
+			query.insert(e);
+
+			e = newDicomElement(DCM_Modality);
+			query.insert(e);
+
+			e = newDicomElement(DCM_SeriesNumber);
 			query.insert(e);
 
 			std::cout << "C-Move request:" << std::endl;
