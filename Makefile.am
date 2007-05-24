@@ -24,6 +24,8 @@ EXTRA_DIST = \
 	COPYING.DCMTK \
 	INSTALL \
 	README \
+	aeskulap.cbp \
+	aeskulap.workspace \
 	gettext.h \
 	intltool-extract.in \
 	intltool-merge.in \
