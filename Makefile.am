@@ -89,5 +89,8 @@ dist-win32:
 	-rm -Rf /tmp/$(PACKAGE)-$(VERSION)
 	mv /tmp/$(PACKAGE)-$(VERSION).zip .
 
+push-dist: dist
+	scp $(PACKAGE)-$(VERSION).tar.gz pipelka@www.bms-austria.com:/home/pipelka/public_html/aeskulap
+
 push-dist-win32: dist-win32
 	scp $(PACKAGE)-$(VERSION).zip pipelka@www.bms-austria.com:/home/pipelka/public_html/aeskulap/win32
