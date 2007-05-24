@@ -1,3 +1,9 @@
+aeskulap (0.2.2-10beta1) feisty; urgency=low
+
+  * beta1 release
+
+ -- Alexander Pipelka <pipelka@shuttle.chello.at>  Thu, 24 May 2007 21:17:29 +0200
+
 aeskulap (0.2.2-10) feisty; urgency=low
 
   * added missing tags (AccessionNumber / Modality)
