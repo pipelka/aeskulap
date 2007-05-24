@@ -22,14 +22,15 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/12 11:02:17 $
+    Update Date:      $Date: 2007/05/24 19:13:17 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/src/aboutdialog.cpp,v $
-    CVS/RCS Revision: $Revision: 1.3 $
+    CVS/RCS Revision: $Revision: 1.4 $
     Status:           $State: Exp $
 */
 
 #include "aboutdialog.h"
 #include "aiconfactory.h"
+#include "config.h"
 
 AboutDialog::AboutDialog(BaseObjectType* cobject, const Glib::RefPtr<Gnome::Glade::Xml>& refGlade) :
 Gtk::AboutDialog(cobject),
@@ -42,6 +43,8 @@ m_refGlade(refGlade) {
 #else
 	set_logo_icon_name("aeskulap");
 #endif
+
+	set_version(VERSION);
 }
 
 AboutDialog::~AboutDialog() {
