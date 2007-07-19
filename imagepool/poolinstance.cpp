@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 14:29:59 $
+    Update Date:      $Date: 2007/07/19 14:42:06 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.15 $
+    CVS/RCS Revision: $Revision: 1.16 $
     Status:           $State: Exp $
 */
 
@@ -391,7 +391,10 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 		r->m_depth = 8;
 	}
 	else {
-		r->m_depth = m_image->getDepth();
+		Uint16 depth;
+		if(dset->findAndGetUint16(DCM_BitsStored, depth).good()) {
+		    r->m_depth = depth;
+		}
 		if( r->m_depth > 16 ) {
 			r->m_depth = 16;
 		}
@@ -421,6 +424,9 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 
 	if(dset->findAndGetOFString(DCM_RescaleSlope, ofstr).good()) {
 		r->m_slope = atof(ofstr.c_str());
+		if(r->m_slope == 0) {
+		    r->m_slope = atoi(ofstr.c_str());
+		}
 	}
 
 	if(dset->findAndGetUint16(DCM_HighBit, value1).good()) {
