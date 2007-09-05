@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/07/19 14:42:06 $
+    Update Date:      $Date: 2007/09/05 10:31:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.cpp,v $
-    CVS/RCS Revision: $Revision: 1.16 $
+    CVS/RCS Revision: $Revision: 1.17 $
     Status:           $State: Exp $
 */
 
@@ -62,7 +62,8 @@ m_min(0),
 m_max(0),
 m_studyrelatedinstances(-1),
 m_seriesrelatedinstances(-1),
-m_studyrelatedseries(-1)
+m_studyrelatedseries(-1),
+m_invert_lut_shape(false)
 {
 	m_encoding[0] = "UTF-8";
 	m_encoding[1] = "UTF-8";
@@ -455,6 +456,11 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 		}
 	}	
 
+	// inverted lut shape
+	if(dset->findAndGetOFString(DCM_PresentationLUTShape, ofstr).good()) {
+		r->m_invert_lut_shape = (ofstr == "INVERSE");
+	}
+
 	double min = 0;
 	double max = 0;
 	if(m_image->getMinMaxValues(min, max) == 1) {
@@ -532,6 +538,16 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 
 	if(dset->findAndGetOFString(DCM_PixelSpacing, ofstr, 1).good()) {
 		r->m_spacing_y = strtod(ofstr.c_str(), NULL);
+	}
+
+	if(r->m_spacing_x == 0 && r->m_spacing_y == 0) {
+		if(dset->findAndGetOFString(DCM_ImagerPixelSpacing, ofstr, 0).good()) {
+			r->m_spacing_x = strtod(ofstr.c_str(), NULL);
+		}
+
+		if(dset->findAndGetOFString(DCM_ImagerPixelSpacing, ofstr, 1).good()) {
+			r->m_spacing_y = strtod(ofstr.c_str(), NULL);
+		}		
 	}
 
 	// get ImagePositionPatient
@@ -719,6 +735,10 @@ int Instance::studyrelatedseries() {
 
 int Instance::seriesrelatedinstances() {
 	return m_seriesrelatedinstances;
+}
+
+bool Instance::invert_lut_shape() {
+	return m_invert_lut_shape;
 }
 
 }

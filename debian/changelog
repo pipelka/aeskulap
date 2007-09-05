@@ -1,3 +1,10 @@
+aeskulap (0.2.2-11beta1) feisty; urgency=low
+
+  * added support for inverse PresentationLUTShape
+  * use ImagerPixelSpacing if available
+
+ -- Alexander Pipelka <pipelka@celeborn>  Wed,  5 Sep 2007 12:41:19 +0200
+
 aeskulap (0.2.2-10beta1) feisty; urgency=low
 
   * beta1 release
