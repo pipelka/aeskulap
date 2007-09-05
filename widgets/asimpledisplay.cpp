@@ -22,9 +22,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/04/24 10:49:37 $
+    Update Date:      $Date: 2007/09/05 10:31:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/widgets/asimpledisplay.cpp,v $
-    CVS/RCS Revision: $Revision: 1.23 $
+    CVS/RCS Revision: $Revision: 1.24 $
     Status:           $State: Exp $
 */
 
@@ -307,6 +307,10 @@ void SimpleDisplay::set_windowlevels(int c, int w) {
 	
 	guint32 ramp_start = 0;
 	guint32 ramp_end = m_windowmap_size/* - 1*/;
+
+	if(m_image->invert_lut_shape()) {
+		cd = ramp_end - cd; 
+	}
 
 	double k = 256.0/wd;
 

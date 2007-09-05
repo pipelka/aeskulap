@@ -20,9 +20,9 @@
     pipelka@teleweb.at
 
     Last Update:      $Author: braindead $
-    Update Date:      $Date: 2007/05/10 14:29:59 $
+    Update Date:      $Date: 2007/09/05 10:31:14 $
     Source File:      $Source: /cvsroot/aeskulap/aeskulap/imagepool/poolinstance.h,v $
-    CVS/RCS Revision: $Revision: 1.14 $
+    CVS/RCS Revision: $Revision: 1.15 $
     Status:           $State: Exp $
 */
 
@@ -184,6 +184,8 @@ public:
 
 	int studyrelatedseries();
 
+	bool invert_lut_shape();
+
 protected:
 
 	bool set_encoding(const std::string& single, const std::string& ideographic="");
@@ -275,6 +277,8 @@ private:
 	int m_seriesrelatedinstances;
 
 	int m_studyrelatedseries;
+	
+	bool m_invert_lut_shape;
 };
 
 }
