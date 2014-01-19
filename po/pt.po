@@ -1,19 +1,20 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Portuguese translations of aeskulap
+# Bruno Queirós <brunoqueiros@portugalmail.com>, 2008
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: aeskulap\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-05-10 22:33+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2008-05-31 22:24+0100\n"
+"Last-Translator: Bruno Queirós <brunoqueiros@portugalmail.com>\n"
+"Language-Team:  <traduz@debian.pt>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: application/x-xml2pot; charset=UTF-8\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Portuguese\n"
+"X-Poedit-Country: PORTUGAL\n"
+"X-Poedit-SourceCharset: utf-8\n"
 
 #. DEFAULT CT WINDOWLEVELS
 #.
@@ -27,32 +28,33 @@ msgstr ""
 #. Vertebrae   W:  2300 C:  530
 #: ../configuration/aconfiguration.cpp:52
 msgid "Abdomen"
-msgstr ""
+msgstr "Abdómen"
 
 #: ../configuration/aconfiguration.cpp:53
 msgid "Head"
-msgstr ""
+msgstr "Cabeça"
 
 #: ../configuration/aconfiguration.cpp:54
 msgid "Lung"
-msgstr ""
+msgstr "Pulmão"
 
 #: ../configuration/aconfiguration.cpp:55
 msgid "Mediastinum"
-msgstr ""
+msgstr "Mediastinum"
 
 #: ../configuration/aconfiguration.cpp:56
 msgid "Spine"
-msgstr ""
+msgstr "Espinha"
 
 #: ../configuration/aconfiguration.cpp:57
 msgid "Vertebrae"
-msgstr ""
+msgstr "Vertebrae"
 
-#: ../imagepool/netquery.cpp:112 ../imagepool/poolinstance.cpp:586
+#: ../imagepool/netquery.cpp:112
+#: ../imagepool/poolinstance.cpp:586
 #: ../imagepool/poolinstance.cpp:609
 msgid "no description"
-msgstr ""
+msgstr "sem descrição"
 
 #: ../widgets/aseriesmenu.cpp:45
 #, c-format
@@ -60,6 +62,8 @@ msgid ""
 "Series %li (%s)\n"
 "%s"
 msgstr ""
+"Séries %li (%s)\n"
+"%s"
 
 #: ../widgets/aseriesmenu.cpp:48
 #, c-format
@@ -67,215 +71,227 @@ msgid ""
 "Series %li (%s)\n"
 "No description"
 msgstr ""
+"Séries %li (%s)\n"
+"Sem descrição"
 
-#: ../widgets/seriesview.cpp:322 ../widgets/awindowleveltoolbutton.cpp:100
+#: ../widgets/seriesview.cpp:322
+#: ../widgets/awindowleveltoolbutton.cpp:100
 #: ../widgets/awindowleveltoolbutton.cpp:107
 #: ../widgets/awindowleveltoolbutton.cpp:143
 #: ../widgets/awindowleveltoolbutton.cpp:144
 msgid "Custom"
-msgstr ""
+msgstr "Personalizado"
 
 #: ../widgets/adisplay.cpp:160
 msgid "Acc:\n"
-msgstr ""
+msgstr "Acc:\n"
 
 #: ../widgets/adisplay.cpp:162
 msgid "Acq Tm: "
-msgstr ""
+msgstr "Acq Tm: "
 
 #: ../widgets/adisplay.cpp:175
 #, c-format
 msgid "Image: %i / %i"
-msgstr ""
+msgstr "Imagem: %i / %i"
 
-#: ../widgets/adisplay.cpp:513 ../widgets/adisplay.cpp:565
+#: ../widgets/adisplay.cpp:513
+#: ../widgets/adisplay.cpp:565
 #, c-format
 msgid "%i mm"
-msgstr ""
+msgstr "%i mm"
 
 #: ../widgets/studyview.cpp:110
 msgid "Rearrange the series of the current study"
-msgstr ""
+msgstr "Organizar as séries do estudo actual"
 
 #: ../widgets/studyview.cpp:111
 msgid "Display the series tiling menu"
-msgstr ""
+msgstr "Mostra o menu das séries tiling"
 
 #: ../widgets/studyview.cpp:120
 msgid "Toggle single series mode"
-msgstr ""
+msgstr "Alternar modo de séries únicas"
 
 #: ../widgets/studyview.cpp:121
 msgid "Display the series selection menu"
-msgstr ""
+msgstr "Mostra o menu da selecção das séries"
 
 #: ../widgets/studyview.cpp:129
 msgid "Rearrange the images of the selected series"
-msgstr ""
+msgstr "Organizar as imagens das séries seleccionadas"
 
 #: ../widgets/studyview.cpp:130
 msgid "Display the the image tiling menu"
-msgstr ""
+msgstr "Mostrar o menu das imagens tiling"
 
 #: ../widgets/studyview.cpp:139
 msgid "Display references of the selected series"
-msgstr ""
+msgstr "Mostra as referências das séries seleccionadas"
 
 #: ../widgets/studyview.cpp:143
 msgid "Navigate through 3D views"
-msgstr ""
+msgstr "Navegar pelas vistas 3D"
 
 #: ../widgets/studyview.cpp:147
 msgid "Display image values under the cursor"
-msgstr ""
+msgstr "Mostra os valores das imagens por debaixo do cursor"
 
 #: ../widgets/studyview.cpp:156
 msgid "Measurement tools"
-msgstr ""
+msgstr "Ferramentas de medição"
 
 #: ../widgets/studyview.cpp:784
 msgid "new windowlevel"
-msgstr ""
+msgstr "novo níveljanela"
 
-#: ../widgets/adatefilter.cpp:44 ../widgets/adatefilter.cpp:49
-#: ../widgets/adatefilter.cpp:91 ../widgets/adatefilter.cpp:97
+#: ../widgets/adatefilter.cpp:44
+#: ../widgets/adatefilter.cpp:49
+#: ../widgets/adatefilter.cpp:91
+#: ../widgets/adatefilter.cpp:97
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
-#: ../widgets/adatefilter.cpp:45 ../widgets/adatefilter.cpp:104
+#: ../widgets/adatefilter.cpp:45
+#: ../widgets/adatefilter.cpp:104
 msgid "Today"
-msgstr ""
+msgstr "Hoje"
 
-#: ../widgets/adatefilter.cpp:46 ../widgets/adatefilter.cpp:110
+#: ../widgets/adatefilter.cpp:46
+#: ../widgets/adatefilter.cpp:110
 msgid "Yesterday"
-msgstr ""
+msgstr "Ontem"
 
-#: ../widgets/adatefilter.cpp:47 ../widgets/adatefilter.cpp:116
+#: ../widgets/adatefilter.cpp:47
+#: ../widgets/adatefilter.cpp:116
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
-#: ../widgets/adatefilter.cpp:48 ../widgets/adatefilter.cpp:125
+#: ../widgets/adatefilter.cpp:48
+#: ../widgets/adatefilter.cpp:125
 msgid "Range"
-msgstr ""
+msgstr "Intervalo"
 
 #: ../widgets/adatefilter.cpp:177
 msgid "Select date"
-msgstr ""
+msgstr "Seleccione data"
 
 #: ../widgets/adatefilter.cpp:183
 msgid "Select Enddate"
-msgstr ""
+msgstr "Seleccionar Enddate"
 
 #: ../widgets/awindowleveltoolbutton.cpp:24
 msgid "Invert windowlevel"
-msgstr ""
+msgstr "Inverter níveljanela"
 
 #: ../widgets/awindowleveltoolbutton.cpp:55
 msgid "Add new windowlevel preset"
-msgstr ""
+msgstr "Adicionar uma nova pré-definição níveljanela"
 
 #: ../widgets/awindowleveltoolbutton.cpp:99
 #: ../widgets/awindowleveltoolbutton.cpp:103
 #: ../widgets/awindowleveltoolbutton.cpp:151
 #: ../widgets/awindowleveltoolbutton.cpp:157
 msgid "Default"
-msgstr ""
+msgstr "Padrão"
 
 #: ../src/astockids.cpp:73
 msgid "1 Image"
-msgstr ""
+msgstr "Imagem 1"
 
 #: ../src/astockids.cpp:74
 msgid "1x2 Images"
-msgstr ""
+msgstr "Imagens 1x2"
 
 #: ../src/astockids.cpp:75
 msgid "2x1 Images"
-msgstr ""
+msgstr "Imagens 2x1"
 
 #: ../src/astockids.cpp:76
 msgid "2x2 Images"
-msgstr ""
+msgstr "Imagens 2x2"
 
 #: ../src/astockids.cpp:77
 msgid "4x4 Images"
-msgstr ""
+msgstr "Imagens 4x4"
 
 #: ../src/astockids.cpp:78
 msgid "Single"
-msgstr ""
+msgstr "Único"
 
 #: ../src/astockids.cpp:79
 msgid "All"
-msgstr ""
+msgstr "Todos"
 
 #: ../src/astockids.cpp:80
 msgid "1 Series"
-msgstr ""
+msgstr "Séries 1"
 
 #: ../src/astockids.cpp:81
 msgid "2x1 Series"
-msgstr ""
+msgstr "Séries 2x1"
 
 #: ../src/astockids.cpp:82
 msgid "2x2 Series"
-msgstr ""
+msgstr "Séries 2x2"
 
 #: ../src/astockids.cpp:83
 msgid "3x2 Series"
-msgstr ""
+msgstr "Séries 3x2"
 
 #: ../src/astockids.cpp:84
 msgid "3x3 Series"
-msgstr ""
+msgstr "Séries 3x3"
 
 #: ../src/astockids.cpp:85
 msgid "4x4 Series"
-msgstr ""
+msgstr "Séries 4x4"
 
 #: ../src/astockids.cpp:86
 msgid "Reference"
-msgstr ""
+msgstr "Referência"
 
 #: ../src/astockids.cpp:87
 msgid "Delete item"
-msgstr ""
+msgstr "Apagar item"
 
 #: ../src/astockids.cpp:88
 msgid "3D Cursor"
-msgstr ""
+msgstr "Cursor 3D"
 
 #: ../src/astockids.cpp:89
 msgid "Value Picker"
-msgstr ""
+msgstr "Seleccionador de Valores"
 
 #: ../src/astockids.cpp:90
 msgid "Measure"
-msgstr ""
+msgstr "Medida"
 
-#: ../src/mainwindow.cpp:57 ../src/mainwindow.cpp:183
+#: ../src/mainwindow.cpp:57
+#: ../src/mainwindow.cpp:183
 msgid "Open DICOM Image files"
-msgstr ""
+msgstr "Abrir ficheiros de Imagem DICOM"
 
 #: ../src/mainwindow.cpp:117
 msgid "Bring opened files to front"
-msgstr ""
+msgstr "Trazer ficheiros abertos para a frente"
 
 #: ../src/mainwindow.cpp:125
 msgid "DICOM files"
-msgstr ""
+msgstr "Ficheiros DICOM"
 
 #: ../src/mainwindow.cpp:128
 msgid "Any files"
-msgstr ""
+msgstr "Qualquer ficheiro"
 
 #: ../src/mainwindow.cpp:131
 msgid "DICOMDIR files"
-msgstr ""
+msgstr "Ficheiros DICOMDIR"
 
-#: ../src/mainwindow.cpp:155 ../src/aeskulap.glade.h:37
+#: ../src/mainwindow.cpp:155
+#: ../src/aeskulap.glade.h:37
 msgid "Open DICOMDIR"
-msgstr ""
+msgstr "Abrir DICOMDIR"
 
 #: ../src/mainwindow.cpp:247
 msgid ""
@@ -284,246 +300,262 @@ msgid ""
 "\n"
 "The request was sent to the server but no response has been received."
 msgstr ""
+"<span weight=\"bold\" size=\"larger\">Incapaz de receber\n"
+"as imagens pedidas</span>\n"
+"\n"
+"O pedido foi enviado para o servidor mas não se recebeu qualquer resposta."
 
 #: ../src/studymanager.cpp:99
 msgid "Patientsname"
-msgstr ""
+msgstr "Nomepacientes"
 
 #: ../src/studymanager.cpp:100
 msgid "Birthdate"
-msgstr ""
+msgstr "Data de nascimento"
 
-#: ../src/studymanager.cpp:101 ../src/settings.cpp:151 ../src/settings.cpp:502
+#: ../src/studymanager.cpp:101
+#: ../src/settings.cpp:151
+#: ../src/settings.cpp:502
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
-#: ../src/studymanager.cpp:102 ../src/aeskulap.glade.h:34
+#: ../src/studymanager.cpp:102
+#: ../src/aeskulap.glade.h:34
 msgid "Modality"
-msgstr ""
+msgstr "Modalidade"
 
 #: ../src/studymanager.cpp:103
 msgid "Date/Time"
-msgstr ""
+msgstr "Data/Tempo"
 
 #: ../src/studymanager.cpp:104
 msgid "Station"
-msgstr ""
+msgstr "Estação"
 
-#: ../src/studymanager.cpp:105 ../src/aeskulap.glade.h:42
+#: ../src/studymanager.cpp:105
+#: ../src/aeskulap.glade.h:42
 msgid "Server"
-msgstr ""
+msgstr "Servidor"
 
-#: ../src/studymanager.cpp:127 ../src/settings.cpp:126
+#: ../src/studymanager.cpp:127
+#: ../src/settings.cpp:126
 #: ../src/aeskulap.glade.h:29
 msgid "Group"
-msgstr ""
+msgstr "Grupo"
 
 #: ../src/studymanager.cpp:174
 msgid "<span weight=\"bold\" size=\"larger\">No results for this query</span>"
-msgstr ""
+msgstr "<span weight=\"bold\" size=\"larger\">Nenhum resultado para esta query</span>"
 
 #: ../src/studymanager.cpp:198
 msgid "<span weight=\"bold\" size=\"larger\">No study or bad DICOMDIR</span>"
-msgstr ""
+msgstr "<span weight=\"bold\" size=\"larger\">Nenhum estudo ou DICOMDIR corrupto</span>"
 
 #: ../src/studymanager.cpp:277
 #, c-format
 msgid "Series %02i (1 Image)"
-msgstr ""
+msgstr "Séries %02i (1 Imagem)"
 
 #: ../src/studymanager.cpp:280
 #, c-format
 msgid "Series %02i (%i Images)"
-msgstr ""
+msgstr "Séries %02i (%i Imagens)"
 
 #: ../src/studymanager.cpp:283
 #, c-format
 msgid "Series %02i"
-msgstr ""
+msgstr "Séries %02i"
 
-#: ../src/settings.cpp:122 ../src/aeskulap.glade.h:36
+#: ../src/settings.cpp:122
+#: ../src/aeskulap.glade.h:36
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
-#: ../src/settings.cpp:123 ../src/aeskulap.glade.h:16
+#: ../src/settings.cpp:123
+#: ../src/aeskulap.glade.h:16
 msgid "AET"
-msgstr ""
+msgstr "AET"
 
-#: ../src/settings.cpp:124 ../src/aeskulap.glade.h:38
+#: ../src/settings.cpp:124
+#: ../src/aeskulap.glade.h:38
 msgid "Port"
-msgstr ""
+msgstr "Porta"
 
 #: ../src/settings.cpp:125
 msgid "Hostname"
-msgstr ""
+msgstr "Nome da máquina"
 
 #: ../src/settings.cpp:152
 msgid "Center"
-msgstr ""
+msgstr "Centro"
 
 #: ../src/settings.cpp:153
 msgid "Width"
-msgstr ""
+msgstr "Largura"
 
 #: ../src/settings.cpp:410
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Echo test failed!</span>\n"
 "\n"
 msgstr ""
+"<span weight=\"bold\" size=\"larger\">Teste Eco falhou!</span>\n"
+"\n"
 
 #: ../src/settings.cpp:426
 msgid "<span weight=\"bold\" size=\"larger\">Echo succeeded</span>"
-msgstr ""
+msgstr "<span weight=\"bold\" size=\"larger\">Eco teve sucesso</span>"
 
 #: ../src/aeskulap.glade.h:1
 msgid "(C) 2005 Alexander Pipelka"
-msgstr ""
+msgstr "(C) 2005 Alexander Pipelka"
 
 #: ../src/aeskulap.glade.h:2
 msgid "<b>Accessionnumber:</b>"
-msgstr ""
+msgstr "<b>Accessionnumber:</b>"
 
 #: ../src/aeskulap.glade.h:3
 msgid "<b>Character Set</b>"
-msgstr ""
+msgstr "<b>Character Set</b>"
 
 #: ../src/aeskulap.glade.h:4
 msgid "<b>Date:</b>"
-msgstr ""
+msgstr "<b>Data:</b>"
 
 #: ../src/aeskulap.glade.h:5
 msgid "<b>Details</b>"
-msgstr ""
+msgstr "<b>Detalhes</b>"
 
 #: ../src/aeskulap.glade.h:6
 msgid "<b>Local DICOM Settings</b>"
-msgstr ""
+msgstr "<b>Local DICOM Settings</b>"
 
 #: ../src/aeskulap.glade.h:7
 msgid "<b>Modality:</b>"
-msgstr ""
+msgstr "<b>Modalidade:</b>"
 
 #: ../src/aeskulap.glade.h:8
 msgid "<b>Name:</b>"
-msgstr ""
+msgstr "<b>Nome:</b>"
 
 #: ../src/aeskulap.glade.h:9
 msgid "<b>Patient ID:</b>"
-msgstr ""
+msgstr "<b>ID Paciente:</b>"
 
 #: ../src/aeskulap.glade.h:10
 msgid "<b>Prescanning files ...</b>"
-msgstr ""
+msgstr "<b>Pré-pesquisando ficheiros ...</b>"
 
 #: ../src/aeskulap.glade.h:11
 msgid "<b>Servergroups</b>"
-msgstr ""
+msgstr "<b>Grupos servidor</b>"
 
 #: ../src/aeskulap.glade.h:12
 msgid "<b>Stationname:</b>"
-msgstr ""
+msgstr "<b>Nome da estação:</b>"
 
 #: ../src/aeskulap.glade.h:13
 msgid "<b>Study Description:</b>"
-msgstr ""
+msgstr "<b>Descrição do Estudo:</b>"
 
 #: ../src/aeskulap.glade.h:14
 msgid "<b>Study List</b>"
-msgstr ""
+msgstr "<b>Lista Estudo</b>"
 
 #: ../src/aeskulap.glade.h:15
 msgid "<b>required</b>"
-msgstr ""
+msgstr "<b>necessário</b>"
 
 #: ../src/aeskulap.glade.h:17
 msgid "Add windowlevel"
-msgstr ""
+msgstr "Adicionar níveljanela"
 
 #: ../src/aeskulap.glade.h:18
 msgid "Advanced query options"
-msgstr ""
+msgstr "Opções avançadas da query"
 
 #: ../src/aeskulap.glade.h:19
 msgid "Aeskulap Viewer"
-msgstr ""
+msgstr "Visualizador Aeskulap"
 
 #: ../src/aeskulap.glade.h:20
 msgid ""
 "CT\n"
 "CR"
 msgstr ""
+"CT\n"
+"CR"
 
 #: ../src/aeskulap.glade.h:22
 msgid "Center:"
-msgstr ""
+msgstr "Centro:"
 
 #: ../src/aeskulap.glade.h:23
 msgid "Clear"
-msgstr ""
+msgstr "Limpar"
 
 #: ../src/aeskulap.glade.h:24
 msgid "Clear Filter"
-msgstr ""
+msgstr "Limpar Filtro"
 
 #: ../src/aeskulap.glade.h:25
 msgid "DICOM Settings"
-msgstr ""
+msgstr "Configurações DICOM"
 
 #: ../src/aeskulap.glade.h:26
 msgid "Description:"
-msgstr ""
+msgstr "Descrição:"
 
 #: ../src/aeskulap.glade.h:27
 msgid "Echotest"
-msgstr ""
+msgstr "Echotest"
 
 #: ../src/aeskulap.glade.h:28
 msgid "Fullscreen"
-msgstr ""
+msgstr "Ecrã Inteiro"
 
 #: ../src/aeskulap.glade.h:30
 msgid "IP / Hostname"
-msgstr ""
+msgstr "IP / Nome da máquina"
 
 #: ../src/aeskulap.glade.h:31
 msgid "Local AET"
-msgstr ""
+msgstr "AET Local"
 
 #: ../src/aeskulap.glade.h:32
 msgid "Medical image viewer and DICOM network client\n"
-msgstr ""
+msgstr "Visualizador de imagens médico e cliente de rede DICOM\n"
 
 #: ../src/aeskulap.glade.h:35
 msgid "Modality:"
-msgstr ""
+msgstr "Modalidade:"
 
 #: ../src/aeskulap.glade.h:39
 msgid "Presets"
-msgstr ""
+msgstr "Pré-definições"
 
 #: ../src/aeskulap.glade.h:40
 msgid "Scanning files"
-msgstr ""
+msgstr "Pesquisando ficheiros"
 
 #: ../src/aeskulap.glade.h:41
 msgid "Search"
-msgstr ""
+msgstr "Procura"
 
 #: ../src/aeskulap.glade.h:43
 msgid "Servers"
-msgstr ""
+msgstr "Servidores"
 
 #: ../src/aeskulap.glade.h:44
 msgid "Settings"
-msgstr ""
+msgstr "Configurações"
 
 #: ../src/aeskulap.glade.h:45
 msgid "Specific Characterset"
-msgstr ""
+msgstr "Específico CódigoCaracteres"
 
 #: ../src/aeskulap.glade.h:46
 msgid "Study Manager"
-msgstr ""
+msgstr "Gestor Estúdio"
 
 #: ../src/aeskulap.glade.h:47
 msgid ""
@@ -538,14 +570,24 @@ msgid ""
 "DCMTK - OFFIS DICOM Toolkit:\n"
 "BSD/MIT"
 msgstr ""
+"O código fonte do Aeskulap é licenciado sob os seguintes termos:\n"
+"\n"
+"Aesuklap aplicação principal:\n"
+"GPL\n"
+"\n"
+"Libraria ImagePool DICOM Bridge:\n"
+"LGPL\n"
+"\n"
+"DCMTK - OFFIS DICOM Toolkit:\n"
+"BSD/MIT"
 
 #: ../src/aeskulap.glade.h:57
 msgid "Width:"
-msgstr ""
+msgstr "Largura:"
 
 #: ../src/aeskulap.glade.h:58
 msgid "Windowlevels"
-msgstr ""
+msgstr "NíveisJanela"
 
 #: ../src/aeskulap.glade.h:59
 msgid ""
@@ -556,36 +598,43 @@ msgid ""
 "MR\n"
 "SC\n"
 msgstr ""
+"XA\n"
+"CT\n"
+"CR\n"
+"NM\n"
+"MR\n"
+"SC\n"
 
 #: ../src/aeskulap.glade.h:66
 msgid "_DicomDir"
-msgstr ""
+msgstr "_DicomDir"
 
 #: ../src/aeskulap.glade.h:67
 msgid "_Edit"
-msgstr ""
+msgstr "_Editar"
 
 #: ../src/aeskulap.glade.h:68
 msgid "_File"
-msgstr ""
+msgstr "_Ficheiro"
 
 #: ../src/aeskulap.glade.h:69
 msgid "_Help"
-msgstr ""
+msgstr "_HAjuda"
 
 #: ../src/aeskulap.glade.h:70
 msgid "_View"
-msgstr ""
+msgstr "_Ver"
 
 #: ../src/aeskulap.glade.h:71
 msgid "non-standard relational queries"
-msgstr ""
+msgstr "queries relacionais não-padronizadas"
 
 #: ../src/aeskulap.glade.h:72
 msgid "prefer lossy JPEG compression"
-msgstr ""
+msgstr "prefere compressão lossy JPEG"
 
 #. TRANSLATORS: Replace this string with your names, one name per line.
 #: ../src/aeskulap.glade.h:74
 msgid "translator-credits"
-msgstr ""
+msgstr "Bruno Queirós"
+
