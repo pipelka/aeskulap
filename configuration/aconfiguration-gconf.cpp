@@ -27,6 +27,7 @@
 */
 
 #include <gconfmm.h>
+#include <cstdio>
 #include <iostream>
 
 namespace Aeskulap {
