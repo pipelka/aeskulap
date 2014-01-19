@@ -115,9 +115,7 @@ public:
 
 		if(value != NULL) {
 			if (strlen(value) > 0) {
-				elem->putString(value);
-
-				if (elem->error() != EC_Normal) {
+				if( elem->putString(value) != EC_Normal) {
 					printf("cannot put tag value: (%04x,%04x)=\"%s\"", g, e, value);
 					return false;
 				}
