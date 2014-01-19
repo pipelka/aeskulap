@@ -37,12 +37,12 @@ icon.o: icon.rc
 
 aeskulap_LDADD = \
 	$(ICONOBJ) \
-	$(GTKMM_LIBS) \
-	$(GLADEMM_LIBS) \
-	$(GTHREAD_LIBS) \
 	../widgets/libgtkdicom.la \
 	../imagepool/libimagepool.la \
 	../configuration/libconfiguration.la \
+	$(GTKMM_LIBS) \
+	$(GLADEMM_LIBS) \
+	$(GTHREAD_LIBS) \
 	$(GCONFMM_LIBS) \
 	$(DCMTK_LIBS)
 
