@@ -527,7 +527,7 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 	}
 
 	// set ManufacturersModelName
-	if(dset->findAndGetOFString(DCM_ManufacturersModelName, ofstr).good()) {
+	if(dset->findAndGetOFString(DCM_ManufacturerModelName, ofstr).good()) {
 		r->m_model = ofstr.c_str();
 	}
 	
@@ -587,12 +587,12 @@ Glib::RefPtr<ImagePool::Instance> Instance::create(DcmDataset* dset) {
 	//std::cout << "intercept: " << r->m_intercept << std::endl;
 
 	// study params
-	if(dset->findAndGetOFString(DCM_PatientsName, ofstr).good()) {
+	if(dset->findAndGetOFString(DCM_PatientName, ofstr).good()) {
 		r->m_patientsname = r->convert_string(ofstr.c_str());
 	}
-	dset->findAndGetOFString(DCM_PatientsBirthDate, ofstr);
+	dset->findAndGetOFString(DCM_PatientBirthDate, ofstr);
 	r->m_patientsbirthdate = ofstr.c_str();
-	dset->findAndGetOFString(DCM_PatientsSex, ofstr);
+	dset->findAndGetOFString(DCM_PatientSex, ofstr);
     r->m_patientssex = ofstr.c_str();
 	if(dset->findAndGetOFString(DCM_StudyDescription, ofstr).good()) {
 		r->m_studydescription = r->convert_string(ofstr.c_str());

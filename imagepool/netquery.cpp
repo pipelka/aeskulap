@@ -210,7 +210,7 @@ void query_from_net(
 	e->putString(dicom_enc.c_str());
 	query.insert(e);
 
-	e = newDicomElement(DCM_PatientsName);
+	e = newDicomElement(DCM_PatientName);
 	e->putString(patientsname.c_str());
 	query.insert(e);
 
@@ -225,10 +225,10 @@ void query_from_net(
 	e->putString(modality.c_str());
 	query.insert(e);
 
-	e = newDicomElement(DCM_PatientsBirthDate);
+	e = newDicomElement(DCM_PatientBirthDate);
 	query.insert(e);
 
-	e = newDicomElement(DCM_PatientsSex);
+	e = newDicomElement(DCM_PatientSex);
 	query.insert(e);
 
 	e = newDicomElement(DCM_StudyDate);
