@@ -112,7 +112,7 @@ bool NetLoader::run() {
 		e->putString("STUDY");
 		query.insert(e);
 
-		e = newDicomElement(DCM_PatientsName);
+		e = newDicomElement(DCM_PatientName);
 		query.insert(e);
 
 		e = newDicomElement(DCM_PatientID);

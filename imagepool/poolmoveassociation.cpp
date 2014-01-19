@@ -34,7 +34,6 @@
 #include "dcmtk/dcmnet/dimse.h"
 #include "dcmtk/dcmnet/diutil.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
-#include "dcmtk/dcmdata/dcdebug.h"
 #include "dcmtk/dcmdata/dcuid.h"
 #include "dcmtk/dcmdata/dcdict.h"
 #include "dcmtk/dcmdata/cmdlnarg.h"
